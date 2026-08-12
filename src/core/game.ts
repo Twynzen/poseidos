@@ -685,6 +685,7 @@ export class Game {
       this.player.tickNeeds(dt, rainNeedsMult(this.weather, indoor));
     }
     // Daño supervivencia: hambre/sed al tope (fatigue no daña HP aquí).
+    // No triggerPlayerAction("hit"): el lean procedural es solo toque hostil.
     if (this.player.alive) {
       const nd = computeNeedsDamage(this.player.needs, dt);
       if (nd.amount > 0) {
