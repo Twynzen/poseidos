@@ -44,6 +44,7 @@ import {
   tickSpawnGrace,
   hostileDamageAllowed,
 } from "../ai";
+import { tryApplyTouchKnockback } from "../combat";
 import { tileKey } from "../world/los";
 import { NoiseBus, type NoiseEvent } from "../world/noise";
 import { shouldShowNoiseRing } from "../render/noiseRings";
@@ -702,6 +703,10 @@ export class Game {
     if (hostileDamageAllowed(this.spawnGrace)) {
       for (const hit of hits) {
         this.player.takeDamage(hit.damage);
+        const attacker = this.hostiles.get(hit.hostileId);
+        if (attacker) {
+          tryApplyTouchKnockback(this.player, attacker, this.map);
+        }
         this.showNoiseRing(this.noise.emitAttack(this.player.x, this.player.y));
         this.lastLootMsg = `golpe -${hit.damage} HP`;
         this.hudAcc = 1;

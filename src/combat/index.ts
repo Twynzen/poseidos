@@ -24,3 +24,9 @@ export {
   type RangedPick,
   type RangedReady,
 } from "./ranged";
+export {
+  TOUCH_KNOCKBACK_DIST,
+  knockbackFromTouch,
+  tryApplyTouchKnockback,
+  type KnockbackActor,
+} from "./touchKnockback";
