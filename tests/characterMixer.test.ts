@@ -77,6 +77,31 @@ describe("buildRoleClipMap (headless)", () => {
 });
 
 describe("bindMixer", () => {
+  test("hasRole: true solo si el clip está mapeado en el GLB", () => {
+    const soldier = bindMixer(
+      fakeLoaded(["Idle", "Walk", "Run", "TPose"]),
+      PLAYER_SOLDIER_MANIFEST,
+    )!;
+    expect(soldier.hasRole("idle")).toBe(true);
+    expect(soldier.hasRole("walk")).toBe(true);
+    expect(soldier.hasRole("run")).toBe(true);
+    expect(soldier.hasRole("primary-attack")).toBe(false);
+    expect(soldier.hasRole("hit")).toBe(false);
+    expect(soldier.hasRole("death")).toBe(false);
+
+    const survivor = bindMixer(
+      fakeLoaded(["Idle", "Walk", "Run", "Attack", "Hit", "Death"]),
+      PLAYER_SURVIVOR_MANIFEST,
+    )!;
+    expect(survivor.hasRole("idle")).toBe(true);
+    expect(survivor.hasRole("primary-attack")).toBe(true);
+    expect(survivor.hasRole("hit")).toBe(true);
+    expect(survivor.hasRole("death")).toBe(true);
+
+    soldier.dispose();
+    survivor.dispose();
+  });
+
   test("fade default positivo; sync idle→walk→run cambia clip", () => {
     expect(DEFAULT_MIXER_FADE_SEC).toBeGreaterThan(0);
     const handle = bindMixer(

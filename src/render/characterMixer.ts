@@ -31,6 +31,8 @@ export interface CharacterMixerHandle {
   syncFromAnimator(role: CharacterClipRole): void;
   /** Advance mixer; optionally sync role first. */
   update(dt: number, role?: CharacterClipRole): void;
+  /** True si el GLB tiene clip mapeado para ese rol (no solo el manifest). */
+  hasRole(role: CharacterClipRole): boolean;
   /** Last role that was synced (debug / tests). */
   readonly activeRole: CharacterClipRole | null;
   /** Clip name currently targeted (debug / tests). */
@@ -143,9 +145,14 @@ export function bindMixer(
     activeClipName = null;
   }
 
+  function hasRole(role: CharacterClipRole): boolean {
+    return actions.has(role);
+  }
+
   return {
     syncFromAnimator,
     update,
+    hasRole,
     get activeRole() {
       return activeRole;
     },

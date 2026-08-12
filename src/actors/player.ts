@@ -42,6 +42,7 @@ import {
   consumeAmmo,
   pickRangedTarget,
   aimAlongFacing,
+  MELEE_WHIFF_COOLDOWN,
   type MeleeWeaponChoice,
 } from "../combat";
 import type { HostileSim, HostileDamageResult } from "../ai";
@@ -138,6 +139,7 @@ export class PlayerSim {
    * Melee (Espacio/V): golpea hostil adyacente / facing.
    * Auto-usa la mejor arma melee del inventario (o puños).
    * Devuelve resultado del daño o null si no hay target / en cooldown / muerto.
+   * Miss (sin target) arranca MELEE_WHIFF_COOLDOWN para no apilar swings.
    */
   tryMelee(hostiles: HostileSim): MeleeAttackResult | null {
     if (!this.alive) return null;
@@ -151,7 +153,10 @@ export class PlayerSim {
       hostiles.hostiles,
       weapon.reach,
     );
-    if (!pick) return null;
+    if (!pick) {
+      this.attackCd = MELEE_WHIFF_COOLDOWN;
+      return null;
+    }
     this.attackCd = weapon.cooldown;
     const hit = hostiles.damage(pick.id, weapon.damage);
     if (!hit) return null;

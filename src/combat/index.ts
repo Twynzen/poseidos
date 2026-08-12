@@ -2,6 +2,7 @@ export {
   MELEE_DAMAGE,
   MELEE_RANGE,
   MELEE_COOLDOWN,
+  MELEE_WHIFF_COOLDOWN,
   BARE_HANDS,
   pickMeleeTarget,
   resolveMeleeWeapon,

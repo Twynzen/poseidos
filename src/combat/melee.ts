@@ -13,6 +13,8 @@ export const MELEE_DAMAGE = 15;
 export const MELEE_RANGE = 1.15;
 /** Cooldown entre golpes del player (puños). */
 export const MELEE_COOLDOWN = 0.5;
+/** CD corto en miss (sin target) para no apilar swings; cubre el lean 0.25s. */
+export const MELEE_WHIFF_COOLDOWN = 0.28;
 
 export interface MeleeTarget {
   id: string;

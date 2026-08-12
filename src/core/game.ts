@@ -751,9 +751,12 @@ export class Game {
     }
 
     if (this.input.consumeAttack()) {
+      const canSwing = this.player.alive && this.player.attackCd === 0;
       const result = this.player.tryMelee(this.hostiles);
-      if (result) {
+      if (canSwing) {
         this.view.triggerPlayerAction("primary-attack");
+      }
+      if (result) {
         if (result.killed) {
           this.speech.unregister(result.hostileId);
           this.trust.unregister(result.hostileId);

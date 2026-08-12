@@ -14,6 +14,7 @@ import {
 import {
   MELEE_DAMAGE,
   MELEE_RANGE,
+  MELEE_WHIFF_COOLDOWN,
   pickMeleeTarget,
   resolveMeleeWeapon,
   BARE_HANDS,
@@ -84,6 +85,28 @@ describe("melee combat", () => {
     expect(bus.loudest()?.source).toBe("attack");
     expect(bus.loudest()?.radius).toBe(NOISE_PRESETS.attack.radius);
     expect(map.walkable(5, 4)).toBe(true);
+  });
+
+  test("tryMelee sin target: null, CD corto, no daño; no apila mientras CD", () => {
+    const player = new PlayerSim({ x: 5.5, y: 4.5 });
+    const sim = new HostileSim({ speed: 0, visionRange: 0, hearRange: 0 });
+    sim.add("far", 10.5, 4.5);
+    const hp = sim.hostiles[0]!.health;
+    expect(player.attackCd).toBe(0);
+
+    expect(player.tryMelee(sim)).toBeNull();
+    expect(player.attackCd).toBe(MELEE_WHIFF_COOLDOWN);
+    expect(MELEE_WHIFF_COOLDOWN).toBeGreaterThanOrEqual(0.25);
+    expect(MELEE_WHIFF_COOLDOWN).toBeLessThanOrEqual(0.35);
+    expect(sim.hostiles[0]!.health).toBe(hp);
+
+    expect(player.tryMelee(sim)).toBeNull();
+    expect(player.attackCd).toBe(MELEE_WHIFF_COOLDOWN);
+
+    player.tickCombat(MELEE_WHIFF_COOLDOWN);
+    expect(player.attackCd).toBe(0);
+    expect(player.tryMelee(sim)).toBeNull();
+    expect(player.attackCd).toBe(MELEE_WHIFF_COOLDOWN);
   });
 
   test("hostil a HP 0 se remueve del sim (mundo)", () => {

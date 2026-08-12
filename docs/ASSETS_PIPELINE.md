@@ -71,10 +71,11 @@ PLAYER_SURVIVOR_MANIFEST.yOffset; // 0
 | --- | --- |
 | Silueta body+head | Fallback (player / mute / poseído si GLB pending/fail) |
 | `locoBob.ts` | Procedural idle/walk/sprint — solo si no hay GLB |
+| `meleeSwing.ts` | Fallback procedural 0.25s si `!hasRole("primary-attack")` (Soldier / silueta); Survivor con Attack no lo usa |
 | `characterManifest.ts` | Contrato + **`PLAYER_SURVIVOR_MANIFEST`** + Soldier/poseído/mute + `preferSurvivorManifest` / `playerManifestCandidates` |
 | `characterAnimator.ts` | Estado de roles mixer-agnóstico (headless) |
 | `characterGltf.ts` | `loadCharacterGltf` / `maybeAttachCharacterGltf` (browser) |
-| `characterMixer.ts` | `bindMixer` + crossfade idle↔walk↔run; `buildRoleClipMap` headless |
+| `characterMixer.ts` | `bindMixer` + crossfade idle↔walk↔run; `buildRoleClipMap` headless; `hasRole(role)` si el clip existe |
 | `possessedLook.ts` | Tint oscuro + acento rojo/violeta emisivo (clone mats) |
 | `muteLook.ts` | Tint gris-verde enfermo (clone mats; sin rojo/violeta) |
 | `hostileLoco.ts` | Delta mapa → idle/walk/run (mute + poseídos; mismos clips Soldier) |
@@ -82,10 +83,11 @@ PLAYER_SURVIVOR_MANIFEST.yOffset; // 0
 | Autogenerar en Mesh2Motion | **Fuera de slice** — herramienta externa, no CI |
 
 Player prueba `playerManifestCandidates()` = `[PLAYER_SURVIVOR_MANIFEST, PLAYER_SOLDIER_MANIFEST]`. Si `Survivor.glb` carga → **sin** `applySurvivorLook`. Si falta o falla → Soldier + tinte tierra/gris + acento visor. Ambos fail → silueta + loco bob.
+Melee: si el mixer **no** mapea `primary-attack` (Soldier / silueta), `worldView` dispara `meleeSwing` (pitch/yawBias en `locoRoot.rotation.x/z`). Si Survivor trae `Attack`, solo el one-shot del GLB.
 Poseídos reusan el mismo Soldier via `SkeletonUtils.clone` + `applyPossessedLook`; loco Idle/Walk/Run por delta en `syncHostiles`.
 Mutes reusan el mismo load (`SkeletonUtils.clone` + `applyMuteLook` + mixer + `hostileLocoFromDelta`). Un solo `loadCharacterGltf` compartido mute+poseído. Boxes × `HOSTILE_VISUAL_SCALE` (1.5) solo si GLB pending/fail.
 Yaw GLB: `playerGltfYawFromMove` / `hostileYaw` con ejes vivos (no facing cardinal).
-Siguiente: hit flash / attack clip / export Mesh2Motion real a `public/models/Survivor.glb`.
+Siguiente: export Mesh2Motion real a `public/models/Survivor.glb`.
 
 ## Survivor drop-in
 

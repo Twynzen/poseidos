@@ -53,6 +53,11 @@ import {
   bindMixer,
   type CharacterMixerHandle,
 } from "./characterMixer";
+import {
+  createMeleeSwingState,
+  tickMeleeSwing,
+  triggerMeleeSwing,
+} from "./meleeSwing";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 import {
   countAoNeighbors,
@@ -106,6 +111,7 @@ export interface WorldView {
   /**
    * Locomocion visual: silueta locoBob o mixer GLB (Idle/Walk/Run).
    * No mueve el root mundo — solo locoRoot local (bob) o mixer + yaw.
+   * Aplica meleeSwing a rotation.x/z si el golpe procedural está activo.
    * faceX/faceZ: ejes de facing (x,z Three / mapa); opcional.
    */
   tickPlayerLoco(
@@ -118,6 +124,7 @@ export interface WorldView {
   /**
    * One-shot de vista: melee/disparo ok → primary-attack; toque hostil → hit;
    * game-over → death. setAction + mixer sync (no-op si el GLB no tiene el clip).
+   * primary-attack sin clip mapeado (`!hasRole`) → swing procedural.
    */
   triggerPlayerAction(role: PlayerOneShotRole): void;
   /**
@@ -335,6 +342,8 @@ export function createWorldView(
   playerLocoRoot.add(playerBody, playerHead);
   playerMesh.add(playerLocoRoot);
   const playerLoco = createLocoBobState();
+  /** Swing procedural si el mixer no tiene clip primary-attack. */
+  const playerSwing = createMeleeSwingState();
   /** Roles mixer-agnosticos; GLB opcional via candidates (Survivor → Soldier). */
   const playerAnimator = createCharacterAnimator();
   let playerUsesGltfVisual = false;
@@ -879,10 +888,11 @@ export function createWorldView(
     tickPlayerLoco(dt, moving, sprinting, faceX, faceZ) {
       setLocomotion(playerAnimator, { moving, sprinting });
       tickCharacterAnimator(playerAnimator, dt);
+      const swing = tickMeleeSwing(playerSwing, dt);
       if (playerUsesGltfVisual && playerMixer) {
         playerLocoRoot.position.y = 0;
-        playerLocoRoot.rotation.z = 0;
-        playerLocoRoot.rotation.x = 0;
+        playerLocoRoot.rotation.z = swing.yawBias;
+        playerLocoRoot.rotation.x = swing.pitch;
         if (faceX != null && faceZ != null) {
           const yaw = playerGltfYawFromMove(faceX, faceZ);
           if (yaw !== null) playerGltfYaw = yaw;
@@ -893,12 +903,15 @@ export function createWorldView(
       }
       const out = tickLocoBob(playerLoco, { moving, sprinting }, dt);
       playerLocoRoot.position.y = out.bobY;
-      playerLocoRoot.rotation.z = out.leanZ;
-      playerLocoRoot.rotation.x = out.swayX;
+      playerLocoRoot.rotation.z = out.leanZ + swing.yawBias;
+      playerLocoRoot.rotation.x = out.swayX + swing.pitch;
     },
     triggerPlayerAction(role) {
       setAction(playerAnimator, role);
       playerMixer?.syncFromAnimator(role);
+      if (role === "primary-attack" && !playerMixer?.hasRole("primary-attack")) {
+        triggerMeleeSwing(playerSwing);
+      }
     },
     clearPlayerAction() {
       setAction(playerAnimator, null);
