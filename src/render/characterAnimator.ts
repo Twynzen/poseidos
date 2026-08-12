@@ -61,7 +61,8 @@ export function setLocomotion(
  * - idle/walk/run: se trata como loco inmediato y limpia one-shot.
  * - primary-attack / hit: one-shot con duracion.
  * - death: sticky (no expira por tick).
- * - null via setAction(anim, null) limpia one-shot (no death a menos que force).
+ * - null via setAction(anim, null) limpia cualquier one-shot, incluida death
+ *   (respawn / load-alive / clearPlayerAction).
  */
 export function setAction(
   anim: CharacterAnimator,

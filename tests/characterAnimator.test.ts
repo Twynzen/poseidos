@@ -73,6 +73,15 @@ describe("setAction + tick", () => {
     expect(currentRole(a)).toBe("idle");
   });
 
+  test("setAction null limpia death sticky (clearPlayerAction / load-alive)", () => {
+    const a = createCharacterAnimator();
+    setAction(a, "death");
+    expect(currentRole(a)).toBe("death");
+    setAction(a, null);
+    expect(a.actionRole).toBeNull();
+    expect(currentRole(a)).toBe("idle");
+  });
+
   test("setAction idle/walk/run limpia one-shot y setea loco", () => {
     const a = createCharacterAnimator();
     setAction(a, "hit", 1);

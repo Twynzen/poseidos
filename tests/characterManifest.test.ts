@@ -4,6 +4,7 @@ import {
   DEFAULT_PLACEHOLDER_MANIFEST,
   PLAYER_SOLDIER_MANIFEST,
   PLAYER_SURVIVOR_MANIFEST,
+  PLAYER_ONESHOT_ROLES,
   MUTE_SOLDIER_MANIFEST,
   POSSESSED_SOLDIER_MANIFEST,
   joinBaseUrl,
@@ -96,6 +97,7 @@ describe("PLAYER_SOLDIER_MANIFEST", () => {
     expect(clipNameForRole(PLAYER_SOLDIER_MANIFEST, "run")).toBe("Run");
     expect(clipNameForRole(PLAYER_SOLDIER_MANIFEST, "primary-attack")).toBeUndefined();
     expect(clipNameForRole(PLAYER_SOLDIER_MANIFEST, "hit")).toBeUndefined();
+    expect(clipNameForRole(PLAYER_SOLDIER_MANIFEST, "death")).toBeUndefined();
     expect(PLAYER_SOLDIER_MANIFEST.scale).toBe(1.25);
     expect(PLAYER_SOLDIER_MANIFEST.yOffset).toBe(0);
   });
@@ -165,5 +167,12 @@ describe("usesPlaceholderMesh / clipNameForRole / isValidManifest", () => {
     expect(
       isValidManifest({ ...DEFAULT_PLACEHOLDER_MANIFEST, yOffset: NaN }),
     ).toBe(false);
+  });
+});
+
+describe("PLAYER_ONESHOT_ROLES", () => {
+  test("incluye primary-attack, hit y death", () => {
+    expect(PLAYER_ONESHOT_ROLES).toEqual(["primary-attack", "hit", "death"]);
+    expect(PLAYER_ONESHOT_ROLES).toContain("death");
   });
 });

@@ -45,6 +45,7 @@ describe("buildRoleClipMap (headless)", () => {
     expect(map.run).toBe("Run");
     expect(map["primary-attack"]).toBeUndefined();
     expect(map.hit).toBeUndefined();
+    expect(map.death).toBeUndefined();
   });
 
   test("mapea Idle/Walk/Run/Attack/Hit/Death del Survivor si existen", () => {
@@ -106,7 +107,7 @@ describe("bindMixer", () => {
     expect(bindMixer(fakeLoaded(["Idle"]), m)).toBeNull();
   });
 
-  test("clip ausente (Soldier Attack/Hit) = no-op; no cambia activeRole", () => {
+  test("clip ausente (Soldier Attack/Hit/Death) = no-op; no cambia activeRole", () => {
     const handle = bindMixer(
       fakeLoaded(["Idle", "Walk", "Run", "TPose"]),
       PLAYER_SOLDIER_MANIFEST,
@@ -120,7 +121,12 @@ describe("bindMixer", () => {
     handle!.syncFromAnimator("hit");
     expect(handle!.activeRole).toBe("idle");
     expect(handle!.activeClipName).toBe("Idle");
+    handle!.syncFromAnimator("death");
+    expect(handle!.activeRole).toBe("idle");
+    expect(handle!.activeClipName).toBe("Idle");
     handle!.update(1 / 60, "primary-attack");
+    expect(handle!.activeRole).toBe("idle");
+    handle!.update(1 / 60, "death");
     expect(handle!.activeRole).toBe("idle");
     handle!.dispose();
   });
@@ -183,6 +189,79 @@ describe("bindMixer", () => {
     survivor.update(1 / 60, currentRole(animV));
     expect(currentRole(animV)).toBe("idle");
     expect(survivor.activeRole).toBe("idle");
+
+    soldier.dispose();
+    survivor.dispose();
+  });
+
+  test("death LoopOnce + clampWhenFinished; update no reinicia; clear vuelve a idle", () => {
+    const handle = bindMixer(
+      fakeLoaded(["Idle", "Walk", "Run", "Attack", "Hit", "Death"]),
+      PLAYER_SURVIVOR_MANIFEST,
+    );
+    expect(handle).not.toBeNull();
+    handle!.syncFromAnimator("idle");
+    handle!.syncFromAnimator("death");
+    expect(handle!.activeRole).toBe("death");
+    expect(handle!.activeClipName).toBe("Death");
+    handle!.update(0.05, "death");
+    expect(handle!.activeRole).toBe("death");
+    expect(handle!.activeActionTime).toBeGreaterThan(0);
+    const advanced = handle!.activeActionTime;
+    handle!.update(0.05, "death");
+    expect(handle!.activeActionTime).toBeGreaterThan(advanced);
+    handle!.update(1);
+    const clamped = handle!.activeActionTime;
+    expect(clamped).toBeGreaterThan(0);
+    handle!.update(1, "death");
+    expect(handle!.activeRole).toBe("death");
+    expect(handle!.activeClipName).toBe("Death");
+    expect(handle!.activeActionTime).toBeCloseTo(clamped, 5);
+    handle!.syncFromAnimator("idle");
+    expect(handle!.activeRole).toBe("idle");
+    expect(handle!.activeClipName).toBe("Idle");
+    handle!.dispose();
+  });
+
+  test("triggerPlayerAction/clearPlayerAction contract: death sticky + clear a loco", () => {
+    const soldier = bindMixer(
+      fakeLoaded(["Idle", "Walk", "Run"]),
+      PLAYER_SOLDIER_MANIFEST,
+    )!;
+    const survivor = bindMixer(
+      fakeLoaded(["Idle", "Walk", "Run", "Attack", "Hit", "Death"]),
+      PLAYER_SURVIVOR_MANIFEST,
+    )!;
+    const animS = createCharacterAnimator();
+    const animV = createCharacterAnimator();
+    soldier.syncFromAnimator("idle");
+    survivor.syncFromAnimator("idle");
+
+    setAction(animS, "death");
+    soldier.syncFromAnimator(currentRole(animS));
+    expect(currentRole(animS)).toBe("death");
+    expect(soldier.activeRole).toBe("idle");
+
+    setAction(animV, "death");
+    survivor.syncFromAnimator(currentRole(animV));
+    expect(currentRole(animV)).toBe("death");
+    expect(survivor.activeRole).toBe("death");
+    expect(survivor.activeClipName).toBe("Death");
+    tickCharacterAnimator(animV, 10);
+    survivor.update(1 / 60, currentRole(animV));
+    expect(currentRole(animV)).toBe("death");
+    expect(survivor.activeRole).toBe("death");
+
+    setAction(animV, null);
+    survivor.syncFromAnimator(currentRole(animV));
+    expect(currentRole(animV)).toBe("idle");
+    expect(survivor.activeRole).toBe("idle");
+    expect(survivor.activeClipName).toBe("Idle");
+
+    setAction(animS, null);
+    soldier.syncFromAnimator(currentRole(animS));
+    expect(currentRole(animS)).toBe("idle");
+    expect(soldier.activeRole).toBe("idle");
 
     soldier.dispose();
     survivor.dispose();

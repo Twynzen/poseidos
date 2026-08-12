@@ -297,6 +297,11 @@ export class Game {
     }
     applySave(this.saveWorld(), save);
     this.gameOver = !this.player.alive;
+    if (this.player.alive) {
+      this.view.clearPlayerAction();
+    } else {
+      this.view.triggerPlayerAction("death");
+    }
     if (!hasFlashlight(this.player.inventory)) this.flashlightOn = false;
     this.noise.clear();
     this.refreshViewAfterLoad();
@@ -333,6 +338,7 @@ export class Game {
     this.lastLootMsg = "reinicio";
     this.view.dispose();
     this.view = createWorldView(this.map, this.containers);
+    this.view.clearPlayerAction();
     this.view.syncVisibleChunks(this.player.x, this.player.y);
     this.applyFov();
     this.view.syncPlayer(this.player.x, this.player.y);
@@ -617,6 +623,7 @@ export class Game {
     this.gameOver = true;
     this.lastLootMsg = "HAS MUERTO";
     this.hudAcc = 1;
+    this.view.triggerPlayerAction("death");
   }
 
 
@@ -631,7 +638,7 @@ export class Game {
 
     // Game-over: solo R reinicia / F9 carga (F5 no aplica)
     if (this.gameOver || !this.player.alive) {
-      this.gameOver = true;
+      if (!this.gameOver) this.enterGameOver();
       if (this.input.consumeRestOrRestart()) {
         this.softReset();
         this.hudAcc = 1;
@@ -659,6 +666,8 @@ export class Game {
       this.view.tickTracers(dt);
     this.view.tickNoiseRings(dt);
       this.tickHitFlashOverlay(dt);
+      // Mixer must keep ticking during freeze so death LoopOnce can play/clamp.
+      this.view.tickPlayerLoco(dt, false, false);
       this.renderer.render(this.view.scene, this.view.camera);
       this.syncSpeechOverlay();
       this.hudAcc += dt;
@@ -735,6 +744,7 @@ export class Game {
       this.syncHostileView(dt);
       this.syncSpeechOverlay();
       this.tickHitFlashOverlay(dt);
+      this.view.tickPlayerLoco(dt, false, false);
       this.renderer.render(this.view.scene, this.view.camera);
       this.refreshHud(true);
       return;

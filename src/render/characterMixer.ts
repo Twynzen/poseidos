@@ -13,6 +13,7 @@ import type { AnimationAction } from "three";
 import type { LoadedCharacterGltf } from "./characterGltf";
 import {
   clipNameForRole,
+  PLAYER_ONESHOT_ROLES,
   type CharacterAssetManifest,
   type CharacterClipRole,
 } from "./characterManifest";
@@ -20,12 +21,10 @@ import {
 /** Default crossfade seconds (idle↔walk↔run). */
 export const DEFAULT_MIXER_FADE_SEC = 0.18;
 
-/** One-shot roles that should not loop. */
-const ONESHOT_ROLES: ReadonlySet<CharacterClipRole> = new Set([
-  "primary-attack",
-  "hit",
-  "death",
-]);
+/** One-shot roles that should not loop (LoopOnce + clampWhenFinished). */
+const ONESHOT_ROLES: ReadonlySet<CharacterClipRole> = new Set(
+  PLAYER_ONESHOT_ROLES,
+);
 
 export interface CharacterMixerHandle {
   /** Sync playing action to semantic role (crossfade if changed). */
@@ -105,7 +104,7 @@ export function bindMixer(
   function syncFromAnimator(role: CharacterClipRole): void {
     const next = actions.get(role);
     if (!next) {
-      // Missing clip (Soldier Attack/Hit): safe no-op — keep current loco.
+      // Missing clip (Soldier Attack/Hit/Death): safe no-op — keep current loco.
       return;
     }
     const oneshot = ONESHOT_ROLES.has(role);

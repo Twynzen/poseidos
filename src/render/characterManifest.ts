@@ -24,6 +24,15 @@ export type CharacterClipRole =
   | "hit"
   | "death";
 
+/** One-shots de vista del player (no loco). Incluye death. */
+export const PLAYER_ONESHOT_ROLES = [
+  "primary-attack",
+  "hit",
+  "death",
+] as const satisfies readonly CharacterClipRole[];
+
+export type PlayerOneShotRole = (typeof PLAYER_ONESHOT_ROLES)[number];
+
 /** Roles minimos exigidos por el pipeline / Skills build-rigged-game-assets. */
 export const CHARACTER_CLIP_ROLES: readonly CharacterClipRole[] = [
   "idle",
