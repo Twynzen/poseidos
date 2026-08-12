@@ -934,10 +934,9 @@ export class Game {
     {
       const ax = this.input.axes;
       const moving = ax.x !== 0 || ax.z !== 0;
-      // Facing del player (cardinal) para orientar el GLB; fallback a ejes.
-      const fx = this.player.facingX;
-      const fz = this.player.facingY; // mapa Y = Three Z
-      this.view.tickPlayerLoco(dt, moving, sprint, fx, fz);
+      // Ejes vivos (diagonal continua) para yaw GLB; facing cardinal sigue
+      // en player para melee / barricada / disparo.
+      this.view.tickPlayerLoco(dt, moving, sprint, ax.x, ax.z);
     }
     this.syncHostileView();
     this.syncAmbient(dt);

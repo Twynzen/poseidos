@@ -31,6 +31,8 @@ import {
 import { PLAYER_SOLDIER_MANIFEST } from "./characterManifest";
 import { ISO_FRUSTUM } from "./cameraConfig";
 import { HOSTILE_VISUAL_SCALE, hostileYaw } from "./hostileFigure";
+import { playerGltfYawFromMove } from "./playerFacing";
+import { applySurvivorLook } from "./survivorLook";
 import { maybeAttachCharacterGltf } from "./characterGltf";
 import {
   bindMixer,
@@ -321,6 +323,8 @@ export function createWorldView(
         playerLocoRoot.remove(loaded.scene);
         return;
       }
+      // Tint survival tras bind OK (antes de mostrar): earth/gray + acento visor.
+      applySurvivorLook(loaded.scene);
       playerMixer = handle;
       playerBody.visible = false;
       playerHead.visible = false;
@@ -814,15 +818,9 @@ export function createWorldView(
         playerLocoRoot.position.y = 0;
         playerLocoRoot.rotation.z = 0;
         playerLocoRoot.rotation.x = 0;
-        if (
-          faceX != null &&
-          faceZ != null &&
-          Number.isFinite(faceX) &&
-          Number.isFinite(faceZ) &&
-          (faceX !== 0 || faceZ !== 0)
-        ) {
-          // Soldier default forward = +Z; W => faceZ=-1 => yaw=PI.
-          playerGltfYaw = Math.atan2(faceX, faceZ);
+        if (faceX != null && faceZ != null) {
+          const yaw = playerGltfYawFromMove(faceX, faceZ);
+          if (yaw !== null) playerGltfYaw = yaw;
         }
         playerLocoRoot.rotation.y = playerGltfYaw;
         playerMixer.update(dt, currentRole(playerAnimator));

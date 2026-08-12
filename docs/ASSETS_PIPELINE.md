@@ -87,8 +87,9 @@ const survivor: CharacterAssetManifest = {
 | GLB en `public/models/` | **`Soldier.glb`** (Three.js examples, MIT) cableado al player |
 | Autogenerar en Mesh2Motion | **Fuera de slice** — herramienta externa, no CI |
 
-Player usa Soldier de prueba (placeholder militar, no look final survival). Load fail → silueta + loco bob.
-Siguiente: export propio Mesh2Motion / poseídos GLB + footsteps SFX.
+Player usa Soldier de prueba (placeholder militar). `applySurvivorLook` tinte tierra/gris + acento visor (clone mats) hasta GLB propio. Load fail → silueta + loco bob.
+Yaw GLB: `playerGltfYawFromMove` con ejes de input vivos (no facing cardinal).
+Siguiente: export propio Mesh2Motion / poseídos GLB.
 
 ## Soldier de prueba
 
