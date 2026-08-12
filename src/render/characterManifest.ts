@@ -83,6 +83,22 @@ export const PLAYER_SOLDIER_MANIFEST: CharacterAssetManifest = {
   yOffset: 0,
 };
 
+/**
+ * Poseídos reusan Soldier.glb con tint distinto (`applyPossessedLook`).
+ * Misma escala que el player (1.25) para altura comparable; mutes siguen box.
+ */
+export const POSSESSED_SOLDIER_MANIFEST: CharacterAssetManifest = {
+  id: "possessed-soldier",
+  url: resolveAssetUrl("models/Soldier.glb"),
+  roles: {
+    idle: "Idle",
+    walk: "Walk",
+    run: "Run",
+  },
+  scale: 1.25,
+  yOffset: 0,
+};
+
 /** true si no hay URL usable (no intentar GLTFLoader). */
 export function usesPlaceholderMesh(manifest: CharacterAssetManifest): boolean {
   return !manifest.url || manifest.url.trim().length === 0;

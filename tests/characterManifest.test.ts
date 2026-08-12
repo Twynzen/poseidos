@@ -3,6 +3,7 @@ import {
   CHARACTER_CLIP_ROLES,
   DEFAULT_PLACEHOLDER_MANIFEST,
   PLAYER_SOLDIER_MANIFEST,
+  POSSESSED_SOLDIER_MANIFEST,
   joinBaseUrl,
   usesPlaceholderMesh,
   clipNameForRole,
@@ -52,6 +53,19 @@ describe("PLAYER_SOLDIER_MANIFEST", () => {
     expect(clipNameForRole(PLAYER_SOLDIER_MANIFEST, "run")).toBe("Run");
     expect(PLAYER_SOLDIER_MANIFEST.scale).toBe(1.25);
     expect(PLAYER_SOLDIER_MANIFEST.yOffset).toBe(0);
+  });
+});
+
+describe("POSSESSED_SOLDIER_MANIFEST", () => {
+  test("mismo Soldier.glb, id possessed-soldier, scale 1.25", () => {
+    expect(usesPlaceholderMesh(POSSESSED_SOLDIER_MANIFEST)).toBe(false);
+    expect(isValidManifest(POSSESSED_SOLDIER_MANIFEST)).toBe(true);
+    expect(POSSESSED_SOLDIER_MANIFEST.id).toBe("possessed-soldier");
+    expect(POSSESSED_SOLDIER_MANIFEST.url).toBe(PLAYER_SOLDIER_MANIFEST.url);
+    expect(POSSESSED_SOLDIER_MANIFEST.url).toBe("/models/Soldier.glb");
+    expect(POSSESSED_SOLDIER_MANIFEST.scale).toBe(1.25);
+    expect(POSSESSED_SOLDIER_MANIFEST.yOffset).toBe(0);
+    expect(clipNameForRole(POSSESSED_SOLDIER_MANIFEST, "idle")).toBe("Idle");
   });
 });
 

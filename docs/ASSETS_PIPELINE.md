@@ -78,18 +78,20 @@ const survivor: CharacterAssetManifest = {
 
 | Pieza | Estado |
 | --- | --- |
-| Silueta body+head | Fallback (player si GLB falla; hostiles) |
+| Silueta body+head | Fallback (player si GLB falla; mute siempre; poseído si GLB pending/fail) |
 | `locoBob.ts` | Procedural idle/walk/sprint — solo si no hay GLB |
-| `characterManifest.ts` | Contrato + placeholder + **`PLAYER_SOLDIER_MANIFEST`** |
+| `characterManifest.ts` | Contrato + placeholder + **`PLAYER_SOLDIER_MANIFEST`** + **`POSSESSED_SOLDIER_MANIFEST`** |
 | `characterAnimator.ts` | Estado de roles mixer-agnóstico (headless) |
 | `characterGltf.ts` | `loadCharacterGltf` / `maybeAttachCharacterGltf` (browser) |
 | `characterMixer.ts` | `bindMixer` + crossfade idle↔walk↔run; `buildRoleClipMap` headless |
-| GLB en `public/models/` | **`Soldier.glb`** (Three.js examples, MIT) cableado al player |
+| `possessedLook.ts` | Tint oscuro + acento rojo/violeta emisivo (clone mats) |
+| GLB en `public/models/` | **`Soldier.glb`** (Three.js examples, MIT) — player + poseídos |
 | Autogenerar en Mesh2Motion | **Fuera de slice** — herramienta externa, no CI |
 
 Player usa Soldier de prueba (placeholder militar). `applySurvivorLook` tinte tierra/gris + acento visor (clone mats) hasta GLB propio. Load fail → silueta + loco bob.
-Yaw GLB: `playerGltfYawFromMove` con ejes de input vivos (no facing cardinal).
-Siguiente: export propio Mesh2Motion / poseídos GLB.
+Poseídos reusan el mismo Soldier via `SkeletonUtils.clone` + `applyPossessedLook`; idle mixer opcional. Mutes siguen boxes × `HOSTILE_VISUAL_SCALE`.
+Yaw GLB: `playerGltfYawFromMove` / `hostileYaw` con ejes vivos (no facing cardinal).
+Siguiente: mute GLB o Mesh2Motion propio / loco walk poseídos.
 
 ## Soldier de prueba
 
@@ -98,5 +100,6 @@ Siguiente: export propio Mesh2Motion / poseídos GLB.
 | Archivo | `public/models/Soldier.glb` |
 | Origen | https://threejs.org/examples/models/gltf/Soldier.glb (MIT) |
 | Clips | `Idle`, `Walk`, `Run` (+ `TPose` no mapeado) |
-| Manifest | `PLAYER_SOLDIER_MANIFEST` — scale `1`, yOffset `0` |
+| Manifest player | `PLAYER_SOLDIER_MANIFEST` — scale `1.25`, yOffset `0` |
+| Manifest poseído | `POSSESSED_SOLDIER_MANIFEST` — mismo url, id `possessed-soldier`, scale `1.25` |
 | Facing | Soldier +Z; yaw = `atan2(faceX, faceZ)` (W → −Z → π) |
