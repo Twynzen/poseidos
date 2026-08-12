@@ -85,10 +85,26 @@ export const PLAYER_SOLDIER_MANIFEST: CharacterAssetManifest = {
 
 /**
  * Poseídos reusan Soldier.glb con tint distinto (`applyPossessedLook`).
- * Misma escala que el player (1.25) para altura comparable; mutes siguen box.
+ * Misma escala que el player (1.25) para altura comparable.
  */
 export const POSSESSED_SOLDIER_MANIFEST: CharacterAssetManifest = {
   id: "possessed-soldier",
+  url: resolveAssetUrl("models/Soldier.glb"),
+  roles: {
+    idle: "Idle",
+    walk: "Walk",
+    run: "Run",
+  },
+  scale: 1.25,
+  yOffset: 0,
+};
+
+/**
+ * Mutes reusan el mismo Soldier.glb con tint gris-verde (`applyMuteLook`).
+ * Misma escala 1.25; boxes × HOSTILE_VISUAL_SCALE solo si GLB pending/fail.
+ */
+export const MUTE_SOLDIER_MANIFEST: CharacterAssetManifest = {
+  id: "mute-soldier",
   url: resolveAssetUrl("models/Soldier.glb"),
   roles: {
     idle: "Idle",

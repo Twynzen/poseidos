@@ -3,6 +3,7 @@ import {
   CHARACTER_CLIP_ROLES,
   DEFAULT_PLACEHOLDER_MANIFEST,
   PLAYER_SOLDIER_MANIFEST,
+  MUTE_SOLDIER_MANIFEST,
   POSSESSED_SOLDIER_MANIFEST,
   joinBaseUrl,
   usesPlaceholderMesh,
@@ -66,6 +67,22 @@ describe("POSSESSED_SOLDIER_MANIFEST", () => {
     expect(POSSESSED_SOLDIER_MANIFEST.scale).toBe(1.25);
     expect(POSSESSED_SOLDIER_MANIFEST.yOffset).toBe(0);
     expect(clipNameForRole(POSSESSED_SOLDIER_MANIFEST, "idle")).toBe("Idle");
+  });
+});
+
+describe("MUTE_SOLDIER_MANIFEST", () => {
+  test("mismo Soldier.glb, id mute-soldier, scale 1.25", () => {
+    expect(usesPlaceholderMesh(MUTE_SOLDIER_MANIFEST)).toBe(false);
+    expect(isValidManifest(MUTE_SOLDIER_MANIFEST)).toBe(true);
+    expect(MUTE_SOLDIER_MANIFEST.id).toBe("mute-soldier");
+    expect(MUTE_SOLDIER_MANIFEST.url).toBe(PLAYER_SOLDIER_MANIFEST.url);
+    expect(MUTE_SOLDIER_MANIFEST.url).toBe(POSSESSED_SOLDIER_MANIFEST.url);
+    expect(MUTE_SOLDIER_MANIFEST.url).toBe("/models/Soldier.glb");
+    expect(MUTE_SOLDIER_MANIFEST.scale).toBe(1.25);
+    expect(MUTE_SOLDIER_MANIFEST.yOffset).toBe(0);
+    expect(clipNameForRole(MUTE_SOLDIER_MANIFEST, "idle")).toBe("Idle");
+    expect(clipNameForRole(MUTE_SOLDIER_MANIFEST, "walk")).toBe("Walk");
+    expect(clipNameForRole(MUTE_SOLDIER_MANIFEST, "run")).toBe("Run");
   });
 });
 

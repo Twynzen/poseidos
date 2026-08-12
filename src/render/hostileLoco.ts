@@ -1,5 +1,5 @@
 /**
- * Locomocion visual poseídos a partir de delta de mapa (x,y) → Three (x,z).
+ * Locomocion visual hostiles (mute/poseído) a partir de delta de mapa (x,y) → Three (x,z).
  * Headless / sin Three.
  */
 

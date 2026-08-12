@@ -78,21 +78,23 @@ const survivor: CharacterAssetManifest = {
 
 | Pieza | Estado |
 | --- | --- |
-| Silueta body+head | Fallback (player si GLB falla; mute siempre; poseído si GLB pending/fail) |
+| Silueta body+head | Fallback (player / mute / poseído si GLB pending/fail) |
 | `locoBob.ts` | Procedural idle/walk/sprint — solo si no hay GLB |
-| `characterManifest.ts` | Contrato + placeholder + **`PLAYER_SOLDIER_MANIFEST`** + **`POSSESSED_SOLDIER_MANIFEST`** |
+| `characterManifest.ts` | Contrato + placeholder + **`PLAYER_SOLDIER_MANIFEST`** + **`POSSESSED_SOLDIER_MANIFEST`** + **`MUTE_SOLDIER_MANIFEST`** |
 | `characterAnimator.ts` | Estado de roles mixer-agnóstico (headless) |
 | `characterGltf.ts` | `loadCharacterGltf` / `maybeAttachCharacterGltf` (browser) |
 | `characterMixer.ts` | `bindMixer` + crossfade idle↔walk↔run; `buildRoleClipMap` headless |
 | `possessedLook.ts` | Tint oscuro + acento rojo/violeta emisivo (clone mats) |
-| `hostileLoco.ts` | Delta mapa → idle/walk/run (poseídos; mismos clips Soldier) |
-| GLB en `public/models/` | **`Soldier.glb`** (Three.js examples, MIT) — player + poseídos |
+| `muteLook.ts` | Tint gris-verde enfermo (clone mats; sin rojo/violeta) |
+| `hostileLoco.ts` | Delta mapa → idle/walk/run (mute + poseídos; mismos clips Soldier) |
+| GLB en `public/models/` | **`Soldier.glb`** (Three.js examples, MIT) — player + poseídos + mutes |
 | Autogenerar en Mesh2Motion | **Fuera de slice** — herramienta externa, no CI |
 
 Player usa Soldier de prueba (placeholder militar). `applySurvivorLook` tinte tierra/gris + acento visor (clone mats) hasta GLB propio. Load fail → silueta + loco bob.
-Poseídos reusan el mismo Soldier via `SkeletonUtils.clone` + `applyPossessedLook`; loco Idle/Walk/Run por delta en `syncHostiles`. Mutes siguen boxes × `HOSTILE_VISUAL_SCALE`.
+Poseídos reusan el mismo Soldier via `SkeletonUtils.clone` + `applyPossessedLook`; loco Idle/Walk/Run por delta en `syncHostiles`.
+Mutes reusan el mismo load (`SkeletonUtils.clone` + `applyMuteLook` + mixer + `hostileLocoFromDelta`). Un solo `loadCharacterGltf` compartido mute+poseído. Boxes × `HOSTILE_VISUAL_SCALE` (1.5) solo si GLB pending/fail.
 Yaw GLB: `playerGltfYawFromMove` / `hostileYaw` con ejes vivos (no facing cardinal).
-Siguiente: mute GLB o Mesh2Motion propio.
+Siguiente: Mesh2Motion / survival GLB / contact polish.
 
 ## Soldier de prueba
 
@@ -103,4 +105,5 @@ Siguiente: mute GLB o Mesh2Motion propio.
 | Clips | `Idle`, `Walk`, `Run` (+ `TPose` no mapeado) |
 | Manifest player | `PLAYER_SOLDIER_MANIFEST` — scale `1.25`, yOffset `0` |
 | Manifest poseído | `POSSESSED_SOLDIER_MANIFEST` — mismo url, id `possessed-soldier`, scale `1.25` |
+| Manifest mute | `MUTE_SOLDIER_MANIFEST` — mismo url, id `mute-soldier`, scale `1.25` |
 | Facing | Soldier +Z; yaw = `atan2(faceX, faceZ)` (W → −Z → π) |
