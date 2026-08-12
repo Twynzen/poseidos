@@ -30,7 +30,7 @@ import {
 } from "./characterAnimator";
 import { PLAYER_SOLDIER_MANIFEST } from "./characterManifest";
 import { ISO_FRUSTUM } from "./cameraConfig";
-import { HOSTILE_VISUAL_SCALE } from "./hostileFigure";
+import { HOSTILE_VISUAL_SCALE, hostileYaw } from "./hostileFigure";
 import { maybeAttachCharacterGltf } from "./characterGltf";
 import {
   bindMixer,
@@ -107,6 +107,9 @@ export interface WorldView {
       y: number;
       visible: boolean;
       kind?: "mute" | "possessed";
+      /** Facing en ejes mapa/Three (x,z); opcional. */
+      faceX?: number;
+      faceZ?: number;
     }>,
   ): void;
   syncDoor(tx: number, ty: number, open: boolean): void;
@@ -853,6 +856,10 @@ export function createWorldView(
         }
         mesh.position.set(e.x, 0, e.y);
         mesh.visible = e.visible;
+        if (e.faceX !== undefined && e.faceZ !== undefined) {
+          const yaw = hostileYaw(e.faceX, e.faceZ);
+          if (yaw !== null) mesh.rotation.y = yaw;
+        }
       }
       for (const [id, mesh] of hostileMeshes) {
         if (!seen.has(id)) {

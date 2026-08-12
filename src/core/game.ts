@@ -391,16 +391,24 @@ export class Game {
 
   /** Hostiles solo visibles si su tile está en FOV del player. */
   private syncHostileView(): void {
+    const px = this.player.x;
+    const py = this.player.y;
     this.view.syncHostiles(
-      this.hostiles.hostiles.map((h) => ({
-        id: h.id,
-        x: h.x,
-        y: h.y,
-        kind: h.kind,
-        visible: this.fovVisible.has(
+      this.hostiles.hostiles.map((h) => {
+        const visible = this.fovVisible.has(
           tileKey(Math.floor(h.x), Math.floor(h.y)),
-        ),
-      })),
+        );
+        return {
+          id: h.id,
+          x: h.x,
+          y: h.y,
+          kind: h.kind,
+          visible,
+          ...(visible
+            ? { faceX: px - h.x, faceZ: py - h.y }
+            : {}),
+        };
+      }),
     );
   }
 
