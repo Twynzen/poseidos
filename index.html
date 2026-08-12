@@ -300,10 +300,26 @@
         color: var(--hud-muted); font-size: 10.5px;
         letter-spacing: 0.05em;
       }
+
+      /* Hit flash: vignette radial rojo fullscreen (opacity la pone game.ts) */
+      #hit-flash {
+        position: fixed;
+        inset: 0;
+        z-index: 8;
+        pointer-events: none;
+        opacity: 0;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(180, 8, 12, 0) 32%,
+          rgba(160, 10, 16, 0.45) 68%,
+          rgba(120, 0, 8, 0.95) 100%
+        );
+      }
     </style>
   </head>
   <body>
     <div id="app"></div>
+    <div id="hit-flash" aria-hidden="true"></div>
     <div id="speech-layer"></div>
     <div id="hud">cargando… · F1 ayuda</div>
     <script type="module" src="/src/main.ts"></script>

@@ -38,3 +38,12 @@ export {
   type HudStatusInput,
 } from "./hudStatus";
 
+export {
+  HIT_FLASH_PEAK,
+  HIT_FLASH_DECAY_PER_SEC,
+  createHitFlash,
+  triggerHitFlash,
+  tickHitFlash,
+  type HitFlash,
+} from "./hitFlash";
+

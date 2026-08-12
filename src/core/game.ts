@@ -69,10 +69,15 @@ import {
   createMoodlesHud,
   createInventoryPanel,
   formatHudStatus,
+  HIT_FLASH_PEAK,
+  createHitFlash,
+  triggerHitFlash,
+  tickHitFlash,
   type SpeechOverlay,
   type DialoguePanel,
   type MoodlesHud,
   type InventoryPanel,
+  type HitFlash,
 } from "../ui";
 import { buildMoodles } from "../actors/moodles";
 import { trySleep, isSafehouseHint, nearBed, hostileNearby } from "../actors/sleep";
@@ -121,6 +126,8 @@ export class Game {
   private dialoguePanel: DialoguePanel;
   private moodlesHud: MoodlesHud;
   private inventoryPanel: InventoryPanel;
+  private readonly hitFlashEl: HTMLElement | null;
+  private readonly hitFlash: HitFlash;
   private dialogueLastLine: string | null = null;
   private dialogueLastTone: string | null = null;
   private noise: NoiseBus;
@@ -155,6 +162,8 @@ export class Game {
   constructor(root: HTMLElement) {
     this.root = root;
     this.hud = document.querySelector("#hud");
+    this.hitFlashEl = document.querySelector("#hit-flash");
+    this.hitFlash = createHitFlash();
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -318,6 +327,8 @@ export class Game {
     this.showInvDetail = false;
     this.flashlightOn = false;
     this.needsDamageMsgCd = 0;
+    this.hitFlash.intensity = 0;
+    this.syncHitFlashOverlay();
     this.syncInventoryPanel();
     this.lastLootMsg = "reinicio";
     this.view.dispose();
@@ -647,6 +658,7 @@ export class Game {
     this.syncGrassVisual(dt);
       this.view.tickTracers(dt);
     this.view.tickNoiseRings(dt);
+      this.tickHitFlashOverlay(dt);
       this.renderer.render(this.view.scene, this.view.camera);
       this.syncSpeechOverlay();
       this.hudAcc += dt;
@@ -668,6 +680,7 @@ export class Game {
       const nd = computeNeedsDamage(this.player.needs, dt);
       if (nd.amount > 0) {
         this.player.takeDamage(nd.amount);
+        triggerHitFlash(this.hitFlash, Math.min(1, nd.amount * 5));
         if (this.needsDamageMsgCd <= 0) {
           const msg = needsDamageHudMessage(nd);
           if (msg) {
@@ -703,6 +716,7 @@ export class Game {
     if (hostileDamageAllowed(this.spawnGrace)) {
       for (const hit of hits) {
         this.player.takeDamage(hit.damage);
+        triggerHitFlash(this.hitFlash, 1);
         const attacker = this.hostiles.get(hit.hostileId);
         if (attacker) {
           tryApplyTouchKnockback(this.player, attacker, this.map);
@@ -719,6 +733,7 @@ export class Game {
       this.input.endFrame();
       this.syncHostileView(dt);
       this.syncSpeechOverlay();
+      this.tickHitFlashOverlay(dt);
       this.renderer.render(this.view.scene, this.view.camera);
       this.refreshHud(true);
       return;
@@ -953,6 +968,7 @@ export class Game {
     this.view.tickTracers(dt);
       this.view.tickNoiseRings(dt);
     this.view.followCamera(this.player.x, this.player.y);
+    this.tickHitFlashOverlay(dt);
     this.renderer.render(this.view.scene, this.view.camera);
     this.syncSpeechOverlay();
     this.syncDialoguePanel();
@@ -962,6 +978,19 @@ export class Game {
       this.hudAcc = 0;
       this.refreshHud(false);
     }
+  }
+
+  /** Overlay `#hit-flash`: decay + opacity = intensity × peak. */
+  private tickHitFlashOverlay(dt: number): void {
+    tickHitFlash(this.hitFlash, dt);
+    this.syncHitFlashOverlay();
+  }
+
+  private syncHitFlashOverlay(): void {
+    if (!this.hitFlashEl) return;
+    this.hitFlashEl.style.opacity = String(
+      this.hitFlash.intensity * HIT_FLASH_PEAK,
+    );
   }
 
   private syncInventoryPanel(): void {
