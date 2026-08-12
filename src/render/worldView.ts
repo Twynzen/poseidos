@@ -27,6 +27,7 @@ import {
   currentRole,
   setLocomotion,
   tickCharacterAnimator,
+  type CharacterAnimator,
 } from "./characterAnimator";
 import {
   PLAYER_SOLDIER_MANIFEST,
@@ -34,6 +35,7 @@ import {
 } from "./characterManifest";
 import { ISO_FRUSTUM } from "./cameraConfig";
 import { HOSTILE_VISUAL_SCALE, hostileYaw } from "./hostileFigure";
+import { hostileLocoFromDelta } from "./hostileLoco";
 import { playerGltfYawFromMove } from "./playerFacing";
 import { applySurvivorLook } from "./survivorLook";
 import { applyPossessedLook } from "./possessedLook";
@@ -110,6 +112,7 @@ export interface WorldView {
   ): void;
   /**
    * Sync meshes de hostiles. `visible` respeta FOV del player (no ver through walls).
+   * `dt` avanza loco Idle/Walk/Run de poseídos GLB (mapa y → Three z).
    */
   syncHostiles(
     entities: ReadonlyArray<{
@@ -122,6 +125,7 @@ export interface WorldView {
       faceX?: number;
       faceZ?: number;
     }>,
+    dt?: number,
   ): void;
   syncDoor(tx: number, ty: number, open: boolean): void;
   /** Reconstruye mesh de un tile (p.ej. tras colocar barricada). */
@@ -366,10 +370,24 @@ export function createWorldView(
   });
   const hostileMeshes = new Map<string, THREE.Object3D>();
   const hostileKinds = new Map<string, "mute" | "possessed">();
-  /** Mixer idle por poseído GLB (clone SkeletonUtils). */
+  /** Mixer Idle/Walk/Run por poseído GLB (clone SkeletonUtils). */
   const possessedMixers = new Map<string, CharacterMixerHandle>();
+  /** Animator por poseído (roles loco; mismos clips Soldier que player). */
+  const possessedAnimators = new Map<string, CharacterAnimator>();
+  /** Última posición mapa (x,y) por poseído — y mapa = Three z. */
+  const possessedLastMapPos = new Map<string, { x: number; y: number }>();
   /** Template Soldier compartido; null mientras carga o si falla. */
   let possessedTemplate: LoadedCharacterGltf | null = null;
+
+  function clearPossessedVisual(id: string): void {
+    const mixer = possessedMixers.get(id);
+    if (mixer) {
+      mixer.dispose();
+      possessedMixers.delete(id);
+    }
+    possessedAnimators.delete(id);
+    possessedLastMapPos.delete(id);
+  }
 
   void loadCharacterGltf(POSSESSED_SOLDIER_MANIFEST.url).then((loaded) => {
     if (!loaded) return;
@@ -379,11 +397,7 @@ export function createWorldView(
       if (kind !== "possessed") continue;
       const mesh = hostileMeshes.get(id);
       if (mesh) scene.remove(mesh);
-      const mixer = possessedMixers.get(id);
-      if (mixer) {
-        mixer.dispose();
-        possessedMixers.delete(id);
-      }
+      clearPossessedVisual(id);
       hostileMeshes.delete(id);
       hostileKinds.delete(id);
     }
@@ -845,9 +859,6 @@ export function createWorldView(
     tickPlayerLoco(dt, moving, sprinting, faceX, faceZ) {
       setLocomotion(playerAnimator, { moving, sprinting });
       tickCharacterAnimator(playerAnimator, dt);
-      for (const handle of possessedMixers.values()) {
-        handle.update(dt);
-      }
       if (playerUsesGltfVisual && playerMixer) {
         playerLocoRoot.position.y = 0;
         playerLocoRoot.rotation.z = 0;
@@ -865,8 +876,9 @@ export function createWorldView(
       playerLocoRoot.rotation.z = out.leanZ;
       playerLocoRoot.rotation.x = out.swayX;
     },
-    syncHostiles(entities) {
+    syncHostiles(entities, dt = 0) {
       const seen = new Set<string>();
+      const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
       for (const e of entities) {
         seen.add(e.id);
         const kind = e.kind ?? "mute";
@@ -874,11 +886,7 @@ export function createWorldView(
         if (!mesh || hostileKinds.get(e.id) !== kind) {
           if (mesh) {
             scene.remove(mesh);
-            const oldMixer = possessedMixers.get(e.id);
-            if (oldMixer) {
-              oldMixer.dispose();
-              possessedMixers.delete(e.id);
-            }
+            clearPossessedVisual(e.id);
           }
           if (kind === "possessed" && possessedTemplate) {
             const built = makePossessedGltfFigure(
@@ -886,7 +894,10 @@ export function createWorldView(
               markerShared,
             );
             mesh = built.root;
-            if (built.mixer) possessedMixers.set(e.id, built.mixer);
+            if (built.mixer) {
+              possessedMixers.set(e.id, built.mixer);
+              possessedAnimators.set(e.id, createCharacterAnimator());
+            }
           } else {
             mesh = makeHostileFigure(
               kind,
@@ -908,15 +919,35 @@ export function createWorldView(
           const yaw = hostileYaw(e.faceX, e.faceZ);
           if (yaw !== null) mesh.rotation.y = yaw;
         }
+
+        // Poseídos GLB: Idle/Walk/Run vía delta mapa (y → z). Mutes = boxes.
+        if (kind === "possessed") {
+          const mixer = possessedMixers.get(e.id);
+          const anim = possessedAnimators.get(e.id);
+          if (mixer && anim) {
+            const last = possessedLastMapPos.get(e.id);
+            let loco: ReturnType<typeof hostileLocoFromDelta> = "idle";
+            if (last) {
+              // dx/dz: mapa x→x, mapa y→Three z
+              loco = hostileLocoFromDelta(e.x - last.x, e.y - last.y, safeDt);
+            }
+            setLocomotion(anim, {
+              moving: loco !== "idle",
+              sprinting: loco === "run",
+            });
+            tickCharacterAnimator(anim, safeDt);
+            mixer.update(safeDt, currentRole(anim));
+          }
+          possessedLastMapPos.set(e.id, { x: e.x, y: e.y });
+        } else {
+          possessedLastMapPos.delete(e.id);
+          possessedAnimators.delete(e.id);
+        }
       }
       for (const [id, mesh] of hostileMeshes) {
         if (!seen.has(id)) {
           scene.remove(mesh);
-          const mixer = possessedMixers.get(id);
-          if (mixer) {
-            mixer.dispose();
-            possessedMixers.delete(id);
-          }
+          clearPossessedVisual(id);
           hostileMeshes.delete(id);
           hostileKinds.delete(id);
         }
@@ -1024,6 +1055,8 @@ export function createWorldView(
       }
       for (const mixer of possessedMixers.values()) mixer.dispose();
       possessedMixers.clear();
+      possessedAnimators.clear();
+      possessedLastMapPos.clear();
       hostileMeshes.clear();
       hostileKinds.clear();
       possessedTemplate = null;
@@ -1072,7 +1105,7 @@ function makeHostileFigure(
 }
 
 /**
- * Poseído GLB: clone del template Soldier + tint + idle opcional.
+ * Poseído GLB: clone del template Soldier + tint + mixer Idle/Walk/Run.
  * Escala del manifest (1.25 = altura player); no HOSTILE_VISUAL_SCALE.
  */
 function makePossessedGltfFigure(

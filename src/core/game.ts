@@ -395,7 +395,7 @@ export class Game {
   }
 
   /** Hostiles solo visibles si su tile está en FOV del player. */
-  private syncHostileView(): void {
+  private syncHostileView(dt = 0): void {
     const px = this.player.x;
     const py = this.player.y;
     this.view.syncHostiles(
@@ -414,6 +414,7 @@ export class Game {
             : {}),
         };
       }),
+      dt,
     );
   }
 
@@ -711,7 +712,7 @@ export class Game {
     if (!this.player.alive) {
       this.enterGameOver();
       this.input.endFrame();
-      this.syncHostileView();
+      this.syncHostileView(dt);
       this.syncSpeechOverlay();
       this.renderer.render(this.view.scene, this.view.camera);
       this.refreshHud(true);
@@ -938,7 +939,7 @@ export class Game {
       // en player para melee / barricada / disparo.
       this.view.tickPlayerLoco(dt, moving, sprint, ax.x, ax.z);
     }
-    this.syncHostileView();
+    this.syncHostileView(dt);
     this.syncAmbient(dt);
     this.syncFootsteps(dt, moved, sprint);
     this.syncLighting();
