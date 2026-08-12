@@ -15,11 +15,11 @@ export interface NeedsState {
 
 /**
  * Segundos reales aprox. para llenar 0→100 a rate 1× (sin mult clima).
- * ~2.3× más lento que el slice demo anterior (180/120/240) — demos sin muerte por sed constante.
+ * Más lento que el slice demo anterior (180/120/240) — demos sin muerte por sed constante.
  */
 export const NEEDS_FULL_SEC = {
   hunger: 420,
-  thirst: 280,
+  thirst: 360,
   fatigue: 560,
 } as const;
 

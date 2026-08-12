@@ -24,10 +24,10 @@ describe("needs tick", () => {
 
   test("NEEDS_FULL_SEC documenta tiempo real 0→100 a rate 1×", () => {
     expect(NEEDS_FULL_SEC.hunger).toBe(420);
-    expect(NEEDS_FULL_SEC.thirst).toBe(280);
+    expect(NEEDS_FULL_SEC.thirst).toBe(360);
     expect(NEEDS_FULL_SEC.fatigue).toBe(560);
     expect(NEEDS_RATE.hunger).toBeCloseTo(100 / 420, 10);
-    expect(NEEDS_RATE.thirst).toBeCloseTo(100 / 280, 10);
+    expect(NEEDS_RATE.thirst).toBeCloseTo(100 / 360, 10);
     expect(NEEDS_RATE.fatigue).toBeCloseTo(100 / 560, 10);
     // sed sigue siendo el need más rápido
     expect(NEEDS_FULL_SEC.thirst).toBeLessThan(NEEDS_FULL_SEC.hunger);

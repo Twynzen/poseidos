@@ -20,3 +20,11 @@ export {
   type FootstepsState,
   type FootstepsBus,
 } from "./footstepsStub";
+
+export {
+  shouldEmitFootstep,
+  createFootstepPlayer,
+  syncFootstepPlayer,
+  type FootstepPlayer,
+  type FootstepPlayerSync,
+} from "./footstepPlayer";

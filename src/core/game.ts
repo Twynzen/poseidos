@@ -83,8 +83,11 @@ import {
   createFootstepsBus,
   tickFootsteps,
   describeFootsteps,
+  createFootstepPlayer,
+  syncFootstepPlayer,
   type AmbientBus,
   type FootstepsBus,
+  type FootstepPlayer,
 } from "../audio";
 import {
   computeNeedsDamage,
@@ -126,6 +129,7 @@ export class Game {
   private weather: WeatherSystem;
   private ambient: AmbientBus;
   private footsteps: FootstepsBus;
+  private footstepPlayer: FootstepPlayer;
   private readonly loop: GameLoop;
   private readonly onResize: () => void;
   private readonly storage: SaveStorage | null;
@@ -193,6 +197,7 @@ export class Game {
     this.weather = new WeatherSystem();
     this.ambient = createAmbientBus();
     this.footsteps = createFootstepsBus();
+    this.footstepPlayer = createFootstepPlayer();
     this.storage = browserStorage();
     this.loop = new GameLoop((dt) => this.tick(dt));
 
@@ -983,7 +988,7 @@ export class Game {
     );
   }
 
-  /** Footsteps stub: nivel desde movimiento; mute compartido con ambient. */
+  /** Footsteps stub + WebAudio beeps; mute compartido con ambient. */
   private syncFootsteps(dt: number, moved: number, sprint: boolean): void {
     tickFootsteps(
       this.footsteps,
@@ -994,6 +999,7 @@ export class Game {
       },
       dt,
     );
+    syncFootstepPlayer(this.footstepPlayer, this.footsteps, { sprint });
   }
 
   private refreshHud(force: boolean): void {
