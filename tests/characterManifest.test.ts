@@ -3,11 +3,30 @@ import {
   CHARACTER_CLIP_ROLES,
   DEFAULT_PLACEHOLDER_MANIFEST,
   PLAYER_SOLDIER_MANIFEST,
+  joinBaseUrl,
   usesPlaceholderMesh,
   clipNameForRole,
   isValidManifest,
   type CharacterAssetManifest,
 } from "../src/render/characterManifest";
+
+describe("joinBaseUrl", () => {
+  test("base / + models path", () => {
+    expect(joinBaseUrl("/", "models/Soldier.glb")).toBe("/models/Soldier.glb");
+  });
+
+  test("base /poseidos/ + models path", () => {
+    expect(joinBaseUrl("/poseidos/", "models/Soldier.glb")).toBe(
+      "/poseidos/models/Soldier.glb",
+    );
+  });
+
+  test("base sin slash final + path con slash inicial", () => {
+    expect(joinBaseUrl("/poseidos", "/models/Soldier.glb")).toBe(
+      "/poseidos/models/Soldier.glb",
+    );
+  });
+});
 
 describe("DEFAULT_PLACEHOLDER_MANIFEST", () => {
   test("sin url => placeholder", () => {

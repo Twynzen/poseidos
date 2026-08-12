@@ -4,6 +4,18 @@
  * url vacia => silueta placeholder (sin fetch de GLB).
  */
 
+/** Une base (p.ej. Vite BASE_URL) con un path de asset. */
+export function joinBaseUrl(base: string, path: string): string {
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+  const normalizedPath = path.startsWith("/") ? path.slice(1) : path;
+  return `${normalizedBase}${normalizedPath}`;
+}
+
+/** Resuelve path de asset contra import.meta.env.BASE_URL (Pages: /poseidos/). */
+export function resolveAssetUrl(path: string): string {
+  return joinBaseUrl(import.meta.env.BASE_URL, path);
+}
+
 export type CharacterClipRole =
   | "idle"
   | "walk"
@@ -61,7 +73,7 @@ export const DEFAULT_PLACEHOLDER_MANIFEST: CharacterAssetManifest = {
  */
 export const PLAYER_SOLDIER_MANIFEST: CharacterAssetManifest = {
   id: "soldier-threejs",
-  url: "/models/Soldier.glb",
+  url: resolveAssetUrl("models/Soldier.glb"),
   roles: {
     idle: "Idle",
     walk: "Walk",
