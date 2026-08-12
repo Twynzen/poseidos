@@ -2,7 +2,7 @@
  * Teclado WASD → ejes · Shift correr.
  * E/F interactuar (puerta; si no, loot contextual).
  * G loot explícito · I panel inventario · Q consumir · R descanso / reinicio game-over.
- * Z dormir (safehouse) · B barricada · C vendaje (craft) · H cocinar · T diálogo poseído · Espacio/V melee · X disparar · L linterna · M mute ambient · F1 ayuda · F5 guardar · F9 cargar.
+ * Z dormir (safehouse) · B barricada · C vendaje (craft) · H cocinar · T diálogo poseído · Espacio/V melee · X disparar · L linterna · M mute ambient · +/- zoom iso · F1 ayuda · F5 guardar · F9 cargar.
  */
 export class Input {
   private readonly keys = new Set<string>();
@@ -154,6 +154,22 @@ export class Input {
   /** L: toggle linterna (requiere item flashlight en inventario). */
   consumeFlashlightToggle(): boolean {
     return this.consumeJustPressed("KeyL");
+  }
+
+  /** = / Numpad+: zoom in (frustum menor). */
+  consumeZoomIn(): boolean {
+    return (
+      this.consumeJustPressed("Equal") ||
+      this.consumeJustPressed("NumpadAdd")
+    );
+  }
+
+  /** - / Numpad-: zoom out (frustum mayor). */
+  consumeZoomOut(): boolean {
+    return (
+      this.consumeJustPressed("Minus") ||
+      this.consumeJustPressed("NumpadSubtract")
+    );
   }
 
   /** Llamar al final del tick para no acumular edges viejos. */

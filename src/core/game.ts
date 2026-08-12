@@ -18,7 +18,11 @@ import {
 } from "../world/los";
 import { PlayerSim } from "../actors/player";
 import { createWorldView, type WorldView } from "../render/worldView";
-import { ISO_FRUSTUM } from "../render/cameraConfig";
+import {
+  ISO_FRUSTUM,
+  zoomInFrustum,
+  zoomOutFrustum,
+} from "../render/cameraConfig";
 import {
   CONTAINER_REACH,
   inventorySummary,
@@ -140,6 +144,8 @@ export class Game {
   private spawnGrace = 0;
   /** Cooldown HUD para mensajes de daño por hambre/sed (~2s). */
   private needsDamageMsgCd = 0;
+  /** Half-extent ortográfico iso (ajustable con +/-). */
+  private isoFrustum = ISO_FRUSTUM;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -595,6 +601,8 @@ export class Game {
   }
 
   private tick(dt: number): void {
+    this.applyIsoZoomInput();
+
     // Game-over: solo R reinicia / F9 carga (F5 no aplica)
     if (this.gameOver || !this.player.alive) {
       this.gameOver = true;
@@ -904,6 +912,7 @@ export class Game {
       this.doLoad();
       this.hudAcc = 1;
     }
+    // Zoom ya consumido al inicio del tick (applyIsoZoomInput).
     this.input.endFrame();
 
     this.view.syncVisibleChunks(this.player.x, this.player.y);
@@ -1088,11 +1097,25 @@ export class Game {
     this.hud.classList.toggle("hud-help", this.showHelp);
   }
 
+  /** +/- zoom iso: ajusta frustum y reaplica proyección. */
+  private applyIsoZoomInput(): void {
+    let changed = false;
+    if (this.input.consumeZoomIn()) {
+      this.isoFrustum = zoomInFrustum(this.isoFrustum);
+      changed = true;
+    }
+    if (this.input.consumeZoomOut()) {
+      this.isoFrustum = zoomOutFrustum(this.isoFrustum);
+      changed = true;
+    }
+    if (changed) this.resize();
+  }
+
   private resize(): void {
     const w = window.innerWidth;
     const h = window.innerHeight;
     const aspect = w / h;
-    const frustum = ISO_FRUSTUM;
+    const frustum = this.isoFrustum;
     const cam = this.view.camera;
     cam.left = -frustum * aspect;
     cam.right = frustum * aspect;
