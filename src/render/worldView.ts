@@ -1,0 +1,1240 @@
+import * as THREE from "three";
+import { paletteFor, type MarkerRole } from "./markers";
+import {
+  DEFAULT_TRACER_TTL,
+  TRACER_HEIGHT,
+  clampTracerTtl,
+  tracerLength,
+  tracerMidpoint,
+  tracerOpacity,
+  tracerYaw,
+  type TracerPoint,
+} from "./tracers";
+import {
+  createNoiseRing,
+  ringColorHex,
+  ringOpacity,
+  ringScale,
+  tickNoiseRing,
+  type NoiseRingState,
+} from "./noiseRings";
+import {
+  createLocoBobState,
+  tickLocoBob,
+} from "./locoBob";
+import {
+  createCharacterAnimator,
+  currentRole,
+  setLocomotion,
+  tickCharacterAnimator,
+} from "./characterAnimator";
+import { PLAYER_SOLDIER_MANIFEST } from "./characterManifest";
+import { ISO_FRUSTUM } from "./cameraConfig";
+import { maybeAttachCharacterGltf } from "./characterGltf";
+import {
+  bindMixer,
+  type CharacterMixerHandle,
+} from "./characterMixer";
+import {
+  countAoNeighbors,
+  floorColorAt,
+} from "./floorStyle";
+import { atmosphereFor } from "./fogAtmosphere";
+import {
+  bladePoseAt,
+  collectGrassTiles,
+  GRASS_RADIUS,
+  MAX_GRASS_INSTANCES,
+  BLADES_PER_TILE,
+  type GrassTile,
+} from "./windGrass";
+import type { TileMap } from "../world/tilemap";
+import type { Tile } from "../world/tile";
+import type { Chunk } from "../world/chunk";
+import { chunkKey } from "../world/chunk";
+import { tileKey } from "../world/los";
+import { isIndoor } from "../world/indoor";
+import type { GameClock } from "../core/clock";
+import type { ContainerRegistry } from "../items";
+
+const WALL_COLOR = 0x5a5348;
+const DOOR_CLOSED = 0x8b5a2b;
+const DOOR_OPEN = 0xc4a35a;
+const PLAYER_COLOR = 0x4a8fd4;
+/** Amenaza muda: rojo oscuro. */
+const HOSTILE_COLOR = 0x6b1a1a;
+/** Poseído: púrpura enfermo. */
+const POSSESSED_COLOR = 0x5a2d6b;
+const POSSESSED_EMISSIVE = 0x1a0820;
+const FURNITURE_COLOR = 0x6b4f2a;
+/** Cama: burdeos / azul oscuro. */
+const BED_COLOR = 0x4a1f3d;
+/** Barricada: madera clara, más baja que muro. */
+const BARRICADE_COLOR = 0xc49a6c;
+const BARRICADE_EDGE = 0x8a6239;
+/** Color del fog de tiles fuera de LOS. */
+const FOG_COLOR = 0x050508;
+
+/** Radio en chunks alrededor del player para mantener meshes. */
+const VISIBLE_CHUNK_RADIUS = 1;
+
+export interface WorldView {
+  scene: THREE.Scene;
+  camera: THREE.OrthographicCamera;
+  ambient: THREE.AmbientLight;
+  sun: THREE.DirectionalLight;
+  syncPlayer(x: number, y: number): void;
+  /**
+   * Locomocion visual: silueta locoBob o mixer GLB (Idle/Walk/Run).
+   * No mueve el root mundo — solo locoRoot local (bob) o mixer + yaw.
+   * faceX/faceZ: ejes de facing (x,z Three / mapa); opcional.
+   */
+  tickPlayerLoco(
+    dt: number,
+    moving: boolean,
+    sprinting: boolean,
+    faceX?: number,
+    faceZ?: number,
+  ): void;
+  /**
+   * Sync meshes de hostiles. `visible` respeta FOV del player (no ver through walls).
+   */
+  syncHostiles(
+    entities: ReadonlyArray<{
+      id: string;
+      x: number;
+      y: number;
+      visible: boolean;
+      kind?: "mute" | "possessed";
+    }>,
+  ): void;
+  syncDoor(tx: number, ty: number, open: boolean): void;
+  /** Reconstruye mesh de un tile (p.ej. tras colocar barricada). */
+  remeshTile(tx: number, ty: number): void;
+  /** Descarga chunks cargados y vuelve a cargar visibles (tras load). */
+  forceReloadVisible(wx: number, wy: number): void;
+  syncDayNight(clock: GameClock): void;
+  /**
+   * Luz cálida indoor de noche (player/furniture). intensity 0 = apagada.
+   * Ambiente frío queda a cargo de syncDayNight.
+   */
+  syncWarmLight(wx: number, wy: number, intensity: number): void;
+  /**
+   * Luz fría de linterna (player). intensity 0 = apagada.
+   * Separada de warmLight / muzzle flash.
+   */
+  syncTorchLight(wx: number, wy: number, intensity: number): void;
+  followCamera(x: number, y: number): void;
+  /** Crea/destruye meshes de chunks cerca de (wx, wy). */
+  syncVisibleChunks(wx: number, wy: number): void;
+  /**
+   * Aplica FOV: tiles no visibles se ocultan (content) y se muestra fog plano.
+   * No afecta el culling de chunks.
+   */
+  syncFov(visible: ReadonlySet<string>): void;
+  /** Chunks con mesh activo (debug / tests de integración). */
+  loadedChunkCount(): number;
+  /**
+   * Tracer visual corto del disparo (player → target / max range).
+   * Desaparece en ~ttl (0.15–0.35s). Opcional: flash en el hocico.
+   */
+  spawnTracer(from: TracerPoint, to: TracerPoint, ttl?: number): void;
+  /** Avanza TTL / opacidad de tracers activos; limpia expirados. */
+  tickTracers(dt: number): void;
+  /**
+   * Anillo de ruido en el suelo: se expande hasta `radius` (tiles) y se desvanece.
+   * `kind` colorea (run blanco, door/loot ámbar, attack/gun/barricade rojo).
+   */
+  spawnNoiseRing(x: number, y: number, radius: number, kind?: string): void;
+  /** Avanza age / scale / opacity de anillos; limpia muertos. */
+  tickNoiseRings(dt: number): void;
+  /**
+   * Lluvia barata: partículas/líneas alrededor de (wx,wy).
+   * intensity 0 = oculto; >0 sync + anima caída.
+   */
+  syncRain(wx: number, wy: number, intensity: number, dt?: number): void;
+  /**
+   * Césped instanced outdoor cerca del player.
+   * Rebuild al cambiar de tile; viento en cada tick.
+   */
+  syncGrass(wx: number, wy: number, dt?: number): void;
+  dispose(): void;
+}
+
+interface ChunkMeshes {
+  group: THREE.Group;
+  doorMeshes: Map<string, THREE.Mesh>;
+  /** Materials propios del chunk (no compartidos) a dispose. */
+  ownedMats: THREE.Material[];
+  /** Raíz por tile (content + fog) para FOV. */
+  tileRoots: Map<string, THREE.Group>;
+}
+
+/**
+ * Vista Three del mapa: meshes por chunk con culling + FOV fog.
+ * La verdad sigue en TileMap / PlayerSim / los.
+ */
+export function createWorldView(
+  map: TileMap,
+  _containers?: ContainerRegistry,
+): WorldView {
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0a0a0c);
+  // Distance fog (idea little-landscapes): noche más cerca/opaca; día abre el horizonte.
+  scene.fog = new THREE.Fog(0x0a0a0c, 30, 78);
+
+  const ambient = new THREE.AmbientLight(0x6a6a78, 0.55);
+  scene.add(ambient);
+
+  const sun = new THREE.DirectionalLight(0xe8e0d0, 1.1);
+  sun.position.set(20, 30, 10);
+  scene.add(sun);
+
+  // Pool cálido indoor de noche (landscapes / chess board light).
+  const warmLight = new THREE.PointLight(0xffb070, 0, 7.5, 2);
+  warmLight.position.set(0, 1.6, 0);
+  scene.add(warmLight);
+
+  // Linterna: PointLight fría azulada (separada de warm / muzzle).
+  const torchLight = new THREE.PointLight(0xb0d0ff, 0, 10, 2);
+  torchLight.position.set(0, 1.35, 0);
+  torchLight.visible = false;
+  scene.add(torchLight);
+
+  // Reutilizados en syncDayNight (evita new Color cada frame).
+  const skyColor = new THREE.Color(0x0a0a0c);
+  const ambientColor = new THREE.Color(0x6a6a78);
+  const sunColor = new THREE.Color(0xe8e0d0);
+
+  const floorGeo = new THREE.PlaneGeometry(1, 1);
+  const wallGeo = new THREE.BoxGeometry(1, 2.2, 1);
+  const doorGeo = new THREE.BoxGeometry(1, 2.0, 0.18);
+  const furnitureGeo = new THREE.BoxGeometry(0.7, 0.85, 0.7);
+  /** Planchas apiladas: más bajas y estrechas que un muro. */
+  const barricadeGeo = new THREE.BoxGeometry(0.92, 1.35, 0.55);
+  const furnitureMat = new THREE.MeshStandardMaterial({
+    color: FURNITURE_COLOR,
+    roughness: 0.8,
+  });
+  /** Cama: más baja y ancha que furniture genérico (reuse geo/mat). */
+  const bedGeo = new THREE.BoxGeometry(1.0, 0.35, 0.7);
+  const bedMat = new THREE.MeshStandardMaterial({
+    color: BED_COLOR,
+    roughness: 0.85,
+  });
+  /** Cache de materiales de floor por color final (tint+AO) — barato, sin GTAO. */
+  const floorMatByColor = new Map<number, THREE.MeshStandardMaterial>();
+  function matForFloorColor(color: number): THREE.MeshStandardMaterial {
+    const key = color & 0xffffff;
+    let m = floorMatByColor.get(key);
+    if (m) return m;
+    m = new THREE.MeshStandardMaterial({
+      color: key,
+      roughness: 0.95,
+    });
+    floorMatByColor.set(key, m);
+    return m;
+  }
+  function resolveFloorMat(x: number, y: number, tile: Tile): THREE.MeshStandardMaterial {
+    // Pasto seeded solo en floor outdoor; door/furniture/barricade = piso indoor + AO.
+    const outdoor =
+      tile.kind === "floor" && !isIndoor(map, x + 0.5, y + 0.5);
+    const { ortho, diag } = countAoNeighbors(
+      (nx, ny) => map.getTile(nx, ny)?.kind,
+      x,
+      y,
+    );
+    const color = floorColorAt(x, y, outdoor, ortho, diag);
+    return matForFloorColor(color);
+  }
+  const wallMat = new THREE.MeshStandardMaterial({
+    color: WALL_COLOR,
+    roughness: 0.85,
+  });
+  const wallBaseMat = new THREE.MeshStandardMaterial({
+    color: 0x1a1c22,
+    roughness: 1,
+  });
+  const barricadeMat = new THREE.MeshStandardMaterial({
+    color: BARRICADE_COLOR,
+    roughness: 0.75,
+  });
+  const barricadeEdgeMat = new THREE.MeshStandardMaterial({
+    color: BARRICADE_EDGE,
+    roughness: 0.9,
+  });
+  const fogMat = new THREE.MeshBasicMaterial({
+    color: FOG_COLOR,
+    transparent: true,
+    opacity: 0.92,
+    depthWrite: false,
+  });
+
+  const loaded = new Map<string, ChunkMeshes>();
+  /** Índice global puerta → mesh (solo chunks cargados). */
+  const doorMeshes = new Map<string, THREE.Mesh>();
+  /** Índice global tile → root group (solo chunks cargados). */
+  const tileRoots = new Map<string, THREE.Group>();
+
+  // Silueta legible a cámara iso: torso + cabeza (create-game-vfx / character silhouette).
+  const playerBodyGeo = new THREE.BoxGeometry(0.55, 1.12, 0.48);
+  const playerHeadGeo = new THREE.BoxGeometry(0.36, 0.36, 0.36);
+  const playerBodyMat = new THREE.MeshStandardMaterial({
+    color: PLAYER_COLOR,
+    roughness: 0.45,
+  });
+  const playerHeadMat = new THREE.MeshStandardMaterial({
+    color: 0x7eb6ef,
+    roughness: 0.4,
+    emissive: 0x102030,
+    emissiveIntensity: 0.22,
+  });
+  const PLAYER_BODY_BASE_Y = 0.56;
+  const PLAYER_HEAD_BASE_Y = 1.32;
+  const playerMesh = new THREE.Group();
+  /** Hijo de silueta: bobY + lean/sway; root queda en suelo (x,0,y). */
+  const playerLocoRoot = new THREE.Group();
+  const playerBody = new THREE.Mesh(playerBodyGeo, playerBodyMat);
+  playerBody.position.y = PLAYER_BODY_BASE_Y;
+  const playerHead = new THREE.Mesh(playerHeadGeo, playerHeadMat);
+  playerHead.position.y = PLAYER_HEAD_BASE_Y;
+  playerLocoRoot.add(playerBody, playerHead);
+  playerMesh.add(playerLocoRoot);
+  const playerLoco = createLocoBobState();
+  /** Roles mixer-agnosticos; GLB opcional via manifest (default: silueta). */
+  const playerAnimator = createCharacterAnimator();
+  const playerCharacterManifest = PLAYER_SOLDIER_MANIFEST;
+  let playerUsesGltfVisual = false;
+  let playerMixer: CharacterMixerHandle | null = null;
+  /** Yaw GLB: Soldier forward=+Z; player.facingY default=1 → yaw 0. */
+  let playerGltfYaw = 0;
+  void maybeAttachCharacterGltf(playerCharacterManifest, {
+    parent: playerLocoRoot,
+    onAttached: (loaded) => {
+      const handle = bindMixer(loaded, playerCharacterManifest);
+      if (!handle) {
+        // Clips no mapeados: quitar mesh y quedar en silueta.
+        playerLocoRoot.remove(loaded.scene);
+        return;
+      }
+      playerMixer = handle;
+      playerBody.visible = false;
+      playerHead.visible = false;
+      playerUsesGltfVisual = true;
+      handle.syncFromAnimator("idle");
+    },
+  });
+  const markerShared = createMarkerSharedResources();
+  attachRoleMarkers(playerMesh, "player", markerShared);
+  playerMesh.position.set(0, 0, 0);
+  scene.add(playerMesh);
+
+  const hostileGeo = new THREE.BoxGeometry(0.58, 1.12, 0.48);
+  const hostileHeadGeo = new THREE.BoxGeometry(0.34, 0.34, 0.34);
+  const hostileMat = new THREE.MeshStandardMaterial({
+    color: HOSTILE_COLOR,
+    roughness: 0.55,
+  });
+  const possessedMat = new THREE.MeshStandardMaterial({
+    color: POSSESSED_COLOR,
+    emissive: POSSESSED_EMISSIVE,
+    emissiveIntensity: 0.55,
+    roughness: 0.5,
+  });
+  const possessedHeadMat = new THREE.MeshStandardMaterial({
+    color: 0x7a3d8a,
+    emissive: 0x2a1040,
+    emissiveIntensity: 0.7,
+    roughness: 0.45,
+  });
+  const hostileMeshes = new Map<string, THREE.Object3D>();
+  const hostileKinds = new Map<string, "mute" | "possessed">();
+
+  // Tracers de disparo (línea fina + flash puntual en hocico).
+  const tracerGeo = new THREE.BoxGeometry(1, 1, 1);
+  const tracerMatBase = new THREE.MeshBasicMaterial({
+    color: 0xffe8a0,
+    transparent: true,
+    opacity: 1,
+    depthWrite: false,
+  });
+  interface LiveTracer {
+    mesh: THREE.Mesh;
+    mat: THREE.MeshBasicMaterial;
+    flash: THREE.PointLight;
+    age: number;
+    ttl: number;
+  }
+  const liveTracers: LiveTracer[] = [];
+
+  function spawnTracer(from: TracerPoint, to: TracerPoint, ttl = DEFAULT_TRACER_TTL): void {
+    const life = clampTracerTtl(ttl);
+    const len = tracerLength(from, to);
+    const mid = tracerMidpoint(from, to);
+    const mat = tracerMatBase.clone();
+    mat.opacity = 1;
+    const mesh = new THREE.Mesh(tracerGeo, mat);
+    mesh.position.set(mid.x, TRACER_HEIGHT, mid.y);
+    mesh.scale.set(0.055, 0.055, len);
+    mesh.rotation.y = tracerYaw(from, to);
+    scene.add(mesh);
+
+    const flash = new THREE.PointLight(0xffc060, 2.4, 3.2, 2);
+    flash.position.set(from.x, TRACER_HEIGHT + 0.15, from.y);
+    scene.add(flash);
+
+    liveTracers.push({ mesh, mat, flash, age: 0, ttl: life });
+  }
+
+  function tickTracers(dt: number): void {
+    for (let i = liveTracers.length - 1; i >= 0; i--) {
+      const t = liveTracers[i]!;
+      t.age += dt;
+      const op = tracerOpacity(t.age, t.ttl);
+      t.mat.opacity = op;
+      t.flash.intensity = 2.4 * op;
+      if (t.age >= t.ttl) {
+        scene.remove(t.mesh);
+        scene.remove(t.flash);
+        t.mat.dispose();
+        liveTracers.splice(i, 1);
+      }
+    }
+  }
+
+  function clearTracers(): void {
+    for (const t of liveTracers) {
+      scene.remove(t.mesh);
+      scene.remove(t.flash);
+      t.mat.dispose();
+    }
+    liveTracers.length = 0;
+  }
+
+  // Noise rings: pool pequeño de anillos en el suelo (feedback de ruido).
+  const NOISE_RING_POOL = 8;
+  const NOISE_RING_Y = 0.05;
+  // RingGeometry unitario (outer≈1); scale = radius * ringScale.
+  const noiseRingGeo = new THREE.RingGeometry(0.82, 1, 48);
+  noiseRingGeo.rotateX(-Math.PI / 2); // plano XZ
+  interface PooledNoiseRing {
+    mesh: THREE.Mesh;
+    mat: THREE.MeshBasicMaterial;
+    state: NoiseRingState | null;
+  }
+  const noiseRingPool: PooledNoiseRing[] = [];
+  for (let i = 0; i < NOISE_RING_POOL; i++) {
+    const mat = new THREE.MeshBasicMaterial({
+      color: 0xe8e8f0,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+    const mesh = new THREE.Mesh(noiseRingGeo, mat);
+    mesh.visible = false;
+    mesh.position.y = NOISE_RING_Y;
+    scene.add(mesh);
+    noiseRingPool.push({ mesh, mat, state: null });
+  }
+
+  function spawnNoiseRing(
+    x: number,
+    y: number,
+    radius: number,
+    kind = "run",
+  ): void {
+    const state = createNoiseRing({ x, y, radius, kind });
+    // Reusar slot libre; si lleno, el más viejo.
+    let slot = noiseRingPool.find((p) => p.state === null);
+    if (!slot) {
+      let oldest = noiseRingPool[0]!;
+      for (const p of noiseRingPool) {
+        if (p.state && oldest.state && p.state.age > oldest.state.age) {
+          oldest = p;
+        }
+      }
+      slot = oldest;
+    }
+    slot.state = state;
+    slot.mat.color.setHex(ringColorHex(state.kind));
+    slot.mat.opacity = ringOpacity(state);
+    const s = Math.max(0.05, state.radius * ringScale(state));
+    slot.mesh.scale.set(s, 1, s);
+    slot.mesh.position.set(state.x, NOISE_RING_Y, state.y);
+    slot.mesh.visible = true;
+  }
+
+  function tickNoiseRings(dt: number): void {
+    for (const p of noiseRingPool) {
+      if (!p.state) continue;
+      const alive = tickNoiseRing(p.state, dt);
+      if (!alive) {
+        p.state = null;
+        p.mesh.visible = false;
+        p.mat.opacity = 0;
+        continue;
+      }
+      const s = Math.max(0.05, p.state.radius * ringScale(p.state));
+      p.mesh.scale.set(s, 1, s);
+      p.mat.opacity = ringOpacity(p.state);
+    }
+  }
+
+  function clearNoiseRings(): void {
+    for (const p of noiseRingPool) {
+      p.state = null;
+      p.mesh.visible = false;
+      p.mat.opacity = 0;
+    }
+  }
+
+  // Lluvia: pocas líneas verticales cayendo (barato).
+  const RAIN_COUNT = 48;
+  const rainGeo = new THREE.BoxGeometry(0.03, 0.55, 0.03);
+  const rainMat = new THREE.MeshBasicMaterial({
+    color: 0xa8c4e0,
+    transparent: true,
+    opacity: 0.45,
+    depthWrite: false,
+  });
+  const rainGroup = new THREE.Group();
+  rainGroup.visible = false;
+  scene.add(rainGroup);
+  interface RainDrop {
+    mesh: THREE.Mesh;
+    vx: number;
+    vz: number;
+    vy: number;
+    y: number;
+  }
+  const rainDrops: RainDrop[] = [];
+  for (let i = 0; i < RAIN_COUNT; i++) {
+    const mat = rainMat.clone();
+    const mesh = new THREE.Mesh(rainGeo, mat);
+    const vx = (Math.random() - 0.5) * 14;
+    const vz = (Math.random() - 0.5) * 14;
+    const y = 2 + Math.random() * 6;
+    mesh.position.set(vx, y, vz);
+    rainGroup.add(mesh);
+    rainDrops.push({
+      mesh,
+      vx,
+      vz,
+      vy: 9 + Math.random() * 6,
+      y,
+    });
+  }
+  let rainAnchorX = 0;
+  let rainAnchorZ = 0;
+
+  function syncRain(wx: number, wy: number, intensity: number, dt = 0.016): void {
+    const i = Math.max(0, Math.min(1, intensity));
+    rainAnchorX = wx;
+    rainAnchorZ = wy;
+    rainGroup.position.set(wx, 0, wy);
+    if (i <= 0.02) {
+      rainGroup.visible = false;
+      return;
+    }
+    rainGroup.visible = true;
+    const op = 0.22 + i * 0.45;
+    const active = Math.max(8, Math.floor(RAIN_COUNT * (0.35 + i * 0.65)));
+    for (let n = 0; n < rainDrops.length; n++) {
+      const d = rainDrops[n]!;
+      const mat = d.mesh.material as THREE.MeshBasicMaterial;
+      if (n >= active) {
+        d.mesh.visible = false;
+        continue;
+      }
+      d.mesh.visible = true;
+      mat.opacity = op;
+      if (dt > 0) {
+        d.y -= d.vy * dt * (0.7 + i * 0.5);
+        if (d.y < 0.15) {
+          d.y = 2.2 + Math.random() * 5.5;
+          d.vx = (Math.random() - 0.5) * 14;
+          d.vz = (Math.random() - 0.5) * 14;
+        }
+        // Drift leve con el viento.
+        d.vx += dt * 0.4;
+        d.mesh.position.set(d.vx, d.y, d.vz);
+      }
+    }
+    void rainAnchorX;
+    void rainAnchorZ;
+  }
+
+  function clearRain(): void {
+    for (const d of rainDrops) {
+      rainGroup.remove(d.mesh);
+      (d.mesh.material as THREE.Material).dispose();
+    }
+    rainDrops.length = 0;
+    scene.remove(rainGroup);
+    rainGeo.dispose();
+    rainMat.dispose();
+  }
+
+  // Césped wind instanced (outdoor cerca del player) — barato, sin shader custom.
+  const grassGeo = new THREE.BoxGeometry(0.045, 0.42, 0.02);
+  const grassMat = new THREE.MeshStandardMaterial({
+    color: 0x4a6a38,
+    roughness: 0.92,
+    metalness: 0,
+  });
+  const grassMesh = new THREE.InstancedMesh(grassGeo, grassMat, MAX_GRASS_INSTANCES);
+  grassMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  grassMesh.frustumCulled = false;
+  grassMesh.count = 0;
+  grassMesh.visible = false;
+  scene.add(grassMesh);
+  const grassDummy = new THREE.Object3D();
+  let grassTiles: GrassTile[] = [];
+  let grassAnchorTx = Number.NaN;
+  let grassAnchorTy = Number.NaN;
+  let grassTime = 0;
+
+  function rebuildGrassTiles(wx: number, wy: number): void {
+    const tx = Math.floor(wx);
+    const ty = Math.floor(wy);
+    if (tx === grassAnchorTx && ty === grassAnchorTy) return;
+    grassAnchorTx = tx;
+    grassAnchorTy = ty;
+    grassTiles = collectGrassTiles(
+      tx,
+      ty,
+      (x, y) => map.getTile(x, y)?.kind,
+      GRASS_RADIUS,
+    );
+  }
+
+  function applyGrassPoses(): void {
+    const max = MAX_GRASS_INSTANCES;
+    let n = 0;
+    for (const t of grassTiles) {
+      for (let b = 0; b < BLADES_PER_TILE; b++) {
+        if (n >= max) break;
+        const pose = bladePoseAt(t.tx, t.ty, b, t.seed, grassTime);
+        grassDummy.position.set(pose.x, pose.y, pose.z);
+        grassDummy.rotation.set(0, pose.yaw, 0);
+        grassDummy.scale.set(1, pose.sy, 1);
+        grassDummy.updateMatrix();
+        grassMesh.setMatrixAt(n, grassDummy.matrix);
+        n++;
+      }
+      if (n >= max) break;
+    }
+    grassMesh.count = n;
+    grassMesh.instanceMatrix.needsUpdate = true;
+    grassMesh.visible = n > 0;
+  }
+
+  function syncGrass(wx: number, wy: number, dt = 0.016): void {
+    grassTime += Math.max(0, dt);
+    rebuildGrassTiles(wx, wy);
+    applyGrassPoses();
+  }
+
+  function clearGrass(): void {
+    scene.remove(grassMesh);
+    grassGeo.dispose();
+    grassMat.dispose();
+    grassMesh.dispose();
+    grassTiles = [];
+  }
+
+  const frustum = ISO_FRUSTUM;
+  const aspect = window.innerWidth / window.innerHeight;
+  const camera = new THREE.OrthographicCamera(
+    -frustum * aspect,
+    frustum * aspect,
+    frustum,
+    -frustum,
+    0.1,
+    200,
+  );
+  camera.position.set(12, 14, 12);
+  camera.lookAt(0, 0, 0);
+  scene.add(camera);
+
+  function unloadChunk(key: string): void {
+    const entry = loaded.get(key);
+    if (!entry) return;
+    scene.remove(entry.group);
+    for (const mat of entry.ownedMats) mat.dispose();
+    for (const dk of entry.doorMeshes.keys()) doorMeshes.delete(dk);
+    for (const tk of entry.tileRoots.keys()) tileRoots.delete(tk);
+    loaded.delete(key);
+  }
+
+  function loadChunk(chunk: Chunk): void {
+    const key = chunkKey(chunk.cx, chunk.cy);
+    if (loaded.has(key)) return;
+
+    const group = new THREE.Group();
+    group.name = `chunk_${key}`;
+    const localDoors = new Map<string, THREE.Mesh>();
+    const localTiles = new Map<string, THREE.Group>();
+    const ownedMats: THREE.Material[] = [];
+
+    chunk.forEachTile((x, y, tile) => {
+      if (!map.inBounds(x, y)) return;
+      const root = addTileMesh(
+        group,
+        x,
+        y,
+        tile,
+        floorGeo,
+        wallGeo,
+        doorGeo,
+        furnitureGeo,
+        bedGeo,
+        barricadeGeo,
+        resolveFloorMat,
+        wallMat,
+        wallBaseMat,
+        furnitureMat,
+        bedMat,
+        barricadeMat,
+        barricadeEdgeMat,
+        fogMat,
+        localDoors,
+        ownedMats,
+      );
+      const tk = tileKey(x, y);
+      localTiles.set(tk, root);
+      tileRoots.set(tk, root);
+    });
+
+    for (const [dk, mesh] of localDoors) doorMeshes.set(dk, mesh);
+    scene.add(group);
+    loaded.set(key, {
+      group,
+      doorMeshes: localDoors,
+      ownedMats,
+      tileRoots: localTiles,
+    });
+  }
+
+  function syncVisibleChunks(wx: number, wy: number): void {
+    const want = new Set<string>();
+    map.forEachVisibleChunks(wx, wy, VISIBLE_CHUNK_RADIUS, (chunk) => {
+      const key = chunkKey(chunk.cx, chunk.cy);
+      want.add(key);
+      loadChunk(chunk);
+    });
+    for (const key of [...loaded.keys()]) {
+      if (!want.has(key)) unloadChunk(key);
+    }
+  }
+
+  function syncFov(visible: ReadonlySet<string>): void {
+    for (const [tk, root] of tileRoots) {
+      const seen = visible.has(tk);
+      const content = root.getObjectByName("content");
+      const fog = root.getObjectByName("fog");
+      if (content) content.visible = seen;
+      if (fog) fog.visible = !seen;
+    }
+  }
+
+  function remeshTile(tx: number, ty: number): void {
+    const tk = tileKey(tx, ty);
+    const root = tileRoots.get(tk);
+    if (!root) return;
+    const tile = map.getTile(tx, ty);
+    if (!tile) return;
+
+    // Localizar chunk entry para ownedMats / localDoors
+    let entry: ChunkMeshes | undefined;
+    for (const e of loaded.values()) {
+      if (e.tileRoots.has(tk)) {
+        entry = e;
+        break;
+      }
+    }
+    if (!entry) return;
+
+    const dk = doorKey(tx, ty);
+    doorMeshes.delete(dk);
+    entry.doorMeshes.delete(dk);
+
+    const content = root.getObjectByName("content") as THREE.Group | undefined;
+    if (!content) return;
+    while (content.children.length > 0) {
+      content.remove(content.children[0]!);
+    }
+
+    fillTileContent(
+      content,
+      tx,
+      ty,
+      tile,
+      floorGeo,
+      wallGeo,
+      doorGeo,
+      furnitureGeo,
+      bedGeo,
+      barricadeGeo,
+      resolveFloorMat,
+      wallMat,
+      wallBaseMat,
+      furnitureMat,
+      bedMat,
+      barricadeMat,
+      barricadeEdgeMat,
+      entry.doorMeshes,
+      entry.ownedMats,
+    );
+    for (const [k, mesh] of entry.doorMeshes) {
+      if (k === dk) doorMeshes.set(k, mesh);
+    }
+    // Re-index door if this tile is a door
+    const mesh = entry.doorMeshes.get(dk);
+    if (mesh) doorMeshes.set(dk, mesh);
+  }
+
+  return {
+    scene,
+    camera,
+    ambient,
+    sun,
+    syncPlayer(x, y) {
+      playerMesh.position.set(x, 0, y);
+    },
+    tickPlayerLoco(dt, moving, sprinting, faceX, faceZ) {
+      setLocomotion(playerAnimator, { moving, sprinting });
+      tickCharacterAnimator(playerAnimator, dt);
+      if (playerUsesGltfVisual && playerMixer) {
+        playerLocoRoot.position.y = 0;
+        playerLocoRoot.rotation.z = 0;
+        playerLocoRoot.rotation.x = 0;
+        if (
+          faceX != null &&
+          faceZ != null &&
+          Number.isFinite(faceX) &&
+          Number.isFinite(faceZ) &&
+          (faceX !== 0 || faceZ !== 0)
+        ) {
+          // Soldier default forward = +Z; W => faceZ=-1 => yaw=PI.
+          playerGltfYaw = Math.atan2(faceX, faceZ);
+        }
+        playerLocoRoot.rotation.y = playerGltfYaw;
+        playerMixer.update(dt, currentRole(playerAnimator));
+        return;
+      }
+      const out = tickLocoBob(playerLoco, { moving, sprinting }, dt);
+      playerLocoRoot.position.y = out.bobY;
+      playerLocoRoot.rotation.z = out.leanZ;
+      playerLocoRoot.rotation.x = out.swayX;
+    },
+    syncHostiles(entities) {
+      const seen = new Set<string>();
+      for (const e of entities) {
+        seen.add(e.id);
+        const kind = e.kind ?? "mute";
+        let mesh = hostileMeshes.get(e.id);
+        if (!mesh || hostileKinds.get(e.id) !== kind) {
+          if (mesh) scene.remove(mesh);
+          mesh = makeHostileFigure(
+            kind,
+            hostileGeo,
+            hostileHeadGeo,
+            hostileMat,
+            possessedMat,
+            possessedHeadMat,
+            markerShared,
+          );
+          hostileMeshes.set(e.id, mesh);
+          hostileKinds.set(e.id, kind);
+          scene.add(mesh);
+        }
+        mesh.position.set(e.x, 0, e.y);
+        mesh.visible = e.visible;
+      }
+      for (const [id, mesh] of hostileMeshes) {
+        if (!seen.has(id)) {
+          scene.remove(mesh);
+          hostileMeshes.delete(id);
+          hostileKinds.delete(id);
+        }
+      }
+    },
+    syncDoor(tx, ty, open) {
+      const mesh = doorMeshes.get(doorKey(tx, ty));
+      if (!mesh) return;
+      const mat = mesh.material as THREE.MeshStandardMaterial;
+      mat.color.setHex(open ? DOOR_OPEN : DOOR_CLOSED);
+      if (open) {
+        mesh.rotation.y = Math.PI / 2;
+        mesh.position.set(tx + 0.15, 1.0, ty + 0.5);
+      } else {
+        mesh.rotation.y = 0;
+        mesh.position.set(tx + 0.5, 1.0, ty + 0.5);
+      }
+    },
+    remeshTile,
+    forceReloadVisible(wx, wy) {
+      for (const key of [...loaded.keys()]) unloadChunk(key);
+      syncVisibleChunks(wx, wy);
+    },
+    syncDayNight(clock) {
+      const d = clock.daylight;
+      const atm = atmosphereFor(clock.phase, d);
+      ambient.intensity = 0.18 + d * 0.52;
+      sun.intensity = 0.12 + d * 1.08;
+      ambientColor.setRGB(atm.ambient.r, atm.ambient.g, atm.ambient.b);
+      ambient.color.copy(ambientColor);
+      sunColor.setRGB(atm.sun.r, atm.sun.g, atm.sun.b);
+      sun.color.copy(sunColor);
+      skyColor.setRGB(atm.sky.r, atm.sky.g, atm.sky.b);
+      scene.background = skyColor;
+      if (scene.fog instanceof THREE.Fog) {
+        scene.fog.color.copy(skyColor);
+        scene.fog.near = atm.near;
+        scene.fog.far = atm.far;
+      }
+    },
+    syncWarmLight(wx, wy, intensity) {
+      const i = Math.max(0, Math.min(1, intensity));
+      warmLight.intensity = i * 1.55;
+      warmLight.distance = 6.5 + i * 2.5;
+      warmLight.position.set(wx, 1.55, wy);
+      warmLight.visible = i > 0.02;
+      // Tinte un poco más ámbar cuando está fuerte.
+      warmLight.color.setRGB(1, 0.66 + i * 0.08, 0.38 + i * 0.1);
+    },
+    syncTorchLight(wx, wy, intensity) {
+      const i = Math.max(0, intensity);
+      torchLight.intensity = i;
+      torchLight.distance = 7 + i * 3.5;
+      torchLight.position.set(wx, 1.35, wy);
+      torchLight.visible = i > 0.02;
+      torchLight.color.setHex(0xb0d0ff);
+    },
+    followCamera(x, y) {
+      camera.position.set(x + 12, 14, y + 12);
+      camera.lookAt(x, 0, y);
+    },
+    syncVisibleChunks,
+    syncFov,
+    loadedChunkCount() {
+      return loaded.size;
+    },
+    spawnTracer,
+    tickTracers,
+    spawnNoiseRing,
+    tickNoiseRings,
+    syncRain,
+    syncGrass,
+    dispose() {
+      scene.remove(torchLight);
+      scene.remove(warmLight);
+      clearTracers();
+      clearNoiseRings();
+      clearRain();
+      clearGrass();
+      tracerGeo.dispose();
+      tracerMatBase.dispose();
+      noiseRingGeo.dispose();
+      for (const p of noiseRingPool) {
+        scene.remove(p.mesh);
+        p.mat.dispose();
+      }
+      for (const key of [...loaded.keys()]) unloadChunk(key);
+      floorGeo.dispose();
+      wallGeo.dispose();
+      doorGeo.dispose();
+      furnitureGeo.dispose();
+      bedGeo.dispose();
+      barricadeGeo.dispose();
+      for (const m of floorMatByColor.values()) m.dispose();
+      floorMatByColor.clear();
+      wallMat.dispose();
+      wallBaseMat.dispose();
+      furnitureMat.dispose();
+      bedMat.dispose();
+      barricadeMat.dispose();
+      barricadeEdgeMat.dispose();
+      fogMat.dispose();
+      for (const mesh of hostileMeshes.values()) {
+        scene.remove(mesh);
+      }
+      hostileMeshes.clear();
+      hostileKinds.clear();
+      hostileGeo.dispose();
+      hostileHeadGeo.dispose();
+      hostileMat.dispose();
+      possessedMat.dispose();
+      possessedHeadMat.dispose();
+      playerBodyMat.dispose();
+      playerHeadMat.dispose();
+      playerBodyGeo.dispose();
+      playerHeadGeo.dispose();
+      markerShared.dispose();
+    },
+  };
+}
+
+/** Figura mute/poseído + anillo/badge (chess-style) — solo vista. */
+function makeHostileFigure(
+  kind: "mute" | "possessed",
+  bodyGeo: THREE.BoxGeometry,
+  headGeo: THREE.BoxGeometry,
+  muteMat: THREE.MeshStandardMaterial,
+  possessedBodyMat: THREE.MeshStandardMaterial,
+  possessedHeadMat: THREE.MeshStandardMaterial,
+  markers: MarkerSharedResources,
+): THREE.Object3D {
+  const root = new THREE.Group();
+  if (kind === "mute") {
+    const mesh = new THREE.Mesh(bodyGeo, muteMat);
+    mesh.position.y = 0.56;
+    // Un poco más bajo/ancho que el player para silueta distinta.
+    mesh.scale.set(1.05, 1, 1.05);
+    root.add(mesh);
+  } else {
+    const body = new THREE.Mesh(bodyGeo, possessedBodyMat);
+    body.position.y = 0.56;
+    const head = new THREE.Mesh(headGeo, possessedHeadMat);
+    head.position.y = 1.3;
+    root.add(body, head);
+  }
+  attachRoleMarkers(root, kind, markers);
+  return root;
+}
+
+interface MarkerSharedResources {
+  ringGeo: THREE.RingGeometry;
+  badgeGeo: THREE.CircleGeometry;
+  iconGeo: THREE.PlaneGeometry;
+  mats: THREE.Material[];
+  dispose(): void;
+}
+
+function createMarkerSharedResources(): MarkerSharedResources {
+  const ringGeo = new THREE.RingGeometry(0.42, 0.58, 28);
+  const badgeGeo = new THREE.CircleGeometry(0.16, 20);
+  const iconGeo = new THREE.PlaneGeometry(0.18, 0.18);
+  const mats: THREE.Material[] = [];
+  return {
+    ringGeo,
+    badgeGeo,
+    iconGeo,
+    mats,
+    dispose() {
+      ringGeo.dispose();
+      badgeGeo.dispose();
+      iconGeo.dispose();
+      for (const m of mats) m.dispose();
+      mats.length = 0;
+    },
+  };
+}
+
+/**
+ * Anillo de suelo + badge flotante (triple encoding chess).
+ * Materiales por rol; geom compartida.
+ */
+function attachRoleMarkers(
+  root: THREE.Object3D,
+  role: MarkerRole,
+  shared: MarkerSharedResources,
+): void {
+  const pal = paletteFor(role);
+  const ringMat = new THREE.MeshBasicMaterial({
+    color: pal.ring,
+    transparent: true,
+    opacity: 0.72,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  });
+  const badgeMat = new THREE.MeshStandardMaterial({
+    color: pal.badge,
+    emissive: pal.emissive,
+    emissiveIntensity: 0.65,
+    roughness: 0.45,
+    metalness: 0.1,
+    side: THREE.DoubleSide,
+  });
+  const iconMat = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 0.92,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  });
+  shared.mats.push(ringMat, badgeMat, iconMat);
+
+  const ring = new THREE.Mesh(shared.ringGeo, ringMat);
+  ring.name = "groundRing";
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.y = 0.04;
+  root.add(ring);
+
+  const badge = new THREE.Group();
+  badge.name = "floatBadge";
+  const disc = new THREE.Mesh(shared.badgeGeo, badgeMat);
+  // Mirar hacia arriba un poco legible en iso
+  disc.rotation.x = -Math.PI / 2.6;
+  const icon = new THREE.Mesh(shared.iconGeo, iconMat);
+  icon.rotation.x = -Math.PI / 2.6;
+  icon.position.y = 0.02;
+  // Escala distinta por glifo visual (mute más angular vía scale)
+  if (role === "mute") icon.scale.set(0.7, 0.7, 1);
+  else if (role === "possessed") icon.scale.set(0.85, 0.85, 1);
+  badge.add(disc, icon);
+  badge.position.y = role === "player" ? 1.72 : 1.68;
+  root.add(badge);
+}
+
+function doorKey(x: number, y: number): string {
+  return `${x},${y}`;
+}
+
+function fillTileContent(
+  content: THREE.Group,
+  x: number,
+  y: number,
+  tile: Tile,
+  floorGeo: THREE.PlaneGeometry,
+  wallGeo: THREE.BoxGeometry,
+  doorGeo: THREE.BoxGeometry,
+  furnitureGeo: THREE.BoxGeometry,
+  bedGeo: THREE.BoxGeometry,
+  barricadeGeo: THREE.BoxGeometry,
+  floorMatForTile: (x: number, y: number, tile: Tile) => THREE.MeshStandardMaterial,
+  wallMat: THREE.MeshStandardMaterial,
+  wallBaseMat: THREE.MeshStandardMaterial,
+  furnitureMat: THREE.MeshStandardMaterial,
+  bedMat: THREE.MeshStandardMaterial,
+  barricadeMat: THREE.MeshStandardMaterial,
+  barricadeEdgeMat: THREE.MeshStandardMaterial,
+  doorMeshes: Map<string, THREE.Mesh>,
+  ownedMats: THREE.Material[],
+): void {
+  if (
+    tile.kind === "floor" ||
+    tile.kind === "door" ||
+    tile.kind === "furniture" ||
+    tile.kind === "barricade"
+  ) {
+    const floor = new THREE.Mesh(floorGeo, floorMatForTile(x, y, tile));
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.set(x + 0.5, 0, y + 0.5);
+    content.add(floor);
+  }
+  if (tile.kind === "wall") {
+    const base = new THREE.Mesh(floorGeo, wallBaseMat);
+    base.rotation.x = -Math.PI / 2;
+    base.position.set(x + 0.5, 0, y + 0.5);
+    content.add(base);
+    const wall = new THREE.Mesh(wallGeo, wallMat);
+    wall.position.set(x + 0.5, 1.1, y + 0.5);
+    content.add(wall);
+  }
+  if (tile.kind === "door") {
+    const mat = new THREE.MeshStandardMaterial({
+      color: tile.open ? DOOR_OPEN : DOOR_CLOSED,
+      roughness: 0.7,
+    });
+    ownedMats.push(mat);
+    const door = new THREE.Mesh(doorGeo, mat);
+    if (tile.open) {
+      door.rotation.y = Math.PI / 2;
+      door.position.set(x + 0.15, 1.0, y + 0.5);
+    } else {
+      door.position.set(x + 0.5, 1.0, y + 0.5);
+    }
+    content.add(door);
+    doorMeshes.set(doorKey(x, y), door);
+  }
+
+  if (tile.kind === "furniture") {
+    if (tile.variant === "bed") {
+      const bed = new THREE.Mesh(bedGeo, bedMat);
+      bed.position.set(x + 0.5, 0.175, y + 0.5);
+      content.add(bed);
+    } else {
+      const furn = new THREE.Mesh(furnitureGeo, furnitureMat);
+      furn.position.set(x + 0.5, 0.425, y + 0.5);
+      content.add(furn);
+    }
+  }
+
+  if (tile.kind === "barricade") {
+    // Dos planchas cruzadas — silueta distinta al muro gris
+    const plank = new THREE.Mesh(barricadeGeo, barricadeMat);
+    plank.position.set(x + 0.5, 0.7, y + 0.5);
+    plank.rotation.y = Math.PI / 8;
+    content.add(plank);
+    const cross = new THREE.Mesh(barricadeGeo, barricadeEdgeMat);
+    cross.position.set(x + 0.5, 0.55, y + 0.5);
+    cross.rotation.y = -Math.PI / 5;
+    cross.scale.set(0.95, 0.7, 0.9);
+    content.add(cross);
+  }
+}
+
+function addTileMesh(
+  chunkGroup: THREE.Group,
+  x: number,
+  y: number,
+  tile: Tile,
+  floorGeo: THREE.PlaneGeometry,
+  wallGeo: THREE.BoxGeometry,
+  doorGeo: THREE.BoxGeometry,
+  furnitureGeo: THREE.BoxGeometry,
+  bedGeo: THREE.BoxGeometry,
+  barricadeGeo: THREE.BoxGeometry,
+  floorMatForTile: (x: number, y: number, tile: Tile) => THREE.MeshStandardMaterial,
+  wallMat: THREE.MeshStandardMaterial,
+  wallBaseMat: THREE.MeshStandardMaterial,
+  furnitureMat: THREE.MeshStandardMaterial,
+  bedMat: THREE.MeshStandardMaterial,
+  barricadeMat: THREE.MeshStandardMaterial,
+  barricadeEdgeMat: THREE.MeshStandardMaterial,
+  fogMat: THREE.MeshBasicMaterial,
+  doorMeshes: Map<string, THREE.Mesh>,
+  ownedMats: THREE.Material[],
+): THREE.Group {
+  const root = new THREE.Group();
+  root.name = `tile_${x}_${y}`;
+
+  const content = new THREE.Group();
+  content.name = "content";
+
+  fillTileContent(
+    content,
+    x,
+    y,
+    tile,
+    floorGeo,
+    wallGeo,
+    doorGeo,
+    furnitureGeo,
+    bedGeo,
+    barricadeGeo,
+    floorMatForTile,
+    wallMat,
+    wallBaseMat,
+    furnitureMat,
+    bedMat,
+    barricadeMat,
+    barricadeEdgeMat,
+    doorMeshes,
+    ownedMats,
+  );
+
+  const fog = new THREE.Mesh(floorGeo, fogMat);
+  fog.name = "fog";
+  fog.rotation.x = -Math.PI / 2;
+  fog.position.set(x + 0.5, 0.02, y + 0.5);
+  fog.visible = false;
+
+  root.add(content);
+  root.add(fog);
+  chunkGroup.add(root);
+  return root;
+}

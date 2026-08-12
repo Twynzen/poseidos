@@ -1,0 +1,15 @@
+export {
+  HostileSim,
+  defaultHostileSpawns,
+  defaultPossessedSpawns,
+  SPAWN_GRACE_SECONDS,
+  tickSpawnGrace,
+  hostileDamageAllowed,
+  type Hostile,
+  type HostileMode,
+  type ThreatKind,
+  type HostileHitEvent,
+  type HostileDamageResult,
+  type HostileSimOptions,
+  type HostileAttitudeMod,
+} from "./hostile";

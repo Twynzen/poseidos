@@ -1,0 +1,103 @@
+/**
+ * Estado / easing de anillos de ruido en el suelo — headless.
+ * La malla Three vive en worldView.spawnNoiseRing / tickNoiseRings.
+ */
+
+export interface NoiseRingSpawn {
+  x: number;
+  y: number;
+  /** Radio objetivo en tiles. */
+  radius: number;
+  kind?: string;
+  /** Segundos de vida total. */
+  life?: number;
+}
+
+export interface NoiseRingState {
+  x: number;
+  y: number;
+  radius: number;
+  kind: string;
+  age: number;
+  life: number;
+}
+
+/** Vida visual por defecto (expansión + fade). */
+export const DEFAULT_NOISE_RING_LIFE = 0.85;
+
+/** Kinds que dibujan anillo (walk spamea — no mostrar). */
+export const NOISE_RING_VISIBLE_KINDS = new Set([
+  "run",
+  "door",
+  "loot",
+  "barricade",
+  "attack",
+  "gun",
+]);
+
+export function shouldShowNoiseRing(kind: string): boolean {
+  return NOISE_RING_VISIBLE_KINDS.has(kind);
+}
+
+export function createNoiseRing(spawn: NoiseRingSpawn): NoiseRingState {
+  const life =
+    spawn.life != null && Number.isFinite(spawn.life) && spawn.life > 0
+      ? spawn.life
+      : DEFAULT_NOISE_RING_LIFE;
+  const radius =
+    spawn.radius != null && Number.isFinite(spawn.radius) && spawn.radius > 0
+      ? spawn.radius
+      : 1;
+  return {
+    x: spawn.x,
+    y: spawn.y,
+    radius,
+    kind: spawn.kind ?? "run",
+    age: 0,
+    life,
+  };
+}
+
+/** Progress 0..1 = age/life. */
+export function ringProgress(r: NoiseRingState): number {
+  if (r.life <= 0) return 1;
+  if (r.age <= 0) return 0;
+  if (r.age >= r.life) return 1;
+  return r.age / r.life;
+}
+
+/**
+ * Avanza age; true si sigue vivo.
+ */
+export function tickNoiseRing(r: NoiseRingState, dt: number): boolean {
+  if (dt > 0) r.age += dt;
+  return r.age < r.life;
+}
+
+/** Ease-out expand 0→1 (quad). */
+export function ringScale(r: NoiseRingState): number {
+  const t = ringProgress(r);
+  return 1 - (1 - t) * (1 - t);
+}
+
+/** Fade lineal 1→0. */
+export function ringOpacity(r: NoiseRingState): number {
+  return 1 - ringProgress(r);
+}
+
+/** Color hex por kind (feedback jugable). */
+export function ringColorHex(kind: string): number {
+  switch (kind) {
+    case "door":
+    case "loot":
+      return 0xe8b060; // ámbar
+    case "attack":
+    case "gun":
+    case "barricade":
+      return 0xff6030; // rojo/naranja
+    case "walk":
+    case "run":
+    default:
+      return 0xe8e8f0; // blanco suave
+  }
+}

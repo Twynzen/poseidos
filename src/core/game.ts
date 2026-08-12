@@ -1,0 +1,1080 @@
+import * as THREE from "three";
+import { GameLoop } from "./loop";
+import { Input } from "./input";
+import { GameClock } from "./clock";
+import {
+  applySave,
+  browserStorage,
+  readSave,
+  writeSave,
+  type SaveStorage,
+  type SaveWorld,
+} from "./save";
+import { createNeighborhood } from "../world/neighborhood";
+import type { TileMap } from "../world/tilemap";
+import {
+  computeVisibleTiles,
+  DEFAULT_FOV_RADIUS,
+} from "../world/los";
+import { PlayerSim } from "../actors/player";
+import { createWorldView, type WorldView } from "../render/worldView";
+import { ISO_FRUSTUM } from "../render/cameraConfig";
+import {
+  CONTAINER_REACH,
+  inventorySummary,
+  buildInventoryPanelData,
+  findSlot,
+  removeFromSlot,
+  canRefillFromRain,
+  tryRefillFromRain,
+  hasFlashlight,
+  fovRadiusWithFlashlight,
+  torchLightIntensity,
+  type ContainerRegistry,
+} from "../items";
+import {
+  HostileSim,
+  defaultHostileSpawns,
+  defaultPossessedSpawns,
+  SPAWN_GRACE_SECONDS,
+  tickSpawnGrace,
+  hostileDamageAllowed,
+} from "../ai";
+import { tileKey } from "../world/los";
+import { NoiseBus, type NoiseEvent } from "../world/noise";
+import { shouldShowNoiseRing } from "../render/noiseRings";
+import {
+  SpeechDirector,
+  TrustLedger,
+  DialogueSession,
+  ShortMemory,
+  DialogueBehaviorGates,
+  applyDialogueChoiceAsync,
+  proposeDialogueGates,
+  nearestPossessed,
+  DIALOGUE_REACH,
+  StubLlmBridge,
+  type DialogueIntent,
+  type LlmBridge,
+} from "../possession";
+import { DEFAULT_CONFIG, DEFAULT_DAY_LENGTH_SEC, type GameConfig } from "./config";
+import {
+  createSpeechOverlay,
+  createDialoguePanel,
+  createMoodlesHud,
+  createInventoryPanel,
+  formatHudStatus,
+  type SpeechOverlay,
+  type DialoguePanel,
+  type MoodlesHud,
+  type InventoryPanel,
+} from "../ui";
+import { buildMoodles } from "../actors/moodles";
+import { trySleep, isSafehouseHint, nearBed, hostileNearby } from "../actors/sleep";
+import {
+  createAmbientBus,
+  tickAmbient,
+  describeAmbient,
+  toggleAmbientMute,
+  type AmbientBus,
+} from "../audio";
+import {
+  computeNeedsDamage,
+  needsDamageHudMessage,
+  NEEDS_DAMAGE_MSG_CD,
+} from "../actors/needsDamage";
+import {
+  isIndoor,
+  warmLightAnchor,
+  warmLightIntensity,
+} from "../world/indoor";
+import { WeatherSystem, rainNeedsMult } from "../world/weather";
+
+export class Game {
+  private readonly root: HTMLElement;
+  private readonly hud: HTMLElement | null;
+  private readonly renderer: THREE.WebGLRenderer;
+  private map: TileMap;
+  private containers: ContainerRegistry;
+  private player: PlayerSim;
+  private hostiles: HostileSim;
+  private speech: SpeechDirector;
+  private speechOverlay: SpeechOverlay;
+  private trust: TrustLedger;
+  private memory: ShortMemory;
+  private gates: DialogueBehaviorGates;
+  private readonly config: GameConfig;
+  private readonly llmBridge: LlmBridge;
+  private dialogue: DialogueSession;
+  private dialoguePanel: DialoguePanel;
+  private moodlesHud: MoodlesHud;
+  private inventoryPanel: InventoryPanel;
+  private dialogueLastLine: string | null = null;
+  private dialogueLastTone: string | null = null;
+  private noise: NoiseBus;
+  private view: WorldView;
+  private readonly input: Input;
+  private clock: GameClock;
+  private weather: WeatherSystem;
+  private ambient: AmbientBus;
+  private readonly loop: GameLoop;
+  private readonly onResize: () => void;
+  private readonly storage: SaveStorage | null;
+  private hudAcc = 0;
+  private fovVisibleCount = 0;
+  private fovVisible: ReadonlySet<string> = new Set();
+  private showInvDetail = false;
+  /** F1: mostrar muro de controles en HUD. */
+  private showHelp = false;
+  /** Linterna encendida (se apaga si pierdes el item). */
+  private flashlightOn = false;
+  private lastLootMsg = "";
+  /** HP ≤ 0: congela gameplay; R reinicia / F9 carga. */
+  private gameOver = false;
+  /** Tras spawnThreats/reinicio: sin daño touch al player. */
+  private spawnGrace = 0;
+  /** Cooldown HUD para mensajes de daño por hambre/sed (~2s). */
+  private needsDamageMsgCd = 0;
+
+  constructor(root: HTMLElement) {
+    this.root = root;
+    this.hud = document.querySelector("#hud");
+
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    root.appendChild(this.renderer.domElement);
+
+    const neighborhood = createNeighborhood(48);
+    this.map = neighborhood.map;
+    this.containers = neighborhood.containers;
+    this.player = new PlayerSim(neighborhood.spawn);
+    this.hostiles = new HostileSim();
+    this.config = DEFAULT_CONFIG;
+    this.llmBridge = new StubLlmBridge({ response: null });
+    this.speech = new SpeechDirector({
+      llmEnabled: this.config.llm.enabled,
+      bridge: this.llmBridge,
+    });
+    this.trust = new TrustLedger();
+    this.memory = new ShortMemory();
+    this.gates = new DialogueBehaviorGates();
+    this.dialogue = new DialogueSession();
+    const speechLayer =
+      document.querySelector<HTMLElement>("#speech-layer") ?? document.body;
+    this.speechOverlay = createSpeechOverlay(speechLayer);
+    const uiRoot = document.body;
+    this.dialoguePanel = createDialoguePanel(uiRoot);
+    this.dialoguePanel.onChoice((intent) => this.handleDialogueChoice(intent));
+    this.moodlesHud = createMoodlesHud(uiRoot);
+    this.inventoryPanel = createInventoryPanel(uiRoot);
+    this.noise = new NoiseBus();
+    this.spawnThreats();
+    this.view = createWorldView(this.map, this.containers);
+    this.view.syncVisibleChunks(this.player.x, this.player.y);
+    this.applyFov();
+    this.view.syncPlayer(this.player.x, this.player.y);
+    this.syncHostileView();
+    this.syncSpeechOverlay();
+
+    this.input = new Input();
+    this.clock = new GameClock(DEFAULT_DAY_LENGTH_SEC);
+    this.weather = new WeatherSystem();
+    this.ambient = createAmbientBus();
+    this.storage = browserStorage();
+    this.loop = new GameLoop((dt) => this.tick(dt));
+
+    this.onResize = () => this.resize();
+    window.addEventListener("resize", this.onResize);
+    this.resize();
+    this.refreshHud(true);
+  }
+
+  start(): void {
+    this.loop.start();
+  }
+
+  dispose(): void {
+    this.loop.stop();
+    this.input.dispose();
+    this.speechOverlay.dispose();
+    this.dialoguePanel.dispose();
+    this.moodlesHud.dispose();
+    this.inventoryPanel.dispose();
+    this.dialogue.close();
+    this.speech.clear();
+    this.trust.clear();
+    this.memory.clear();
+    this.gates.clear();
+    this.view.dispose();
+    window.removeEventListener("resize", this.onResize);
+    this.renderer.dispose();
+    this.root.replaceChildren();
+  }
+
+  /** Mudos + poseídos (F4: conviven; no reemplaza todos los mudos). */
+  private spawnThreats(): void {
+    this.hostiles.clear();
+    this.speech.clear();
+    this.trust.clear();
+    this.memory.clear();
+    this.gates.clear();
+    this.dialogue.close();
+    this.dialogueLastLine = null;
+    this.dialogueLastTone = null;
+    for (const s of defaultHostileSpawns()) {
+      this.hostiles.add(s.id, s.x, s.y);
+    }
+    for (const s of defaultPossessedSpawns()) {
+      this.hostiles.add(s.id, s.x, s.y, undefined, "possessed");
+      this.speech.register(s.id);
+      this.trust.register(s.id);
+    }
+    this.spawnGrace = SPAWN_GRACE_SECONDS;
+  }
+
+  private saveWorld(): SaveWorld {
+    return {
+      clock: this.clock,
+      player: this.player,
+      map: this.map,
+      containers: this.containers,
+    };
+  }
+
+  /** Guarda en localStorage (no-op si no hay storage). */
+  private doSave(): boolean {
+    if (this.gameOver) {
+      this.lastLootMsg = "F5 no aplica (muerto)";
+      return false;
+    }
+    if (!this.storage) {
+      this.lastLootMsg = "sin storage";
+      return false;
+    }
+    writeSave(this.storage, this.saveWorld());
+    this.lastLootMsg = "guardado";
+    return true;
+  }
+
+  /** Carga desde localStorage y refresca sim + render. */
+  private doLoad(): boolean {
+    if (!this.storage) {
+      this.lastLootMsg = "sin storage";
+      return false;
+    }
+    const save = readSave(this.storage);
+    if (!save) {
+      this.lastLootMsg = "sin partida";
+      return false;
+    }
+    applySave(this.saveWorld(), save);
+    this.gameOver = !this.player.alive;
+    if (!hasFlashlight(this.player.inventory)) this.flashlightOn = false;
+    this.noise.clear();
+    this.refreshViewAfterLoad();
+    this.lastLootMsg = "cargado";
+    return true;
+  }
+
+  /** Reinicio fresco del barrio (game-over → R). Recrea vista (mapa nuevo). */
+  private softReset(): void {
+    const neighborhood = createNeighborhood(48);
+    this.map = neighborhood.map;
+    this.containers = neighborhood.containers;
+    this.player = new PlayerSim(neighborhood.spawn);
+    this.hostiles = new HostileSim();
+    this.speech = new SpeechDirector({
+      llmEnabled: this.config.llm.enabled,
+      bridge: this.llmBridge,
+    });
+    this.trust = new TrustLedger();
+    this.memory = new ShortMemory();
+    this.gates = new DialogueBehaviorGates();
+    this.dialogue = new DialogueSession();
+    this.noise = new NoiseBus();
+    this.spawnThreats();
+    this.clock = new GameClock(DEFAULT_DAY_LENGTH_SEC);
+    this.weather = new WeatherSystem();
+    this.gameOver = false;
+    this.showInvDetail = false;
+    this.flashlightOn = false;
+    this.needsDamageMsgCd = 0;
+    this.syncInventoryPanel();
+    this.lastLootMsg = "reinicio";
+    this.view.dispose();
+    this.view = createWorldView(this.map, this.containers);
+    this.view.syncVisibleChunks(this.player.x, this.player.y);
+    this.applyFov();
+    this.view.syncPlayer(this.player.x, this.player.y);
+    this.syncHostileView();
+    this.syncSpeechOverlay();
+    this.syncDialoguePanel();
+    this.syncLighting();
+    this.view.followCamera(this.player.x, this.player.y);
+  }
+
+  /** Tras applySave: remesh chunks, puertas, FOV, player, día/noche. */
+  private refreshViewAfterLoad(): void {
+    this.view.forceReloadVisible(this.player.x, this.player.y);
+    this.map.forEach((x, y, tile) => {
+      if (tile.kind === "door") this.view.syncDoor(x, y, tile.open);
+    });
+    this.applyFov();
+    this.view.syncPlayer(this.player.x, this.player.y);
+    this.syncHostileView();
+    this.syncSpeechOverlay();
+    this.syncLighting();
+    this.view.followCamera(this.player.x, this.player.y);
+  }
+
+  /** Día/noche + pool cálido indoor + linterna (no toca FOV/badges). */
+  private syncLighting(): void {
+    this.view.syncDayNight(this.clock);
+    const indoor = isIndoor(this.map, this.player.x, this.player.y);
+    const inten = warmLightIntensity(indoor, this.clock.daylight);
+    const anchor = warmLightAnchor(this.map, this.player.x, this.player.y);
+    this.view.syncWarmLight(anchor.x, anchor.y, inten);
+    const has = hasFlashlight(this.player.inventory);
+    if (!has) this.flashlightOn = false;
+    const torch = torchLightIntensity(
+      this.flashlightOn,
+      has,
+      this.clock.daylight,
+    );
+    this.view.syncTorchLight(this.player.x, this.player.y, torch);
+  }
+
+  /** Partículas de lluvia (ocultas indoor o si clear). */
+  private syncRainVisual(dt: number): void {
+    const indoor = isIndoor(this.map, this.player.x, this.player.y);
+    const inten =
+      indoor || !this.weather.isRaining ? 0 : this.weather.intensity;
+    this.view.syncRain(this.player.x, this.player.y, inten, dt);
+  }
+
+  /** Césped wind outdoor cerca del player (rebuild por tile). */
+  private syncGrassVisual(dt: number): void {
+    this.view.syncGrass(this.player.x, this.player.y, dt);
+  }
+
+  private applyFov(): void {
+    const has = hasFlashlight(this.player.inventory);
+    if (!has) this.flashlightOn = false;
+    const radius = fovRadiusWithFlashlight(
+      DEFAULT_FOV_RADIUS,
+      this.flashlightOn,
+      has,
+    );
+    const visible = computeVisibleTiles(
+      this.map,
+      this.player.x,
+      this.player.y,
+      radius,
+    );
+    this.fovVisible = visible;
+    this.fovVisibleCount = visible.size;
+    this.view.syncFov(visible);
+  }
+
+  /** Hostiles solo visibles si su tile está en FOV del player. */
+  private syncHostileView(): void {
+    this.view.syncHostiles(
+      this.hostiles.hostiles.map((h) => ({
+        id: h.id,
+        x: h.x,
+        y: h.y,
+        kind: h.kind,
+        visible: this.fovVisible.has(
+          tileKey(Math.floor(h.x), Math.floor(h.y)),
+        ),
+      })),
+    );
+  }
+
+  private syncSpeechOverlay(): void {
+    this.speechOverlay.sync(
+      this.hostiles.hostiles
+        .filter((h) => h.kind === "possessed")
+        .map((h) => {
+          const active = this.speech.getActive(h.id);
+          const inFov = this.fovVisible.has(
+            tileKey(Math.floor(h.x), Math.floor(h.y)),
+          );
+          return {
+            id: h.id,
+            x: h.x,
+            y: h.y,
+            line: active?.line ?? null,
+            tone: active?.tone ?? null,
+            visible: inFov && !!active,
+          };
+        }),
+      this.view.camera,
+      this.renderer.domElement,
+    );
+  }
+
+
+  private syncDialoguePanel(): void {
+    const open = this.dialogue.open;
+    const id = this.dialogue.target;
+    this.dialoguePanel.sync({
+      open,
+      targetId: id,
+      trust: id ? this.trust.get(id) : 50,
+      lastLine: open ? this.dialogueLastLine : null,
+      lastTone: open ? this.dialogueLastTone : null,
+    });
+  }
+
+  private async handleDialogueChoice(intent: DialogueIntent): Promise<void> {
+    const id = this.dialogue.target;
+    if (!id || this.gameOver) return;
+    const result = await applyDialogueChoiceAsync(
+      this.trust,
+      id,
+      intent,
+      Math.random,
+      this.memory,
+      { enabled: this.config.llm.enabled, bridge: this.llmBridge },
+    );
+    // Ofrecer: detectar comida antes de validar gates (diálogo propone; código valida)
+    const inv = this.player.inventory;
+    const hasOfferFood =
+      findSlot(inv, "hot_meal") >= 0 || findSlot(inv, "canned_food") >= 0;
+    const proposal = proposeDialogueGates(result.intent, result.trustAfter, {
+      hasOfferFood,
+    });
+    if (proposal.consumeFood) {
+      // Preferir plato caliente si hay; si no, lata
+      const hot = findSlot(inv, "hot_meal");
+      const canned = findSlot(inv, "canned_food");
+      const slot = hot >= 0 ? hot : canned;
+      if (slot >= 0) removeFromSlot(inv, slot, 1);
+    }
+    if (proposal.extraTrustHeal > 0) {
+      result.trustAfter = this.trust.adjust(id, proposal.extraTrustHeal);
+      result.trustDelta += proposal.extraTrustHeal;
+    }
+    this.gates.apply(id, proposal);
+    if (proposal.lucidityBoost) {
+      this.speech.setMoodBias(id, "lucidez");
+    }
+    if (proposal.emitThreatNoise) {
+      const h = this.hostiles.get(id);
+      if (h) this.showNoiseRing(this.noise.emitAttack(h.x, h.y));
+    }
+    // Distraer: ruido señuelo lejos del player (no chase hacia el player)
+    if (proposal.emitDistractNoise) {
+      const h = this.hostiles.get(id);
+      if (h) {
+        const DISTRACT_RANGE = 8;
+        let nx = h.x + proposal.distractOffset.dx;
+        let ny = h.y + proposal.distractOffset.dy;
+        const awayX = h.x - this.player.x;
+        const awayY = h.y - this.player.y;
+        const len = Math.hypot(awayX, awayY);
+        if (len > 0.05) {
+          nx = h.x + (awayX / len) * DISTRACT_RANGE;
+          ny = h.y + (awayY / len) * DISTRACT_RANGE;
+        }
+        // Radio medio/alto (attack ≈ threat) en el punto far → atrae mudos
+        this.showNoiseRing(this.noise.emitAttack(nx, ny));
+      }
+    }
+    if (proposal.forceChase) {
+      const h = this.hostiles.get(id);
+      if (h && !this.gates.isPacifiedByGate(id) && !this.trust.attitude(id).pacified) {
+        h.mode = "chase";
+        h.investigateX = this.player.x;
+        h.investigateY = this.player.y;
+        h.path = [];
+        h.pathIndex = 0;
+        h.replanAt = 0;
+      }
+    }
+    if (proposal.pacifyTtl > 0) {
+      const h = this.hostiles.get(id);
+      if (h) {
+        h.mode = "wander";
+        h.path = [];
+        h.pathIndex = 0;
+        h.investigateTtl = 0;
+        h.replanAt = 0;
+      }
+    }
+    this.speech.forceSpeak(
+      id,
+      result.tone,
+      result.line,
+      "dialogue",
+      result.lineSource ?? "bank",
+    );
+    const bias = this.memory.toneBias(id);
+    if (bias && !proposal.lucidityBoost) this.speech.setMoodBias(id, bias);
+    this.dialogueLastLine = result.line;
+    this.dialogueLastTone = result.tone;
+    const sign = result.trustDelta >= 0 ? "+" : "";
+    let gateHint =
+      proposal.applied.length > 0
+        ? ` · gate ${proposal.applied.join("+")}`
+        : "";
+    if (
+      intent === "ofrecer" &&
+      proposal.rejected.includes("offer_food") &&
+      !hasOfferFood
+    ) {
+      gateHint += " · sin comida";
+    }
+    this.lastLootMsg = `${intent} → trust ${result.trustAfter} (${sign}${result.trustDelta})${gateHint}`;
+    this.hudAcc = 1;
+    this.syncDialoguePanel();
+    this.syncSpeechOverlay();
+  }
+
+  private tryToggleDialogue(): void {
+    if (this.dialogue.open) {
+      this.dialogue.close();
+      this.dialogueLastLine = null;
+      this.dialogueLastTone = null;
+      this.syncDialoguePanel();
+      return;
+    }
+    const near = nearestPossessed(
+      this.hostiles.hostiles,
+      this.player.x,
+      this.player.y,
+      DIALOGUE_REACH,
+    );
+    if (!near) {
+      this.lastLootMsg = "nadie cerca (T)";
+      this.hudAcc = 1;
+      return;
+    }
+    this.trust.register(near.id);
+    this.dialogue.begin(near.id);
+    this.dialogueLastLine = null;
+    this.dialogueLastTone = null;
+    this.lastLootMsg = `diálogo ${near.id}`;
+    this.hudAcc = 1;
+    this.syncDialoguePanel();
+  }
+
+  /** Habla de poseídos: al ver player o periódico. */
+  private tickSpeech(dt: number): void {
+    const ptx = Math.floor(this.player.x);
+    const pty = Math.floor(this.player.y);
+    const entities = this.hostiles.hostiles
+      .filter((h) => h.kind === "possessed")
+      .map((h) => ({
+        id: h.id,
+        seesPlayer: this.hostiles.seesPlayer(this.map, h, ptx, pty),
+      }));
+    this.speech.tick(dt, entities);
+  }
+
+  private enterGameOver(): void {
+    if (this.gameOver) return;
+    this.gameOver = true;
+    this.lastLootMsg = "HAS MUERTO";
+    this.hudAcc = 1;
+  }
+
+
+  /** Feedback visual de ruido (no walk — spam). */
+  private showNoiseRing(ev: NoiseEvent): void {
+    if (!shouldShowNoiseRing(ev.source)) return;
+    this.view.spawnNoiseRing(ev.x, ev.y, ev.radius, ev.source);
+  }
+
+  private tick(dt: number): void {
+    // Game-over: solo R reinicia / F9 carga (F5 no aplica)
+    if (this.gameOver || !this.player.alive) {
+      this.gameOver = true;
+      if (this.input.consumeRestOrRestart()) {
+        this.softReset();
+        this.hudAcc = 1;
+      } else if (this.input.consumeLoad()) {
+        this.doLoad();
+        this.hudAcc = 1;
+      } else if (this.input.consumeSave()) {
+        this.doSave();
+        this.hudAcc = 1;
+      }
+      if (this.input.consumeHelp()) {
+        this.showHelp = !this.showHelp;
+        this.hudAcc = 1;
+      }
+      if (this.input.consumeMute()) {
+        toggleAmbientMute(this.ambient);
+        this.hudAcc = 1;
+      }
+      this.input.endFrame();
+      this.syncAmbient(dt);
+      this.syncLighting();
+      this.syncRainVisual(dt);
+    this.syncGrassVisual(dt);
+      this.view.tickTracers(dt);
+    this.view.tickNoiseRings(dt);
+      this.renderer.render(this.view.scene, this.view.camera);
+      this.syncSpeechOverlay();
+      this.hudAcc += dt;
+      if (this.hudAcc >= 0.25) {
+        this.hudAcc = 0;
+        this.refreshHud(false);
+      }
+      return;
+    }
+
+    this.clock.advance(dt);
+    this.weather.tick(dt, this.clock.phase);
+    {
+      const indoor = isIndoor(this.map, this.player.x, this.player.y);
+      this.player.tickNeeds(dt, rainNeedsMult(this.weather, indoor));
+    }
+    // Daño supervivencia: hambre/sed al tope (fatigue no daña HP aquí).
+    if (this.player.alive) {
+      const nd = computeNeedsDamage(this.player.needs, dt);
+      if (nd.amount > 0) {
+        this.player.takeDamage(nd.amount);
+        if (this.needsDamageMsgCd <= 0) {
+          const msg = needsDamageHudMessage(nd);
+          if (msg) {
+            this.lastLootMsg = msg;
+            this.hudAcc = 1;
+            this.needsDamageMsgCd = NEEDS_DAMAGE_MSG_CD;
+          }
+        }
+      }
+    }
+    if (this.needsDamageMsgCd > 0) {
+      this.needsDamageMsgCd = Math.max(0, this.needsDamageMsgCd - dt);
+    }
+    this.player.tickCombat(dt);
+    const sprint = this.input.sprinting;
+    const moved = this.player.move(dt, this.input.axes, this.map, sprint);
+    if (moved > 0.001) {
+      if (sprint) this.showNoiseRing(this.noise.emitRun(this.player.x, this.player.y));
+      else this.noise.emitWalk(this.player.x, this.player.y);
+    }
+
+    this.noise.tick(dt);
+    this.gates.tick(dt);
+
+    const hits = this.hostiles.tick(
+      dt,
+      this.map,
+      this.player.x,
+      this.player.y,
+      this.noise,
+      this.gates.mergeAttitudes(this.trust.attitudes()),
+    );
+    if (hostileDamageAllowed(this.spawnGrace)) {
+      for (const hit of hits) {
+        this.player.takeDamage(hit.damage);
+        this.showNoiseRing(this.noise.emitAttack(this.player.x, this.player.y));
+        this.lastLootMsg = `golpe -${hit.damage} HP`;
+        this.hudAcc = 1;
+      }
+    }
+    this.spawnGrace = tickSpawnGrace(this.spawnGrace, dt);
+    this.tickSpeech(dt);
+    if (!this.player.alive) {
+      this.enterGameOver();
+      this.input.endFrame();
+      this.syncHostileView();
+      this.syncSpeechOverlay();
+      this.renderer.render(this.view.scene, this.view.camera);
+      this.refreshHud(true);
+      return;
+    }
+
+    if (this.input.consumeAttack()) {
+      const result = this.player.tryMelee(this.hostiles);
+      if (result) {
+        if (result.killed) {
+          this.speech.unregister(result.hostileId);
+          this.trust.unregister(result.hostileId);
+          this.memory.unregister(result.hostileId);
+          this.gates.unregister(result.hostileId);
+          if (this.dialogue.target === result.hostileId) {
+            this.dialogue.close();
+            this.dialogueLastLine = null;
+            this.dialogueLastTone = null;
+          }
+        }
+        this.showNoiseRing(this.noise.emitAttack(this.player.x, this.player.y));
+        const wpn = result.weapon.label;
+        this.lastLootMsg = result.killed
+          ? `mataste ${result.hostileId} (${wpn})`
+          : `golpeaste ${result.hostileId} con ${wpn} -${result.damage}`;
+        this.hudAcc = 1;
+      } else {
+        this.lastLootMsg = "sin objetivo";
+        this.hudAcc = 1;
+      }
+    }
+
+    if (this.input.consumeShoot()) {
+      const shot = this.player.tryShoot(this.hostiles, this.map);
+      if (shot.kind === "fail") {
+        this.lastLootMsg = shot.message;
+        this.hudAcc = 1;
+      } else {
+        this.showNoiseRing(this.noise.emitGun(this.player.x, this.player.y));
+        this.view.spawnTracer(
+          { x: shot.fromX, y: shot.fromY },
+          { x: shot.toX, y: shot.toY },
+        );
+        if (shot.hit) {
+          if (shot.killed) {
+            this.speech.unregister(shot.hostileId);
+            this.trust.unregister(shot.hostileId);
+            this.memory.unregister(shot.hostileId);
+            this.gates.unregister(shot.hostileId);
+            if (this.dialogue.target === shot.hostileId) {
+              this.dialogue.close();
+              this.dialogueLastLine = null;
+              this.dialogueLastTone = null;
+            }
+          }
+        }
+        this.lastLootMsg = shot.message;
+        this.hudAcc = 1;
+      }
+    }
+
+    if (this.input.consumeInteract()) {
+      const result = this.player.tryToggleDoor(this.map);
+      if (result) {
+        this.view.syncDoor(result.x, result.y, result.open);
+        this.showNoiseRing(this.noise.emitDoor(result.x + 0.5, result.y + 0.5));
+      } else {
+        const taken = this.player.tryLoot(this.containers);
+        if (taken) {
+          this.showNoiseRing(this.noise.emitLoot(this.player.x, this.player.y));
+          this.lastLootMsg = `+${taken.id}`;
+          this.hudAcc = 1; // forzar refresh
+        }
+      }
+    }
+    if (this.input.consumeLoot()) {
+      const taken = this.player.tryLoot(this.containers);
+      if (taken) {
+        this.showNoiseRing(this.noise.emitLoot(this.player.x, this.player.y));
+        this.lastLootMsg = `+${taken.id}`;
+        this.hudAcc = 1;
+      }
+    }
+    if (this.input.consumeUse()) {
+      const outdoor = !isIndoor(this.map, this.player.x, this.player.y);
+      if (
+        canRefillFromRain(
+          this.weather.isRaining,
+          outdoor,
+          this.player.inventory,
+        )
+      ) {
+        if (
+          tryRefillFromRain(
+            this.weather.isRaining,
+            outdoor,
+            this.player.inventory,
+          )
+        ) {
+          this.lastLootMsg = "recogiste agua de lluvia";
+          this.hudAcc = 1;
+        }
+      } else {
+        const used = this.player.tryConsume();
+        if (used) {
+          this.lastLootMsg =
+            used === "food"
+              ? "comiste"
+              : used === "drink"
+                ? "bebiste"
+                : "vendaje +HP";
+          this.hudAcc = 1;
+        }
+      }
+    }
+    if (this.input.consumeInventoryToggle()) {
+      this.showInvDetail = !this.showInvDetail;
+      this.hudAcc = 1;
+    }
+    if (this.input.consumeHelp()) {
+      this.showHelp = !this.showHelp;
+      this.hudAcc = 1;
+    }
+    if (this.input.consumeMute()) {
+      toggleAmbientMute(this.ambient);
+      this.hudAcc = 1;
+    }
+    if (this.input.consumeRestOrRestart()) {
+      this.player.rest();
+    }
+    if (this.input.consumeSleep()) {
+      const result = trySleep(
+        this.player.needs,
+        this.clock,
+        this.map,
+        this.player.x,
+        this.player.y,
+        this.hostiles.hostiles,
+        { alive: this.player.alive },
+      );
+      this.lastLootMsg = result.message;
+      this.hudAcc = 1;
+    }
+    if (this.input.consumeBuild()) {
+      const built = this.player.tryPlaceBarricade(this.map);
+      if (built?.ok) {
+        const { x, y } = built.result;
+        this.view.remeshTile(x, y);
+        this.showNoiseRing(this.noise.emitBarricade(x + 0.5, y + 0.5));
+        this.lastLootMsg = "barricada colocada";
+        this.hudAcc = 1;
+      } else if (built && !built.ok) {
+        this.lastLootMsg = built.message;
+        this.hudAcc = 1;
+      }
+    }
+    if (this.input.consumeCraft()) {
+      if (this.player.tryCraftBandage()) {
+        this.lastLootMsg = "vendaje craftado";
+        this.hudAcc = 1;
+      } else {
+        this.lastLootMsg = "falta tela/chatarra";
+        this.hudAcc = 1;
+      }
+    }
+    if (this.input.consumeCook()) {
+      const cooked = this.player.tryCook(this.map);
+      if (cooked?.ok) {
+        this.lastLootMsg = "cocinaste un plato caliente";
+        this.hudAcc = 1;
+      } else if (cooked && !cooked.ok) {
+        this.lastLootMsg = cooked.message;
+        this.hudAcc = 1;
+      }
+    }
+    if (this.input.consumeTalk()) {
+      this.tryToggleDialogue();
+    }
+    if (this.input.consumeCancel() && this.dialogue.open) {
+      this.dialogue.close();
+      this.dialogueLastLine = null;
+      this.dialogueLastTone = null;
+    }
+    if (this.dialogue.open) {
+      this.dialogue.validate(
+        this.hostiles.hostiles,
+        this.player.x,
+        this.player.y,
+        DIALOGUE_REACH,
+      );
+      if (!this.dialogue.open) {
+        this.dialogueLastLine = null;
+        this.dialogueLastTone = null;
+      }
+    }
+    if (this.input.consumeFlashlightToggle()) {
+      if (!hasFlashlight(this.player.inventory)) {
+        this.flashlightOn = false;
+        this.lastLootMsg = "sin linterna";
+      } else {
+        this.flashlightOn = !this.flashlightOn;
+        this.lastLootMsg = this.flashlightOn ? "linterna on" : "linterna off";
+      }
+      this.hudAcc = 1;
+    }
+    if (this.input.consumeSave()) {
+      this.doSave();
+      this.hudAcc = 1;
+    }
+    if (this.input.consumeLoad()) {
+      this.doLoad();
+      this.hudAcc = 1;
+    }
+    this.input.endFrame();
+
+    this.view.syncVisibleChunks(this.player.x, this.player.y);
+    this.applyFov();
+    this.view.syncPlayer(this.player.x, this.player.y);
+    {
+      const ax = this.input.axes;
+      const moving = ax.x !== 0 || ax.z !== 0;
+      // Facing del player (cardinal) para orientar el GLB; fallback a ejes.
+      const fx = this.player.facingX;
+      const fz = this.player.facingY; // mapa Y = Three Z
+      this.view.tickPlayerLoco(dt, moving, sprint, fx, fz);
+    }
+    this.syncHostileView();
+    this.syncAmbient(dt);
+    this.syncLighting();
+    this.syncRainVisual(dt);
+    this.syncGrassVisual(dt);
+    this.view.tickTracers(dt);
+      this.view.tickNoiseRings(dt);
+    this.view.followCamera(this.player.x, this.player.y);
+    this.renderer.render(this.view.scene, this.view.camera);
+    this.syncSpeechOverlay();
+    this.syncDialoguePanel();
+
+    this.hudAcc += dt;
+    if (this.hudAcc >= 0.25) {
+      this.hudAcc = 0;
+      this.refreshHud(false);
+    }
+  }
+
+  private syncInventoryPanel(): void {
+    this.inventoryPanel.sync({
+      open: this.showInvDetail && !this.gameOver,
+      data: buildInventoryPanelData(this.player.inventory),
+    });
+  }
+
+
+  /** Ambient stub: mute + niveles desde weather/clock/indoor/hostiles. */
+  private syncAmbient(dt: number): void {
+    const indoor = isIndoor(this.map, this.player.x, this.player.y);
+    const threat = hostileNearby(
+      this.hostiles.hostiles,
+      this.player.x,
+      this.player.y,
+      10,
+    );
+    tickAmbient(
+      this.ambient,
+      {
+        raining: this.weather.isRaining,
+        isNight: this.clock.isNight,
+        indoor,
+        threatNearby: threat,
+      },
+      dt,
+    );
+  }
+
+  private refreshHud(force: boolean): void {
+    if (!this.hud && !force) return;
+    if (!this.hud) return;
+
+    if (this.gameOver || !this.player.alive) {
+      this.hud.textContent = formatHudStatus({
+        modo: this.clock.isNight ? "noche" : "día",
+        phasePct: Math.floor(this.clock.phase * 100),
+        muteN: 0,
+        possN: 0,
+        invLine: "",
+        tileX: Math.floor(this.player.x),
+        tileY: Math.floor(this.player.y),
+        chunksLoaded: this.view.loadedChunkCount(),
+        chunksTotal: this.map.chunkCount,
+        fov: this.fovVisibleCount,
+        gameOver: true,
+        msg: this.lastLootMsg || undefined,
+        showHelp: this.showHelp,
+      });
+      this.hud.classList.toggle("hud-help", this.showHelp);
+      this.moodlesHud.sync(
+        buildMoodles(this.player.needs, this.player.health),
+      );
+      this.inventoryPanel.sync({
+        open: false,
+        data: buildInventoryPanelData(this.player.inventory),
+      });
+      return;
+    }
+
+    const phase = Math.floor(this.clock.phase * 100);
+    const modo = this.clock.isNight ? "noche" : "día";
+    const muteN = this.hostiles.hostiles.filter((x) => x.kind === "mute").length;
+    const possN = this.hostiles.hostiles.filter(
+      (x) => x.kind === "possessed",
+    ).length;
+    const near = this.containers.nearest(
+      this.player.x,
+      this.player.y,
+      CONTAINER_REACH,
+    );
+    const nearHint = near
+      ? `cerca: ${near.name} [${inventorySummary(near.inv)}] G/E loot`
+      : undefined;
+    const invLine = `inv ${this.player.invSummary()} (${this.player.invWeight().toFixed(1)}kg)`;
+    const invDetailHint = this.showInvDetail ? "I cerrar inv" : undefined;
+    this.syncInventoryPanel();
+    const loud = this.noise.loudest();
+    const noiseHint = loud
+      ? `ruido ${loud.source} r${loud.radius.toFixed(0)}`
+      : undefined;
+    const msg = this.lastLootMsg || undefined;
+    const nearPoss = nearestPossessed(
+      this.hostiles.hostiles,
+      this.player.x,
+      this.player.y,
+      DIALOGUE_REACH,
+    );
+    const talkHint = nearPoss
+      ? `T hablar ${nearPoss.id} (trust ${this.trust.get(nearPoss.id)})`
+      : undefined;
+    const dlgHint = this.dialogue.open
+      ? `diálogo ${this.dialogue.target}`
+      : undefined;
+    this.moodlesHud.sync(buildMoodles(this.player.needs, this.player.health));
+    const indoor = isIndoor(this.map, this.player.x, this.player.y);
+    const safe =
+      indoor && isSafehouseHint(this.map, this.player.x, this.player.y);
+    const bedNear = nearBed(this.map, this.player.x, this.player.y);
+    const safeHint = safe
+      ? bedNear
+        ? "safehouse cama"
+        : "safehouse"
+      : undefined;
+    const raining = this.weather.isRaining && !indoor;
+    const flashlight =
+      this.flashlightOn && hasFlashlight(this.player.inventory);
+
+    this.hud.textContent = formatHudStatus({
+      modo,
+      phasePct: phase,
+      muteN,
+      possN,
+      invLine,
+      nearHint,
+      noiseHint,
+      talkHint,
+      dlgHint,
+      indoor,
+      safeHint,
+      raining,
+      flashlight,
+      audioHint: describeAmbient(this.ambient) ?? undefined,
+      msg,
+      invDetailHint,
+      tileX: Math.floor(this.player.x),
+      tileY: Math.floor(this.player.y),
+      chunksLoaded: this.view.loadedChunkCount(),
+      chunksTotal: this.map.chunkCount,
+      fov: this.fovVisibleCount,
+      showHelp: this.showHelp,
+    });
+    this.hud.classList.toggle("hud-help", this.showHelp);
+  }
+
+  private resize(): void {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const aspect = w / h;
+    const frustum = ISO_FRUSTUM;
+    const cam = this.view.camera;
+    cam.left = -frustum * aspect;
+    cam.right = frustum * aspect;
+    cam.top = frustum;
+    cam.bottom = -frustum;
+    cam.updateProjectionMatrix();
+    this.renderer.setSize(w, h);
+  }
+}
