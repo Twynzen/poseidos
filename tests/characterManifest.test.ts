@@ -3,12 +3,16 @@ import {
   CHARACTER_CLIP_ROLES,
   DEFAULT_PLACEHOLDER_MANIFEST,
   PLAYER_SOLDIER_MANIFEST,
+  PLAYER_SURVIVOR_MANIFEST,
   MUTE_SOLDIER_MANIFEST,
   POSSESSED_SOLDIER_MANIFEST,
   joinBaseUrl,
   usesPlaceholderMesh,
   clipNameForRole,
   isValidManifest,
+  preferSurvivorManifest,
+  playerManifestCandidates,
+  shouldApplySurvivorLook,
   type CharacterAssetManifest,
 } from "../src/render/characterManifest";
 
@@ -41,6 +45,44 @@ describe("DEFAULT_PLACEHOLDER_MANIFEST", () => {
     for (const role of CHARACTER_CLIP_ROLES) {
       expect(clipNameForRole(DEFAULT_PLACEHOLDER_MANIFEST, role)).toBeTruthy();
     }
+  });
+});
+
+describe("PLAYER_SURVIVOR_MANIFEST", () => {
+  test("id survivor, url Survivor.glb, roles Idle/Walk/Run/Attack/Hit/Death", () => {
+    expect(usesPlaceholderMesh(PLAYER_SURVIVOR_MANIFEST)).toBe(false);
+    expect(isValidManifest(PLAYER_SURVIVOR_MANIFEST)).toBe(true);
+    expect(PLAYER_SURVIVOR_MANIFEST.id).toBe("survivor");
+    expect(PLAYER_SURVIVOR_MANIFEST.url).toBe("/models/Survivor.glb");
+    expect(clipNameForRole(PLAYER_SURVIVOR_MANIFEST, "idle")).toBe("Idle");
+    expect(clipNameForRole(PLAYER_SURVIVOR_MANIFEST, "walk")).toBe("Walk");
+    expect(clipNameForRole(PLAYER_SURVIVOR_MANIFEST, "run")).toBe("Run");
+    expect(clipNameForRole(PLAYER_SURVIVOR_MANIFEST, "primary-attack")).toBe(
+      "Attack",
+    );
+    expect(clipNameForRole(PLAYER_SURVIVOR_MANIFEST, "hit")).toBe("Hit");
+    expect(clipNameForRole(PLAYER_SURVIVOR_MANIFEST, "death")).toBe("Death");
+    expect(PLAYER_SURVIVOR_MANIFEST.scale).toBe(1.25);
+    expect(PLAYER_SURVIVOR_MANIFEST.yOffset).toBe(0);
+  });
+});
+
+describe("preferSurvivorManifest / playerManifestCandidates", () => {
+  test("preferSurvivorManifest(true) → Survivor; false → Soldier", () => {
+    expect(preferSurvivorManifest(true)).toBe(PLAYER_SURVIVOR_MANIFEST);
+    expect(preferSurvivorManifest(false)).toBe(PLAYER_SOLDIER_MANIFEST);
+  });
+
+  test("playerManifestCandidates es [Survivor, Soldier]", () => {
+    expect(playerManifestCandidates()).toEqual([
+      PLAYER_SURVIVOR_MANIFEST,
+      PLAYER_SOLDIER_MANIFEST,
+    ]);
+  });
+
+  test("shouldApplySurvivorLook: skip Survivor, tint Soldier", () => {
+    expect(shouldApplySurvivorLook(PLAYER_SURVIVOR_MANIFEST)).toBe(false);
+    expect(shouldApplySurvivorLook(PLAYER_SOLDIER_MANIFEST)).toBe(true);
   });
 });
 

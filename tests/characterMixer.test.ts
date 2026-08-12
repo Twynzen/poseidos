@@ -7,6 +7,7 @@ import {
 } from "../src/render/characterMixer";
 import {
   PLAYER_SOLDIER_MANIFEST,
+  PLAYER_SURVIVOR_MANIFEST,
   type CharacterAssetManifest,
 } from "../src/render/characterManifest";
 import type { LoadedCharacterGltf } from "../src/render/characterGltf";
@@ -37,6 +38,19 @@ describe("buildRoleClipMap (headless)", () => {
     expect(map.walk).toBe("Walk");
     expect(map.run).toBe("Run");
     expect(map["primary-attack"]).toBeUndefined();
+  });
+
+  test("mapea Idle/Walk/Run/Attack/Hit/Death del Survivor si existen", () => {
+    const map = buildRoleClipMap(
+      ["Idle", "Walk", "Run", "Attack", "Hit", "Death"],
+      PLAYER_SURVIVOR_MANIFEST,
+    );
+    expect(map.idle).toBe("Idle");
+    expect(map.walk).toBe("Walk");
+    expect(map.run).toBe("Run");
+    expect(map["primary-attack"]).toBe("Attack");
+    expect(map.hit).toBe("Hit");
+    expect(map.death).toBe("Death");
   });
 
   test("omite roles cuyo clip no esta en el GLB", () => {

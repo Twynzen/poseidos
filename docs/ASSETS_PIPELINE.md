@@ -50,26 +50,17 @@ El manifest mapea `rol → nombreDeClip` dentro del GLB (los nombres de Mesh2Mot
 1. Exportar desde Mesh2Motion → copiar a `public/models/<id>.glb`.
 2. Registrar en un `CharacterAssetManifest` (ver `src/render/characterManifest.ts`):
    - `id`, `url` (p.ej. `/models/<id>.glb`), `roles`, `scale`, `yOffset`.
-3. Pasar el manifest a la vista (player: `PLAYER_SOLDIER_MANIFEST` en `worldView`).
-4. Si `url` está vacía o el load falla → silueta box + `locoBob` (sin romper el juego).
+3. Pasar el manifest a la vista. Player: `playerManifestCandidates()` en `worldView` prueba Survivor y cae a Soldier.
+4. Si `url` está vacía o el load falla → siguiente candidate; si ninguno carga → silueta box + `locoBob`.
 
 ```ts
-import type { CharacterAssetManifest } from "../src/render/characterManifest";
+import { PLAYER_SURVIVOR_MANIFEST } from "../src/render/characterManifest";
 
-const survivor: CharacterAssetManifest = {
-  id: "survivor",
-  url: "/models/survivor.glb",
-  roles: {
-    idle: "Idle",
-    walk: "Walk",
-    run: "Run",
-    "primary-attack": "Attack",
-    hit: "Hit",
-    death: "Death",
-  },
-  scale: 1,
-  yOffset: 0,
-};
+PLAYER_SURVIVOR_MANIFEST.id; // "survivor"
+PLAYER_SURVIVOR_MANIFEST.url; // resolveAssetUrl("models/Survivor.glb")
+PLAYER_SURVIVOR_MANIFEST.roles; // Idle / Walk / Run / Attack / Hit / Death
+PLAYER_SURVIVOR_MANIFEST.scale; // 1.25
+PLAYER_SURVIVOR_MANIFEST.yOffset; // 0
 ```
 
 ---
@@ -80,21 +71,31 @@ const survivor: CharacterAssetManifest = {
 | --- | --- |
 | Silueta body+head | Fallback (player / mute / poseído si GLB pending/fail) |
 | `locoBob.ts` | Procedural idle/walk/sprint — solo si no hay GLB |
-| `characterManifest.ts` | Contrato + placeholder + **`PLAYER_SOLDIER_MANIFEST`** + **`POSSESSED_SOLDIER_MANIFEST`** + **`MUTE_SOLDIER_MANIFEST`** |
+| `characterManifest.ts` | Contrato + **`PLAYER_SURVIVOR_MANIFEST`** + Soldier/poseído/mute + `preferSurvivorManifest` / `playerManifestCandidates` |
 | `characterAnimator.ts` | Estado de roles mixer-agnóstico (headless) |
 | `characterGltf.ts` | `loadCharacterGltf` / `maybeAttachCharacterGltf` (browser) |
 | `characterMixer.ts` | `bindMixer` + crossfade idle↔walk↔run; `buildRoleClipMap` headless |
 | `possessedLook.ts` | Tint oscuro + acento rojo/violeta emisivo (clone mats) |
 | `muteLook.ts` | Tint gris-verde enfermo (clone mats; sin rojo/violeta) |
 | `hostileLoco.ts` | Delta mapa → idle/walk/run (mute + poseídos; mismos clips Soldier) |
-| GLB en `public/models/` | **`Soldier.glb`** (Three.js examples, MIT) — player + poseídos + mutes |
+| GLB en `public/models/` | **`Survivor.glb`** drop-in (opcional) + **`Soldier.glb`** (MIT) fallback player + poseídos + mutes |
 | Autogenerar en Mesh2Motion | **Fuera de slice** — herramienta externa, no CI |
 
-Player usa Soldier de prueba (placeholder militar). `applySurvivorLook` tinte tierra/gris + acento visor (clone mats) hasta GLB propio. Load fail → silueta + loco bob.
+Player prueba `playerManifestCandidates()` = `[PLAYER_SURVIVOR_MANIFEST, PLAYER_SOLDIER_MANIFEST]`. Si `Survivor.glb` carga → **sin** `applySurvivorLook`. Si falta o falla → Soldier + tinte tierra/gris + acento visor. Ambos fail → silueta + loco bob.
 Poseídos reusan el mismo Soldier via `SkeletonUtils.clone` + `applyPossessedLook`; loco Idle/Walk/Run por delta en `syncHostiles`.
 Mutes reusan el mismo load (`SkeletonUtils.clone` + `applyMuteLook` + mixer + `hostileLocoFromDelta`). Un solo `loadCharacterGltf` compartido mute+poseído. Boxes × `HOSTILE_VISUAL_SCALE` (1.5) solo si GLB pending/fail.
 Yaw GLB: `playerGltfYawFromMove` / `hostileYaw` con ejes vivos (no facing cardinal).
-Siguiente: Mesh2Motion / survival GLB / contact polish.
+Siguiente: hit flash / attack clip / export Mesh2Motion real a `public/models/Survivor.glb`.
+
+## Survivor drop-in
+
+| Campo | Valor |
+| --- | --- |
+| Archivo | `public/models/Survivor.glb` (opcional hasta el export) |
+| Manifest | `PLAYER_SURVIVOR_MANIFEST` — id `survivor`, scale `1.25`, yOffset `0` |
+| Clips | `Idle`, `Walk`, `Run`, `Attack`, `Hit`, `Death` |
+| Orden | `playerManifestCandidates()` → Survivor, luego Soldier |
+| Tint | Skip `applySurvivorLook` si este candidate gana |
 
 ## Soldier de prueba
 

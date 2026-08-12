@@ -31,8 +31,9 @@ import {
 } from "./characterAnimator";
 import {
   MUTE_SOLDIER_MANIFEST,
-  PLAYER_SOLDIER_MANIFEST,
   POSSESSED_SOLDIER_MANIFEST,
+  playerManifestCandidates,
+  shouldApplySurvivorLook,
 } from "./characterManifest";
 import { ISO_FRUSTUM } from "./cameraConfig";
 import { HOSTILE_VISUAL_SCALE, hostileYaw } from "./hostileFigure";
@@ -322,31 +323,36 @@ export function createWorldView(
   playerLocoRoot.add(playerBody, playerHead);
   playerMesh.add(playerLocoRoot);
   const playerLoco = createLocoBobState();
-  /** Roles mixer-agnosticos; GLB opcional via manifest (default: silueta). */
+  /** Roles mixer-agnosticos; GLB opcional via candidates (Survivor → Soldier). */
   const playerAnimator = createCharacterAnimator();
-  const playerCharacterManifest = PLAYER_SOLDIER_MANIFEST;
   let playerUsesGltfVisual = false;
   let playerMixer: CharacterMixerHandle | null = null;
   /** Yaw GLB: Soldier forward=+Z; player.facingY default=1 → yaw 0. */
   let playerGltfYaw = 0;
-  void maybeAttachCharacterGltf(playerCharacterManifest, {
-    parent: playerLocoRoot,
-    onAttached: (loaded) => {
-      const handle = bindMixer(loaded, playerCharacterManifest);
+  void (async () => {
+    for (const candidate of playerManifestCandidates()) {
+      const loaded = await maybeAttachCharacterGltf(candidate, {
+        parent: playerLocoRoot,
+      });
+      if (!loaded) continue;
+      const handle = bindMixer(loaded, candidate);
       if (!handle) {
-        // Clips no mapeados: quitar mesh y quedar en silueta.
+        // Clips no mapeados: quitar mesh y probar el siguiente candidate.
         playerLocoRoot.remove(loaded.scene);
-        return;
+        continue;
       }
-      // Tint survival tras bind OK (antes de mostrar): earth/gray + acento visor.
-      applySurvivorLook(loaded.scene);
+      // Survivor drop-in: mesh propio. Soldier fallback: tint tierra/visor.
+      if (shouldApplySurvivorLook(candidate)) {
+        applySurvivorLook(loaded.scene);
+      }
       playerMixer = handle;
       playerBody.visible = false;
       playerHead.visible = false;
       playerUsesGltfVisual = true;
       handle.syncFromAnimator("idle");
-    },
-  });
+      return;
+    }
+  })();
   const markerShared = createMarkerSharedResources();
   attachRoleMarkers(playerMesh, "player", markerShared);
   playerMesh.position.set(0, 0, 0);
