@@ -47,11 +47,12 @@ export function attitudeFromTrust(trust: number): HostileAttitude {
     };
   }
   if (isAggressive(trust)) {
+    // Fear is speedMul (chase/wander), not burst DPS.
     return {
       pacified: false,
       speedMul: 1.35,
-      attackCdMul: 0.65,
-      damageMul: 1.25,
+      attackCdMul: 0.9,
+      damageMul: 1.0,
     };
   }
   return {

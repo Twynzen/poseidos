@@ -85,9 +85,9 @@ const DEFAULTS = {
   visionRange: 8,
   hearRange: 0,
   speed: 2.4,
-  touchRange: 0.7,
+  touchRange: 0.58,
   touchDamage: TOUCH_DAMAGE,
-  attackCooldown: 0.85,
+  attackCooldown: 1.15,
   wanderRadius: 4,
   maxHealth: HOSTILE_MAX_HEALTH,
   investigateTimeout: 4.0,
@@ -489,7 +489,7 @@ export function defaultPossessedSpawns(): Array<{
 }
 
 /** Segundos sin daño touch tras spawnThreats / reinicio. */
-export const SPAWN_GRACE_SECONDS = 5;
+export const SPAWN_GRACE_SECONDS = 6;
 
 /** Baja la gracia de spawn con dt (nunca negativa). */
 export function tickSpawnGrace(spawnGrace: number, dt: number): number {

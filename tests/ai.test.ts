@@ -185,9 +185,17 @@ describe("HostileSim AI tick", () => {
 });
 
 describe("spawn grace (demo survivable)", () => {
+  test("defaults kiteable: CD 1.15, touchRange 0.58, grace 6, TOUCH_DAMAGE 12", () => {
+    const sim = new HostileSim();
+    expect(sim.attackCooldown).toBe(1.15);
+    expect(sim.touchRange).toBe(0.58);
+    expect(SPAWN_GRACE_SECONDS).toBe(6);
+    expect(TOUCH_DAMAGE).toBe(12);
+  });
+
   test("tickSpawnGrace baja con dt y clampa a 0", () => {
-    expect(SPAWN_GRACE_SECONDS).toBe(5);
-    expect(tickSpawnGrace(5, 1)).toBeCloseTo(4);
+    expect(SPAWN_GRACE_SECONDS).toBe(6);
+    expect(tickSpawnGrace(6, 1)).toBeCloseTo(5);
     expect(tickSpawnGrace(0.2, 0.5)).toBe(0);
     expect(tickSpawnGrace(0, 1)).toBe(0);
   });
@@ -206,7 +214,7 @@ describe("spawn grace (demo survivable)", () => {
     const player = new PlayerSim({ x: 2.5, y: 2.5 });
     let grace = SPAWN_GRACE_SECONDS;
 
-    // ~2s dentro de la gracia (5s): hostiles.tick puede devolver hits, pero no aplicamos
+    // ~2s dentro de la gracia (6s): hostiles.tick puede devolver hits, pero no aplicamos
     for (let t = 0; t < 20; t++) {
       const hits = sim.tick(0.1, map, player.x, player.y);
       if (hostileDamageAllowed(grace)) {

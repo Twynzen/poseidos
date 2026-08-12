@@ -224,7 +224,10 @@ describe("trust ledger", () => {
     expect(isAggressive(TRUST_AGGRO)).toBe(true);
     expect(isAggressive(TRUST_AGGRO + 1)).toBe(false);
     expect(attitudeFromTrust(80).pacified).toBe(true);
+    expect(attitudeFromTrust(80).damageMul).toBe(0);
     expect(attitudeFromTrust(10).speedMul).toBeGreaterThan(1);
+    expect(attitudeFromTrust(10).damageMul).toBe(1);
+    expect(attitudeFromTrust(10).attackCdMul).toBe(0.9);
     expect(attitudeFromTrust(50).speedMul).toBe(1);
   });
 });
@@ -343,7 +346,7 @@ describe("trust → AI hostility", () => {
     expect(sim.hostiles[0]!.mode).toBe("wander");
   });
 
-  test("trust muy bajo: más daño / cooldown corto al tocar", () => {
+  test("trust muy bajo: fear es speedMul, no burst DPS", () => {
     const map = corridorMap();
     const sim = new HostileSim({
       visionRange: 10,
@@ -357,16 +360,20 @@ describe("trust → AI hostility", () => {
     const ledger = new TrustLedger();
     ledger.register("poss-rage", 10);
     const att = ledger.attitude("poss-rage");
-    expect(att.damageMul).toBeGreaterThan(1);
-    expect(att.attackCdMul).toBeLessThan(1);
+    expect(att.damageMul).toBe(1);
+    expect(att.attackCdMul).toBe(0.9);
+    expect(att.speedMul).toBeGreaterThan(1);
 
     const hits = sim.tick(0.1, map, 5.5, 2.5, null, ledger.attitudes());
     expect(hits.length).toBe(1);
-    expect(hits[0]!.damage).toBeGreaterThan(TOUCH_DAMAGE);
+    expect(hits[0]!.damage).toBe(TOUCH_DAMAGE);
 
-    // Con attackCdMul < 1, el siguiente hit llega antes que cooldown base
-    const early = sim.tick(0.7, map, 5.5, 2.5, null, ledger.attitudes());
-    expect(early.length).toBe(1);
+    // attackCdMul 0.9 → siguiente hit a 0.9s, no burst a 0.7s
+    const tooEarly = sim.tick(0.7, map, 5.5, 2.5, null, ledger.attitudes());
+    expect(tooEarly.length).toBe(0);
+    const onCd = sim.tick(0.21, map, 5.5, 2.5, null, ledger.attitudes());
+    expect(onCd.length).toBe(1);
+    expect(onCd[0]!.damage).toBe(TOUCH_DAMAGE);
   });
 
   test("mudos ignoran attitudes ajenas (combat intacto)", () => {
