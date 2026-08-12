@@ -1,6 +1,7 @@
 /**
  * AnimationMixer wiring for character GLBs.
  * Headless-safe helpers (clip map) + browser binder with short crossfade.
+ * Missing clips are a no-op; one-shots (attack/hit/death) reset when present.
  */
 
 import {
@@ -35,6 +36,8 @@ export interface CharacterMixerHandle {
   readonly activeRole: CharacterClipRole | null;
   /** Clip name currently targeted (debug / tests). */
   readonly activeClipName: string | null;
+  /** Time of the current action (debug / tests; 0 if none). */
+  readonly activeActionTime: number;
   dispose(): void;
 }
 
@@ -102,10 +105,12 @@ export function bindMixer(
   function syncFromAnimator(role: CharacterClipRole): void {
     const next = actions.get(role);
     if (!next) {
-      // Role has no clip — keep current loco action if any.
+      // Missing clip (Soldier Attack/Hit): safe no-op — keep current loco.
       return;
     }
-    if (role === activeRole && currentAction === next) return;
+    const oneshot = ONESHOT_ROLES.has(role);
+    // Loco: skip if already playing. One-shots: always reset from the start.
+    if (!oneshot && role === activeRole && currentAction === next) return;
 
     const fade = fadeSec;
     if (currentAction && currentAction !== next && fade > 0) {
@@ -121,7 +126,12 @@ export function bindMixer(
   }
 
   function update(dt: number, role?: CharacterClipRole): void {
-    if (role != null) syncFromAnimator(role);
+    if (role != null) {
+      // Don't restart a one-shot every frame while the animator still holds it.
+      const alreadyPlayingOneshot =
+        ONESHOT_ROLES.has(role) && role === activeRole;
+      if (!alreadyPlayingOneshot) syncFromAnimator(role);
+    }
     const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
     mixer.update(safeDt);
   }
@@ -142,6 +152,9 @@ export function bindMixer(
     },
     get activeClipName() {
       return activeClipName;
+    },
+    get activeActionTime() {
+      return currentAction?.time ?? 0;
     },
     dispose,
   };

@@ -25,6 +25,7 @@ import {
 import {
   createCharacterAnimator,
   currentRole,
+  setAction,
   setLocomotion,
   tickCharacterAnimator,
   type CharacterAnimator,
@@ -34,6 +35,7 @@ import {
   POSSESSED_SOLDIER_MANIFEST,
   playerManifestCandidates,
   shouldApplySurvivorLook,
+  type CharacterClipRole,
 } from "./characterManifest";
 import { ISO_FRUSTUM } from "./cameraConfig";
 import { HOSTILE_VISUAL_SCALE, hostileYaw } from "./hostileFigure";
@@ -113,6 +115,11 @@ export interface WorldView {
     faceX?: number,
     faceZ?: number,
   ): void;
+  /**
+   * One-shot de vista: melee/disparo ok → primary-attack; toque hostil → hit.
+   * setAction en playerAnimator + mixer sync (no-op si el GLB no tiene el clip).
+   */
+  triggerPlayerAction(role: Extract<CharacterClipRole, "primary-attack" | "hit">): void;
   /**
    * Sync meshes de hostiles. `visible` respeta FOV del player (no ver through walls).
    * `dt` avanza loco Idle/Walk/Run de mute/poseído GLB (mapa y → Three z).
@@ -883,6 +890,10 @@ export function createWorldView(
       playerLocoRoot.position.y = out.bobY;
       playerLocoRoot.rotation.z = out.leanZ;
       playerLocoRoot.rotation.x = out.swayX;
+    },
+    triggerPlayerAction(role) {
+      setAction(playerAnimator, role);
+      playerMixer?.syncFromAnimator(role);
     },
     syncHostiles(entities, dt = 0) {
       const seen = new Set<string>();

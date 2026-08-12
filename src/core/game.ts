@@ -716,6 +716,7 @@ export class Game {
     if (hostileDamageAllowed(this.spawnGrace)) {
       for (const hit of hits) {
         this.player.takeDamage(hit.damage);
+        this.view.triggerPlayerAction("hit");
         triggerHitFlash(this.hitFlash, 1);
         const attacker = this.hostiles.get(hit.hostileId);
         if (attacker) {
@@ -742,6 +743,7 @@ export class Game {
     if (this.input.consumeAttack()) {
       const result = this.player.tryMelee(this.hostiles);
       if (result) {
+        this.view.triggerPlayerAction("primary-attack");
         if (result.killed) {
           this.speech.unregister(result.hostileId);
           this.trust.unregister(result.hostileId);
@@ -771,6 +773,7 @@ export class Game {
         this.lastLootMsg = shot.message;
         this.hudAcc = 1;
       } else {
+        this.view.triggerPlayerAction("primary-attack");
         this.showNoiseRing(this.noise.emitGun(this.player.x, this.player.y));
         this.view.spawnTracer(
           { x: shot.fromX, y: shot.fromY },

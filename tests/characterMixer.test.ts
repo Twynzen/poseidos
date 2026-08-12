@@ -11,6 +11,12 @@ import {
   type CharacterAssetManifest,
 } from "../src/render/characterManifest";
 import type { LoadedCharacterGltf } from "../src/render/characterGltf";
+import {
+  createCharacterAnimator,
+  currentRole,
+  setAction,
+  tickCharacterAnimator,
+} from "../src/render/characterAnimator";
 
 function fakeClip(name: string): AnimationClip {
   const track = new VectorKeyframeTrack(".position", [0, 0.1], [0, 0, 0, 0, 0, 0]);
@@ -38,6 +44,7 @@ describe("buildRoleClipMap (headless)", () => {
     expect(map.walk).toBe("Walk");
     expect(map.run).toBe("Run");
     expect(map["primary-attack"]).toBeUndefined();
+    expect(map.hit).toBeUndefined();
   });
 
   test("mapea Idle/Walk/Run/Attack/Hit/Death del Survivor si existen", () => {
@@ -97,5 +104,87 @@ describe("bindMixer", () => {
       yOffset: 0,
     };
     expect(bindMixer(fakeLoaded(["Idle"]), m)).toBeNull();
+  });
+
+  test("clip ausente (Soldier Attack/Hit) = no-op; no cambia activeRole", () => {
+    const handle = bindMixer(
+      fakeLoaded(["Idle", "Walk", "Run", "TPose"]),
+      PLAYER_SOLDIER_MANIFEST,
+    );
+    expect(handle).not.toBeNull();
+    handle!.syncFromAnimator("idle");
+    expect(handle!.activeRole).toBe("idle");
+    handle!.syncFromAnimator("primary-attack");
+    expect(handle!.activeRole).toBe("idle");
+    expect(handle!.activeClipName).toBe("Idle");
+    handle!.syncFromAnimator("hit");
+    expect(handle!.activeRole).toBe("idle");
+    expect(handle!.activeClipName).toBe("Idle");
+    handle!.update(1 / 60, "primary-attack");
+    expect(handle!.activeRole).toBe("idle");
+    handle!.dispose();
+  });
+
+  test("one-shot presente (Survivor Attack/Hit) se reproduce y reset al re-trigger", () => {
+    const handle = bindMixer(
+      fakeLoaded(["Idle", "Walk", "Run", "Attack", "Hit", "Death"]),
+      PLAYER_SURVIVOR_MANIFEST,
+    );
+    expect(handle).not.toBeNull();
+    handle!.syncFromAnimator("idle");
+    handle!.syncFromAnimator("primary-attack");
+    expect(handle!.activeRole).toBe("primary-attack");
+    expect(handle!.activeClipName).toBe("Attack");
+    handle!.update(0.05);
+    expect(handle!.activeActionTime).toBeGreaterThan(0);
+    const advanced = handle!.activeActionTime;
+    handle!.update(0.05, "primary-attack");
+    expect(handle!.activeRole).toBe("primary-attack");
+    expect(handle!.activeActionTime).toBeGreaterThan(advanced);
+    handle!.syncFromAnimator("primary-attack");
+    expect(handle!.activeRole).toBe("primary-attack");
+    expect(handle!.activeActionTime).toBe(0);
+    handle!.syncFromAnimator("hit");
+    expect(handle!.activeRole).toBe("hit");
+    expect(handle!.activeClipName).toBe("Hit");
+    expect(handle!.activeActionTime).toBe(0);
+    handle!.update(1 / 60, "walk");
+    expect(handle!.activeRole).toBe("walk");
+    expect(handle!.activeClipName).toBe("Walk");
+    handle!.dispose();
+  });
+
+  test("triggerPlayerAction contract: setAction + sync; Soldier no-op, Survivor Attack", () => {
+    const soldier = bindMixer(
+      fakeLoaded(["Idle", "Walk", "Run"]),
+      PLAYER_SOLDIER_MANIFEST,
+    )!;
+    const survivor = bindMixer(
+      fakeLoaded(["Idle", "Walk", "Run", "Attack", "Hit", "Death"]),
+      PLAYER_SURVIVOR_MANIFEST,
+    )!;
+    const animS = createCharacterAnimator();
+    const animV = createCharacterAnimator();
+    soldier.syncFromAnimator("idle");
+    survivor.syncFromAnimator("idle");
+
+    setAction(animS, "primary-attack");
+    soldier.syncFromAnimator(currentRole(animS));
+    expect(currentRole(animS)).toBe("primary-attack");
+    expect(soldier.activeRole).toBe("idle");
+
+    setAction(animV, "hit");
+    survivor.syncFromAnimator(currentRole(animV));
+    expect(currentRole(animV)).toBe("hit");
+    expect(survivor.activeRole).toBe("hit");
+    expect(survivor.activeClipName).toBe("Hit");
+
+    tickCharacterAnimator(animV, 1);
+    survivor.update(1 / 60, currentRole(animV));
+    expect(currentRole(animV)).toBe("idle");
+    expect(survivor.activeRole).toBe("idle");
+
+    soldier.dispose();
+    survivor.dispose();
   });
 });

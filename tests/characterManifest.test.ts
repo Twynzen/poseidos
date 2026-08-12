@@ -94,6 +94,8 @@ describe("PLAYER_SOLDIER_MANIFEST", () => {
     expect(clipNameForRole(PLAYER_SOLDIER_MANIFEST, "idle")).toBe("Idle");
     expect(clipNameForRole(PLAYER_SOLDIER_MANIFEST, "walk")).toBe("Walk");
     expect(clipNameForRole(PLAYER_SOLDIER_MANIFEST, "run")).toBe("Run");
+    expect(clipNameForRole(PLAYER_SOLDIER_MANIFEST, "primary-attack")).toBeUndefined();
+    expect(clipNameForRole(PLAYER_SOLDIER_MANIFEST, "hit")).toBeUndefined();
     expect(PLAYER_SOLDIER_MANIFEST.scale).toBe(1.25);
     expect(PLAYER_SOLDIER_MANIFEST.yOffset).toBe(0);
   });
