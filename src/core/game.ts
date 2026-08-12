@@ -76,7 +76,11 @@ import {
   tickAmbient,
   describeAmbient,
   toggleAmbientMute,
+  createFootstepsBus,
+  tickFootsteps,
+  describeFootsteps,
   type AmbientBus,
+  type FootstepsBus,
 } from "../audio";
 import {
   computeNeedsDamage,
@@ -117,6 +121,7 @@ export class Game {
   private clock: GameClock;
   private weather: WeatherSystem;
   private ambient: AmbientBus;
+  private footsteps: FootstepsBus;
   private readonly loop: GameLoop;
   private readonly onResize: () => void;
   private readonly storage: SaveStorage | null;
@@ -181,6 +186,7 @@ export class Game {
     this.clock = new GameClock(DEFAULT_DAY_LENGTH_SEC);
     this.weather = new WeatherSystem();
     this.ambient = createAmbientBus();
+    this.footsteps = createFootstepsBus();
     this.storage = browserStorage();
     this.loop = new GameLoop((dt) => this.tick(dt));
 
@@ -612,6 +618,7 @@ export class Game {
       }
       this.input.endFrame();
       this.syncAmbient(dt);
+      this.syncFootsteps(dt, 0, false);
       this.syncLighting();
       this.syncRainVisual(dt);
     this.syncGrassVisual(dt);
@@ -912,6 +919,7 @@ export class Game {
     }
     this.syncHostileView();
     this.syncAmbient(dt);
+    this.syncFootsteps(dt, moved, sprint);
     this.syncLighting();
     this.syncRainVisual(dt);
     this.syncGrassVisual(dt);
@@ -953,6 +961,19 @@ export class Game {
         isNight: this.clock.isNight,
         indoor,
         threatNearby: threat,
+      },
+      dt,
+    );
+  }
+
+  /** Footsteps stub: nivel desde movimiento; mute compartido con ambient. */
+  private syncFootsteps(dt: number, moved: number, sprint: boolean): void {
+    tickFootsteps(
+      this.footsteps,
+      {
+        moved,
+        sprint,
+        muted: this.ambient.muted,
       },
       dt,
     );
@@ -1051,7 +1072,10 @@ export class Game {
       safeHint,
       raining,
       flashlight,
-      audioHint: describeAmbient(this.ambient) ?? undefined,
+      audioHint:
+        describeAmbient(this.ambient) ??
+        describeFootsteps(this.footsteps) ??
+        undefined,
       msg,
       invDetailHint,
       tileX: Math.floor(this.player.x),

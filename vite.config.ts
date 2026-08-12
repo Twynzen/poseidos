@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 
-// base para GitHub Pages (repo /poseidos/). En local, VITE_BASE=/ bun run dev
-const base = process.env.VITE_BASE ?? "/poseidos/";
+// Local default "/". CI / Pages: VITE_BASE=/poseidos/ bun run build
+const base = process.env.VITE_BASE ?? "/";
 
 export default defineConfig({
   base,

@@ -55,15 +55,20 @@ git push -u origin main
 5. El workflow `.github/workflows/pages.yml` hace build con Bun y publica `dist`.
 6. Esperá el Action verde; abrí `https://<tu-usuario>.github.io/poseidos/`.
 
-### Dev local
+### Base path (local vs Pages)
+
+- **Local:** `vite.config.ts` usa `base: "/"` por defecto (`bun run dev` / `bun run build`).
+- **GitHub Pages:** el workflow y `bun run build:pages` setean `VITE_BASE=/poseidos/` (URL `…/poseidos/`).
 
 ```bash
 bun install
-VITE_BASE=/ bun run dev
+bun run dev          # base /
+bun run build        # base /
+bun run build:pages  # base /poseidos/
 ```
 
-### Redeploy cada 12 h
+### Redeploy
 
-Cuando el remoto exista, el agente puede dejar una rutina que haga commit/push desde tu PC o un Action `schedule` — por ahora el push inicial lo hacés vos.
+Push a `main` dispara el workflow. También hay `workflow_dispatch` y `schedule` cada 12 h (UTC).
 
 Owner: Daniel Castiblanco · agente: HorrorNpcs

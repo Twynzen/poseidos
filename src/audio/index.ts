@@ -10,3 +10,13 @@ export {
   type AmbientState,
   type AmbientBus,
 } from "./ambientStub";
+
+export {
+  createFootstepsBus,
+  tickFootsteps,
+  footstepsLevel,
+  footstepsTarget,
+  describeFootsteps,
+  type FootstepsState,
+  type FootstepsBus,
+} from "./footstepsStub";
