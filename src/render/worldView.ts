@@ -30,6 +30,7 @@ import {
 } from "./characterAnimator";
 import { PLAYER_SOLDIER_MANIFEST } from "./characterManifest";
 import { ISO_FRUSTUM } from "./cameraConfig";
+import { HOSTILE_VISUAL_SCALE } from "./hostileFigure";
 import { maybeAttachCharacterGltf } from "./characterGltf";
 import {
   bindMixer,
@@ -1002,6 +1003,8 @@ function makeHostileFigure(
     root.add(body, head);
   }
   attachRoleMarkers(root, kind, markers);
+  // Mute/poseído a escala legible vs Soldier; markers/rings heredan.
+  root.scale.setScalar(HOSTILE_VISUAL_SCALE);
   return root;
 }
 
