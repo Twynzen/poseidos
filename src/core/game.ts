@@ -97,6 +97,7 @@ import {
   playMelee,
   playHit,
   playGun,
+  playDryFire,
   createInteractPlayer,
   playDoor,
   playLoot,
@@ -828,6 +829,9 @@ export class Game {
       if (shot.kind === "fail") {
         this.lastLootMsg = shot.message;
         this.hudAcc = 1;
+        if (shot.message === "sin munición") {
+          playDryFire(this.combatPlayer, this.ambient.muted);
+        }
       } else {
         playGun(this.combatPlayer, this.ambient.muted);
         this.view.triggerPlayerAction("primary-attack");

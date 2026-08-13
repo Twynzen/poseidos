@@ -44,6 +44,7 @@ export {
   playMelee,
   playHit,
   playGun,
+  playDryFire,
   type CombatSfxKind,
   type CombatBeepSpec,
   type CombatPlayer,

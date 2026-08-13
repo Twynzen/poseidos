@@ -1,15 +1,16 @@
 /**
- * Combat WebAudio SFX — beeps one-shot (melee / hit / gun).
+ * Combat WebAudio SFX — beeps one-shot (melee / hit / gun / dry).
  * Headless: `shouldPlayCombatSfx` / `combatBeepSpec` sin AudioContext.
  * Browser: AudioContext lazy (solo al primer play audible). Mute → no-op.
  */
 
-export type CombatSfxKind = "melee" | "hit" | "gun";
+export type CombatSfxKind = "melee" | "hit" | "gun" | "dry";
 
 export type CombatBeepSpec = {
   hz: number;
   type: OscillatorType;
   durationSec: number;
+  gain: number;
 };
 
 export type CombatPlayer = {
@@ -17,13 +18,11 @@ export type CombatPlayer = {
   ctx: AudioContext | null;
 };
 
-/** Gain pico (pre-mute ya filtrado). */
-const BEEP_GAIN = 0.09;
-
 const SPECS: Record<CombatSfxKind, CombatBeepSpec> = {
-  melee: { hz: 200, type: "square", durationSec: 0.08 },
-  hit: { hz: 90, type: "triangle", durationSec: 0.1 },
-  gun: { hz: 400, type: "sawtooth", durationSec: 0.06 },
+  melee: { hz: 200, type: "square", durationSec: 0.08, gain: 0.09 },
+  hit: { hz: 90, type: "triangle", durationSec: 0.1, gain: 0.09 },
+  gun: { hz: 400, type: "sawtooth", durationSec: 0.06, gain: 0.09 },
+  dry: { hz: 1100, type: "square", durationSec: 0.035, gain: 0.06 },
 };
 
 /**
@@ -77,7 +76,7 @@ function playBeep(ctx: AudioContext, spec: CombatBeepSpec): void {
   const gain = ctx.createGain();
   osc.type = spec.type;
   osc.frequency.setValueAtTime(spec.hz, t0);
-  gain.gain.setValueAtTime(BEEP_GAIN, t0);
+  gain.gain.setValueAtTime(spec.gain, t0);
   gain.gain.exponentialRampToValueAtTime(0.0001, t0 + spec.durationSec);
   osc.connect(gain);
   gain.connect(ctx.destination);
@@ -85,7 +84,7 @@ function playBeep(ctx: AudioContext, spec: CombatBeepSpec): void {
   osc.stop(t0 + spec.durationSec + 0.01);
 }
 
-function playCombatSfx(
+function playKind(
   player: CombatPlayer,
   kind: CombatSfxKind,
   muted: boolean,
@@ -100,17 +99,22 @@ function playCombatSfx(
   }
 }
 
-/** 200Hz square 80ms. Mute → no-op (no abre ctx). */
+/** 200Hz square 80ms, gain 0.09. Mute → no-op (no abre ctx). */
 export function playMelee(player: CombatPlayer, muted: boolean): void {
-  playCombatSfx(player, "melee", muted);
+  playKind(player, "melee", muted);
 }
 
-/** 90Hz triangle 100ms. Mute → no-op (no abre ctx). */
+/** 90Hz triangle 100ms, gain 0.09. Mute → no-op (no abre ctx). */
 export function playHit(player: CombatPlayer, muted: boolean): void {
-  playCombatSfx(player, "hit", muted);
+  playKind(player, "hit", muted);
 }
 
-/** 400Hz saw 60ms. Mute → no-op (no abre ctx). */
+/** 400Hz saw 60ms, gain 0.09. Mute → no-op (no abre ctx). */
 export function playGun(player: CombatPlayer, muted: boolean): void {
-  playCombatSfx(player, "gun", muted);
+  playKind(player, "gun", muted);
+}
+
+/** 1100Hz square 35ms, gain 0.06. Mute → no-op (no abre ctx). */
+export function playDryFire(player: CombatPlayer, muted: boolean): void {
+  playKind(player, "dry", muted);
 }
