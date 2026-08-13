@@ -101,6 +101,12 @@ import {
   type GrassTile,
 } from "./windGrass";
 import { lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
+import {
+  LOOT_NAMEPLATE_Y,
+  lootNameplateOpacity,
+  lootNameplateVisible,
+  truncateLootLabel,
+} from "./lootNameplate";
 import { doorFocusMul, DOOR_FOCUS_REACH } from "./doorFocus";
 import { bedFocusMul, BED_FOCUS_REACH } from "./bedFocus";
 import type { TileMap } from "../world/tilemap";
@@ -143,6 +149,7 @@ export interface WorldView {
    * Pulso de escala del loot más cercano en reach.
    * Fuera de reach: scale 1. `dt` avanza el seno del pulso.
    * `emptyIds`: contenedores vacíos — anillo oculto, no reciben foco.
+   * Nameplate canvas: visible/opacity según dist (fade 10) y empty.
    */
   syncLootFocus(
     wx: number,
@@ -476,15 +483,51 @@ export function createWorldView(
   scene.add(playerMesh);
 
   // Loot: anillo/badge ámbar por contenedor. Siempre on (no FOV);
-  // syncLootFocus oculta ids vacíos.
+  // syncLootFocus oculta ids vacíos. Nameplate canvas hijo (fade dist 10).
   interface LootMarkerEntry {
     group: THREE.Group;
+    nameplate: THREE.Sprite;
     x: number;
     y: number;
     id: string;
   }
   const lootMarkerGroups: LootMarkerEntry[] = [];
   let lootFocusElapsed = 0;
+
+  function createLootNameplateSprite(label: string): THREE.Sprite {
+    const text = truncateLootLabel(label);
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 64;
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      ctx.clearRect(0, 0, 256, 64);
+      ctx.fillStyle = "rgba(15, 23, 42, 0.72)";
+      ctx.fillRect(8, 12, 240, 40);
+      ctx.font = "600 26px ui-monospace, SF Mono, Menlo, Consolas, monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = "rgba(10, 10, 12, 0.85)";
+      ctx.strokeText(text, 128, 32);
+      ctx.fillStyle = "#f0c060";
+      ctx.fillText(text, 128, 32);
+    }
+    const map = new THREE.CanvasTexture(canvas);
+    map.needsUpdate = true;
+    const mat = new THREE.SpriteMaterial({
+      map,
+      transparent: true,
+      depthWrite: false,
+    });
+    const sprite = new THREE.Sprite(mat);
+    sprite.name = "lootNameplate";
+    sprite.position.set(0, LOOT_NAMEPLATE_Y, 0);
+    sprite.scale.set(1.6, 0.4, 1);
+    sprite.renderOrder = 9;
+    return sprite;
+  }
+
   if (containers) {
     for (const c of containers.list) {
       const group = new THREE.Group();
@@ -493,8 +536,10 @@ export function createWorldView(
       const y = c.y + 0.5;
       group.position.set(x, 0, y);
       attachRoleMarkers(group, "loot", markerShared);
+      const nameplate = createLootNameplateSprite(c.name);
+      group.add(nameplate);
       scene.add(group);
-      lootMarkerGroups.push({ group, x, y, id: c.id });
+      lootMarkerGroups.push({ group, nameplate, x, y, id: c.id });
     }
   }
 
@@ -1194,8 +1239,11 @@ export function createWorldView(
         const e = lootMarkerGroups[i]!;
         const empty = !!emptyIds?.has(e.id);
         e.group.visible = lootRingVisible(empty);
-        if (empty) continue;
         const d = Math.hypot(wx - e.x, wy - e.y);
+        e.nameplate.visible = lootNameplateVisible(d, empty);
+        const plateMat = e.nameplate.material as THREE.SpriteMaterial;
+        plateMat.opacity = lootNameplateOpacity(d);
+        if (empty) continue;
         if (d <= LOOT_FOCUS_REACH && d < bestD) {
           bestD = d;
           best = i;
@@ -1490,6 +1538,9 @@ export function createWorldView(
       barricadeEdgeMat.dispose();
       fogMat.dispose();
       for (const entry of lootMarkerGroups) {
+        const mat = entry.nameplate.material as THREE.SpriteMaterial;
+        mat.map?.dispose();
+        mat.dispose();
         scene.remove(entry.group);
       }
       lootMarkerGroups.length = 0;
