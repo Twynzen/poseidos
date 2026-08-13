@@ -3,6 +3,7 @@
  */
 
 import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
 import { buildHudMoodles, clockMoodle } from "../src/actors/moodles";
 import { createNeeds } from "../src/actors/needs";
@@ -88,7 +89,7 @@ describe("createMoodlesHud", () => {
 
 describe("F1 lift CSS", () => {
   test("#hud.hud-help ~ #moodles bottom 340px", () => {
-    const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+    const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
     expect(html).toMatch(/#hud\.hud-help\s*~\s*#moodles/);
     expect(html).toMatch(/#hud\.hud-help\s*~\s*#moodles\s*\{\s*bottom:\s*340px;/);
     expect(html).toMatch(/\.moodle-glyph svg\s*\{\s*width:\s*12px;\s*height:\s*12px;/);
