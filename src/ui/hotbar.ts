@@ -1,9 +1,10 @@
 /**
  * Hotbar display-only (5 slots, estilo PZ). Headless: no DOM.
- * Lee `inv.slots[0..4]` y rellena vacíos; no muta el inventario.
+ * Lee `inv.slots[0..4]` y rellena vacíos; no muta el inventario (salvo swap).
  * `hotbarIndexFromKey` mapea Digit/Numpad 1–5 → índice; el bind vive en Input.
  * `stepHotbarIndex` cicla con rueda (wrap 0..4).
  * Clic en slot: HotbarHud.consumeClick → Game.hotbarSelected.
+ * Arrastrar: `swapHotbarStacks` intercambia dos índices ocupados (packed, sin huecos).
  */
 
 import { getItemDef, type ItemId } from "../items/defs";
@@ -67,6 +68,27 @@ export function clampHotbarIndex(index: number): number {
   if (!Number.isFinite(index) || index <= 0) return 0;
   const i = Math.trunc(index);
   return i >= HOTBAR_SIZE ? HOTBAR_SIZE - 1 : i;
+}
+
+/**
+ * Intercambia dos stacks ocupados en la hotbar (primeros 5, packed).
+ * No-op si el índice clampa al mismo, o si falta alguno de los dos slots.
+ * `swap(0, 99)` con 5 stacks → intercambia 0 y 4.
+ */
+export function swapHotbarStacks(
+  inv: { slots: Array<{ id: string; qty: number }> },
+  from: number,
+  to: number,
+): boolean {
+  const a = clampHotbarIndex(from);
+  const b = clampHotbarIndex(to);
+  if (a === b) return false;
+  const sa = inv.slots[a];
+  const sb = inv.slots[b];
+  if (!sa || !sb) return false;
+  inv.slots[a] = sb;
+  inv.slots[b] = sa;
+  return true;
 }
 
 /**

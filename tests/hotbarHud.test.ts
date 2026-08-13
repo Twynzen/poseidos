@@ -62,7 +62,7 @@ describe("hotbarHud consumeClick", () => {
     hud.dispose();
   });
 
-  test("slot vacío sigue seleccionando; cursor pointer; data-hotbar-index", () => {
+  test("slot vacío sigue seleccionando; cursor grab; data-hotbar-index", () => {
     root = document.createElement("div");
     document.body.appendChild(root);
     const hud = createHotbarHud(root);
@@ -70,11 +70,78 @@ describe("hotbarHud consumeClick", () => {
 
     const empty = root.querySelectorAll<HTMLElement>(".hotbar-slot")[2];
     expect(empty.classList.contains("hotbar-empty")).toBe(true);
-    expect(empty.style.cursor).toBe("pointer");
+    expect(empty.style.cursor).toBe("grab");
     expect(empty.dataset.hotbarIndex).toBe("2");
 
     clickSlot(root, 2);
     expect(hud.consumeClick()).toBe(2);
+    hud.dispose();
+  });
+});
+
+function pointerOnSlot(root: HTMLElement, index: number, type: string): void {
+  const slot = root.querySelectorAll<HTMLElement>(".hotbar-slot")[index];
+  slot.dispatchEvent(new PointerEvent(type, { bubbles: true, cancelable: true }));
+}
+
+describe("hotbarHud consumeDrag", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  test("pointerdown 0, pointerup 3 → consumeDrag {from:0,to:3}, consumeClick null", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    pointerOnSlot(root, 0, "pointerdown");
+    pointerOnSlot(root, 3, "pointerup");
+    expect(hud.consumeDrag()).toEqual({ from: 0, to: 3 });
+    expect(hud.consumeClick()).toBeNull();
+    hud.dispose();
+  });
+
+  test("pointerdown 0, pointerup 0 → consumeDrag null, consumeClick 0", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    pointerOnSlot(root, 0, "pointerdown");
+    pointerOnSlot(root, 0, "pointerup");
+    expect(hud.consumeDrag()).toBeNull();
+    expect(hud.consumeClick()).toBe(0);
+    hud.dispose();
+  });
+
+  test("segundo consumeDrag null", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    pointerOnSlot(root, 0, "pointerdown");
+    pointerOnSlot(root, 3, "pointerup");
+    expect(hud.consumeDrag()).toEqual({ from: 0, to: 3 });
+    expect(hud.consumeDrag()).toBeNull();
+    hud.dispose();
+  });
+
+  test("dos drags sin consume: gana el último", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    pointerOnSlot(root, 0, "pointerdown");
+    pointerOnSlot(root, 3, "pointerup");
+    pointerOnSlot(root, 1, "pointerdown");
+    pointerOnSlot(root, 4, "pointerup");
+    expect(hud.consumeDrag()).toEqual({ from: 1, to: 4 });
+    expect(hud.consumeClick()).toBeNull();
     hud.dispose();
   });
 });

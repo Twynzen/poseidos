@@ -21,6 +21,7 @@ export {
   hotbarIndexFromKey,
   clampHotbarIndex,
   stepHotbarIndex,
+  swapHotbarStacks,
   hotbarSlots,
   hotbarSlotIsConsumable,
   type HotbarSlot,

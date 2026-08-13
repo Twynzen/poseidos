@@ -75,6 +75,7 @@ import {
   createInventoryPanel,
   hotbarSlots,
   stepHotbarIndex,
+  swapHotbarStacks,
   formatHudStatus,
   HIT_FLASH_PEAK,
   createHitFlash,
@@ -702,7 +703,13 @@ export class Game {
       this.hudAcc = 1;
     }
     const clicked = this.hotbarHud.consumeClick();
-    if (clicked !== null) {
+    const dragged = this.hotbarHud.consumeDrag();
+    if (dragged) {
+      if (swapHotbarStacks(this.player.inventory, dragged.from, dragged.to)) {
+        this.hotbarSelected = dragged.to;
+        this.hudAcc = 1;
+      }
+    } else if (clicked !== null) {
       this.hotbarSelected = clicked;
       this.hudAcc = 1;
     }

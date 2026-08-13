@@ -9,6 +9,7 @@ import {
   HOTBAR_SIZE,
   clampHotbarIndex,
   stepHotbarIndex,
+  swapHotbarStacks,
   hotbarIndexFromKey,
   hotbarKey,
   hotbarSlotIsConsumable,
@@ -157,6 +158,40 @@ describe("hotbarSlots", () => {
     expect(slots[3]).toEqual({ empty: true, index: 3, key: "4" });
     expect(slots[4]).toEqual({ empty: true, index: 4, key: "5" });
     expect(inv.slots).toHaveLength(2);
+  });
+});
+
+describe("swapHotbarStacks", () => {
+  test("starter: swap 0 y 3 → pistola en 0, agua en 3, lata sigue en 1", () => {
+    const inv = createStarterInventory();
+    expect(swapHotbarStacks(inv, 0, 3)).toBe(true);
+    expect(inv.slots[0]?.id).toBe("pistol");
+    expect(inv.slots[3]?.id).toBe("water_bottle");
+    expect(inv.slots[1]?.id).toBe("canned_food");
+  });
+
+  test("mismo índice → false, inventario intacto", () => {
+    const inv = createStarterInventory();
+    const before = inv.slots.map((s) => ({ ...s }));
+    expect(swapHotbarStacks(inv, 2, 2)).toBe(false);
+    expect(inv.slots).toEqual(before);
+  });
+
+  test("swap 0 y 4 con solo 2 stacks → false", () => {
+    const inv = createInventory(8, 20, [
+      { id: "water_bottle", qty: 1 },
+      { id: "canned_food", qty: 2 },
+    ]);
+    const before = inv.slots.map((s) => ({ ...s }));
+    expect(swapHotbarStacks(inv, 0, 4)).toBe(false);
+    expect(inv.slots).toEqual(before);
+  });
+
+  test("swap(0, 99) con 5 stacks → intercambia 0 y 4", () => {
+    const inv = createStarterInventory();
+    expect(swapHotbarStacks(inv, 0, 99)).toBe(true);
+    expect(inv.slots[0]?.id).toBe("ammo");
+    expect(inv.slots[4]?.id).toBe("water_bottle");
   });
 });
 
