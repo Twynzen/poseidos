@@ -420,7 +420,7 @@ describe("createHotbarHud icons", () => {
     root?.remove();
   });
 
-  test("slot ocupado tiene svg + title/aria-label; vacío no tiene svg; qty>1 badge", () => {
+  test("slot ocupado tiene svg + title/aria-label; vacío ghost + vacío · N; qty>1 badge", () => {
     root = document.createElement("div");
     document.body.appendChild(root);
     const hud = createHotbarHud(root);
@@ -431,7 +431,11 @@ describe("createHotbarHud icons", () => {
     hud.sync(hotbarSlots(inv), 0);
 
     const water = slotAt(root, 0);
+    const waterIcon = water.querySelector(".hotbar-slot-icon")?.innerHTML ?? "";
     expect(water.querySelector(".hotbar-slot-icon svg")).toBeTruthy();
+    expect(waterIcon).toContain("<svg");
+    expect(waterIcon).toContain("M13 3.5h6v3.2");
+    expect(waterIcon).not.toContain("stroke-dasharray");
     expect(water.title).toBe("botella de agua");
     expect(water.getAttribute("aria-label")).toBe("botella de agua ×1");
     expect(water.querySelector(".hotbar-qty")).toBeNull();
@@ -443,13 +447,38 @@ describe("createHotbarHud icons", () => {
     expect(food.querySelector(".hotbar-key")?.textContent).toBe("2");
 
     const empty = slotAt(root, 2);
+    const emptyIcon = empty.querySelector(".hotbar-slot-icon")?.innerHTML ?? "";
     expect(empty.classList.contains("hotbar-empty")).toBe(true);
-    expect(empty.querySelector(".hotbar-slot-icon svg")).toBeNull();
+    expect(empty.querySelector(".hotbar-slot-icon svg")).toBeTruthy();
+    expect(emptyIcon).toContain("stroke-dasharray");
+    expect(emptyIcon).toContain("M16 6.5");
+    expect(emptyIcon).not.toContain("M16 3.5");
     expect(empty.querySelector(".hotbar-qty")).toBeNull();
-    expect(empty.getAttribute("title")).toBeNull();
-    expect(empty.getAttribute("aria-label")).toBeNull();
+    expect(empty.title).toBe("vacío · 3");
+    expect(empty.getAttribute("aria-label")).toBe("vacío · 3");
     expect(empty.querySelector(".hotbar-key")?.textContent).toBe("3");
 
+    hud.dispose();
+  });
+
+  test("inventario vacío: 5 ghosts dashed + tecla + vacío · N", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createInventory()), 0);
+
+    for (let i = 0; i < 5; i++) {
+      const slot = slotAt(root, i);
+      expect(slot.classList.contains("hotbar-empty")).toBe(true);
+      const iconHtml = slot.querySelector(".hotbar-slot-icon")?.innerHTML ?? "";
+      expect(iconHtml).toContain("stroke-dasharray");
+      expect(iconHtml).toContain("M16 6.5");
+      expect(iconHtml).not.toContain("M16 3.5");
+      expect(slot.querySelector(".hotbar-key")?.textContent).toBe(String(i + 1));
+      expect(slot.title).toBe(`vacío · ${i + 1}`);
+      expect(slot.getAttribute("aria-label")).toBe(`vacío · ${i + 1}`);
+      expect(slot.querySelector(".hotbar-qty")).toBeNull();
+    }
     hud.dispose();
   });
 

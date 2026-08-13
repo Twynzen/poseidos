@@ -2,6 +2,7 @@
  * Hotbar HUD: 5 slots glass-dark (Skills P1) bottom-center.
  * Solo DOM; datos en ui/hotbar. Clase `hotbar-selected` = slot activo (1–5).
  * Iconos SVG inline (`itemIconSvg`, mismo set que I); qty>1 en badge; teclas 1–5.
+ * Slot vacío: ghost `emptySlotIconSvg` + `vacío · N`; gestos iguales.
  * Clic en slot: encola índice; Game consume con consumeClick().
  * Shift+clic partir; Ctrl/Cmd+clic juntar. No abre I.
  * Doble clic: consumeDblClick (usar slot); no encola drag. Clic-select en esos clics OK.
@@ -11,7 +12,7 @@
  */
 
 import { clampHotbarIndex, HOTBAR_SIZE, type HotbarSlot } from "./hotbar";
-import { itemIconSvg } from "./itemIcons";
+import { emptySlotIconSvg, itemIconSvg } from "./itemIcons";
 
 type SlotNodes = { slot: HTMLElement; key: HTMLElement; icon: HTMLElement };
 
@@ -184,10 +185,11 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
         key.textContent = view?.key ?? String(i + 1);
         if (!view || view.empty) {
           slot.classList.add("hotbar-empty");
-          icon.innerHTML = "";
+          icon.innerHTML = emptySlotIconSvg();
           clearQtyBadge(slot);
-          slot.removeAttribute("title");
-          slot.removeAttribute("aria-label");
+          const emptyLabel = `vacío · ${view?.key ?? String(i + 1)}`;
+          slot.title = emptyLabel;
+          slot.setAttribute("aria-label", emptyLabel);
           continue;
         }
         slot.classList.remove("hotbar-empty");
