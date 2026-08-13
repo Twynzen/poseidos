@@ -4,7 +4,13 @@ import {
   createStarterInventory,
   getItemDef,
 } from "../src/items";
-import { HOTBAR_SIZE, hotbarKey, hotbarSlots } from "../src/ui/hotbar";
+import {
+  HOTBAR_SIZE,
+  clampHotbarIndex,
+  hotbarIndexFromKey,
+  hotbarKey,
+  hotbarSlots,
+} from "../src/ui/hotbar";
 
 describe("hotbarKey", () => {
   test("índices 0..4 → teclas 1..5", () => {
@@ -13,6 +19,26 @@ describe("hotbarKey", () => {
     expect(hotbarKey(2)).toBe("3");
     expect(hotbarKey(3)).toBe("4");
     expect(hotbarKey(4)).toBe("5");
+  });
+});
+
+describe("hotbarIndexFromKey", () => {
+  test("Digit1–5 y Numpad1–5 → 0–4; resto null", () => {
+    expect(hotbarIndexFromKey("Digit1")).toBe(0);
+    expect(hotbarIndexFromKey("Digit5")).toBe(4);
+    expect(hotbarIndexFromKey("Numpad3")).toBe(2);
+    expect(hotbarIndexFromKey("Digit6")).toBeNull();
+    expect(hotbarIndexFromKey("KeyQ")).toBeNull();
+  });
+});
+
+describe("clampHotbarIndex", () => {
+  test("clampa a [0, HOTBAR_SIZE-1]; NaN/no-positivo → 0", () => {
+    expect(clampHotbarIndex(-1)).toBe(0);
+    expect(clampHotbarIndex(99)).toBe(4);
+    expect(clampHotbarIndex(2.7)).toBe(2);
+    expect(clampHotbarIndex(Number.NaN)).toBe(0);
+    expect(clampHotbarIndex(-0.2)).toBe(0);
   });
 });
 

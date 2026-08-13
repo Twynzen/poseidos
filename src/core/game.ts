@@ -197,6 +197,8 @@ export class Game {
   private needsDamageMsgCd = 0;
   /** Half-extent ortográfico iso (ajustable con +/-). */
   private isoFrustum = ISO_FRUSTUM;
+  /** Slot hotbar seleccionado (0–4). Default 0 = tecla 1, botella de agua. */
+  private hotbarSelected = 0;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -688,6 +690,11 @@ export class Game {
 
   private tick(dt: number): void {
     this.applyIsoZoomInput();
+    const slot = this.input.consumeHotbar();
+    if (slot !== null) {
+      this.hotbarSelected = slot;
+      this.hudAcc = 1;
+    }
 
     // Game-over: solo R reinicia / F9 carga (F5 no aplica)
     if (this.gameOver || !this.player.alive) {
@@ -1215,7 +1222,7 @@ export class Game {
       });
       this.hud.classList.toggle("hud-help", this.showHelp);
       this.moodlesHud.sync(this.buildPlayerHudMoodles());
-      this.hotbarHud.sync(hotbarSlots(this.player.inventory));
+      this.hotbarHud.sync(hotbarSlots(this.player.inventory), this.hotbarSelected);
       this.inventoryPanel.sync({
         open: false,
         data: buildInventoryPanelData(this.player.inventory),
@@ -1259,7 +1266,7 @@ export class Game {
       ? `diálogo ${this.dialogue.target}`
       : undefined;
     this.moodlesHud.sync(this.buildPlayerHudMoodles());
-    this.hotbarHud.sync(hotbarSlots(this.player.inventory));
+    this.hotbarHud.sync(hotbarSlots(this.player.inventory), this.hotbarSelected);
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
     const safe =
       indoor && isSafehouseHint(this.map, this.player.x, this.player.y);

@@ -18,6 +18,8 @@ export {
 export {
   HOTBAR_SIZE,
   hotbarKey,
+  hotbarIndexFromKey,
+  clampHotbarIndex,
   hotbarSlots,
   type HotbarSlot,
   type HotbarFilledSlot,

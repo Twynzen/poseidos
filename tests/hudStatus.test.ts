@@ -46,6 +46,7 @@ describe("formatHudStatus compact", () => {
     expect(s).toContain("WASD");
     expect(s).toContain(CONTROLS_HELP);
     expect(CONTROLS_HELP).toMatch(/\+\/- zoom/);
+    expect(CONTROLS_HELP).toMatch(/1-5 hotbar/);
     expect(s).toMatch(/F1 cerrar ayuda/);
   });
 

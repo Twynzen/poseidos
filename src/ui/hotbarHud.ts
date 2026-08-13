@@ -1,12 +1,12 @@
 /**
  * Hotbar HUD: 5 slots glass-dark (Skills P1) bottom-center.
- * Solo DOM; datos en ui/hotbar. Sin keybinds 1-5.
+ * Solo DOM; datos en ui/hotbar. Clase `hotbar-selected` = slot activo (1–5).
  */
 
-import { HOTBAR_SIZE, type HotbarSlot } from "./hotbar";
+import { clampHotbarIndex, HOTBAR_SIZE, type HotbarSlot } from "./hotbar";
 
 export interface HotbarHud {
-  sync(slots: ReadonlyArray<HotbarSlot>): void;
+  sync(slots: ReadonlyArray<HotbarSlot>, selectedIndex?: number): void;
   dispose(): void;
 }
 
@@ -32,13 +32,15 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
   }
 
   return {
-    sync(slots) {
+    sync(slots, selectedIndex) {
+      const selected = clampHotbarIndex(selectedIndex ?? 0);
       for (let i = 0; i < HOTBAR_SIZE; i++) {
         const el = nodes[i];
         const view = slots[i];
         const keyEl = el.querySelector(".hotbar-key");
         const nameEl = el.querySelector(".hotbar-name");
         const qtyEl = el.querySelector(".hotbar-qty");
+        el.classList.toggle("hotbar-selected", i === selected);
         if (!view || view.empty) {
           el.classList.add("hotbar-empty");
           if (keyEl) keyEl.textContent = view?.key ?? String(i + 1);

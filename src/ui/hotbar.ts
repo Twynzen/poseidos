@@ -1,6 +1,7 @@
 /**
- * Hotbar display-only (5 slots, estilo PZ). Headless: no DOM, no keybinds.
+ * Hotbar display-only (5 slots, estilo PZ). Headless: no DOM.
  * Lee `inv.slots[0..4]` y rellena vacíos; no muta el inventario.
+ * `hotbarIndexFromKey` mapea Digit/Numpad 1–5 → índice; el bind vive en Input.
  */
 
 import { getItemDef, type ItemId } from "../items/defs";
@@ -28,6 +29,42 @@ export type HotbarSlot = HotbarFilledSlot | HotbarEmptySlot;
 /** Tecla visual del slot (`0` → `"1"`, … `4` → `"5"`). */
 export function hotbarKey(index: number): string {
   return String(index + 1);
+}
+
+/**
+ * KeyboardEvent.code → índice hotbar.
+ * Digit1/Numpad1 → 0 … Digit5/Numpad5 → 4; cualquier otro código → null.
+ */
+export function hotbarIndexFromKey(code: string): number | null {
+  switch (code) {
+    case "Digit1":
+    case "Numpad1":
+      return 0;
+    case "Digit2":
+    case "Numpad2":
+      return 1;
+    case "Digit3":
+    case "Numpad3":
+      return 2;
+    case "Digit4":
+    case "Numpad4":
+      return 3;
+    case "Digit5":
+    case "Numpad5":
+      return 4;
+    default:
+      return null;
+  }
+}
+
+/**
+ * Clamp a [0, HOTBAR_SIZE-1]. NaN / no finito → 0.
+ * No-positivo (incl. `Math.trunc(-0.2) === -0`) → 0.
+ */
+export function clampHotbarIndex(index: number): number {
+  if (!Number.isFinite(index) || index <= 0) return 0;
+  const i = Math.trunc(index);
+  return i >= HOTBAR_SIZE ? HOTBAR_SIZE - 1 : i;
 }
 
 /**

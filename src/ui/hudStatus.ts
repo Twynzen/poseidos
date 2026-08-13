@@ -4,7 +4,7 @@
  */
 
 export const CONTROLS_HELP =
-  "WASD mover · Shift correr · Espacio/V atacar · X disparar · E puerta/loot · G loot · Q usar/lluvia · I inv · B barricada · C vendaje · H cocinar · T diálogo · L linterna · R descanso · Z dormir · M mute · +/- zoom · F5 guardar · F9 cargar";
+  "WASD mover · Shift correr · Espacio/V atacar · X disparar · E puerta/loot · G loot · Q usar/lluvia · 1-5 hotbar · I inv · B barricada · C vendaje · H cocinar · T diálogo · L linterna · R descanso · Z dormir · M mute · +/- zoom · F5 guardar · F9 cargar";
 
 export type HudStatusInput = {
   modo: string;

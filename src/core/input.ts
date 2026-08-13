@@ -1,7 +1,7 @@
 /**
  * Teclado WASD → ejes · Shift correr.
  * E/F interactuar (puerta; si no, loot contextual).
- * G loot explícito · I panel inventario · Q consumir · R descanso / reinicio game-over.
+ * G loot explícito · I panel inventario · Q consumir · 1–5 hotbar (selección) · R descanso / reinicio game-over.
  * Z dormir (safehouse) · B barricada · C vendaje (craft) · H cocinar · T diálogo poseído · Espacio/V melee · X disparar · L linterna · M mute ambient · +/- zoom iso · F1 ayuda · F5 guardar · F9 cargar.
  */
 export class Input {
@@ -75,6 +75,21 @@ export class Input {
   /** Q: refill botella bajo lluvia outdoor, o consumir food/drink/heal. */
   consumeUse(): boolean {
     return this.consumeJustPressed("KeyQ");
+  }
+
+  /**
+   * 1–5 (Digit luego Numpad): índice hotbar 0–4, o null.
+   * Si Digit y Numpad en el mismo frame, Digit gana.
+   * Display-only: no consume el ítem.
+   */
+  consumeHotbar(): number | null {
+    for (let i = 1; i <= 5; i++) {
+      if (this.consumeJustPressed(`Digit${i}`)) return i - 1;
+    }
+    for (let i = 1; i <= 5; i++) {
+      if (this.consumeJustPressed(`Numpad${i}`)) return i - 1;
+    }
+    return null;
   }
 
   /**
