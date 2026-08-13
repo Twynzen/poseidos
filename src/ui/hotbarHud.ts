@@ -3,7 +3,9 @@
  * Solo DOM; datos en ui/hotbar. Clase `hotbar-selected` = slot activo (1–5).
  * Clic en slot: encola índice; Game consume con consumeClick().
  * Doble clic: consumeDblClick (usar slot); no encola drag. Clic-select en esos clics OK.
+ * Clic derecho: consumeInspect (info); no encola drag ni dblclick; no consume ítem.
  * Arrastrar de slot a slot: consumeDrag {from,to}; soltar fuera cancela (sin click-select).
+ * Pointerdown no-primario (clic der.) no inicia drag.
  */
 
 import { clampHotbarIndex, HOTBAR_SIZE, type HotbarSlot } from "./hotbar";
@@ -13,6 +15,7 @@ export interface HotbarHud {
   consumeClick(): number | null;
   consumeDblClick(): number | null;
   consumeDrag(): { from: number; to: number } | null;
+  consumeInspect(): number | null;
   dispose(): void;
 }
 
@@ -25,6 +28,7 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
   let pendingClick: number | null = null;
   let pendingDblClick: number | null = null;
   let pendingDrag: { from: number; to: number } | null = null;
+  let pendingInspect: number | null = null;
   let dragFrom: number | null = null;
   let ignoreClick = false;
   const nodes: HTMLElement[] = [];
@@ -48,6 +52,10 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
   window.addEventListener("pointerup", onWindowLost);
   window.addEventListener("pointercancel", onWindowLost);
 
+  bar.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+  });
+
   for (let i = 0; i < HOTBAR_SIZE; i++) {
     const slot = document.createElement("div");
     slot.className = "hotbar-slot";
@@ -55,6 +63,7 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
     slot.style.cursor = "grab";
     slot.addEventListener("pointerdown", (e) => {
       e.stopPropagation();
+      if (e.button !== 0) return;
       e.preventDefault();
       ignoreClick = false;
       endDrag();
@@ -90,6 +99,11 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
       e.stopPropagation();
       pendingDblClick = clampHotbarIndex(i);
     });
+    slot.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      pendingInspect = clampHotbarIndex(i);
+    });
     const key = document.createElement("span");
     key.className = "hotbar-key";
     const name = document.createElement("span");
@@ -116,6 +130,11 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
       const dragged = pendingDrag;
       pendingDrag = null;
       return dragged;
+    },
+    consumeInspect() {
+      const inspected = pendingInspect;
+      pendingInspect = null;
+      return inspected;
     },
     sync(slots, selectedIndex) {
       const selected = clampHotbarIndex(selectedIndex ?? 0);

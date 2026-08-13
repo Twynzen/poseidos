@@ -74,6 +74,7 @@ import {
   createLootFloaterHud,
   createInventoryPanel,
   hotbarSlots,
+  hotbarInspectLabel,
   clampHotbarIndex,
   stepHotbarIndex,
   swapHotbarStacks,
@@ -757,6 +758,7 @@ export class Game {
     }
     const clicked = this.hotbarHud.consumeClick();
     const dragged = this.hotbarHud.consumeDrag();
+    const inspected = this.hotbarHud.consumeInspect();
     const dbl = this.hotbarHud.consumeDblClick();
     if (dragged) {
       if (swapHotbarStacks(this.player.inventory, dragged.from, dragged.to)) {
@@ -1007,7 +1009,15 @@ export class Game {
         this.hudAcc = 1;
       }
     }
-    if (dbl !== null) {
+    if (inspected !== null) {
+      this.hotbarSelected = inspected;
+      const label = hotbarInspectLabel(
+        hotbarSlots(this.player.inventory)[inspected]!,
+      );
+      this.lastLootMsg = label;
+      this.lootToast.show(label);
+      this.hudAcc = 1;
+    } else if (dbl !== null) {
       this.hotbarSelected = dbl;
       this.useHotbarSlot(dbl);
     }

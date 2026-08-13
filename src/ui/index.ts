@@ -24,6 +24,7 @@ export {
   swapHotbarStacks,
   hotbarSlots,
   hotbarSlotIsConsumable,
+  hotbarInspectLabel,
   type HotbarSlot,
   type HotbarFilledSlot,
   type HotbarEmptySlot,

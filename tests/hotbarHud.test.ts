@@ -197,3 +197,86 @@ describe("hotbarHud consumeDblClick", () => {
     hud.dispose();
   });
 });
+
+function contextmenuSlot(root: HTMLElement, index: number): MouseEvent {
+  const slot = root.querySelectorAll<HTMLElement>(".hotbar-slot")[index];
+  const ev = new MouseEvent("contextmenu", { bubbles: true, cancelable: true });
+  slot.dispatchEvent(ev);
+  return ev;
+}
+
+describe("hotbarHud consumeInspect", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  test("contextmenu slot 3 → consumeInspect 3; consumeDrag/dblclick null; defaultPrevented", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    const ev = contextmenuSlot(root, 3);
+    expect(ev.defaultPrevented).toBe(true);
+    expect(hud.consumeInspect()).toBe(3);
+    expect(hud.consumeInspect()).toBeNull();
+    expect(hud.consumeDrag()).toBeNull();
+    expect(hud.consumeDblClick()).toBeNull();
+    hud.dispose();
+  });
+
+  test("contextmenu 1 luego 4 sin consume → consumeInspect 4", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    contextmenuSlot(root, 1);
+    contextmenuSlot(root, 4);
+    expect(hud.consumeInspect()).toBe(4);
+    hud.dispose();
+  });
+
+  test("contextmenu en la barra preventDefault", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    const bar = root.querySelector("#hotbar");
+    const ev = new MouseEvent("contextmenu", { bubbles: true, cancelable: true });
+    bar?.dispatchEvent(ev);
+    expect(ev.defaultPrevented).toBe(true);
+    expect(hud.consumeInspect()).toBeNull();
+    hud.dispose();
+  });
+
+  test("pointerdown no-primario no inicia drag", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    const from = root.querySelectorAll<HTMLElement>(".hotbar-slot")[0];
+    const to = root.querySelectorAll<HTMLElement>(".hotbar-slot")[3];
+    from.dispatchEvent(
+      new PointerEvent("pointerdown", {
+        bubbles: true,
+        cancelable: true,
+        button: 2,
+      }),
+    );
+    to.dispatchEvent(
+      new PointerEvent("pointerup", {
+        bubbles: true,
+        cancelable: true,
+        button: 2,
+      }),
+    );
+    expect(hud.consumeDrag()).toBeNull();
+    expect(hud.consumeClick()).toBeNull();
+    hud.dispose();
+  });
+});

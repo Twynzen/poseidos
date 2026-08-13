@@ -5,6 +5,7 @@
  * `stepHotbarIndex` cicla con rueda (wrap 0..4).
  * Clic en slot: HotbarHud.consumeClick → Game.hotbarSelected.
  * Doble clic: HotbarHud.consumeDblClick → Game.useHotbarSlot (usar / lluvia).
+ * Clic derecho: HotbarHud.consumeInspect → Game selecciona + toast (no consume).
  * Arrastrar: `swapHotbarStacks` intercambia dos índices ocupados (packed, sin huecos).
  */
 
@@ -138,4 +139,26 @@ export function hotbarSlotIsConsumable(slot: HotbarSlot): boolean {
   if (slot.empty) return false;
   const use = getItemDef(slot.id).use;
   return use === "food" || use === "drink" || use === "heal";
+}
+
+/**
+ * Label de inspección (clic derecho): "nombre · verbo". Vacío → "vacío".
+ * No muta el inventario.
+ */
+export function hotbarInspectLabel(slot: HotbarSlot): string {
+  if (slot.empty) return "vacío";
+  const def = getItemDef(slot.id);
+  const { name } = slot;
+  if (def.use === "food") return `${name} · comer`;
+  if (def.use === "drink") return `${name} · beber`;
+  if (def.use === "heal") return `${name} · curar`;
+  if (typeof def.rangedDamage === "number" && def.rangedDamage > 0) {
+    return `${name} · disparar`;
+  }
+  if (typeof def.meleeDamage === "number" && def.meleeDamage > 0) {
+    return `${name} · melee`;
+  }
+  if (slot.id === "flashlight") return `${name} · linterna`;
+  if (slot.id === "empty_bottle") return `${name} · rellenar (lluvia)`;
+  return `${name} · sin uso`;
 }

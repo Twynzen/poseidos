@@ -13,6 +13,7 @@ import {
   hotbarIndexFromKey,
   hotbarKey,
   hotbarSlotIsConsumable,
+  hotbarInspectLabel,
   hotbarSlots,
 } from "../src/ui/hotbar";
 
@@ -206,5 +207,40 @@ describe("hotbarSlotIsConsumable", () => {
     expect(
       hotbarSlotIsConsumable({ empty: true, index: 2, key: "3" }),
     ).toBe(false);
+  });
+});
+
+describe("hotbarInspectLabel", () => {
+  test("empty → vacío", () => {
+    expect(hotbarInspectLabel({ empty: true, index: 2, key: "3" })).toBe(
+      "vacío",
+    );
+  });
+
+  test("starter kit: beber / comer / linterna / disparar / sin uso", () => {
+    const slots = hotbarSlots(createStarterInventory());
+    expect(hotbarInspectLabel(slots[0]!)).toBe("botella de agua · beber");
+    expect(hotbarInspectLabel(slots[1]!)).toBe("lata de comida · comer");
+    expect(hotbarInspectLabel(slots[2]!)).toBe("linterna · linterna");
+    expect(hotbarInspectLabel(slots[3]!)).toBe("pistola · disparar");
+    expect(hotbarInspectLabel(slots[4]!)).toBe("munición · sin uso");
+  });
+
+  test("botella vacía, vendaje, cuchillo", () => {
+    const player = new PlayerSim({ x: 1, y: 1 });
+    expect(player.tryConsumeAt(0)).toBe("drink");
+    const emptyBottle = hotbarSlots(player.inventory)[0]!;
+    expect(hotbarInspectLabel(emptyBottle)).toBe(
+      "botella vacía · rellenar (lluvia)",
+    );
+
+    const healMelee = hotbarSlots(
+      createInventory(8, 20, [
+        { id: "bandage", qty: 1 },
+        { id: "knife", qty: 1 },
+      ]),
+    );
+    expect(hotbarInspectLabel(healMelee[0]!)).toBe("vendaje · curar");
+    expect(hotbarInspectLabel(healMelee[1]!)).toBe("cuchillo · melee");
   });
 });

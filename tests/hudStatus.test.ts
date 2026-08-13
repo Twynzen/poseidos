@@ -51,6 +51,7 @@ describe("formatHudStatus compact", () => {
     expect(CONTROLS_HELP).toMatch(/clic hotbar/);
     expect(CONTROLS_HELP).toMatch(/arrastrar hotbar/);
     expect(CONTROLS_HELP).toMatch(/doble clic usar/);
+    expect(CONTROLS_HELP).toMatch(/clic der\. info/);
     expect(CONTROLS_HELP).toMatch(/Q usar slot/);
     expect(s).toMatch(/F1 cerrar ayuda/);
   });
