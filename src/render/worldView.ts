@@ -63,6 +63,12 @@ import {
   tickHitLean,
   triggerHitLean,
 } from "./hitLean";
+import {
+  createCameraShakeState,
+  tickCameraShake,
+  triggerCameraShake,
+  type CameraShakeOutput,
+} from "./cameraShake";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 import {
   countAoNeighbors,
@@ -118,6 +124,7 @@ export interface WorldView {
    * No mueve el root mundo — solo locoRoot local (bob) o mixer + yaw.
    * Aplica meleeSwing a rotation.x/z si el golpe procedural está activo.
    * Hit lean (recoil) overridea el swing mientras está activo.
+   * Avanza camera shake (offset para followCamera).
    * faceX/faceZ: ejes de facing (x,z Three / mapa); opcional.
    */
   tickPlayerLoco(
@@ -131,7 +138,8 @@ export interface WorldView {
    * One-shot de vista: melee/disparo ok → primary-attack; toque hostil → hit;
    * game-over → death. setAction + mixer sync (no-op si el GLB no tiene el clip).
    * primary-attack sin clip mapeado (`!hasRole`) → swing procedural.
-   * hit sin clip mapeado (`!hasRole`) → lean procedural (no needs-damage).
+   * hit → camera shake; sin clip mapeado (`!hasRole`) → lean procedural
+   * (no needs-damage).
    */
   triggerPlayerAction(role: PlayerOneShotRole): void;
   /**
@@ -172,6 +180,9 @@ export interface WorldView {
    * Separada de warmLight / muzzle flash.
    */
   syncTorchLight(wx: number, wy: number, intensity: number): void;
+  /**
+   * Iso follow: position = (x+12, 14, y+12) + shake XZ; lookAt (x,0,y) sin shake.
+   */
   followCamera(x: number, y: number): void;
   /** Crea/destruye meshes de chunks cerca de (wx, wy). */
   syncVisibleChunks(wx: number, wy: number): void;
@@ -353,6 +364,13 @@ export function createWorldView(
   const playerSwing = createMeleeSwingState();
   /** Lean procedural si el mixer no tiene clip hit (recoil; overridea swing). */
   const playerHitLean = createHitLeanState();
+  /** Shake de cámara en toque hostil (siempre; independiente del clip hit). */
+  const playerCameraShake = createCameraShakeState();
+  let cameraShakeOut: CameraShakeOutput = {
+    offsetX: 0,
+    offsetZ: 0,
+    active: false,
+  };
   /** Roles mixer-agnosticos; GLB opcional via candidates (Survivor → Soldier). */
   const playerAnimator = createCharacterAnimator();
   let playerUsesGltfVisual = false;
@@ -899,6 +917,7 @@ export function createWorldView(
       tickCharacterAnimator(playerAnimator, dt);
       const swing = tickMeleeSwing(playerSwing, dt);
       const lean = tickHitLean(playerHitLean, dt);
+      cameraShakeOut = tickCameraShake(playerCameraShake, dt);
       const pose = lean.active ? lean : swing;
       if (playerUsesGltfVisual && playerMixer) {
         playerLocoRoot.position.y = 0;
@@ -923,8 +942,11 @@ export function createWorldView(
       if (role === "primary-attack" && !playerMixer?.hasRole("primary-attack")) {
         triggerMeleeSwing(playerSwing);
       }
-      if (role === "hit" && !playerMixer?.hasRole("hit")) {
-        triggerHitLean(playerHitLean);
+      if (role === "hit") {
+        triggerCameraShake(playerCameraShake);
+        if (!playerMixer?.hasRole("hit")) {
+          triggerHitLean(playerHitLean);
+        }
       }
     },
     clearPlayerAction() {
@@ -1057,7 +1079,11 @@ export function createWorldView(
       torchLight.color.setHex(0xb0d0ff);
     },
     followCamera(x, y) {
-      camera.position.set(x + 12, 14, y + 12);
+      camera.position.set(
+        x + 12 + cameraShakeOut.offsetX,
+        14,
+        y + 12 + cameraShakeOut.offsetZ,
+      );
       camera.lookAt(x, 0, y);
     },
     syncVisibleChunks,
