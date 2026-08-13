@@ -18,6 +18,25 @@ import {
 } from "./containers";
 import { lootPileLabel } from "./lootLabel";
 
+/**
+ * De qué slot tira U: con I abierto, la última fila ocupada; si no, hotbar.
+ * panel cerrado → hotbarSelected.
+ * panel abierto + lastInvIndex con qty ≥ 1 → ese índice.
+ * null / vacío / ausente → hotbarSelected.
+ */
+export function dropSourceIndex(
+  panelOpen: boolean,
+  lastInvIndex: number | null,
+  hotbarSelected: number,
+  slots: ReadonlyArray<{ qty: number } | null | undefined>,
+): number {
+  if (!panelOpen) return hotbarSelected;
+  if (lastInvIndex === null) return hotbarSelected;
+  const stack = slots[lastInvIndex];
+  if (!stack || !(stack.qty >= 1)) return hotbarSelected;
+  return lastInvIndex;
+}
+
 /** Cuántas unidades tirar: 1, o el stack entero si `wholeStack`. */
 export function dropQty(
   stackQty: number | undefined,

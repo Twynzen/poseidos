@@ -13,6 +13,8 @@ import {
 export interface InventoryPanelView {
   open: boolean;
   data: InventoryPanelData;
+  /** Fila I resaltada (última clicada); U tira de aquí con el panel abierto. */
+  selectedIndex?: number | null;
 }
 
 export interface InventoryPanel {
@@ -69,7 +71,7 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
   const hint = document.createElement("div");
   hint.className = "inv-hint";
   hint.textContent =
-    "I cerrar · clic usar · doble clic usar · arrastrar reordenar · Shift+clic partir · Ctrl+clic juntar · clic der. info · Q usar/lluvia · L linterna · Espacio/V melee · X disparar";
+    "I cerrar · U inv tirar · clic usar · doble clic usar · arrastrar reordenar · Shift+clic partir · Ctrl+clic juntar · clic der. info · Q usar/lluvia · L linterna · Espacio/V melee · X disparar";
 
   panel.append(head, weightEl, equip, empty, list, hint);
   root.appendChild(panel);
@@ -244,6 +246,14 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
           li.append(name, qty, w);
           list.appendChild(li);
         }
+        const selected = view.selectedIndex;
+        list.querySelectorAll(".inv-slot").forEach((el) => {
+          const n = Number((el as HTMLElement).dataset.index);
+          el.classList.toggle(
+            "inv-slot-selected",
+            selected != null && Number.isFinite(n) && Math.trunc(n) === selected,
+          );
+        });
       }
     },
     dispose() {

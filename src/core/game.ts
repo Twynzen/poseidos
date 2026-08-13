@@ -42,6 +42,7 @@ import {
   takeFromSlot,
   dropOnTile,
   dropQty,
+  dropSourceIndex,
   dropToastLabel,
   dropTargetTile,
   type ContainerRegistry,
@@ -219,6 +220,8 @@ export class Game {
   /** Debounce useInventorySlot: mismo índice en ~0.35s de clock.elapsed es no-op. */
   private lastInvUseSlot: number | null = null;
   private lastInvUseAt = Number.NEGATIVE_INFINITY;
+  /** Última fila I clicada; U tira de aquí si el panel está abierto y ocupada. */
+  private lastInvIndex: number | null = null;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -403,6 +406,7 @@ export class Game {
     this.showInvDetail = false;
     this.lastInvUseSlot = null;
     this.lastInvUseAt = Number.NEGATIVE_INFINITY;
+    this.lastInvIndex = null;
     this.flashlightOn = false;
     this.needsDamageMsgCd = 0;
     this.hitFlash.intensity = 0;
@@ -1140,7 +1144,12 @@ export class Game {
     }
     const drop = this.input.consumeDrop();
     if (drop) {
-      const i = this.hotbarSelected;
+      const i = dropSourceIndex(
+        this.showInvDetail,
+        this.lastInvIndex,
+        this.hotbarSelected,
+        this.player.inventory.slots,
+      );
       const stack = this.player.inventory.slots[i];
       const qty = dropQty(stack?.qty, drop.whole);
       const taken = takeFromSlot(this.player.inventory, i, qty);
@@ -1175,6 +1184,7 @@ export class Game {
       this.useHotbarSlot(dbl);
     }
     if (this.showInvDetail && invDragged) {
+      this.lastInvIndex = invDragged.to;
       if (
         swapInventoryStacks(
           this.player.inventory,
@@ -1186,12 +1196,15 @@ export class Game {
       }
     }
     if (this.showInvDetail && invDbl !== null) {
+      this.lastInvIndex = invDbl;
       this.useInventorySlot(invDbl);
     }
     if (this.showInvDetail && invClick !== null) {
+      this.lastInvIndex = invClick;
       this.useInventorySlot(invClick);
     }
     if (this.showInvDetail && invInspect !== null) {
+      this.lastInvIndex = invInspect;
       const label = inventoryInspectLabel(this.player.inventory, invInspect);
       this.lastLootMsg = label;
       this.lootToast.show(label);
@@ -1204,9 +1217,11 @@ export class Game {
       this.toastMerge(hotbarMergeIdx);
     }
     if (this.showInvDetail && splitIdx !== null) {
+      this.lastInvIndex = splitIdx;
       this.toastSplit(splitIdx);
     }
     if (this.showInvDetail && mergeIdx !== null) {
+      this.lastInvIndex = mergeIdx;
       this.toastMerge(mergeIdx);
     }
     if (this.input.consumeUse()) {
@@ -1236,6 +1251,7 @@ export class Game {
     }
     if (this.input.consumeInventoryToggle()) {
       this.showInvDetail = !this.showInvDetail;
+      if (!this.showInvDetail) this.lastInvIndex = null;
       this.hudAcc = 1;
     }
     if (this.input.consumeHelp()) {
@@ -1421,9 +1437,11 @@ export class Game {
   }
 
   private syncInventoryPanel(): void {
+    const open = this.showInvDetail && !this.gameOver;
     this.inventoryPanel.sync({
-      open: this.showInvDetail && !this.gameOver,
+      open,
       data: buildInventoryPanelData(this.player.inventory),
+      selectedIndex: open ? this.lastInvIndex : null,
     });
   }
 

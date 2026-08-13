@@ -278,6 +278,11 @@
         cursor: grab;
       }
       .inv-slot-dragging { opacity: 0.7; cursor: grabbing; }
+      .inv-slot.inv-slot-selected {
+        border-color: rgba(96, 165, 250, 0.85);
+        box-shadow: 0 0 16px rgba(96, 165, 250, 0.55),
+          inset 0 1px 0 rgba(255,255,255,0.12);
+      }
       .inv-slot-name { color: var(--hud-text); }
       .inv-slot-qty {
         color: var(--hud-accent); font-variant-numeric: tabular-nums; font-weight: 600;

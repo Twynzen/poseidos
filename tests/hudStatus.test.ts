@@ -64,6 +64,7 @@ describe("formatHudStatus compact", () => {
     expect(CONTROLS_HELP).toMatch(/G loot · Shift\+G stack/);
     expect(CONTROLS_HELP).toMatch(/U tirar/);
     expect(CONTROLS_HELP).toMatch(/Shift\+U stack/);
+    expect(CONTROLS_HELP).toContain("U inv tirar");
     expect(s).toMatch(/F1 cerrar ayuda/);
   });
 

@@ -444,6 +444,41 @@ describe("inventory panel consumeDrag", () => {
   });
 });
 
+describe("inventory panel selectedIndex", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  test("selectedIndex 2 → that row has inv-slot-selected", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "flashlight", qty: 1 },
+      { id: "water_bottle", qty: 1 },
+    ]);
+    panel.sync({
+      open: true,
+      data: buildInventoryPanelData(inv),
+      selectedIndex: 2,
+    });
+
+    const selected = [
+      ...root.querySelectorAll<HTMLElement>(".inv-slot-selected"),
+    ];
+    expect(selected).toHaveLength(1);
+    expect(selected[0]?.dataset.index).toBe("2");
+    const row2 = root.querySelector<HTMLElement>('.inv-slot[data-index="2"]');
+    expect(row2?.classList.contains("inv-slot-selected")).toBe(true);
+    const row0 = root.querySelector<HTMLElement>('.inv-slot[data-index="0"]');
+    expect(row0?.classList.contains("inv-slot-selected")).toBe(false);
+    panel.dispose();
+  });
+});
+
 describe("inventoryInspectLabel", () => {
   test("empty / qty<=0 → vacío", () => {
     const empty = createInventory();

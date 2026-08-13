@@ -110,6 +110,7 @@ export {
   takeFromSlot,
   dropOnTile,
   dropQty,
+  dropSourceIndex,
   dropToastLabel,
   dropTargetTile,
 } from "./drop";

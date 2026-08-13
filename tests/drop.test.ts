@@ -5,6 +5,7 @@ import {
   createStarterInventory,
   dropOnTile,
   dropQty,
+  dropSourceIndex,
   dropTargetTile,
   dropToastLabel,
   takeFromSlot,
@@ -35,6 +36,32 @@ describe("dropTargetTile", () => {
     expect(
       dropTargetTile(Number.NaN, Number.POSITIVE_INFINITY, Number.NaN, Number.NaN),
     ).toEqual({ tx: 0, ty: 0 });
+  });
+});
+
+describe("dropSourceIndex", () => {
+  const slots = [
+    { id: "canned_food", qty: 1 },
+    { id: "flashlight", qty: 1 },
+    { id: "ammo", qty: 8 },
+  ];
+
+  test("panel closed → hotbarSelected", () => {
+    expect(dropSourceIndex(false, 2, 0, slots)).toBe(0);
+    expect(dropSourceIndex(false, null, 4, slots)).toBe(4);
+  });
+
+  test("panel open + occupied lastInvIndex → that index", () => {
+    expect(dropSourceIndex(true, 2, 0, slots)).toBe(2);
+    expect(dropSourceIndex(true, 0, 4, slots)).toBe(0);
+  });
+
+  test("panel open + empty / null / missing → hotbarSelected", () => {
+    expect(dropSourceIndex(true, null, 1, slots)).toBe(1);
+    expect(dropSourceIndex(true, 1, 0, [{ id: "a", qty: 1 }, { id: "b", qty: 0 }])).toBe(
+      0,
+    );
+    expect(dropSourceIndex(true, 9, 3, slots)).toBe(3);
   });
 });
 
