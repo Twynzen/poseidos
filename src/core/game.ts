@@ -1163,7 +1163,7 @@ export class Game {
         );
         const id = `drop-${tx}-${ty}-${taken.id}`;
         const c = dropOnTile(this.containers, tx, ty, taken, id);
-        this.view.addLootMarker(c.id, c.x, c.y, c.name);
+        this.view.addLootMarker(c.id, c.x, c.y, c.name, c.inv);
         playLoot(this.interactPlayer, this.ambient.muted);
         const label = dropToastLabel(getItemDef(taken.id).name, taken.qty);
         this.lootToast.show(label);
@@ -1420,7 +1420,7 @@ export class Game {
       this.lootPreferTile(),
     );
     if (!c) return;
-    this.view.addLootMarker(c.id, c.x, c.y, c.name);
+    this.view.addLootMarker(c.id, c.x, c.y, c.name, c.inv);
   }
 
   /** Overlay `#hit-flash`: decay + opacity = intensity × peak. */
