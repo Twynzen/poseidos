@@ -1101,7 +1101,7 @@ export class Game {
     syncAmbientPlayer(this.ambientPlayer, this.ambient);
   }
 
-  /** Needs/HP + BAL si hay pistola (qty>0) y munición actual. */
+  /** Needs/HP + BAL si hay pistola (qty>0) + clock DIA/NOC. */
   private buildPlayerHudMoodles() {
     const inv = this.player.inventory;
     const pistolSlot = findSlot(inv, "pistol");
@@ -1113,6 +1113,8 @@ export class Game {
       this.player.health,
       hasPistol,
       ammoQty,
+      this.clock.isNight,
+      this.clock.phase * 100,
     );
   }
 

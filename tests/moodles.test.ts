@@ -9,6 +9,7 @@ import {
   ammoMoodle,
   buildHudMoodles,
   buildMoodles,
+  clockMoodle,
   moodleLevelForAmmo,
   moodleLevelForHealth,
   moodleLevelForNeed,
@@ -88,28 +89,62 @@ describe("buildMoodles", () => {
   });
 });
 
+describe("clockMoodle", () => {
+  test("día DIA ok", () => {
+    const m = clockMoodle(false, 50);
+    expect(m.id).toBe("clock");
+    expect(m.label).toBe("DIA");
+    expect(m.glyph).toBe("☀");
+    expect(m.value).toBe(50);
+    expect(m.level).toBe("ok");
+  });
+
+  test("noche 10 warn", () => {
+    const m = clockMoodle(true, 10);
+    expect(m.id).toBe("clock");
+    expect(m.label).toBe("NOC");
+    expect(m.glyph).toBe("☾");
+    expect(m.value).toBe(10);
+    expect(m.level).toBe("warn");
+  });
+
+  test("noche 80 critical", () => {
+    const m = clockMoodle(true, 80);
+    expect(m.label).toBe("NOC");
+    expect(m.glyph).toBe("☾");
+    expect(m.value).toBe(80);
+    expect(m.level).toBe("critical");
+  });
+});
+
 describe("buildHudMoodles", () => {
   const needs = createNeeds({ hunger: 10, thirst: 50, fatigue: 80 });
 
-  test("4 pills sin pistola", () => {
-    const m = buildHudMoodles(needs, 25, false, 8);
-    expect(m).toHaveLength(4);
+  test("5 pills sin pistola + clock", () => {
+    const m = buildHudMoodles(needs, 25, false, 8, false, 50);
+    expect(m).toHaveLength(5);
     expect(m.map((x) => x.id)).not.toContain("ammo");
+    expect(m[4]!.id).toBe("clock");
+    expect(m[4]!.label).toBe("DIA");
   });
 
-  test("5 pills con pistola + BAL", () => {
-    const m = buildHudMoodles(needs, 25, true, 1);
-    expect(m).toHaveLength(5);
+  test("6 pills con pistola + BAL + clock", () => {
+    const m = buildHudMoodles(needs, 25, true, 1, true, 10);
+    expect(m).toHaveLength(6);
     expect(m.map((x) => x.id)).toEqual([
       "hunger",
       "thirst",
       "fatigue",
       "health",
       "ammo",
+      "clock",
     ]);
     expect(m[4]!.label).toBe("BAL");
     expect(m[4]!.glyph).toBe("◉");
     expect(m[4]!.value).toBe(1);
     expect(m[4]!.level).toBe("warn");
+    expect(m[5]!.id).toBe("clock");
+    expect(m[5]!.label).toBe("NOC");
+    expect(m[5]!.level).toBe("warn");
   });
 });

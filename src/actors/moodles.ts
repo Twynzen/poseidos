@@ -8,7 +8,13 @@ import type { NeedsState } from "./needs";
 
 export type MoodleLevel = "ok" | "warn" | "critical";
 
-export type MoodleId = "hunger" | "thirst" | "fatigue" | "health" | "ammo";
+export type MoodleId =
+  | "hunger"
+  | "thirst"
+  | "fatigue"
+  | "health"
+  | "ammo"
+  | "clock";
 
 export interface MoodleView {
   id: MoodleId;
@@ -37,6 +43,9 @@ export const HP_CRITICAL = 30;
 export const AMMO_WARN = 2;
 export const AMMO_CRITICAL = 0;
 
+/** Noche: phasePct < este umbral = warn; >= = critical. */
+export const CLOCK_NIGHT_DARK = 30;
+
 export function moodleLevelForNeed(value: number): MoodleLevel {
   if (value >= NEED_CRITICAL) return "critical";
   if (value >= NEED_WARN) return "warn";
@@ -61,6 +70,7 @@ const LABELS: Record<MoodleId, { label: string; glyph: string }> = {
   fatigue: { label: "CAN", glyph: "◌" },
   health: { label: "HP", glyph: "✚" },
   ammo: { label: "BAL", glyph: "◉" },
+  clock: { label: "DIA", glyph: "☀" },
 };
 
 /** Construye las 4 pills (hambre/sed/cansancio/HP) para el HUD. */
@@ -107,14 +117,38 @@ export function ammoMoodle(
   };
 }
 
-/** 4 pills de needs/HP + BAL si hay pistola. */
+/** Pill DIA (día ok) / NOC (noche warn si pct<30, si no critical). */
+export function clockMoodle(isNight: boolean, phasePct: number): MoodleView {
+  const value = Math.round(phasePct);
+  if (!isNight) {
+    return {
+      id: "clock",
+      label: "DIA",
+      glyph: "☀",
+      value,
+      level: "ok",
+    };
+  }
+  return {
+    id: "clock",
+    label: "NOC",
+    glyph: "☾",
+    value,
+    level: value < CLOCK_NIGHT_DARK ? "warn" : "critical",
+  };
+}
+
+/** 4 pills de needs/HP + BAL si hay pistola + clock al final. */
 export function buildHudMoodles(
   needs: NeedsState,
   health: number,
   hasPistol: boolean,
   ammoQty: number,
+  isNight: boolean,
+  phasePct: number,
 ): MoodleView[] {
   const pills = buildMoodles(needs, health);
   const ammo = ammoMoodle(hasPistol, ammoQty);
-  return ammo ? [...pills, ammo] : pills;
+  const clock = clockMoodle(isNight, phasePct);
+  return ammo ? [...pills, ammo, clock] : [...pills, clock];
 }
