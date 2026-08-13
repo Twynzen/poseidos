@@ -705,6 +705,7 @@ export class Game {
       this.syncRainVisual(dt);
     this.syncGrassVisual(dt);
       this.view.tickTracers(dt);
+      this.view.tickLootFloaters(dt);
     this.view.tickNoiseRings(dt);
       this.tickHitFlashOverlay(dt);
       this.view.syncPlayer(this.player.x, this.player.y);
@@ -890,6 +891,7 @@ export class Game {
         if (taken) {
           playLoot(this.interactPlayer, this.ambient.muted);
           this.showNoiseRing(this.noise.emitLoot(this.player.x, this.player.y));
+          this.view.spawnLootFloater(`+${taken.id}`, this.player.x, this.player.y);
           this.lastLootMsg = `+${taken.id}`;
           this.hudAcc = 1; // forzar refresh
         }
@@ -900,6 +902,7 @@ export class Game {
       if (taken) {
         playLoot(this.interactPlayer, this.ambient.muted);
         this.showNoiseRing(this.noise.emitLoot(this.player.x, this.player.y));
+        this.view.spawnLootFloater(`+${taken.id}`, this.player.x, this.player.y);
         this.lastLootMsg = `+${taken.id}`;
         this.hudAcc = 1;
       }
@@ -1065,6 +1068,7 @@ export class Game {
     this.syncRainVisual(dt);
     this.syncGrassVisual(dt);
     this.view.tickTracers(dt);
+    this.view.tickLootFloaters(dt);
       this.view.tickNoiseRings(dt);
     this.view.followCamera(this.player.x, this.player.y);
     this.tickHitFlashOverlay(dt);

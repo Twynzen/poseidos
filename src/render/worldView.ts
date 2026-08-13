@@ -107,6 +107,12 @@ import {
   lootNameplateVisible,
   truncateLootLabel,
 } from "./lootNameplate";
+import {
+  lootFloaterAlive,
+  lootFloaterLabel,
+  lootFloaterOpacity,
+  lootFloaterY,
+} from "./lootFloater";
 import { doorFocusMul, DOOR_FOCUS_REACH } from "./doorFocus";
 import { bedFocusMul, BED_FOCUS_REACH } from "./bedFocus";
 import type { TileMap } from "../world/tilemap";
@@ -260,6 +266,13 @@ export interface WorldView {
   spawnTracer(from: TracerPoint, to: TracerPoint, ttl?: number): void;
   /** Avanza TTL / opacidad de tracers activos; limpia expirados. */
   tickTracers(dt: number): void;
+  /**
+   * Texto ámbar de pickup (canvas 128×48) que sube y se desvanece.
+   * TTL 1.8s, rise 1.0 desde Y0 1.35.
+   */
+  spawnLootFloater(label: string, x: number, y: number): void;
+  /** Avanza age / Y / opacity de floaters; limpia expirados. */
+  tickLootFloaters(dt: number): void;
   /**
    * Anillo de ruido en el suelo: se expande hasta `radius` (tiles) y se desvanece.
    * `kind` colorea (run blanco, door/loot ámbar, attack/gun/barricade rojo).
@@ -835,6 +848,78 @@ export function createWorldView(
       t.mat.dispose();
     }
     liveTracers.length = 0;
+  }
+
+  // Loot pickup floaters: canvas 128×48 ámbar, suben y fade en TTL 1.8s.
+  interface LiveLootFloater {
+    sprite: THREE.Sprite;
+    mat: THREE.SpriteMaterial;
+    age: number;
+  }
+  const liveLootFloaters: LiveLootFloater[] = [];
+
+  function createLootFloaterSprite(label: string): THREE.Sprite {
+    const text = lootFloaterLabel(label);
+    const canvas = document.createElement("canvas");
+    canvas.width = 128;
+    canvas.height = 48;
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      ctx.clearRect(0, 0, 128, 48);
+      ctx.font = "600 18px ui-monospace, SF Mono, Menlo, Consolas, monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = "rgba(10, 10, 12, 0.85)";
+      ctx.strokeText(text, 64, 24);
+      ctx.fillStyle = "#f0c060";
+      ctx.fillText(text, 64, 24);
+    }
+    const map = new THREE.CanvasTexture(canvas);
+    map.needsUpdate = true;
+    const mat = new THREE.SpriteMaterial({
+      map,
+      transparent: true,
+      depthWrite: false,
+    });
+    const sprite = new THREE.Sprite(mat);
+    sprite.name = "lootFloater";
+    sprite.scale.set(0.8, 0.3, 1);
+    sprite.renderOrder = 10;
+    return sprite;
+  }
+
+  function spawnLootFloater(label: string, x: number, y: number): void {
+    const sprite = createLootFloaterSprite(label);
+    const mat = sprite.material as THREE.SpriteMaterial;
+    sprite.position.set(x, lootFloaterY(0), y);
+    mat.opacity = lootFloaterOpacity(0);
+    scene.add(sprite);
+    liveLootFloaters.push({ sprite, mat, age: 0 });
+  }
+
+  function tickLootFloaters(dt: number): void {
+    for (let i = liveLootFloaters.length - 1; i >= 0; i--) {
+      const f = liveLootFloaters[i]!;
+      f.age += dt;
+      f.sprite.position.y = lootFloaterY(f.age);
+      f.mat.opacity = lootFloaterOpacity(f.age);
+      if (!lootFloaterAlive(f.age)) {
+        scene.remove(f.sprite);
+        f.mat.map?.dispose();
+        f.mat.dispose();
+        liveLootFloaters.splice(i, 1);
+      }
+    }
+  }
+
+  function clearLootFloaters(): void {
+    for (const f of liveLootFloaters) {
+      scene.remove(f.sprite);
+      f.mat.map?.dispose();
+      f.mat.dispose();
+    }
+    liveLootFloaters.length = 0;
   }
 
   // Noise rings: pool pequeño de anillos en el suelo (feedback de ruido).
@@ -1501,6 +1586,8 @@ export function createWorldView(
     },
     spawnTracer,
     tickTracers,
+    spawnLootFloater,
+    tickLootFloaters,
     spawnNoiseRing,
     tickNoiseRings,
     syncRain,
@@ -1511,6 +1598,7 @@ export function createWorldView(
       scene.remove(torchSpot.target);
       scene.remove(warmLight);
       clearTracers();
+      clearLootFloaters();
       clearNoiseRings();
       clearRain();
       clearGrass();
