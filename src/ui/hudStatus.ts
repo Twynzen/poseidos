@@ -3,8 +3,13 @@
  * F1 (showHelp) revela CONTROLS_HELP.
  */
 
-export const CONTROLS_HELP =
-  "WASD mover · Shift correr · Espacio/V atacar · X disparar · E puerta/loot · G loot · Shift+G stack · Q usar slot · U tirar · Shift+U stack · U inv tirar · 1-5 hotbar · rueda hotbar · clic hotbar · arrastrar hotbar · doble clic usar · clic der. info · Shift+clic hotbar partir · Ctrl+clic hotbar juntar · clic inv usar · doble clic inv · arrastrar inv · clic der. inv · Shift+clic inv partir · Ctrl+clic inv juntar · I inv · B barricada · C vendaje · H cocinar · T diálogo · L linterna · R descanso · Z dormir · M mute · +/- zoom · F5 guardar · F9 cargar";
+export const CONTROLS_HELP = [
+  "Mover: WASD · Shift correr · +/- zoom",
+  "Combate: Espacio/V melee · X disparar",
+  "Loot: E puerta/loot · G loot · Shift+G stack · U tirar · Shift+U stack · Q usar slot / rellenar botella (lluvia)",
+  "Inventario: 1-5 hotbar · rueda hotbar · clic hotbar · arrastrar hotbar · doble clic usar · clic der. info · Shift+clic hotbar partir · Ctrl+clic hotbar juntar · I inv · clic inv usar · doble clic inv · arrastrar inv · Shift+clic inv partir · Ctrl+clic inv juntar · clic der. inv · U inv tirar",
+  "Mundo: B barricada · C vendaje · H cocinar · T diálogo (calmar / preguntar / amenazar / ofrecer comida / Distraer) · L linterna · Z cama o suelo indoor · R descanso/reinicio · M mute · F1 ayuda · F5 guardar · F9 cargar",
+].join("\n");
 
 export type HudStatusInput = {
   modo: string;
