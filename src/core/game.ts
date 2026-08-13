@@ -999,13 +999,17 @@ export class Game {
         }
       }
     }
-    if (this.input.consumeLoot()) {
-      const taken = this.player.tryLoot(this.containers);
+    const loot = this.input.consumeLoot();
+    if (loot) {
+      const taken = loot.whole
+        ? this.player.tryLootStack(this.containers)
+        : this.player.tryLoot(this.containers);
       if (taken) {
         playLoot(this.interactPlayer, this.ambient.muted);
         this.showNoiseRing(this.noise.emitLoot(this.player.x, this.player.y));
         const lootLabel = lootFloaterLabel(
           `+${getItemDef(taken.id).name}`,
+          taken.qty,
         );
         this.view.spawnLootFloater(lootLabel, this.player.x, this.player.y);
         this.lootToast.show(lootLabel);

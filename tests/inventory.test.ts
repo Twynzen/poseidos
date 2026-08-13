@@ -161,6 +161,26 @@ describe("containers + transfer", () => {
     expect(reg.at(5, 5)?.inv.slots[0]?.qty).toBe(1);
   });
 
+  test("lootStack toma el primer stack entero; lootOne sigue 1", () => {
+    const stackReg = new ContainerRegistry([
+      createWorldContainer("ammo8", 5, 5, "pila", [{ id: "ammo", qty: 8 }]),
+    ]);
+    const dest = createInventory();
+    const taken = stackReg.lootStack(5.5, 5.5, dest);
+    expect(taken).toEqual({ id: "ammo", qty: 8 });
+    expect(dest.slots[0]).toEqual({ id: "ammo", qty: 8 });
+    expect(stackReg.at(5, 5)?.inv.slots).toHaveLength(0);
+
+    const oneReg = new ContainerRegistry([
+      createWorldContainer("ammo8b", 5, 5, "pila", [{ id: "ammo", qty: 8 }]),
+    ]);
+    const destOne = createInventory();
+    const one = oneReg.lootOne(5.5, 5.5, destOne);
+    expect(one).toEqual({ id: "ammo", qty: 1 });
+    expect(destOne.slots[0]?.qty).toBe(1);
+    expect(oneReg.at(5, 5)?.inv.slots[0]?.qty).toBe(7);
+  });
+
   test("containerHasLoot y nearest saltan vacíos (slots o qty 0)", () => {
     const empty = createWorldContainer("empty", 5, 5, "caja");
     expect(empty.inv.slots).toHaveLength(0);
@@ -228,6 +248,34 @@ describe("PlayerSim loot + consume", () => {
     ]);
     const player = new PlayerSim({ x: 1, y: 1 });
     expect(player.tryLoot(reg)).toBeNull();
+  });
+
+  test("tryLootStack toma el stack entero; tryLoot sigue 1", () => {
+    const stackBox = createWorldContainer("box", 2, 2, "pila", [
+      { id: "ammo", qty: 8 },
+    ]);
+    const stackReg = new ContainerRegistry([stackBox]);
+    const stackPlayer = new PlayerSim(
+      { x: 2.4, y: 2.3 },
+      undefined,
+      createInventory(8, 20),
+    );
+    expect(stackPlayer.tryLootStack(stackReg)).toEqual({ id: "ammo", qty: 8 });
+    expect(stackPlayer.inventory.slots[0]).toEqual({ id: "ammo", qty: 8 });
+    expect(stackBox.inv.slots).toHaveLength(0);
+
+    const oneBox = createWorldContainer("box2", 2, 2, "pila", [
+      { id: "ammo", qty: 8 },
+    ]);
+    const oneReg = new ContainerRegistry([oneBox]);
+    const onePlayer = new PlayerSim(
+      { x: 2.4, y: 2.3 },
+      undefined,
+      createInventory(8, 20),
+    );
+    expect(onePlayer.tryLoot(oneReg)).toEqual({ id: "ammo", qty: 1 });
+    expect(onePlayer.inventory.slots[0]?.qty).toBe(1);
+    expect(oneBox.inv.slots[0]?.qty).toBe(7);
   });
 });
 

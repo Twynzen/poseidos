@@ -1,6 +1,6 @@
 /**
  * Tirar del slot al tile (pila WorldContainer).
- * U tira 1; Shift+U tira el stack entero (ver game.ts). G/E recogen con lootOne.
+ * U tira 1; Shift+U tira el stack entero (ver game.ts). G/E recogen 1; Shift+G el stack.
  */
 
 import { getItemDef } from "./defs";

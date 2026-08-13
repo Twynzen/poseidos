@@ -1,13 +1,14 @@
 /**
  * Teclado WASD → ejes · Shift correr.
  * E/F interactuar (puerta; si no, loot contextual).
- * G loot explícito · I panel inventario · Q consumir · U tira 1; Shift+U tira el stack (shift se captura en el keydown de U, no en el tick) · 1–5 hotbar (selección) · rueda hotbar · R descanso / reinicio game-over.
+ * G loot 1 · Shift+G el stack (shift se captura en el keydown de G, no en el tick) · I panel inventario · Q consumir · U tira 1; Shift+U tira el stack (shift se captura en el keydown de U, no en el tick) · 1–5 hotbar (selección) · rueda hotbar · R descanso / reinicio game-over.
  * Z dormir (safehouse) · B barricada · C vendaje (craft) · H cocinar · T diálogo poseído · Espacio/V melee · X disparar · L linterna · M mute ambient · +/- zoom iso · F1 ayuda · F5 guardar · F9 cargar.
  */
 export class Input {
   private readonly keys = new Set<string>();
   private readonly pressed = new Set<string>();
   private dropWhole = false;
+  private lootWhole = false;
   private wheel: -1 | 1 | null = null;
   private readonly onDown: (e: KeyboardEvent) => void;
   private readonly onUp: (e: KeyboardEvent) => void;
@@ -23,6 +24,12 @@ export class Input {
       if (e.code === "Space") e.preventDefault();
       if (e.code === "KeyU" && !this.keys.has("KeyU")) {
         this.dropWhole =
+          e.shiftKey ||
+          this.keys.has("ShiftLeft") ||
+          this.keys.has("ShiftRight");
+      }
+      if (e.code === "KeyG" && !this.keys.has("KeyG")) {
+        this.lootWhole =
           e.shiftKey ||
           this.keys.has("ShiftLeft") ||
           this.keys.has("ShiftRight");
@@ -78,9 +85,15 @@ export class Input {
     );
   }
 
-  /** G: loot / tomar 1 del contenedor cercano. */
-  consumeLoot(): boolean {
-    return this.consumeJustPressed("KeyG");
+  /**
+   * G: loot 1, o el stack si Shift estaba activo en el keydown de G.
+   * Null si KeyG no se acaba de pulsar.
+   */
+  consumeLoot(): { whole: boolean } | null {
+    if (!this.consumeJustPressed("KeyG")) return null;
+    const whole = this.lootWhole;
+    this.lootWhole = false;
+    return { whole };
   }
 
   /**
