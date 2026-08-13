@@ -92,8 +92,38 @@ describe("rainFill", () => {
     const inv = createInventory(4, 20, [{ id: "empty_bottle", qty: 1 }]);
     expect(tryRefillFromRain(true, true, inv)).toBe(true);
     expect(findSlot(inv, "empty_bottle")).toBe(-1);
-    expect(findSlot(inv, "water_bottle")).toBeGreaterThanOrEqual(0);
-    expect(inv.slots.find((s) => s.id === "water_bottle")?.qty).toBe(1);
+    expect(inv.slots[0]?.id).toBe("water_bottle");
+    expect(inv.slots[0]?.qty).toBe(1);
+  });
+
+  test("tryRefill in-place: vacía→agua mismo índice; lata no se corre", () => {
+    const inv = createInventory(8, 20, [
+      { id: "empty_bottle", qty: 1 },
+      { id: "canned_food", qty: 1 },
+      { id: "flashlight", qty: 1 },
+    ]);
+    expect(tryRefillFromRain(true, true, inv)).toBe(true);
+    expect(inv.slots[0]?.id).toBe("water_bottle");
+    expect(inv.slots[1]?.id).toBe("canned_food");
+    expect(inv.slots[2]?.id).toBe("flashlight");
+    expect(findSlot(inv, "empty_bottle")).toBe(-1);
+  });
+
+  test("starter Q then Q: beber + refill deja agua slot 0 y lata slot 1", () => {
+    const player = new PlayerSim({ x: 1, y: 1 });
+    expect(player.tryConsumeAt(0)).toBe("drink");
+    expect(player.inventory.slots[0]?.id).toBe("empty_bottle");
+    expect(player.inventory.slots[1]?.id).toBe("canned_food");
+    expect(tryRefillFromRain(true, true, player.inventory)).toBe(true);
+    expect(player.inventory.slots[0]?.id).toBe("water_bottle");
+    expect(player.inventory.slots[1]?.id).toBe("canned_food");
+    expect(player.inventory.slots.map((s) => s.id)).toEqual([
+      "water_bottle",
+      "canned_food",
+      "flashlight",
+      "pistol",
+      "ammo",
+    ]);
   });
 
   test("tryRefill falla indoor / no rain / sin vacía", () => {
@@ -105,11 +135,12 @@ describe("rainFill", () => {
     expect(tryRefillFromRain(true, true, noBottle)).toBe(false);
   });
 
-  test("tryRefill rollback si no cabe water_bottle", () => {
-    // empty 0.2 en maxWeight 0.25; water 0.4 no cabe → rollback
-    const inv = createInventory(2, 0.25, [{ id: "empty_bottle", qty: 1 }]);
+  test("tryRefill leftover rollback si no cabe water_bottle", () => {
+    // qty>1 usa addItem; 1 slot → water no cabe → rollback
+    const inv = createInventory(1, 20, [{ id: "empty_bottle", qty: 2 }]);
     expect(tryRefillFromRain(true, true, inv)).toBe(false);
-    expect(findSlot(inv, "empty_bottle")).toBeGreaterThanOrEqual(0);
+    expect(inv.slots[0]?.id).toBe("empty_bottle");
+    expect(inv.slots[0]?.qty).toBe(2);
     expect(findSlot(inv, "water_bottle")).toBe(-1);
   });
 

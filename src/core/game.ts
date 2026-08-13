@@ -248,7 +248,7 @@ export class Game {
 
     this.input = new Input();
     this.clock = new GameClock(DEFAULT_DAY_LENGTH_SEC);
-    this.weather = new WeatherSystem();
+    this.weather = new WeatherSystem({ initial: "drizzle" });
     this.ambient = createAmbientBus();
     this.ambientPlayer = createAmbientPlayer();
     this.combatPlayer = createCombatPlayer();
@@ -379,7 +379,7 @@ export class Game {
     this.noise = new NoiseBus();
     this.spawnThreats();
     this.clock = new GameClock(DEFAULT_DAY_LENGTH_SEC);
-    this.weather = new WeatherSystem();
+    this.weather = new WeatherSystem({ initial: "drizzle" });
     this.gameOver = false;
     this.showInvDetail = false;
     this.flashlightOn = false;

@@ -2,9 +2,17 @@
  * Relleno de botella vacía con lluvia (survival agua/sed).
  * Headless: raining + outdoor + empty_bottle → water_bottle.
  * Tecla Q prioriza refill sobre consumir (ver game.ts).
+ * Última del stack: water_bottle en el mismo índice (sticky, como drink);
+ * leftover: addItem + rollback.
  */
 
-import { addItem, findSlot, removeFromSlot, type Inventory } from "./inventory";
+import {
+  addItem,
+  findSlot,
+  insertStackAt,
+  removeFromSlot,
+  type Inventory,
+} from "./inventory";
 
 export type RefillFailReason = "no_rain" | "indoor" | "no_bottle" | "inv_full";
 
@@ -48,8 +56,9 @@ export function refillFailMessage(reason: RefillFailReason): string {
 }
 
 /**
- * Consume 1 empty_bottle → añade 1 water_bottle.
- * Rollback si el add falla (peso/slots). Devuelve true si ok.
+ * Consume 1 empty_bottle → 1 water_bottle.
+ * Última del stack: inserta agua en el mismo índice (sticky).
+ * Leftover: addItem + rollback si no cabe. Devuelve true si ok.
  */
 export function tryRefillFromRain(
   weatherIsRaining: boolean,
@@ -59,10 +68,14 @@ export function tryRefillFromRain(
   if (!canRefillFromRain(weatherIsRaining, outdoor, inv)) return false;
   const slot = findSlot(inv, "empty_bottle");
   if (slot < 0) return false;
+  const last = (inv.slots[slot]?.qty ?? 0) <= 1;
   if (removeFromSlot(inv, slot, 1) < 1) return false;
+  if (last) {
+    insertStackAt(inv, slot, { id: "water_bottle", qty: 1 });
+    return true;
+  }
   if (addItem(inv, "water_bottle", 1) < 1) {
-    // Inventario lleno / sin peso: devolver la vacía
-    addItem(inv, "empty_bottle", 1);
+    addItem(inv, "empty_bottle", 1); // rollback leftover case
     return false;
   }
   return true;
