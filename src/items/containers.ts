@@ -6,6 +6,7 @@ import {
   createInventory,
   totalQty,
   transferOne,
+  transferStack,
   type Inventory,
   type ItemStack,
 } from "./inventory";
@@ -104,5 +105,23 @@ export class ContainerRegistry {
     const c = this.nearest(wx, wy, reach);
     if (!c || c.inv.slots.length === 0) return null;
     return transferOne(c.inv, dest, 0);
+  }
+
+  /**
+   * Toma el primer stack entero del contenedor cercano → inventario destino.
+   * Devuelve `{ id, qty }` transferido o null.
+   */
+  lootStack(
+    wx: number,
+    wy: number,
+    dest: Inventory,
+    reach = CONTAINER_REACH,
+  ): ItemStack | null {
+    const c = this.nearest(wx, wy, reach);
+    if (!c || c.inv.slots.length === 0) return null;
+    const id = c.inv.slots[0]!.id;
+    const added = transferStack(c.inv, dest, 0);
+    if (added <= 0) return null;
+    return { id, qty: added };
   }
 }

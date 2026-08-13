@@ -305,6 +305,15 @@ export class PlayerSim {
   }
 
   /**
+   * Loot: toma el primer stack entero del contenedor cercano → inventario.
+   * Tecla Shift+G.
+   */
+  tryLootStack(containers: ContainerRegistry): ItemStack | null {
+    if (!this.alive) return null;
+    return containers.lootStack(this.x, this.y, this.inventory, CONTAINER_REACH);
+  }
+
+  /**
    * Consume primer food/drink/heal del inventario y aplica eat/drink/heal.
    * Tecla Q (game) usa tryConsumeAt(hotbarSelected); `prefer` fuerza tipo.
    * water_bottle: última unidad → empty_bottle en el mismo índice;

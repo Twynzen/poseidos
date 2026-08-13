@@ -57,3 +57,37 @@ describe("consumeDrop", () => {
     expect(input.consumeDrop()).toEqual({ whole: false });
   });
 });
+
+describe("consumeLoot", () => {
+  let input: Input;
+
+  afterEach(() => {
+    input?.dispose();
+  });
+
+  test("KeyG without shift → { whole: false }", () => {
+    input = new Input();
+    keydown("KeyG");
+    expect(input.consumeLoot()).toEqual({ whole: false });
+  });
+
+  test("KeyG with shiftKey true (no ShiftLeft in keys) → { whole: true }", () => {
+    input = new Input();
+    keydown("KeyG", true);
+    expect(input.consumeLoot()).toEqual({ whole: true });
+  });
+
+  test("ShiftLeft held then KeyG (shiftKey false) → { whole: true }", () => {
+    input = new Input();
+    keydown("ShiftLeft");
+    keydown("KeyG", false);
+    expect(input.consumeLoot()).toEqual({ whole: true });
+  });
+
+  test("consumeLoot() twice: second is null", () => {
+    input = new Input();
+    keydown("KeyG");
+    expect(input.consumeLoot()).toEqual({ whole: false });
+    expect(input.consumeLoot()).toBeNull();
+  });
+});

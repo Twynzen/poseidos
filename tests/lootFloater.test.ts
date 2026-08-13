@@ -40,6 +40,12 @@ describe("lootFloaterLabel", () => {
   test('vacío → ""', () => {
     expect(lootFloaterLabel("")).toBe("");
   });
+
+  test("qty>1 sufija ×n; qty 1 no cambia", () => {
+    expect(lootFloaterLabel("+madera", 6)).toBe("+madera×6");
+    expect(lootFloaterLabel("+munición", 8)).toBe("+munición×8");
+    expect(lootFloaterLabel("+madera", 1)).toBe("+madera");
+  });
 });
 
 describe("lootFloaterY", () => {
