@@ -43,6 +43,21 @@ function clickRow(
   );
 }
 
+function pointerOnRow(
+  root: HTMLElement,
+  originalIndex: number,
+  type: string,
+  extra: PointerEventInit = {},
+): void {
+  const li = root.querySelector<HTMLElement>(
+    `.inv-slot[data-index="${originalIndex}"]`,
+  );
+  expect(li).toBeTruthy();
+  li!.dispatchEvent(
+    new PointerEvent(type, { bubbles: true, cancelable: true, ...extra }),
+  );
+}
+
 function contextmenuRow(root: HTMLElement, originalIndex: number): void {
   const li = root.querySelector<HTMLElement>(
     `.inv-slot[data-index="${originalIndex}"]`,
@@ -112,7 +127,7 @@ describe("inventory panel click uses original slot index", () => {
     const rows = [...root.querySelectorAll<HTMLElement>(".inv-slot")];
     expect(rows.map((r) => r.dataset.index)).toEqual(["0", "2"]);
     expect(rows[1]?.dataset.id).toBe("water_bottle");
-    expect(rows[1]?.style.cursor).toBe("pointer");
+    expect(rows[1]?.style.cursor).toBe("grab");
 
     clickRow(root, 2);
     expect(panel.consumeClick()).toBe(2);
@@ -271,6 +286,87 @@ describe("inventory panel contextmenu inspects without using", () => {
     clickRow(root, 0);
     expect(panel.consumeClick()).toBe(0);
     expect(panel.consumeInspect()).toBeNull();
+    panel.dispose();
+  });
+});
+
+describe("inventory panel consumeDrag", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  function openThree(panel: ReturnType<typeof createInventoryPanel>): void {
+    const inv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "flashlight", qty: 1 },
+      { id: "water_bottle", qty: 1 },
+    ]);
+    panel.sync({ open: true, data: buildInventoryPanelData(inv) });
+  }
+
+  test("pointerdown row 0, pointerup row 2 → consumeDrag {from:0,to:2}, consumeClick null", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    openThree(panel);
+
+    pointerOnRow(root, 0, "pointerdown");
+    pointerOnRow(root, 2, "pointerup");
+    expect(panel.consumeDrag()).toEqual({ from: 0, to: 2 });
+    expect(panel.consumeClick()).toBeNull();
+    expect(panel.consumeDrag()).toBeNull();
+    panel.dispose();
+  });
+
+  test("dos drags sin consume: last-wins", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    openThree(panel);
+
+    pointerOnRow(root, 0, "pointerdown");
+    pointerOnRow(root, 2, "pointerup");
+    pointerOnRow(root, 1, "pointerdown");
+    pointerOnRow(root, 0, "pointerup");
+    expect(panel.consumeDrag()).toEqual({ from: 1, to: 0 });
+    expect(panel.consumeClick()).toBeNull();
+    panel.dispose();
+  });
+
+  test("pointerdown 0, pointerup 0 → consumeDrag null; click still consumeClick", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    openThree(panel);
+
+    pointerOnRow(root, 0, "pointerdown");
+    pointerOnRow(root, 0, "pointerup");
+    expect(panel.consumeDrag()).toBeNull();
+    clickRow(root, 0);
+    expect(panel.consumeClick()).toBe(0);
+    panel.dispose();
+  });
+
+  test("cross-row drag with shiftKey still consumeDrag, not split", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "ammo", qty: 8 },
+      { id: "water_bottle", qty: 1 },
+    ]);
+    panel.sync({ open: true, data: buildInventoryPanelData(inv) });
+
+    pointerOnRow(root, 0, "pointerdown", { shiftKey: true });
+    pointerOnRow(root, 2, "pointerup", { shiftKey: true });
+    clickRow(root, 2, true);
+    expect(panel.consumeDrag()).toEqual({ from: 0, to: 2 });
+    expect(panel.consumeSplit()).toBeNull();
+    expect(panel.consumeMerge()).toBeNull();
+    expect(panel.consumeClick()).toBeNull();
     panel.dispose();
   });
 });

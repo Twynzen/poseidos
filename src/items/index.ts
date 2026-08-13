@@ -17,6 +17,7 @@ export {
   insertStackAt,
   splitStack,
   mergeStack,
+  swapInventoryStacks,
   findSlot,
   findConsumableSlot,
   transferOne,

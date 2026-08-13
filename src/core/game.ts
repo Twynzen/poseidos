@@ -38,6 +38,7 @@ import {
   getItemDef,
   splitStack,
   mergeStack,
+  swapInventoryStacks,
   takeFromSlot,
   dropOnTile,
   dropQty,
@@ -861,6 +862,7 @@ export class Game {
     const invInspect = this.inventoryPanel.consumeInspect();
     const splitIdx = this.inventoryPanel.consumeSplit();
     const mergeIdx = this.inventoryPanel.consumeMerge();
+    const invDragged = this.inventoryPanel.consumeDrag();
     if (dragged) {
       if (swapHotbarStacks(this.player.inventory, dragged.from, dragged.to)) {
         this.hotbarSelected = dragged.to;
@@ -1155,6 +1157,17 @@ export class Game {
     } else if (dbl !== null) {
       this.hotbarSelected = dbl;
       this.useHotbarSlot(dbl);
+    }
+    if (this.showInvDetail && invDragged) {
+      if (
+        swapInventoryStacks(
+          this.player.inventory,
+          invDragged.from,
+          invDragged.to,
+        )
+      ) {
+        this.hudAcc = 1;
+      }
     }
     if (this.showInvDetail && invClick !== null) {
       this.useInventorySlot(invClick);

@@ -4,7 +4,7 @@
  */
 
 export const CONTROLS_HELP =
-  "WASD mover · Shift correr · Espacio/V atacar · X disparar · E puerta/loot · G loot · Shift+G stack · Q usar slot · U tirar · Shift+U stack · 1-5 hotbar · rueda hotbar · clic hotbar · arrastrar hotbar · doble clic usar · clic der. info · Shift+clic hotbar partir · Ctrl+clic hotbar juntar · clic inv usar · clic der. inv · Shift+clic inv partir · Ctrl+clic inv juntar · I inv · B barricada · C vendaje · H cocinar · T diálogo · L linterna · R descanso · Z dormir · M mute · +/- zoom · F5 guardar · F9 cargar";
+  "WASD mover · Shift correr · Espacio/V atacar · X disparar · E puerta/loot · G loot · Shift+G stack · Q usar slot · U tirar · Shift+U stack · 1-5 hotbar · rueda hotbar · clic hotbar · arrastrar hotbar · doble clic usar · clic der. info · Shift+clic hotbar partir · Ctrl+clic hotbar juntar · clic inv usar · arrastrar inv · clic der. inv · Shift+clic inv partir · Ctrl+clic inv juntar · I inv · B barricada · C vendaje · H cocinar · T diálogo · L linterna · R descanso · Z dormir · M mute · +/- zoom · F5 guardar · F9 cargar";
 
 export type HudStatusInput = {
   modo: string;

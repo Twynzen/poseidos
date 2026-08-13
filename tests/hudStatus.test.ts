@@ -53,6 +53,7 @@ describe("formatHudStatus compact", () => {
     expect(CONTROLS_HELP).toMatch(/doble clic usar/);
     expect(CONTROLS_HELP).toMatch(/clic der\. info/);
     expect(CONTROLS_HELP).toContain("clic inv usar");
+    expect(CONTROLS_HELP).toContain("arrastrar inv");
     expect(CONTROLS_HELP).toContain("clic der. inv");
     expect(CONTROLS_HELP).toContain("Shift+clic inv partir");
     expect(CONTROLS_HELP).toContain("Ctrl+clic inv juntar");

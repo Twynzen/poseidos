@@ -12,6 +12,7 @@ import {
   insertStackAt,
   splitStack,
   mergeStack,
+  swapInventoryStacks,
   inventorySummary,
   LOOT_KITCHEN,
   LOOT_CABINET,
@@ -181,6 +182,46 @@ describe("inventory", () => {
     expect(findConsumableSlot(inv, "drink")).toBe(2);
     expect(findConsumableSlot(inv, "food")).toBe(1);
     expect(findConsumableSlot(inv)).toBe(1);
+  });
+
+  test("swapInventoryStacks intercambia canned_food @0 y flashlight @2", () => {
+    const inv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "water_bottle", qty: 1 },
+      { id: "flashlight", qty: 1 },
+    ]);
+    expect(swapInventoryStacks(inv, 0, 2)).toBe(true);
+    expect(inv.slots[0]).toEqual({ id: "flashlight", qty: 1 });
+    expect(inv.slots[1]).toEqual({ id: "water_bottle", qty: 1 });
+    expect(inv.slots[2]).toEqual({ id: "canned_food", qty: 1 });
+
+    const same = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "flashlight", qty: 1 },
+    ]);
+    const beforeSame = same.slots.map((s) => ({ ...s }));
+    expect(swapInventoryStacks(same, 0, 0)).toBe(false);
+    expect(same.slots).toEqual(beforeSame);
+
+    const empty = createInventory();
+    expect(swapInventoryStacks(empty, 0, 1)).toBe(false);
+
+    const missing = createInventory(8, 20, [{ id: "canned_food", qty: 1 }]);
+    const beforeMissing = missing.slots.map((s) => ({ ...s }));
+    expect(swapInventoryStacks(missing, 0, 2)).toBe(false);
+    expect(missing.slots).toEqual(beforeMissing);
+
+    const hole = createInventory(8, 20);
+    hole.slots.push(
+      { id: "canned_food", qty: 1 },
+      { id: "scrap", qty: 0 },
+      { id: "flashlight", qty: 1 },
+    );
+    expect(swapInventoryStacks(hole, 0, 1)).toBe(false);
+    expect(swapInventoryStacks(hole, 0, -1)).toBe(false);
+    expect(swapInventoryStacks(hole, 0, 2)).toBe(true);
+    expect(hole.slots[0]?.id).toBe("flashlight");
+    expect(hole.slots[2]?.id).toBe("canned_food");
   });
 });
 

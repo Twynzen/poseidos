@@ -211,6 +211,27 @@ export function mergeStack(
   return { id, qtyMoved: n, intoIndex, destQty };
 }
 
+/**
+ * Intercambia dos stacks ocupados del inventario (cualquier índice).
+ * `Math.trunc` de los índices; no clampa a HOTBAR_SIZE.
+ * False si mismo índice, negativo, slot ausente o qty < 1.
+ */
+export function swapInventoryStacks(
+  inv: { slots: Array<{ id: string; qty: number }> },
+  from: number,
+  to: number,
+): boolean {
+  const a = Math.trunc(from);
+  const b = Math.trunc(to);
+  if (a === b || a < 0 || b < 0) return false;
+  const sa = inv.slots[a];
+  const sb = inv.slots[b];
+  if (!sa || !sb || sa.qty < 1 || sb.qty < 1) return false;
+  inv.slots[a] = { id: sb.id, qty: sb.qty };
+  inv.slots[b] = { id: sa.id, qty: sa.qty };
+  return true;
+}
+
 /** Índice del primer stack con id, o -1. */
 export function findSlot(inv: Inventory, id: ItemId): number {
   return inv.slots.findIndex((s) => s.id === id);

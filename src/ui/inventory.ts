@@ -1,6 +1,7 @@
 /**
  * Panel HTML de inventario (tecla I) — glass-dark estilo moodles/HUD.
  * Solo DOM; formato headless en items/inventoryPanelData.
+ * Arrastrar fila→fila encola {from,to}; Game consumeDrag (swap, no usa).
  */
 
 import {
@@ -23,7 +24,17 @@ export interface InventoryPanel {
   consumeSplit(): number | null;
   /** Último Ctrl/Cmd+clic en fila (juntar stack); last-wins; consume y limpia. */
   consumeMerge(): number | null;
+  /** Último arrastre fila→fila; last-wins; consume y limpia. */
+  consumeDrag(): { from: number; to: number } | null;
   dispose(): void;
+}
+
+function slotIndexFromEvent(e: Event): number | null {
+  const el = (e.target as Element | null)?.closest?.(".inv-slot");
+  if (!el) return null;
+  const n = Number((el as HTMLElement).dataset.index);
+  if (!Number.isFinite(n)) return null;
+  return Math.trunc(n);
 }
 
 export function createInventoryPanel(root: HTMLElement): InventoryPanel {
@@ -55,7 +66,7 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
   const hint = document.createElement("div");
   hint.className = "inv-hint";
   hint.textContent =
-    "I cerrar · clic usar · Shift+clic partir · Ctrl+clic juntar · clic der. info · Q usar/lluvia · L linterna · Espacio/V melee · X disparar";
+    "I cerrar · clic usar · arrastrar reordenar · Shift+clic partir · Ctrl+clic juntar · clic der. info · Q usar/lluvia · L linterna · Espacio/V melee · X disparar";
 
   panel.append(head, weightEl, equip, empty, list, hint);
   root.appendChild(panel);
@@ -64,6 +75,53 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
   let pendingInspect: number | null = null;
   let pendingSplit: number | null = null;
   let pendingMerge: number | null = null;
+  let pendingDrag: { from: number; to: number } | null = null;
+  let dragFrom: number | null = null;
+  let draggedThisGesture = false;
+
+  function endDrag(): void {
+    list.querySelectorAll(".inv-slot-dragging").forEach((el) => {
+      el.classList.remove("inv-slot-dragging");
+      (el as HTMLElement).style.cursor = "grab";
+    });
+    dragFrom = null;
+  }
+
+  function onWindowLost(e: Event): void {
+    if (dragFrom === null) return;
+    if (slotIndexFromEvent(e) === null) endDrag();
+  }
+
+  list.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0) return;
+    const from = slotIndexFromEvent(e);
+    if (from === null) return;
+    endDrag();
+    dragFrom = from;
+    draggedThisGesture = false;
+    const el = (e.target as Element | null)?.closest?.(".inv-slot") as
+      | HTMLElement
+      | null;
+    if (el) {
+      el.classList.add("inv-slot-dragging");
+      el.style.cursor = "grabbing";
+    }
+  });
+
+  list.addEventListener("pointerup", (e) => {
+    if (dragFrom === null) return;
+    const from = dragFrom;
+    const dest = slotIndexFromEvent(e);
+    if (dest !== null && dest !== from) {
+      pendingDrag = { from, to: dest };
+      pendingClick = null;
+      draggedThisGesture = true;
+    }
+    endDrag();
+  });
+
+  window.addEventListener("pointerup", onWindowLost);
+  window.addEventListener("pointercancel", onWindowLost);
 
   return {
     consumeClick() {
@@ -85,6 +143,11 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
       const merge = pendingMerge;
       pendingMerge = null;
       return merge;
+    },
+    consumeDrag() {
+      const dragged = pendingDrag;
+      pendingDrag = null;
+      return dragged;
     },
     sync(view) {
       if (!view.open) {
@@ -116,10 +179,14 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
           li.className = "inv-slot";
           li.dataset.id = slot.id;
           li.dataset.index = String(slot.index);
-          li.style.cursor = "pointer";
+          li.style.cursor = "grab";
           li.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
+            if (draggedThisGesture) {
+              draggedThisGesture = false;
+              return;
+            }
             if (e.shiftKey) {
               pendingSplit = slot.index;
               pendingClick = null;
@@ -163,6 +230,8 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
       }
     },
     dispose() {
+      window.removeEventListener("pointerup", onWindowLost);
+      window.removeEventListener("pointercancel", onWindowLost);
       panel.remove();
     },
   };
