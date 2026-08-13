@@ -262,7 +262,11 @@ describe("ranged stub", () => {
 
   test("tryShoot sin arma/ammo: fail HUD, no gasta, no daño", () => {
     const map = openMap();
-    const player = new PlayerSim({ x: 3.5, y: 4.5 });
+    const player = new PlayerSim(
+      { x: 3.5, y: 4.5 },
+      undefined,
+      createInventory(8, 20),
+    );
     player.facingX = 1;
     player.facingY = 0;
     const sim = new HostileSim({ speed: 0, visionRange: 0, hearRange: 0 });
@@ -283,11 +287,12 @@ describe("ranged stub", () => {
 
   test("tryShoot con pistola+ammo y hostil en LOS: daño y gasta 1 ammo", () => {
     const map = openMap(16, 8);
-    const player = new PlayerSim({ x: 3.5, y: 4.5 });
+    const inv = createInventory(8, 20);
+    addItem(inv, "pistol", 1);
+    addItem(inv, "ammo", 3);
+    const player = new PlayerSim({ x: 3.5, y: 4.5 }, undefined, inv);
     player.facingX = 1;
     player.facingY = 0;
-    addItem(player.inventory, "pistol", 1);
-    addItem(player.inventory, "ammo", 3);
     // HP alto: un tiro (45) no mata (HOSTILE_MAX_HEALTH=40)
     const sim = new HostileSim({
       speed: 0,
@@ -327,11 +332,12 @@ describe("ranged stub", () => {
     const map = openMap(16, 8);
     // pared entre player y hostil
     for (let y = 1; y < 7; y++) map.set(6, y, makeWall());
-    const player = new PlayerSim({ x: 3.5, y: 4.5 });
+    const inv = createInventory(8, 20);
+    addItem(inv, "pistol", 1);
+    addItem(inv, "ammo", 2);
+    const player = new PlayerSim({ x: 3.5, y: 4.5 }, undefined, inv);
     player.facingX = 1;
     player.facingY = 0;
-    addItem(player.inventory, "pistol", 1);
-    addItem(player.inventory, "ammo", 2);
     const sim = new HostileSim({ speed: 0, visionRange: 0, hearRange: 0 });
     sim.add("blocked", 9.5, 4.5);
     const hp = sim.hostiles[0]!.health;

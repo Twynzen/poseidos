@@ -1,5 +1,5 @@
 /**
- * Kit inicial al spawn (1P polish): agua + lata + linterna.
+ * Kit inicial al spawn (1P polish): agua + lata + linterna + pistola + ammo.
  * Headless; PlayerSim lo aplica por defecto si no pasan inventario.
  * Load save NO lo sobrescribe: applySave reemplaza el inventario del save.
  */
@@ -15,6 +15,8 @@ export const STARTER_KIT: readonly { id: ItemId; qty: number }[] = [
   { id: "water_bottle", qty: 1 },
   { id: "canned_food", qty: 1 },
   { id: "flashlight", qty: 1 },
+  { id: "pistol", qty: 1 },
+  { id: "ammo", qty: 8 },
 ];
 
 /** Añade cada entrada del kit al inventario (respeta slots/peso). */

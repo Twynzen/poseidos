@@ -831,6 +831,7 @@ export class Game {
       } else {
         playGun(this.combatPlayer, this.ambient.muted);
         this.view.triggerPlayerAction("primary-attack");
+        this.view.triggerMuzzleFlash();
         this.showNoiseRing(this.noise.emitGun(this.player.x, this.player.y));
         this.view.spawnTracer(
           { x: shot.fromX, y: shot.fromY },

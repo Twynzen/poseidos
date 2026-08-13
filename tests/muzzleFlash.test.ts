@@ -1,0 +1,82 @@
+import { describe, expect, test } from "vitest";
+import {
+  MUZZLE_FLASH_DURATION,
+  MUZZLE_FLASH_PEAK,
+  createMuzzleFlash,
+  tickMuzzleFlash,
+  triggerMuzzleFlash,
+} from "../src/render/muzzleFlash";
+
+describe("constantes", () => {
+  test("duración 0.12s y pico 1", () => {
+    expect(MUZZLE_FLASH_DURATION).toBe(0.12);
+    expect(MUZZLE_FLASH_PEAK).toBe(1);
+  });
+});
+
+describe("create / trigger / tick", () => {
+  test("create: inactivo, tick da ceros", () => {
+    const s = createMuzzleFlash();
+    expect(s.active).toBe(false);
+    const out = tickMuzzleFlash(s, 1 / 60);
+    expect(out.active).toBe(false);
+    expect(out.intensity).toBe(0);
+  });
+
+  test("trigger + primer tick: intensity cerca de 1 (ease-out sine)", () => {
+    const s = createMuzzleFlash();
+    triggerMuzzleFlash(s);
+    expect(s.active).toBe(true);
+    const dt = 1 / 60;
+    const out = tickMuzzleFlash(s, dt);
+    expect(out.active).toBe(true);
+    const u = dt / MUZZLE_FLASH_DURATION;
+    const expected = Math.cos((u * Math.PI) / 2) * MUZZLE_FLASH_PEAK;
+    expect(out.intensity).toBeCloseTo(expected, 10);
+    expect(out.intensity).toBeGreaterThan(0.95);
+    expect(out.intensity).toBeLessThanOrEqual(MUZZLE_FLASH_PEAK + 1e-12);
+  });
+
+  test("al cumplir duración: inactivo e intensity 0", () => {
+    const s = createMuzzleFlash();
+    triggerMuzzleFlash(s);
+    const out = tickMuzzleFlash(s, MUZZLE_FLASH_DURATION);
+    expect(s.active).toBe(false);
+    expect(out.active).toBe(false);
+    expect(out.intensity).toBe(0);
+  });
+
+  test("dt extra grande completa el flash en un tick", () => {
+    const s = createMuzzleFlash();
+    triggerMuzzleFlash(s);
+    const out = tickMuzzleFlash(s, 10);
+    expect(out.active).toBe(false);
+    expect(out.intensity).toBe(0);
+  });
+
+  test("dt ≤ 0 no avanza age; output determinista", () => {
+    const s = createMuzzleFlash();
+    triggerMuzzleFlash(s);
+    tickMuzzleFlash(s, 0.05);
+    const age = s.age;
+    const a = tickMuzzleFlash(s, 0);
+    expect(s.age).toBe(age);
+    const b = tickMuzzleFlash(s, -1);
+    expect(s.age).toBe(age);
+    expect(a.intensity).toBe(b.intensity);
+    expect(a.active).toBe(true);
+  });
+
+  test("re-trigger a mitad reinicia desde t=0", () => {
+    const s = createMuzzleFlash();
+    triggerMuzzleFlash(s);
+    tickMuzzleFlash(s, 0.08);
+    expect(s.age).toBeGreaterThan(0);
+    triggerMuzzleFlash(s);
+    expect(s.age).toBe(0);
+    expect(s.active).toBe(true);
+    const out = tickMuzzleFlash(s, 1 / 60);
+    expect(out.active).toBe(true);
+    expect(out.intensity).toBeGreaterThan(0.95);
+  });
+});

@@ -69,6 +69,11 @@ import {
   triggerCameraShake,
   type CameraShakeOutput,
 } from "./cameraShake";
+import {
+  createMuzzleFlash,
+  tickMuzzleFlash,
+  triggerMuzzleFlash as startMuzzleFlash,
+} from "./muzzleFlash";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 import {
   countAoNeighbors,
@@ -142,6 +147,11 @@ export interface WorldView {
    * (no needs-damage).
    */
   triggerPlayerAction(role: PlayerOneShotRole): void;
+  /**
+   * Flash de hocico al disparar (hit y miss). Re-triggerable.
+   * Esfera aditiva + PointLight; avanza en tickPlayerLoco.
+   */
+  triggerMuzzleFlash(): void;
   /**
    * Limpia one-shot (incluida death sticky) y resync mixer a loco.
    * softReset (R) y load-alive.
@@ -366,6 +376,8 @@ export function createWorldView(
   const playerHitLean = createHitLeanState();
   /** Shake de cámara en toque hostil (siempre; independiente del clip hit). */
   const playerCameraShake = createCameraShakeState();
+  /** Flash de hocico (disparo X hit/miss). */
+  const playerMuzzle = createMuzzleFlash();
   let cameraShakeOut: CameraShakeOutput = {
     offsetX: 0,
     offsetZ: 0,
@@ -405,6 +417,43 @@ export function createWorldView(
   attachRoleMarkers(playerMesh, "player", markerShared);
   playerMesh.position.set(0, 0, 0);
   scene.add(playerMesh);
+
+  // Muzzle flash: esfera aditiva ~0.22 dia + PointLight (reutilizable).
+  const MUZZLE_FORWARD = 0.48;
+  const MUZZLE_LIGHT_PEAK = 2.2;
+  const MUZZLE_LIGHT_DISTANCE = 2.6;
+  const muzzleGeo = new THREE.SphereGeometry(0.11, 10, 8);
+  const muzzleMat = new THREE.MeshBasicMaterial({
+    color: 0xfff2c0,
+    transparent: true,
+    opacity: 1,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+  const muzzleMesh = new THREE.Mesh(muzzleGeo, muzzleMat);
+  muzzleMesh.visible = false;
+  const muzzleLight = new THREE.PointLight(
+    0xffe8a0,
+    0,
+    MUZZLE_LIGHT_DISTANCE,
+    2,
+  );
+  muzzleLight.visible = false;
+  playerMesh.add(muzzleMesh, muzzleLight);
+
+  function applyMuzzleFlashVisual(out: {
+    intensity: number;
+    active: boolean;
+  }): void {
+    const ox = Math.sin(playerGltfYaw) * MUZZLE_FORWARD;
+    const oz = Math.cos(playerGltfYaw) * MUZZLE_FORWARD;
+    muzzleMesh.position.set(ox, TRACER_HEIGHT, oz);
+    muzzleLight.position.set(ox, TRACER_HEIGHT, oz);
+    muzzleMesh.visible = out.active;
+    muzzleLight.visible = out.active;
+    muzzleMat.opacity = out.intensity;
+    muzzleLight.intensity = out.active ? MUZZLE_LIGHT_PEAK * out.intensity : 0;
+  }
 
   const hostileGeo = new THREE.BoxGeometry(0.58, 1.12, 0.48);
   const hostileHeadGeo = new THREE.BoxGeometry(0.34, 0.34, 0.34);
@@ -918,15 +967,16 @@ export function createWorldView(
       const swing = tickMeleeSwing(playerSwing, dt);
       const lean = tickHitLean(playerHitLean, dt);
       cameraShakeOut = tickCameraShake(playerCameraShake, dt);
+      if (faceX != null && faceZ != null) {
+        const yaw = playerGltfYawFromMove(faceX, faceZ);
+        if (yaw !== null) playerGltfYaw = yaw;
+      }
+      applyMuzzleFlashVisual(tickMuzzleFlash(playerMuzzle, dt));
       const pose = lean.active ? lean : swing;
       if (playerUsesGltfVisual && playerMixer) {
         playerLocoRoot.position.y = 0;
         playerLocoRoot.rotation.z = pose.yawBias;
         playerLocoRoot.rotation.x = pose.pitch;
-        if (faceX != null && faceZ != null) {
-          const yaw = playerGltfYawFromMove(faceX, faceZ);
-          if (yaw !== null) playerGltfYaw = yaw;
-        }
         playerLocoRoot.rotation.y = playerGltfYaw;
         playerMixer.update(dt, currentRole(playerAnimator));
         return;
@@ -948,6 +998,9 @@ export function createWorldView(
           triggerHitLean(playerHitLean);
         }
       }
+    },
+    triggerMuzzleFlash() {
+      startMuzzleFlash(playerMuzzle);
     },
     clearPlayerAction() {
       setAction(playerAnimator, null);
@@ -1142,6 +1195,9 @@ export function createWorldView(
       hostileMat.dispose();
       possessedMat.dispose();
       possessedHeadMat.dispose();
+      playerMesh.remove(muzzleMesh, muzzleLight);
+      muzzleGeo.dispose();
+      muzzleMat.dispose();
       playerBodyMat.dispose();
       playerHeadMat.dispose();
       playerBodyGeo.dispose();
