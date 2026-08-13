@@ -74,6 +74,11 @@ import {
   tickMuzzleFlash,
   triggerMuzzleFlash as startMuzzleFlash,
 } from "./muzzleFlash";
+import {
+  createImpactSpark,
+  tickImpactSpark,
+  triggerImpactSpark as startImpactSpark,
+} from "./impactSpark";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 import {
   countAoNeighbors,
@@ -152,6 +157,11 @@ export interface WorldView {
    * Esfera aditiva + PointLight; avanza en tickPlayerLoco.
    */
   triggerMuzzleFlash(): void;
+  /**
+   * Spark de impacto al extremo del tracer (hit y miss). Re-triggerable.
+   * Esfera aditiva unlit + PointLight en (x, TRACER_HEIGHT, y); hide si idle.
+   */
+  triggerImpactSpark(x: number, y: number): void;
   /**
    * Limpia one-shot (incluida death sticky) y resync mixer a loco.
    * softReset (R) y load-alive.
@@ -378,6 +388,8 @@ export function createWorldView(
   const playerCameraShake = createCameraShakeState();
   /** Flash de hocico (disparo X hit/miss). */
   const playerMuzzle = createMuzzleFlash();
+  /** Spark de impacto al extremo del tracer (X hit/miss). */
+  const impactSpark = createImpactSpark();
   let cameraShakeOut: CameraShakeOutput = {
     offsetX: 0,
     offsetZ: 0,
@@ -453,6 +465,44 @@ export function createWorldView(
     muzzleLight.visible = out.active;
     muzzleMat.opacity = out.intensity;
     muzzleLight.intensity = out.active ? MUZZLE_LIGHT_PEAK * out.intensity : 0;
+  }
+
+  // Impact spark: esfera aditiva unlit dia 0.18 + PointLight (reutilizable).
+  const IMPACT_SPARK_LIGHT_PEAK = 1.4;
+  const IMPACT_SPARK_LIGHT_DISTANCE = 1.8;
+  const impactGeo = new THREE.SphereGeometry(0.09, 10, 8);
+  const impactMat = new THREE.MeshBasicMaterial({
+    color: 0xffd080,
+    transparent: true,
+    opacity: 1,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+  const impactMesh = new THREE.Mesh(impactGeo, impactMat);
+  impactMesh.visible = false;
+  const impactLight = new THREE.PointLight(
+    0xffd080,
+    0,
+    IMPACT_SPARK_LIGHT_DISTANCE,
+    2,
+  );
+  impactLight.visible = false;
+  scene.add(impactMesh, impactLight);
+
+  function applyImpactSparkVisual(out: {
+    intensity: number;
+    active: boolean;
+    x: number;
+    y: number;
+  }): void {
+    impactMesh.position.set(out.x, TRACER_HEIGHT, out.y);
+    impactLight.position.set(out.x, TRACER_HEIGHT, out.y);
+    impactMesh.visible = out.active;
+    impactLight.visible = out.active;
+    impactMat.opacity = out.intensity;
+    impactLight.intensity = out.active
+      ? IMPACT_SPARK_LIGHT_PEAK * out.intensity
+      : 0;
   }
 
   const hostileGeo = new THREE.BoxGeometry(0.58, 1.12, 0.48);
@@ -972,6 +1022,7 @@ export function createWorldView(
         if (yaw !== null) playerGltfYaw = yaw;
       }
       applyMuzzleFlashVisual(tickMuzzleFlash(playerMuzzle, dt));
+      applyImpactSparkVisual(tickImpactSpark(impactSpark, dt));
       const pose = lean.active ? lean : swing;
       if (playerUsesGltfVisual && playerMixer) {
         playerLocoRoot.position.y = 0;
@@ -1001,6 +1052,9 @@ export function createWorldView(
     },
     triggerMuzzleFlash() {
       startMuzzleFlash(playerMuzzle);
+    },
+    triggerImpactSpark(x, y) {
+      startImpactSpark(impactSpark, x, y);
     },
     clearPlayerAction() {
       setAction(playerAnimator, null);
@@ -1198,6 +1252,9 @@ export function createWorldView(
       playerMesh.remove(muzzleMesh, muzzleLight);
       muzzleGeo.dispose();
       muzzleMat.dispose();
+      scene.remove(impactMesh, impactLight);
+      impactGeo.dispose();
+      impactMat.dispose();
       playerBodyMat.dispose();
       playerHeadMat.dispose();
       playerBodyGeo.dispose();
