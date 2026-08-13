@@ -55,7 +55,9 @@ export {
 
 export {
   CONTROLS_HELP,
+  formatHudDebugTokens,
   formatHudStatus,
+  type HudDebugInput,
   type HudStatusInput,
 } from "./hudStatus";
 
