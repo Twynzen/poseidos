@@ -714,6 +714,7 @@ export class Game {
         dt,
         this.emptyLootIds(),
       );
+      this.view.syncDoorFocus(this.player.x, this.player.y, dt);
       // Mixer must keep ticking during freeze so death LoopOnce can play/clamp.
       this.view.tickPlayerLoco(dt, false, false);
       this.renderer.render(this.view.scene, this.view.camera);
@@ -802,6 +803,7 @@ export class Game {
         dt,
         this.emptyLootIds(),
       );
+      this.view.syncDoorFocus(this.player.x, this.player.y, dt);
       this.view.tickPlayerLoco(dt, false, false);
       this.renderer.render(this.view.scene, this.view.camera);
       this.refreshHud(true);
@@ -1044,6 +1046,7 @@ export class Game {
       dt,
       this.emptyLootIds(),
     );
+    this.view.syncDoorFocus(this.player.x, this.player.y, dt);
     {
       const ax = this.input.axes;
       const moving = ax.x !== 0 || ax.z !== 0;

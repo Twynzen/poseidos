@@ -95,6 +95,7 @@ import {
   type GrassTile,
 } from "./windGrass";
 import { lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
+import { doorFocusMul, DOOR_FOCUS_REACH } from "./doorFocus";
 import type { TileMap } from "../world/tilemap";
 import type { Tile } from "../world/tile";
 import type { Chunk } from "../world/chunk";
@@ -142,6 +143,11 @@ export interface WorldView {
     dt: number,
     emptyIds?: ReadonlySet<string>,
   ): void;
+  /**
+   * Pulso de escala de la puerta más cercana en reach.
+   * Fuera de reach: scale 1. `dt` avanza el seno del pulso.
+   */
+  syncDoorFocus(wx: number, wy: number, dt: number): void;
   /**
    * Locomocion visual: silueta locoBob o mixer GLB (Idle/Walk/Run).
    * No mueve el root mundo — solo locoRoot local (bob) o mixer + yaw.
@@ -466,6 +472,26 @@ export function createWorldView(
       lootMarkerGroups.push({ group, x, y, id: c.id });
     }
   }
+
+  // Door: anillo/badge teal por tile door. Siempre on (no FOV).
+  interface DoorMarkerEntry {
+    group: THREE.Group;
+    x: number;
+    y: number;
+  }
+  const doorMarkerGroups: DoorMarkerEntry[] = [];
+  let doorFocusElapsed = 0;
+  map.forEach((tx, ty, tile) => {
+    if (tile.kind !== "door") return;
+    const group = new THREE.Group();
+    group.name = `doorMarker_${tx}_${ty}`;
+    const x = tx + 0.5;
+    const y = ty + 0.5;
+    group.position.set(x, 0, y);
+    attachRoleMarkers(group, "door", markerShared);
+    scene.add(group);
+    doorMarkerGroups.push({ group, x, y });
+  });
 
   // Muzzle flash: esfera aditiva ~0.22 dia + PointLight (reutilizable).
   const MUZZLE_FORWARD = 0.48;
@@ -1110,6 +1136,25 @@ export function createWorldView(
         e.group.scale.setScalar(mul);
       }
     },
+    syncDoorFocus(wx, wy, dt) {
+      const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
+      doorFocusElapsed += safeDt;
+      let best = -1;
+      let bestD = Infinity;
+      for (let i = 0; i < doorMarkerGroups.length; i++) {
+        const e = doorMarkerGroups[i]!;
+        const d = Math.hypot(wx - e.x, wy - e.y);
+        if (d <= DOOR_FOCUS_REACH && d < bestD) {
+          bestD = d;
+          best = i;
+        }
+      }
+      for (let i = 0; i < doorMarkerGroups.length; i++) {
+        const e = doorMarkerGroups[i]!;
+        const mul = i === best ? doorFocusMul(bestD, doorFocusElapsed) : 1;
+        e.group.scale.setScalar(mul);
+      }
+    },
     tickPlayerLoco(dt, moving, sprinting, faceX, faceZ) {
       setLocomotion(playerAnimator, { moving, sprinting });
       tickCharacterAnimator(playerAnimator, dt);
@@ -1338,6 +1383,10 @@ export function createWorldView(
         scene.remove(entry.group);
       }
       lootMarkerGroups.length = 0;
+      for (const entry of doorMarkerGroups) {
+        scene.remove(entry.group);
+      }
+      doorMarkerGroups.length = 0;
       for (const mesh of hostileMeshes.values()) {
         scene.remove(mesh);
       }
@@ -1515,10 +1564,10 @@ function attachRoleMarkers(
   // Escala distinta por glifo visual (mute más angular vía scale)
   if (role === "mute") icon.scale.set(0.7, 0.7, 1);
   else if (role === "possessed") icon.scale.set(0.85, 0.85, 1);
-  else if (role === "loot") icon.scale.set(0.8, 0.8, 1);
+  else if (role === "loot" || role === "door") icon.scale.set(0.8, 0.8, 1);
   badge.add(disc, icon);
   badge.position.y =
-    role === "player" ? 1.72 : role === "loot" ? 1.12 : 1.68;
+    role === "player" ? 1.72 : role === "loot" || role === "door" ? 1.12 : 1.68;
   root.add(badge);
 }
 

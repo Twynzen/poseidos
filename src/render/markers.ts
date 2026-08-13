@@ -3,7 +3,7 @@
  * Colores/roles headless — la geometría vive en worldView.
  */
 
-export type MarkerRole = "player" | "mute" | "possessed" | "loot";
+export type MarkerRole = "player" | "mute" | "possessed" | "loot" | "door";
 
 export interface MarkerPalette {
   /** Anillo de suelo (hex). */
@@ -16,7 +16,7 @@ export interface MarkerPalette {
   glyph: string;
 }
 
-/** mute=rojo · poseído=púrpura · player=azul · loot=ámbar */
+/** mute=rojo · poseído=púrpura · player=azul · loot=ámbar · door=teal */
 export const MARKER_PALETTE: Readonly<Record<MarkerRole, MarkerPalette>> = {
   player: {
     ring: 0x3a7fd4,
@@ -41,6 +41,12 @@ export const MARKER_PALETTE: Readonly<Record<MarkerRole, MarkerPalette>> = {
     badge: 0xf0c060,
     emissive: 0x403010,
     glyph: "▣",
+  },
+  door: {
+    ring: 0x2ec8b4,
+    badge: 0x7eefe4,
+    emissive: 0x104038,
+    glyph: "⊓",
   },
 };
 
