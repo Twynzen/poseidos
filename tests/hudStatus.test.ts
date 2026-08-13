@@ -41,11 +41,20 @@ describe("formatHudStatus compact", () => {
     expect(s).not.toMatch(/F1 cerrar ayuda/);
   });
 
-  test("showHelp incluye CONTROLS_HELP / WASD y F1 cerrar", () => {
+  test("showHelp incluye CONTROLS_HELP agrupado por líneas y F1 cerrar", () => {
     const s = formatHudStatus(base({ showHelp: true }));
     expect(s).toContain("WASD");
     expect(s).toContain(CONTROLS_HELP);
+    expect(s.startsWith(CONTROLS_HELP + "\n")).toBe(true);
+    expect(CONTROLS_HELP).toContain("\n");
+    expect(CONTROLS_HELP.split("\n")).toHaveLength(5);
+    expect(CONTROLS_HELP).toMatch(/^Mover:/);
+    expect(CONTROLS_HELP).toContain("Combate:");
+    expect(CONTROLS_HELP).toContain("Loot:");
+    expect(CONTROLS_HELP).toContain("Inventario:");
+    expect(CONTROLS_HELP).toContain("Mundo:");
     expect(CONTROLS_HELP).toMatch(/\+\/- zoom/);
+    expect(CONTROLS_HELP).toMatch(/Espacio\/V melee/);
     expect(CONTROLS_HELP).toMatch(/1-5 hotbar/);
     expect(CONTROLS_HELP).toMatch(/rueda hotbar/);
     expect(CONTROLS_HELP).toMatch(/clic hotbar/);
@@ -60,11 +69,17 @@ describe("formatHudStatus compact", () => {
     expect(CONTROLS_HELP).toContain("Ctrl+clic inv juntar");
     expect(CONTROLS_HELP).toContain("Shift+clic hotbar partir");
     expect(CONTROLS_HELP).toContain("Ctrl+clic hotbar juntar");
-    expect(CONTROLS_HELP).toMatch(/Q usar slot/);
+    expect(CONTROLS_HELP).toMatch(/Q usar slot \/ rellenar botella \(lluvia\)/);
     expect(CONTROLS_HELP).toMatch(/G loot · Shift\+G stack/);
     expect(CONTROLS_HELP).toMatch(/U tirar/);
     expect(CONTROLS_HELP).toMatch(/Shift\+U stack/);
     expect(CONTROLS_HELP).toContain("U inv tirar");
+    expect(CONTROLS_HELP).toMatch(
+      /T diálogo \(calmar \/ preguntar \/ amenazar \/ ofrecer comida \/ Distraer\)/,
+    );
+    expect(CONTROLS_HELP).toMatch(/Z cama o suelo indoor/);
+    expect(CONTROLS_HELP).toMatch(/R descanso\/reinicio/);
+    expect(CONTROLS_HELP).toMatch(/F1 ayuda/);
     expect(s).toMatch(/F1 cerrar ayuda/);
   });
 
