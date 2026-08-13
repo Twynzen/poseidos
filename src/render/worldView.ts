@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { paletteFor, type MarkerRole } from "./markers";
+import { facingChevronOffset } from "./facingChevron";
 import {
   DEFAULT_TRACER_TTL,
   TRACER_HEIGHT,
@@ -135,6 +136,7 @@ export interface WorldView {
    * Aplica meleeSwing a rotation.x/z si el golpe procedural está activo.
    * Hit lean (recoil) overridea el swing mientras está activo.
    * Avanza camera shake (offset para followCamera).
+   * Coloca el chevron de facing (siempre on).
    * faceX/faceZ: ejes de facing (x,z Three / mapa); opcional.
    */
   tickPlayerLoco(
@@ -452,6 +454,39 @@ export function createWorldView(
   );
   muzzleLight.visible = false;
   playerMesh.add(muzzleMesh, muzzleLight);
+
+  // Chevron de facing: triángulo plano unlit (siempre visible; sin luz extra).
+  const CHEVRON_LEN = 0.4;
+  const CHEVRON_HALF_W = 0.16;
+  const CHEVRON_Y = 0.1;
+  const chevronGeo = new THREE.BufferGeometry();
+  chevronGeo.setAttribute(
+    "position",
+    new THREE.BufferAttribute(
+      new Float32Array([
+        0, 0, CHEVRON_LEN * 0.5,
+        CHEVRON_HALF_W, 0, -CHEVRON_LEN * 0.5,
+        -CHEVRON_HALF_W, 0, -CHEVRON_LEN * 0.5,
+      ]),
+      3,
+    ),
+  );
+  const chevronMat = new THREE.MeshBasicMaterial({
+    color: 0x7eb6ef,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  });
+  const chevronMesh = new THREE.Mesh(chevronGeo, chevronMat);
+  chevronMesh.renderOrder = 8;
+  chevronMesh.visible = true;
+  playerMesh.add(chevronMesh);
+
+  function placeFacingChevron(): void {
+    const { x, z } = facingChevronOffset(playerGltfYaw);
+    chevronMesh.position.set(x, CHEVRON_Y, z);
+    chevronMesh.rotation.y = playerGltfYaw;
+  }
+  placeFacingChevron();
 
   function applyMuzzleFlashVisual(out: {
     intensity: number;
@@ -1010,6 +1045,7 @@ export function createWorldView(
     sun,
     syncPlayer(x, y) {
       playerMesh.position.set(x, 0, y);
+      placeFacingChevron();
     },
     tickPlayerLoco(dt, moving, sprinting, faceX, faceZ) {
       setLocomotion(playerAnimator, { moving, sprinting });
@@ -1021,6 +1057,7 @@ export function createWorldView(
         const yaw = playerGltfYawFromMove(faceX, faceZ);
         if (yaw !== null) playerGltfYaw = yaw;
       }
+      placeFacingChevron();
       applyMuzzleFlashVisual(tickMuzzleFlash(playerMuzzle, dt));
       applyImpactSparkVisual(tickImpactSpark(impactSpark, dt));
       const pose = lean.active ? lean : swing;
@@ -1252,6 +1289,9 @@ export function createWorldView(
       playerMesh.remove(muzzleMesh, muzzleLight);
       muzzleGeo.dispose();
       muzzleMat.dispose();
+      playerMesh.remove(chevronMesh);
+      chevronGeo.dispose();
+      chevronMat.dispose();
       scene.remove(impactMesh, impactLight);
       impactGeo.dispose();
       impactMat.dispose();
