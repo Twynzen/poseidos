@@ -25,6 +25,7 @@ export {
   hotbarSlots,
   hotbarSlotIsConsumable,
   hotbarInspectLabel,
+  inventoryInspectLabel,
   type HotbarSlot,
   type HotbarFilledSlot,
   type HotbarEmptySlot,

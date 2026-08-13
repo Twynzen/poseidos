@@ -80,6 +80,7 @@ import {
   createInventoryPanel,
   hotbarSlots,
   hotbarInspectLabel,
+  inventoryInspectLabel,
   HOTBAR_SIZE,
   clampHotbarIndex,
   stepHotbarIndex,
@@ -745,6 +746,7 @@ export class Game {
       const use = getItemDef(stack.id).use;
       if (use !== "food" && use !== "drink" && use !== "heal") {
         this.lastLootMsg = "no se puede usar";
+        this.lootToast.show(this.lastLootMsg);
         this.hudAcc = 1;
       }
     }
@@ -800,6 +802,7 @@ export class Game {
       const use = getItemDef(stack.id).use;
       if (use !== "food" && use !== "drink" && use !== "heal") {
         this.lastLootMsg = "no se puede usar";
+        this.lootToast.show(this.lastLootMsg);
         this.hudAcc = 1;
       }
     }
@@ -822,6 +825,7 @@ export class Game {
     const inspected = this.hotbarHud.consumeInspect();
     const dbl = this.hotbarHud.consumeDblClick();
     const invClick = this.inventoryPanel.consumeClick();
+    const invInspect = this.inventoryPanel.consumeInspect();
     if (dragged) {
       if (swapHotbarStacks(this.player.inventory, dragged.from, dragged.to)) {
         this.hotbarSelected = dragged.to;
@@ -1115,6 +1119,12 @@ export class Game {
     }
     if (this.showInvDetail && invClick !== null) {
       this.useInventorySlot(invClick);
+    }
+    if (this.showInvDetail && invInspect !== null) {
+      const label = inventoryInspectLabel(this.player.inventory, invInspect);
+      this.lastLootMsg = label;
+      this.lootToast.show(label);
+      this.hudAcc = 1;
     }
     if (this.input.consumeUse()) {
       const outdoor = !isIndoor(this.map, this.player.x, this.player.y);

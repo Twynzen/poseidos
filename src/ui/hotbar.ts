@@ -162,3 +162,27 @@ export function hotbarInspectLabel(slot: HotbarSlot): string {
   if (slot.id === "empty_bottle") return `${name} · rellenar (lluvia)`;
   return `${name} · sin uso`;
 }
+
+/**
+ * Label de inspección para una fila del panel I (mismo texto que hotbar).
+ * Slot ausente o qty≤0 → "vacío". No muta el inventario.
+ */
+export function inventoryInspectLabel(
+  inv: { slots: ReadonlyArray<{ id: string; qty: number }> },
+  index: number,
+): string {
+  const i = Number.isFinite(index) ? Math.trunc(index) : 0;
+  const stack = inv.slots[i];
+  if (!stack || stack.qty <= 0) {
+    return hotbarInspectLabel({ empty: true, index: i, key: String(i + 1) });
+  }
+  const def = getItemDef(stack.id as ItemId);
+  return hotbarInspectLabel({
+    empty: false,
+    index: i,
+    key: String(i + 1),
+    id: stack.id as ItemId,
+    name: def.name,
+    qty: stack.qty,
+  });
+}

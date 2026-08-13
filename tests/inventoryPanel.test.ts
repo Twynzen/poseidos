@@ -9,6 +9,7 @@ import {
   type Inventory,
 } from "../src/items";
 import { createInventoryPanel } from "../src/ui/inventory";
+import { inventoryInspectLabel } from "../src/ui/hotbar";
 
 function invWithHole(): Inventory {
   const inv = createInventory(8, 20);
@@ -27,6 +28,16 @@ function clickRow(root: HTMLElement, originalIndex: number): void {
   expect(li).toBeTruthy();
   li!.dispatchEvent(
     new MouseEvent("click", { bubbles: true, cancelable: true }),
+  );
+}
+
+function contextmenuRow(root: HTMLElement, originalIndex: number): void {
+  const li = root.querySelector<HTMLElement>(
+    `.inv-slot[data-index="${originalIndex}"]`,
+  );
+  expect(li).toBeTruthy();
+  li!.dispatchEvent(
+    new MouseEvent("contextmenu", { bubbles: true, cancelable: true }),
   );
 }
 
@@ -114,5 +125,88 @@ describe("inventory panel click uses original slot index", () => {
     panel.sync({ open: true, data: buildInventoryPanelData(inv) });
     expect(panel.consumeClick()).toBeNull();
     panel.dispose();
+  });
+});
+
+describe("inventory panel contextmenu inspects without using", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  test("contextmenu row → consumeInspect returns that index; consumeClick stays null", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "flashlight", qty: 1 },
+      { id: "water_bottle", qty: 1 },
+    ]);
+    panel.sync({ open: true, data: buildInventoryPanelData(inv) });
+
+    contextmenuRow(root, 1);
+    expect(panel.consumeInspect()).toBe(1);
+    expect(panel.consumeClick()).toBeNull();
+    expect(panel.consumeInspect()).toBeNull();
+    panel.dispose();
+  });
+
+  test("two contextmenus without consume → last wins", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "flashlight", qty: 1 },
+      { id: "water_bottle", qty: 1 },
+    ]);
+    panel.sync({ open: true, data: buildInventoryPanelData(inv) });
+
+    contextmenuRow(root, 0);
+    contextmenuRow(root, 2);
+    expect(panel.consumeInspect()).toBe(2);
+    expect(panel.consumeClick()).toBeNull();
+    panel.dispose();
+  });
+
+  test("left-click does not set inspect", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "flashlight", qty: 1 },
+    ]);
+    panel.sync({ open: true, data: buildInventoryPanelData(inv) });
+
+    clickRow(root, 0);
+    expect(panel.consumeClick()).toBe(0);
+    expect(panel.consumeInspect()).toBeNull();
+    panel.dispose();
+  });
+});
+
+describe("inventoryInspectLabel", () => {
+  test("empty / qty<=0 → vacío", () => {
+    const empty = createInventory();
+    expect(inventoryInspectLabel(empty, 0)).toBe("vacío");
+    const hole = createInventory(8, 20);
+    hole.slots.push(
+      { id: "canned_food", qty: 1 },
+      { id: "scrap", qty: 0 },
+    );
+    expect(inventoryInspectLabel(hole, 1)).toBe("vacío");
+  });
+
+  test("canned_food contains comer; flashlight contains linterna", () => {
+    const inv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "flashlight", qty: 1 },
+    ]);
+    expect(inventoryInspectLabel(inv, 0)).toContain("comer");
+    expect(inventoryInspectLabel(inv, 1)).toContain("linterna");
+    expect(inventoryInspectLabel(inv, 1)).toBe("linterna · linterna");
   });
 });

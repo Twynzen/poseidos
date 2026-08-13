@@ -17,6 +17,8 @@ export interface InventoryPanel {
   sync(view: InventoryPanelView): void;
   /** Último clic en fila; last-wins; consume y limpia. */
   consumeClick(): number | null;
+  /** Último clic derecho en fila (inspeccionar); last-wins; consume y limpia. */
+  consumeInspect(): number | null;
   dispose(): void;
 }
 
@@ -49,18 +51,24 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
   const hint = document.createElement("div");
   hint.className = "inv-hint";
   hint.textContent =
-    "I cerrar · clic usar · Q usar/lluvia · L linterna · Espacio/V melee · X disparar";
+    "I cerrar · clic usar · clic der. info · Q usar/lluvia · L linterna · Espacio/V melee · X disparar";
 
   panel.append(head, weightEl, equip, empty, list, hint);
   root.appendChild(panel);
 
   let pendingClick: number | null = null;
+  let pendingInspect: number | null = null;
 
   return {
     consumeClick() {
       const clicked = pendingClick;
       pendingClick = null;
       return clicked;
+    },
+    consumeInspect() {
+      const inspected = pendingInspect;
+      pendingInspect = null;
+      return inspected;
     },
     sync(view) {
       if (!view.open) {
@@ -97,6 +105,12 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
             e.preventDefault();
             e.stopPropagation();
             pendingClick = slot.index;
+          });
+          li.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const n = Number(li.dataset.index);
+            pendingInspect = Number.isFinite(n) ? Math.trunc(n) : slot.index;
           });
 
           const name = document.createElement("span");
