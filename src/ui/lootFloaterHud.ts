@@ -1,14 +1,19 @@
 /**
  * Toast HTML `#loot-floater` montado en el mismo uiRoot que moodles (body).
- * Live: `createLootFloaterHud(root).show(label)` — display none/block, 4s, opaco ~55%.
+ * Live: `createLootFloaterHud(root).show(label, itemId?)` — chip glass, 2s, icono SVG.
  * Tests: `showLootFloaterHud(label, bag)` / el.classList (sin jsdom).
  */
 
+import { itemIconSvg } from "./itemIcons";
+
 /** Duración del toast live (ms). */
-export const LOOT_FLOATER_HUD_MS = 4000;
+export const LOOT_FLOATER_HUD_MS = 2000;
 
 /** Clase que dispara la animación en el path de tests (bag / classList). */
 export const LOOT_FLOATER_HUD_PLAY_CLASS = "loot-floater-play";
+
+/** Tono error: muted red, sin glow gold. */
+export const LOOT_FLOATER_HUD_ERR_CLASS = "loot-floater-err";
 
 export const LOOT_FLOATER_HUD_ID = "loot-floater";
 
@@ -16,9 +21,18 @@ const KEYFRAMES_STYLE_ID = "loot-floater-kf";
 
 const LOOT_FLOAT_KEYFRAMES = `@keyframes loot-float {
   0% { opacity: 1; transform: translate(-50%, 8px); }
-  55% { opacity: 1; transform: translate(-50%, -18px); }
-  100% { opacity: 0; transform: translate(-50%, -72px); }
+  50% { opacity: 1; transform: translate(-50%, -12px); }
+  100% { opacity: 0; transform: translate(-50%, -48px); }
 }`;
+
+const ERR_LABELS = new Set([
+  "no se puede usar",
+  "no se puede partir",
+  "no se puede juntar",
+  "vacío",
+]);
+
+const QTY_RE = /\s*×(\d+)/;
 
 export type LootFloaterHudEl = {
   textContent: string | null;
@@ -35,7 +49,7 @@ export type LootFloaterHudBag = {
 };
 
 export interface LootFloaterHud {
-  show(label: string): void;
+  show(label: string, itemId?: string): void;
   dispose(): void;
 }
 
@@ -72,6 +86,49 @@ function injectLootFloatKeyframes(document: Document): void {
   (document.head ?? document.body)?.appendChild(style);
 }
 
+function isErrorLabel(label: string): boolean {
+  return ERR_LABELS.has(label.trim());
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+/** Markup del chip: icono opcional + label + badge ×N. */
+function lootFloaterChipHtml(label: string, itemId?: string): string {
+  const qty = label.match(QTY_RE);
+  let text = label;
+  let qtyHtml = "";
+  if (qty && qty.index !== undefined) {
+    text = label.slice(0, qty.index) + label.slice(qty.index + qty[0].length);
+    qtyHtml = `<span class="loot-floater-qty">${qty[1]}</span>`;
+  }
+  const err = isErrorLabel(label);
+  const id = typeof itemId === "string" ? itemId.trim() : "";
+  const icon =
+    !err && id
+      ? `<span class="loot-floater-icon">${itemIconSvg(id)}</span>`
+      : "";
+  return `${icon}${escapeHtml(text)}${qtyHtml}`;
+}
+
+function applyTone(el: HTMLElement, err: boolean): void {
+  if (err) {
+    el.classList.add(LOOT_FLOATER_HUD_ERR_CLASS);
+    el.style.color = "#fca5a5";
+    el.style.textShadow = "none";
+    el.style.borderColor = "rgba(248, 113, 113, 0.4)";
+  } else {
+    el.classList.remove(LOOT_FLOATER_HUD_ERR_CLASS);
+    el.style.color = "#ffe080";
+    el.style.textShadow = "0 1px 8px #000, 0 0 12px rgba(255,224,128,.4)";
+    el.style.borderColor = "";
+  }
+}
+
 function applyLiveStyles(el: HTMLElement): void {
   el.removeAttribute("hidden");
   el.style.position = "fixed";
@@ -80,11 +137,22 @@ function applyLiveStyles(el: HTMLElement): void {
   el.style.transform = "translate(-50%, 0)";
   el.style.zIndex = "9999";
   el.style.pointerEvents = "none";
-  el.style.font = "800 42px/1 ui-monospace, monospace";
-  el.style.color = "#ffe080";
-  el.style.textShadow = "0 2px 14px #000, 0 0 22px rgba(255,224,128,.75)";
+  el.style.alignItems = "center";
+  el.style.gap = "8px";
+  el.style.padding = "6px 12px 6px 8px";
+  el.style.borderRadius = "999px";
+  el.style.font =
+    '800 20px/1.2 ui-monospace, "SF Mono", Menlo, Consolas, monospace';
+  el.style.letterSpacing = "0.03em";
   el.style.whiteSpace = "nowrap";
-  el.style.letterSpacing = "0.02em";
+  el.style.color = "#ffe080";
+  el.style.textShadow = "0 1px 8px #000, 0 0 12px rgba(255,224,128,.4)";
+  el.style.background =
+    "linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02)), var(--hud-bg)";
+  el.style.border = "1px solid var(--hud-border)";
+  el.style.boxShadow =
+    "0 8px 18px rgba(2, 6, 23, 0.35), inset 0 1px 0 rgba(255,255,255,0.1)";
+  el.style.backdropFilter = "blur(10px) saturate(140%)";
 }
 
 function ensureToastEl(root: HTMLElement, document: Document): HTMLElement {
@@ -117,10 +185,12 @@ export function createLootFloaterHud(root: HTMLElement): LootFloaterHud {
   const el = ensureToastEl(root, document);
 
   return {
-    show(label: string) {
-      el.textContent = typeof label === "string" ? label : "";
+    show(label: string, itemId?: string) {
+      if (typeof label !== "string" || !label.trim()) return;
+      el.innerHTML = lootFloaterChipHtml(label, itemId);
+      applyTone(el, isErrorLabel(label));
       el.removeAttribute("hidden");
-      el.style.display = "block";
+      el.style.display = "inline-flex";
       el.style.animation = "none";
       void el.offsetWidth;
       el.style.animation = `loot-float ${LOOT_FLOATER_HUD_MS / 1000}s ease-out forwards`;

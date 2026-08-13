@@ -739,7 +739,7 @@ export class Game {
       ) {
         playUse(this.interactPlayer, this.ambient.muted);
         this.lastLootMsg = RAIN_FILL_MSG;
-        this.lootToast.show(this.lastLootMsg);
+        this.lootToast.show(this.lastLootMsg, "water_bottle");
         this.hudAcc = 1;
       }
       return;
@@ -753,7 +753,7 @@ export class Game {
           : used === "drink"
             ? "bebiste"
             : "vendaje +HP";
-      this.lootToast.show(this.lastLootMsg);
+      this.lootToast.show(this.lastLootMsg, stack?.id);
       this.hudAcc = 1;
     } else if (stack) {
       const use = getItemDef(stack.id).use;
@@ -805,7 +805,7 @@ export class Game {
       ) {
         playUse(this.interactPlayer, this.ambient.muted);
         this.lastLootMsg = RAIN_FILL_MSG;
-        this.lootToast.show(this.lastLootMsg);
+        this.lootToast.show(this.lastLootMsg, "water_bottle");
         this.hudAcc = 1;
       }
       return;
@@ -819,7 +819,7 @@ export class Game {
           : used === "drink"
             ? "bebiste"
             : "vendaje +HP";
-      this.lootToast.show(this.lastLootMsg);
+      this.lootToast.show(this.lastLootMsg, stack.id);
       this.hudAcc = 1;
     } else {
       const use = getItemDef(stack.id).use;
@@ -836,7 +836,7 @@ export class Game {
     if (split) {
       const label = `partiste ${getItemDef(split.id as ItemId).name} ×${split.qty}`;
       this.lastLootMsg = label;
-      this.lootToast.show(label);
+      this.lootToast.show(label, split.id);
       this.hudAcc = 1;
     } else {
       this.lastLootMsg = "no se puede partir";
@@ -850,7 +850,7 @@ export class Game {
     if (merged) {
       const label = `juntaste ${getItemDef(merged.id as ItemId).name} ×${merged.destQty}`;
       this.lastLootMsg = label;
-      this.lootToast.show(label);
+      this.lootToast.show(label, merged.id);
       this.hudAcc = 1;
     } else {
       this.lastLootMsg = "no se puede juntar";
@@ -1116,7 +1116,7 @@ export class Game {
             `+${getItemDef(taken.id).name}`,
           );
           this.view.spawnLootFloater(lootLabel, this.player.x, this.player.y);
-          this.lootToast.show(lootLabel);
+          this.lootToast.show(lootLabel, taken.id);
           this.lastLootMsg = lootLabel;
           this.hudAcc = 1; // forzar refresh
           this.refreshNearestLootMarker();
@@ -1136,7 +1136,7 @@ export class Game {
           taken.qty,
         );
         this.view.spawnLootFloater(lootLabel, this.player.x, this.player.y);
-        this.lootToast.show(lootLabel);
+        this.lootToast.show(lootLabel, taken.id);
         this.lastLootMsg = lootLabel;
         this.hudAcc = 1;
         this.refreshNearestLootMarker();
@@ -1166,18 +1166,17 @@ export class Game {
         this.view.addLootMarker(c.id, c.x, c.y, c.name, c.inv);
         playLoot(this.interactPlayer, this.ambient.muted);
         const label = dropToastLabel(getItemDef(taken.id).name, taken.qty);
-        this.lootToast.show(label);
+        this.lootToast.show(label, taken.id);
         this.lastLootMsg = label;
         this.hudAcc = 1;
       }
     }
     if (inspected !== null) {
       this.hotbarSelected = inspected;
-      const label = hotbarInspectLabel(
-        hotbarSlots(this.player.inventory)[inspected]!,
-      );
+      const slot = hotbarSlots(this.player.inventory)[inspected]!;
+      const label = hotbarInspectLabel(slot);
       this.lastLootMsg = label;
-      this.lootToast.show(label);
+      this.lootToast.show(label, slot.empty ? undefined : slot.id);
       this.hudAcc = 1;
     } else if (dbl !== null) {
       this.hotbarSelected = dbl;
@@ -1207,7 +1206,11 @@ export class Game {
       this.lastInvIndex = invInspect;
       const label = inventoryInspectLabel(this.player.inventory, invInspect);
       this.lastLootMsg = label;
-      this.lootToast.show(label);
+      const invStack = this.player.inventory.slots[invInspect];
+      this.lootToast.show(
+        label,
+        invStack && invStack.qty > 0 ? invStack.id : undefined,
+      );
       this.hudAcc = 1;
     }
     if (hotbarSplitIdx !== null) {
@@ -1242,7 +1245,7 @@ export class Game {
         ) {
           playUse(this.interactPlayer, this.ambient.muted);
           this.lastLootMsg = RAIN_FILL_MSG;
-          this.lootToast.show(this.lastLootMsg);
+          this.lootToast.show(this.lastLootMsg, "water_bottle");
           this.hudAcc = 1;
         }
       } else {
@@ -1549,7 +1552,7 @@ export class Game {
     );
     const nearHint =
       near && containerHasLoot(near)
-        ? `cerca: ${near.name} [${inventorySummary(near.inv)}] G/E loot`
+        ? `cerca: ${near.name} [${inventorySummary(near.inv)}] G/E recoger`
         : undefined;
     const invLine = `inv ${this.player.invSummary()} (${this.player.invWeight().toFixed(1)}kg)`;
     const invDetailHint = this.showInvDetail ? "I cerrar inv" : undefined;

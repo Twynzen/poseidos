@@ -398,25 +398,39 @@
 
       /* Loot toast: JS createLootFloaterHud pisa con inline; no usar [hidden] */
       #loot-floater {
-        display: none;
-        position: fixed;
-        left: 50%;
-        top: 34%;
+        position: fixed; left: 50%; top: 34%;
         transform: translate(-50%, 0);
-        z-index: 9999;
-        pointer-events: none;
-        color: #ffe080;
-        font: 800 42px/1 ui-monospace, monospace;
-        text-shadow: 0 2px 14px #000, 0 0 22px rgba(255,224,128,.75);
+        z-index: 9999; pointer-events: none;
+        display: none;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px 6px 8px;
+        border-radius: 999px;
+        font: 800 20px/1.2 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        letter-spacing: 0.03em;
         white-space: nowrap;
+        color: #ffe080;
+        text-shadow: 0 1px 8px #000, 0 0 12px rgba(255,224,128,.4);
+        background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02)), var(--hud-bg);
+        border: 1px solid var(--hud-border);
+        box-shadow: 0 8px 18px rgba(2, 6, 23, 0.35), inset 0 1px 0 rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px) saturate(140%);
+      }
+      #loot-floater.loot-floater-err { color: #fca5a5; text-shadow: none; border-color: rgba(248, 113, 113, 0.4); }
+      #loot-floater .loot-floater-icon { width: 30px; height: 30px; display: inline-flex; flex: 0 0 30px; }
+      #loot-floater .loot-floater-icon svg { width: 30px; height: 30px; display: block; }
+      #loot-floater .loot-floater-qty {
+        min-width: 1.1em; padding: 0 4px; border-radius: 4px;
+        font: 800 12px/1.2 ui-monospace; color: #0b1220; background: #ffe080;
       }
       #loot-floater.loot-floater-play {
-        animation: loot-float 4s ease-out forwards;
+        display: inline-flex;
+        animation: loot-float 2s ease-out forwards;
       }
       @keyframes loot-float {
         0% { opacity: 1; transform: translate(-50%, 8px); }
-        55% { opacity: 1; transform: translate(-50%, -18px); }
-        100% { opacity: 0; transform: translate(-50%, -72px); }
+        50% { opacity: 1; transform: translate(-50%, -12px); }
+        100% { opacity: 0; transform: translate(-50%, -48px); }
       }
     </style>
   </head>
