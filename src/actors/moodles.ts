@@ -8,7 +8,7 @@ import type { NeedsState } from "./needs";
 
 export type MoodleLevel = "ok" | "warn" | "critical";
 
-export type MoodleId = "hunger" | "thirst" | "fatigue" | "health";
+export type MoodleId = "hunger" | "thirst" | "fatigue" | "health" | "ammo";
 
 export interface MoodleView {
   id: MoodleId;
@@ -33,6 +33,10 @@ export const NEED_CRITICAL = 70;
 export const HP_WARN = 60;
 export const HP_CRITICAL = 30;
 
+/** Munición: por encima = ok; entre = warn; <= critical. */
+export const AMMO_WARN = 2;
+export const AMMO_CRITICAL = 0;
+
 export function moodleLevelForNeed(value: number): MoodleLevel {
   if (value >= NEED_CRITICAL) return "critical";
   if (value >= NEED_WARN) return "warn";
@@ -45,11 +49,18 @@ export function moodleLevelForHealth(hp: number): MoodleLevel {
   return "ok";
 }
 
+export function moodleLevelForAmmo(qty: number): MoodleLevel {
+  if (qty <= AMMO_CRITICAL) return "critical";
+  if (qty <= AMMO_WARN) return "warn";
+  return "ok";
+}
+
 const LABELS: Record<MoodleId, { label: string; glyph: string }> = {
   hunger: { label: "HMB", glyph: "⬡" },
   thirst: { label: "SED", glyph: "◈" },
   fatigue: { label: "CAN", glyph: "◌" },
   health: { label: "HP", glyph: "✚" },
+  ammo: { label: "BAL", glyph: "◉" },
 };
 
 /** Construye las 4 pills (hambre/sed/cansancio/HP) para el HUD. */
@@ -80,4 +91,30 @@ export function buildMoodles(needs: NeedsState, health: number): MoodleView[] {
       level: moodleLevelForHealth(health),
     },
   ];
+}
+
+/** Pill BAL solo si hay pistola (qty>0). Sin pistola → null (HUD no muestra). */
+export function ammoMoodle(
+  hasPistol: boolean,
+  ammoQty: number,
+): MoodleView | null {
+  if (!hasPistol) return null;
+  return {
+    id: "ammo",
+    ...LABELS.ammo,
+    value: Math.round(ammoQty),
+    level: moodleLevelForAmmo(ammoQty),
+  };
+}
+
+/** 4 pills de needs/HP + BAL si hay pistola. */
+export function buildHudMoodles(
+  needs: NeedsState,
+  health: number,
+  hasPistol: boolean,
+  ammoQty: number,
+): MoodleView[] {
+  const pills = buildMoodles(needs, health);
+  const ammo = ammoMoodle(hasPistol, ammoQty);
+  return ammo ? [...pills, ammo] : pills;
 }

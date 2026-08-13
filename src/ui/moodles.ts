@@ -38,6 +38,12 @@ export function createMoodlesHud(root: HTMLElement): MoodlesHud {
 
   return {
     sync(moodles) {
+      const keep = new Set<string>(moodles.map((m) => m.id));
+      for (const [id, el] of [...pills]) {
+        if (keep.has(id)) continue;
+        el.remove();
+        pills.delete(id);
+      }
       for (const m of moodles) {
         const el = ensurePill(m);
         el.dataset.level = m.level;

@@ -79,7 +79,7 @@ import {
   type InventoryPanel,
   type HitFlash,
 } from "../ui";
-import { buildMoodles } from "../actors/moodles";
+import { buildHudMoodles } from "../actors/moodles";
 import { trySleep, isSafehouseHint, nearBed, hostileNearby } from "../actors/sleep";
 import {
   createAmbientBus,
@@ -1101,6 +1101,21 @@ export class Game {
     syncAmbientPlayer(this.ambientPlayer, this.ambient);
   }
 
+  /** Needs/HP + BAL si hay pistola (qty>0) y munición actual. */
+  private buildPlayerHudMoodles() {
+    const inv = this.player.inventory;
+    const pistolSlot = findSlot(inv, "pistol");
+    const hasPistol = pistolSlot >= 0 && (inv.slots[pistolSlot]?.qty ?? 0) > 0;
+    const ammoSlot = findSlot(inv, "ammo");
+    const ammoQty = ammoSlot >= 0 ? (inv.slots[ammoSlot]?.qty ?? 0) : 0;
+    return buildHudMoodles(
+      this.player.needs,
+      this.player.health,
+      hasPistol,
+      ammoQty,
+    );
+  }
+
   /** Footsteps stub + WebAudio beeps; mute compartido con ambient. */
   private syncFootsteps(dt: number, moved: number, sprint: boolean): void {
     tickFootsteps(
@@ -1136,9 +1151,7 @@ export class Game {
         showHelp: this.showHelp,
       });
       this.hud.classList.toggle("hud-help", this.showHelp);
-      this.moodlesHud.sync(
-        buildMoodles(this.player.needs, this.player.health),
-      );
+      this.moodlesHud.sync(this.buildPlayerHudMoodles());
       this.inventoryPanel.sync({
         open: false,
         data: buildInventoryPanelData(this.player.inventory),
@@ -1180,7 +1193,7 @@ export class Game {
     const dlgHint = this.dialogue.open
       ? `diálogo ${this.dialogue.target}`
       : undefined;
-    this.moodlesHud.sync(buildMoodles(this.player.needs, this.player.health));
+    this.moodlesHud.sync(this.buildPlayerHudMoodles());
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
     const safe =
       indoor && isSafehouseHint(this.map, this.player.x, this.player.y);
