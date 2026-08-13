@@ -59,7 +59,7 @@ describe("ammoMoodle", () => {
     const m = ammoMoodle(true, 8);
     expect(m).not.toBeNull();
     expect(m!.id).toBe("ammo");
-    expect(m!.label).toBe("BAL");
+    expect(m!.label).toBe("Balas");
     expect(m!.glyph).toBe("◉");
     expect(m!.value).toBe(8);
     expect(m!.level).toBe("ok");
@@ -83,8 +83,8 @@ describe("buildMoodles", () => {
     expect(m[1]!.level).toBe("warn");
     expect(m[2]!.level).toBe("critical");
     expect(m[3]!.level).toBe("critical");
-    expect(m[0]!.label).toBe("HMB");
-    expect(m[3]!.label).toBe("HP");
+    expect(m[0]!.label).toBe("Hambre");
+    expect(m[3]!.label).toBe("Vida");
     expect(m[3]!.value).toBe(25);
   });
 });
@@ -139,7 +139,7 @@ describe("buildHudMoodles", () => {
       "ammo",
       "clock",
     ]);
-    expect(m[4]!.label).toBe("BAL");
+    expect(m[4]!.label).toBe("Balas");
     expect(m[4]!.glyph).toBe("◉");
     expect(m[4]!.value).toBe(1);
     expect(m[4]!.level).toBe("warn");
