@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** HUD debug quieter.
+- **Última rutina:** HUD no tapa hotbar.
 - **Qué quedó (esta corrida):**
+  - **HUD no tapa hotbar** `#hud` max-width `min(420px, calc(50% - 220px))`; `#hud.hud-help` y `#moodles` `min(720px, calc(50% - 220px))` para no crecer al centro (hotbar ~334px, half ≈167 + left/pad/gap). Moodles `flex-wrap: wrap`. `white-space: pre-wrap` sin cambio. Sin mover hotbar ni widgets nuevos.
   - **HUD debug quieter** `#hud` compacto = línea de jugador (día/fase, rain, indoor, mudos/poseídos, inv, cerca, hints/msg, `F1 ayuda`). Tokens `tile X,Y · chunks A/B · fov N` solo con F1 (`showHelp`), antes de `F1 cerrar ayuda`. `formatHudDebugTokens` helper. Sin widgets nuevos ni cambio de grupos CONTROLS_HELP.
   - **Inventory empty cells** panel I padded a `maxSlots`: celdas vacías (hueco qty=0 y capacidad libre) con ghost diamante gold dashed (`emptySlotIconSvg`, no el fallback unknown-item) + `title`/`aria-label` `vacío`. CSS `.inv-slot-empty` borde dashed gold/ghost y opacity ~0.82, como hotbar. Ocupados (SVG + qty) y gestos (clic / drag / split / merge / inspect / use) sin cambio; vacío no encola gestos.
   - **Hotbar empty-slot hint** celdas vacías 1–5 con ghost diamante gold dashed (`emptySlotIconSvg`, no el fallback unknown-item) + tecla + `title`/`aria-label` `vacío · N`. CSS borde dashed gold/ghost y opacity ~0.82 (antes 0.4). Ocupados (SVG + qty + tecla) y gestos (clic / drag / split / merge / inspect) sin cambio.

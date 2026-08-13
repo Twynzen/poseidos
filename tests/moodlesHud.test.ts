@@ -95,3 +95,14 @@ describe("F1 lift CSS", () => {
     expect(html).toMatch(/\.moodle-glyph svg\s*\{\s*width:\s*12px;\s*height:\s*12px;/);
   });
 });
+
+describe("HUD vs hotbar CSS", () => {
+  test("#hud / #moodles max-width stay left of centered hotbar", () => {
+    const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
+    expect(html).toMatch(/#hud\s*\{[^}]*max-width:\s*min\(420px,\s*calc\(50%\s*-\s*220px\)\)/s);
+    expect(html).toMatch(/#hud\.hud-help\s*\{[^}]*max-width:\s*min\(720px,\s*calc\(50%\s*-\s*220px\)\)/s);
+    expect(html).toMatch(/#moodles\s*\{[^}]*flex-wrap:\s*wrap/s);
+    expect(html).toMatch(/#moodles\s*\{[^}]*max-width:\s*min\(720px,\s*calc\(50%\s*-\s*220px\)\)/s);
+    expect(html).toMatch(/#hud\s*\{[^}]*white-space:\s*pre-wrap/s);
+  });
+});
