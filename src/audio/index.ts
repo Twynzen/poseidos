@@ -36,3 +36,15 @@ export {
   syncAmbientPlayer,
   type AmbientPlayer,
 } from "./ambientPlayer";
+
+export {
+  shouldPlayCombatSfx,
+  combatBeepSpec,
+  createCombatPlayer,
+  playMelee,
+  playHit,
+  playGun,
+  type CombatSfxKind,
+  type CombatBeepSpec,
+  type CombatPlayer,
+} from "./combatPlayer";

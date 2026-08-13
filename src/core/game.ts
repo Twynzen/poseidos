@@ -93,10 +93,15 @@ import {
   syncFootstepPlayer,
   createAmbientPlayer,
   syncAmbientPlayer,
+  createCombatPlayer,
+  playMelee,
+  playHit,
+  playGun,
   type AmbientBus,
   type FootstepsBus,
   type FootstepPlayer,
   type AmbientPlayer,
+  type CombatPlayer,
 } from "../audio";
 import {
   computeNeedsDamage,
@@ -140,6 +145,7 @@ export class Game {
   private weather: WeatherSystem;
   private ambient: AmbientBus;
   private ambientPlayer: AmbientPlayer;
+  private combatPlayer: CombatPlayer;
   private footsteps: FootstepsBus;
   private footstepPlayer: FootstepPlayer;
   private readonly loop: GameLoop;
@@ -211,6 +217,7 @@ export class Game {
     this.weather = new WeatherSystem();
     this.ambient = createAmbientBus();
     this.ambientPlayer = createAmbientPlayer();
+    this.combatPlayer = createCombatPlayer();
     this.footsteps = createFootstepsBus();
     this.footstepPlayer = createFootstepPlayer();
     this.storage = browserStorage();
@@ -731,6 +738,7 @@ export class Game {
     if (hostileDamageAllowed(this.spawnGrace)) {
       for (const hit of hits) {
         this.player.takeDamage(hit.damage);
+        playHit(this.combatPlayer, this.ambient.muted);
         this.view.triggerPlayerAction("hit");
         triggerHitFlash(this.hitFlash, 1);
         const attacker = this.hostiles.get(hit.hostileId);
@@ -761,6 +769,7 @@ export class Game {
       const result = this.player.tryMelee(this.hostiles);
       if (canSwing) {
         this.view.triggerPlayerAction("primary-attack");
+        playMelee(this.combatPlayer, this.ambient.muted);
       }
       if (result) {
         if (result.killed) {
@@ -792,6 +801,7 @@ export class Game {
         this.lastLootMsg = shot.message;
         this.hudAcc = 1;
       } else {
+        playGun(this.combatPlayer, this.ambient.muted);
         this.view.triggerPlayerAction("primary-attack");
         this.showNoiseRing(this.noise.emitGun(this.player.x, this.player.y));
         this.view.spawnTracer(
