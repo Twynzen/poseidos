@@ -9,6 +9,7 @@ import {
   doorFocusMul,
   doorFocusPulse,
   doorFocusScale,
+  doorRingVisible,
 } from "../src/render/doorFocus";
 
 describe("constantes", () => {
@@ -90,5 +91,33 @@ describe("doorFocusInReach", () => {
     expect(doorFocusInReach(1.6)).toBe(true);
     expect(doorFocusInReach(1.61)).toBe(false);
     expect(doorFocusInReach(Number.NaN)).toBe(false);
+  });
+});
+
+describe("doorRingVisible", () => {
+  test("abierta o cerrada en 0 y en reach → true", () => {
+    expect(doorRingVisible(false, 0)).toBe(true);
+    expect(doorRingVisible(true, 0)).toBe(true);
+    expect(doorRingVisible(false, DOOR_FOCUS_REACH)).toBe(true);
+    expect(doorRingVisible(true, DOOR_FOCUS_REACH)).toBe(true);
+  });
+
+  test("justo fuera de reach → false", () => {
+    expect(doorRingVisible(false, 1.61)).toBe(false);
+    expect(doorRingVisible(true, 1.61)).toBe(false);
+  });
+
+  test("open y closed ambas true en reach", () => {
+    expect(doorRingVisible(false, 0.8)).toBe(true);
+    expect(doorRingVisible(true, 0.8)).toBe(true);
+  });
+
+  test("NaN / Inf / reach 0 → false", () => {
+    expect(doorRingVisible(false, Number.NaN)).toBe(false);
+    expect(doorRingVisible(true, Number.POSITIVE_INFINITY)).toBe(false);
+    expect(doorRingVisible(false, Number.NEGATIVE_INFINITY)).toBe(false);
+    expect(doorRingVisible(false, 0, 0)).toBe(false);
+    expect(doorRingVisible(true, 0, Number.NaN)).toBe(false);
+    expect(doorRingVisible(false, 0, Number.POSITIVE_INFINITY)).toBe(false);
   });
 });

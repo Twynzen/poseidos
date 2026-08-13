@@ -115,8 +115,8 @@ import {
   lootFloaterOpacity,
   lootFloaterY,
 } from "./lootFloater";
-import { doorFocusMul, DOOR_FOCUS_REACH } from "./doorFocus";
-import { bedFocusMul, BED_FOCUS_REACH } from "./bedFocus";
+import { doorFocusMul, doorRingVisible, DOOR_FOCUS_REACH } from "./doorFocus";
+import { bedFocusMul, bedRingVisible, BED_FOCUS_REACH } from "./bedFocus";
 import type { TileMap } from "../world/tilemap";
 import type { Tile } from "../world/tile";
 import type { Chunk } from "../world/chunk";
@@ -162,9 +162,9 @@ export interface WorldView {
    */
   addLootMarker(id: string, x: number, y: number, name: string): void;
   /**
-   * Pulso de escala del loot más cercano en reach.
-   * Fuera de reach: scale 1. `dt` avanza el seno del pulso.
-   * `emptyIds`: contenedores vacíos — anillo oculto, no reciben foco.
+   * Pulso de escala del loot más cercano en reach (anillo+badge visibles).
+   * Fuera de reach: scale 1; anillo/badge ocultos. Nameplate sigue.
+   * `emptyIds`: contenedores vacíos — grupo oculto, no reciben foco.
    * Nameplate canvas: visible/opacity según dist (fade 10) y empty.
    */
   syncLootFocus(
@@ -174,13 +174,13 @@ export interface WorldView {
     emptyIds?: ReadonlySet<string>,
   ): void;
   /**
-   * Pulso de escala de la puerta más cercana en reach.
-   * Fuera de reach: scale 1. `dt` avanza el seno del pulso.
+   * Pulso de escala de la puerta más cercana en reach (anillo+badge).
+   * Fuera de reach: scale 1; anillo/badge ocultos. `dt` avanza el seno.
    */
   syncDoorFocus(wx: number, wy: number, dt: number): void;
   /**
-   * Pulso de escala de la cama más cercana en reach.
-   * Fuera de reach: scale 1. `dt` avanza el seno del pulso.
+   * Pulso de escala de la cama más cercana en reach (anillo+badge).
+   * Fuera de reach: scale 1; anillo/badge ocultos. `dt` avanza el seno.
    */
   syncBedFocus(wx: number, wy: number, dt: number): void;
   /**
@@ -506,7 +506,7 @@ export function createWorldView(
   playerMesh.position.set(0, 0, 0);
   scene.add(playerMesh);
 
-  // Loot: anillo/badge ámbar por contenedor. Siempre on (no FOV);
+  // Loot: anillo/badge ámbar por contenedor. Anillo solo en reach (no FOV);
   // syncLootFocus oculta ids vacíos. Nameplate canvas hijo (fade dist 10).
   interface LootMarkerEntry {
     group: THREE.Group;
@@ -606,7 +606,7 @@ export function createWorldView(
     }
   }
 
-  // Door: anillo/badge teal por tile door. Siempre on (no FOV).
+  // Door: anillo/badge teal por tile door. Anillo solo en reach (no FOV).
   interface DoorMarkerEntry {
     group: THREE.Group;
     x: number;
@@ -626,7 +626,7 @@ export function createWorldView(
     doorMarkerGroups.push({ group, x, y });
   });
 
-  // Bed: anillo/badge rosa por tile cama. Siempre on (no FOV).
+  // Bed: anillo/badge rosa por tile cama. Anillo solo en reach (no FOV).
   // Neighborhood: (6,6) y (24,22).
   interface BedMarkerEntry {
     group: THREE.Group;
@@ -1389,13 +1389,15 @@ export function createWorldView(
       for (let i = 0; i < lootMarkerGroups.length; i++) {
         const e = lootMarkerGroups[i]!;
         const empty = !!emptyIds?.has(e.id);
-        e.group.visible = lootRingVisible(empty);
         const d = Math.hypot(wx - e.x, wy - e.y);
+        const vis = lootRingVisible(empty, d, LOOT_FOCUS_REACH);
+        e.group.visible = !empty;
+        setInteractRingVisible(e.group, vis);
         e.nameplate.visible = lootNameplateVisible(d, empty);
         const plateMat = e.nameplate.material as THREE.SpriteMaterial;
         plateMat.opacity = lootNameplateOpacity(d);
-        if (empty) continue;
-        if (d <= LOOT_FOCUS_REACH && d < bestD) {
+        if (!vis) continue;
+        if (d < bestD) {
           bestD = d;
           best = i;
         }
@@ -1418,7 +1420,10 @@ export function createWorldView(
       for (let i = 0; i < doorMarkerGroups.length; i++) {
         const e = doorMarkerGroups[i]!;
         const d = Math.hypot(wx - e.x, wy - e.y);
-        if (d <= DOOR_FOCUS_REACH && d < bestD) {
+        const open = map.get(Math.floor(e.x), Math.floor(e.y))?.open ?? false;
+        const vis = doorRingVisible(open, d, DOOR_FOCUS_REACH);
+        setInteractRingVisible(e.group, vis);
+        if (vis && d < bestD) {
           bestD = d;
           best = i;
         }
@@ -1437,7 +1442,9 @@ export function createWorldView(
       for (let i = 0; i < bedMarkerGroups.length; i++) {
         const e = bedMarkerGroups[i]!;
         const d = Math.hypot(wx - e.x, wy - e.y);
-        if (d <= BED_FOCUS_REACH && d < bestD) {
+        const vis = bedRingVisible(d, BED_FOCUS_REACH);
+        setInteractRingVisible(e.group, vis);
+        if (vis && d < bestD) {
           bestD = d;
           best = i;
         }
@@ -1834,6 +1841,14 @@ function createMarkerSharedResources(): MarkerSharedResources {
       mats.length = 0;
     },
   };
+}
+
+/** Oculta solo anillo+badge; no toca el nameplate de loot. */
+function setInteractRingVisible(root: THREE.Object3D, vis: boolean): void {
+  const ring = root.getObjectByName("groundRing");
+  if (ring) ring.visible = vis;
+  const badge = root.getObjectByName("floatBadge");
+  if (badge) badge.visible = vis;
 }
 
 /**

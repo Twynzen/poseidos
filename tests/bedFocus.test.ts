@@ -9,6 +9,7 @@ import {
   bedFocusMul,
   bedFocusPulse,
   bedFocusScale,
+  bedRingVisible,
 } from "../src/render/bedFocus";
 
 describe("constantes", () => {
@@ -90,5 +91,25 @@ describe("bedFocusInReach", () => {
     expect(bedFocusInReach(1.5)).toBe(true);
     expect(bedFocusInReach(1.51)).toBe(false);
     expect(bedFocusInReach(Number.NaN)).toBe(false);
+  });
+});
+
+describe("bedRingVisible", () => {
+  test("0 y borde de reach → true", () => {
+    expect(bedRingVisible(0)).toBe(true);
+    expect(bedRingVisible(BED_FOCUS_REACH)).toBe(true);
+  });
+
+  test("justo fuera de reach → false", () => {
+    expect(bedRingVisible(1.51)).toBe(false);
+  });
+
+  test("NaN / Inf / reach 0 → false", () => {
+    expect(bedRingVisible(Number.NaN)).toBe(false);
+    expect(bedRingVisible(Number.POSITIVE_INFINITY)).toBe(false);
+    expect(bedRingVisible(Number.NEGATIVE_INFINITY)).toBe(false);
+    expect(bedRingVisible(0, 0)).toBe(false);
+    expect(bedRingVisible(0, Number.NaN)).toBe(false);
+    expect(bedRingVisible(0, Number.POSITIVE_INFINITY)).toBe(false);
   });
 });

@@ -88,8 +88,25 @@ describe("lootFocusInReach", () => {
 });
 
 describe("lootRingVisible", () => {
-  test("empty → false; con loot → true", () => {
-    expect(lootRingVisible(true)).toBe(false);
-    expect(lootRingVisible(false)).toBe(true);
+  test("con loot en reach (0 y borde) → true", () => {
+    expect(lootRingVisible(false, 0)).toBe(true);
+    expect(lootRingVisible(false, LOOT_FOCUS_REACH)).toBe(true);
+  });
+
+  test("con loot justo fuera de reach → false", () => {
+    expect(lootRingVisible(false, 1.61)).toBe(false);
+  });
+
+  test("empty → false aunque dist 0", () => {
+    expect(lootRingVisible(true, 0)).toBe(false);
+  });
+
+  test("NaN / Inf / reach 0 → false", () => {
+    expect(lootRingVisible(false, Number.NaN)).toBe(false);
+    expect(lootRingVisible(false, Number.POSITIVE_INFINITY)).toBe(false);
+    expect(lootRingVisible(false, Number.NEGATIVE_INFINITY)).toBe(false);
+    expect(lootRingVisible(false, 0, 0)).toBe(false);
+    expect(lootRingVisible(false, 0, Number.NaN)).toBe(false);
+    expect(lootRingVisible(false, 0, Number.POSITIVE_INFINITY)).toBe(false);
   });
 });

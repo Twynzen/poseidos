@@ -48,3 +48,18 @@ export function doorFocusMul(dist: number, elapsed: number): number {
   if (!doorFocusInReach(dist)) return 1;
   return doorFocusScale(dist) * doorFocusPulse(elapsed);
 }
+
+/**
+ * Anillo teal si la puerta está en reach.
+ * `open` se ignora: abierta o cerrada, ambas se muestran en alcance.
+ */
+export function doorRingVisible(
+  _open: boolean,
+  dist: number,
+  reach: number = DOOR_FOCUS_REACH,
+): boolean {
+  if (!Number.isFinite(dist) || !Number.isFinite(reach) || reach <= 0) {
+    return false;
+  }
+  return dist <= reach;
+}
