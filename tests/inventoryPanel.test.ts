@@ -21,6 +21,14 @@ function invWithHole(): Inventory {
   return inv;
 }
 
+function slotAt(root: HTMLElement, originalIndex: number): HTMLElement {
+  const li = root.querySelector<HTMLElement>(
+    `.inv-slot[data-index="${originalIndex}"]`,
+  );
+  expect(li).toBeTruthy();
+  return li!;
+}
+
 function clickRow(
   root: HTMLElement,
   originalIndex: number,
@@ -28,11 +36,7 @@ function clickRow(
   ctrlKey = false,
   metaKey = false,
 ): void {
-  const li = root.querySelector<HTMLElement>(
-    `.inv-slot[data-index="${originalIndex}"]`,
-  );
-  expect(li).toBeTruthy();
-  li!.dispatchEvent(
+  slotAt(root, originalIndex).dispatchEvent(
     new MouseEvent("click", {
       bubbles: true,
       cancelable: true,
@@ -44,11 +48,7 @@ function clickRow(
 }
 
 function dblclickRow(root: HTMLElement, originalIndex: number): void {
-  const li = root.querySelector<HTMLElement>(
-    `.inv-slot[data-index="${originalIndex}"]`,
-  );
-  expect(li).toBeTruthy();
-  li!.dispatchEvent(
+  slotAt(root, originalIndex).dispatchEvent(
     new MouseEvent("dblclick", { bubbles: true, cancelable: true }),
   );
 }
@@ -59,21 +59,13 @@ function pointerOnRow(
   type: string,
   extra: PointerEventInit = {},
 ): void {
-  const li = root.querySelector<HTMLElement>(
-    `.inv-slot[data-index="${originalIndex}"]`,
-  );
-  expect(li).toBeTruthy();
-  li!.dispatchEvent(
+  slotAt(root, originalIndex).dispatchEvent(
     new PointerEvent(type, { bubbles: true, cancelable: true, ...extra }),
   );
 }
 
 function contextmenuRow(root: HTMLElement, originalIndex: number): void {
-  const li = root.querySelector<HTMLElement>(
-    `.inv-slot[data-index="${originalIndex}"]`,
-  );
-  expect(li).toBeTruthy();
-  li!.dispatchEvent(
+  slotAt(root, originalIndex).dispatchEvent(
     new MouseEvent("contextmenu", { bubbles: true, cancelable: true }),
   );
 }
@@ -475,6 +467,72 @@ describe("inventory panel selectedIndex", () => {
     expect(row2?.classList.contains("inv-slot-selected")).toBe(true);
     const row0 = root.querySelector<HTMLElement>('.inv-slot[data-index="0"]');
     expect(row0?.classList.contains("inv-slot-selected")).toBe(false);
+    panel.dispose();
+  });
+});
+
+describe("createInventoryPanel grid + icons", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  test("ul.inv-list tiene inv-grid; cada slot SVG + aria-label + title", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "water_bottle", qty: 2 },
+      { id: "flashlight", qty: 1 },
+    ]);
+    panel.sync({ open: true, data: buildInventoryPanelData(inv) });
+
+    const list = root.querySelector("ul.inv-list");
+    expect(list).toBeTruthy();
+    expect(list!.classList.contains("inv-grid")).toBe(true);
+
+    const food = slotAt(root, 0);
+    expect(food.title).toBe("lata de comida");
+    expect(food.getAttribute("aria-label")).toBe("lata de comida ×1");
+    expect(food.querySelector(".inv-slot-qty")).toBeNull();
+    expect(food.querySelector(".inv-slot-icon svg")).toBeTruthy();
+    expect(food.querySelector(".inv-slot-name")).toBeNull();
+    expect(food.querySelector(".inv-slot-weight")).toBeNull();
+
+    const water = slotAt(root, 1);
+    expect(water.title).toBe("botella de agua");
+    expect(water.getAttribute("aria-label")).toBe("botella de agua ×2");
+    expect(water.querySelector(".inv-slot-qty")?.textContent).toBe("2");
+    expect(water.querySelector(".inv-slot-icon svg")).toBeTruthy();
+
+    const light = slotAt(root, 2);
+    expect(light.title).toBe("linterna");
+    expect(light.getAttribute("aria-label")).toBe("linterna ×1");
+    expect(light.querySelector(".inv-slot-qty")).toBeNull();
+    expect(light.querySelector(".inv-slot-icon svg")).toBeTruthy();
+
+    panel.dispose();
+  });
+
+  test("click en icono SVG sigue consumeClick (delegación .inv-slot)", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "water_bottle", qty: 2 },
+      { id: "flashlight", qty: 1 },
+    ]);
+    panel.sync({ open: true, data: buildInventoryPanelData(inv) });
+
+    const icon = slotAt(root, 1).querySelector(".inv-slot-icon");
+    expect(icon).toBeTruthy();
+    icon!.dispatchEvent(
+      new MouseEvent("click", { bubbles: true, cancelable: true }),
+    );
+    expect(panel.consumeClick()).toBe(1);
     panel.dispose();
   });
 });

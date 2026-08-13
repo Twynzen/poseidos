@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** Fix facing walk vs WASD (offset π: S ya no moonwalk).
+- **Última rutina:** Inventario I estilo Diablo (grid 5 + iconos SVG).
 - **Qué quedó (esta corrida):**
+  - **Panel I** es grilla 5 columnas (`.inv-grid`) de slots cuadrados con siluetas SVG inline (`itemIconSvg`); qty>1 en badge; `title` / `aria-label` con el nombre. Gestos iguales: clic / doble clic / arrastrar / Shift+partir / Ctrl+juntar / clic der. inspect / `selectedIndex`. Sin iconos en hotbar; sin cambio de facing/yaw.
   - **PLAYER_GLTF_YAW_OFFSET = π** — Soldier.glb camina −Z local; S baja y la animación también. Solo yaw visual del GLB; movimiento/physics/facingX/Y sin cambio. Chevron / linterna / muzzle ya consumen `playerGltfYaw` (incluye el offset); `FACING_CHEVRON_YAW_OFFSET` sigue 0.
   - **U inv tirar** con el panel I abierto, U / Shift+U tiran de `lastInvIndex` (última fila clicada: clic / doble clic / inspect / partir / juntar / drag.to) si qty ≥ 1; si null / vacía / ausente, hotbar. Panel cerrado: U sigue el slot hotbar. `dropSourceIndex`. Highlight `inv-slot-selected`.
   - **consumeDblClick + useInventorySlot**; doble clic en fila del panel I usa el stack (food/drink/heal / recarga lluvia / "no se puede usar"). Clic simple sigue usando. Debounce ~0.35s de `clock.elapsed` en el mismo índice evita comer dos veces (click+click+dblclick).
@@ -27,6 +28,6 @@
 - **Controles:** WASD mover · **Shift correr** · **Espacio/V melee** · **X disparar** · E puerta/loot · G loot · **Shift+G stack** · **Q usar slot** (consumible seleccionado / lluvia outdoor) · **U tirar** · **Shift+U stack** · **U inv tirar** · **1-5 hotbar** (selección, highlight azul) · **rueda hotbar** (cicla slot, wrap) · **clic hotbar** · **arrastrar hotbar** · **doble clic usar** · **clic der. info** · **Shift+clic hotbar partir** · **Ctrl+clic hotbar juntar** · **clic inv usar** · **doble clic inv** · **arrastrar inv** · **clic der. inv** · **Shift+clic inv partir** · **Ctrl+clic inv juntar** · **I inventorio (panel; al empezar muestra kit inicial)** · B barricada · **C vendaje** · **H cocinar** · **T diálogo** (calmar / preguntar / amenazar / ofrecer comida / Distraer) · **L linterna** · **M mute ambient** · **+/- zoom** · R descanso/reinicio · **Z dormir** (cama o suelo indoor) · **F1 ayuda** · F5 guardar · F9 cargar · (boot) clic/Espacio saltar loading
 - **Fuera de este slice:** autogenerar modelos en Mesh2Motion (herramienta externa); WebSocket real; lobby UI browser; API LLM real; GTAO; samples de pisadas (sigue beep); samples ambient reales; samples combat reales (sigue beep); samples interact reales (sigue beep); samples speech reales (sigue beep); samples heartbeat reales (sigue beep)
 - **Dirección:** sandbox largo en Three.js (sim primero; render es vista); LLM solo stub/fallback; MP solo stub headless por ahora
-- **Siguiente subtarea concreta:** Inventario estilo Diablo + iconos SVG.
+- **Siguiente subtarea concreta:** Simplificar aros loot/puerta/cama.
 - **Bloqueos:** ninguno
 - **Entorno:** Bun; scripts `dev`, `build`, `test`
