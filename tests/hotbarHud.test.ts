@@ -84,6 +84,13 @@ function pointerOnSlot(root: HTMLElement, index: number, type: string): void {
   slot.dispatchEvent(new PointerEvent(type, { bubbles: true, cancelable: true }));
 }
 
+function dblclickSlot(root: HTMLElement, index: number): void {
+  const slot = root.querySelectorAll<HTMLElement>(".hotbar-slot")[index];
+  slot.dispatchEvent(
+    new MouseEvent("dblclick", { bubbles: true, cancelable: true }),
+  );
+}
+
 describe("hotbarHud consumeDrag", () => {
   let root: HTMLElement;
 
@@ -142,6 +149,51 @@ describe("hotbarHud consumeDrag", () => {
     pointerOnSlot(root, 4, "pointerup");
     expect(hud.consumeDrag()).toEqual({ from: 1, to: 4 });
     expect(hud.consumeClick()).toBeNull();
+    hud.dispose();
+  });
+});
+
+describe("hotbarHud consumeDblClick", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  test("dblclick slot 0 → consumeDblClick 0, segundo consume null", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    dblclickSlot(root, 0);
+    expect(hud.consumeDblClick()).toBe(0);
+    expect(hud.consumeDblClick()).toBeNull();
+    hud.dispose();
+  });
+
+  test("dblclick 1 luego 3 sin consume → consumeDblClick 3", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    dblclickSlot(root, 1);
+    dblclickSlot(root, 3);
+    expect(hud.consumeDblClick()).toBe(3);
+    expect(hud.consumeDblClick()).toBeNull();
+    hud.dispose();
+  });
+
+  test("dblclick no produce consumeDrag", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    dblclickSlot(root, 2);
+    expect(hud.consumeDrag()).toBeNull();
+    expect(hud.consumeDblClick()).toBe(2);
     hud.dispose();
   });
 });

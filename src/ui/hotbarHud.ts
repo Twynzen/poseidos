@@ -2,6 +2,7 @@
  * Hotbar HUD: 5 slots glass-dark (Skills P1) bottom-center.
  * Solo DOM; datos en ui/hotbar. Clase `hotbar-selected` = slot activo (1–5).
  * Clic en slot: encola índice; Game consume con consumeClick().
+ * Doble clic: consumeDblClick (usar slot); no encola drag. Clic-select en esos clics OK.
  * Arrastrar de slot a slot: consumeDrag {from,to}; soltar fuera cancela (sin click-select).
  */
 
@@ -10,6 +11,7 @@ import { clampHotbarIndex, HOTBAR_SIZE, type HotbarSlot } from "./hotbar";
 export interface HotbarHud {
   sync(slots: ReadonlyArray<HotbarSlot>, selectedIndex?: number): void;
   consumeClick(): number | null;
+  consumeDblClick(): number | null;
   consumeDrag(): { from: number; to: number } | null;
   dispose(): void;
 }
@@ -21,6 +23,7 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
   root.appendChild(bar);
 
   let pendingClick: number | null = null;
+  let pendingDblClick: number | null = null;
   let pendingDrag: { from: number; to: number } | null = null;
   let dragFrom: number | null = null;
   let ignoreClick = false;
@@ -82,6 +85,11 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
       }
       pendingClick = clampHotbarIndex(i);
     });
+    slot.addEventListener("dblclick", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      pendingDblClick = clampHotbarIndex(i);
+    });
     const key = document.createElement("span");
     key.className = "hotbar-key";
     const name = document.createElement("span");
@@ -98,6 +106,11 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
       const clicked = pendingClick;
       pendingClick = null;
       return clicked;
+    },
+    consumeDblClick() {
+      const dbl = pendingDblClick;
+      pendingDblClick = null;
+      return dbl;
     },
     consumeDrag() {
       const dragged = pendingDrag;

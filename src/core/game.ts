@@ -74,6 +74,7 @@ import {
   createLootFloaterHud,
   createInventoryPanel,
   hotbarSlots,
+  clampHotbarIndex,
   stepHotbarIndex,
   swapHotbarStacks,
   formatHudStatus,
@@ -690,6 +691,56 @@ export class Game {
     this.view.spawnNoiseRing(ev.x, ev.y, ev.radius, ev.source);
   }
 
+  /**
+   * Usa el slot de hotbar: vacía+lluvia outdoor rellena esa botella;
+   * si no, consume food/drink/heal. Q prioriza lluvia en cualquier vacía.
+   */
+  private useHotbarSlot(index: number): void {
+    this.hotbarSelected = clampHotbarIndex(index);
+    const outdoor = !isIndoor(this.map, this.player.x, this.player.y);
+    const stack = this.player.inventory.slots[this.hotbarSelected];
+    if (
+      stack?.id === "empty_bottle" &&
+      canRefillFromRain(
+        this.weather.isRaining,
+        outdoor,
+        this.player.inventory,
+      )
+    ) {
+      if (
+        tryRefillFromRain(
+          this.weather.isRaining,
+          outdoor,
+          this.player.inventory,
+        )
+      ) {
+        playUse(this.interactPlayer, this.ambient.muted);
+        this.lastLootMsg = "recogiste agua de lluvia";
+        this.lootToast.show(this.lastLootMsg);
+        this.hudAcc = 1;
+      }
+      return;
+    }
+    const used = this.player.tryConsumeAt(this.hotbarSelected);
+    if (used) {
+      playUse(this.interactPlayer, this.ambient.muted);
+      this.lastLootMsg =
+        used === "food"
+          ? "comiste"
+          : used === "drink"
+            ? "bebiste"
+            : "vendaje +HP";
+      this.lootToast.show(this.lastLootMsg);
+      this.hudAcc = 1;
+    } else if (stack) {
+      const use = getItemDef(stack.id).use;
+      if (use !== "food" && use !== "drink" && use !== "heal") {
+        this.lastLootMsg = "no se puede usar";
+        this.hudAcc = 1;
+      }
+    }
+  }
+
   private tick(dt: number): void {
     this.applyIsoZoomInput();
     const slot = this.input.consumeHotbar();
@@ -704,6 +755,7 @@ export class Game {
     }
     const clicked = this.hotbarHud.consumeClick();
     const dragged = this.hotbarHud.consumeDrag();
+    const dbl = this.hotbarHud.consumeDblClick();
     if (dragged) {
       if (swapHotbarStacks(this.player.inventory, dragged.from, dragged.to)) {
         this.hotbarSelected = dragged.to;
@@ -953,6 +1005,10 @@ export class Game {
         this.hudAcc = 1;
       }
     }
+    if (dbl !== null) {
+      this.hotbarSelected = dbl;
+      this.useHotbarSlot(dbl);
+    }
     if (this.input.consumeUse()) {
       const outdoor = !isIndoor(this.map, this.player.x, this.player.y);
       if (
@@ -974,21 +1030,7 @@ export class Game {
           this.hudAcc = 1;
         }
       } else {
-        const used = this.player.tryConsumeAt(this.hotbarSelected);
-        if (used) {
-          playUse(this.interactPlayer, this.ambient.muted);
-          this.lastLootMsg =
-            used === "food"
-              ? "comiste"
-              : used === "drink"
-                ? "bebiste"
-                : "vendaje +HP";
-          this.lootToast.show(this.lastLootMsg);
-          this.hudAcc = 1;
-        } else {
-          this.lastLootMsg = "no se puede usar";
-          this.hudAcc = 1;
-        }
+        this.useHotbarSlot(this.hotbarSelected);
       }
     }
     if (this.input.consumeInventoryToggle()) {

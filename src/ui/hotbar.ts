@@ -4,6 +4,7 @@
  * `hotbarIndexFromKey` mapea Digit/Numpad 1–5 → índice; el bind vive en Input.
  * `stepHotbarIndex` cicla con rueda (wrap 0..4).
  * Clic en slot: HotbarHud.consumeClick → Game.hotbarSelected.
+ * Doble clic: HotbarHud.consumeDblClick → Game.useHotbarSlot (usar / lluvia).
  * Arrastrar: `swapHotbarStacks` intercambia dos índices ocupados (packed, sin huecos).
  */
 
