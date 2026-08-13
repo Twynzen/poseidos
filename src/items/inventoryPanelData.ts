@@ -32,6 +32,8 @@ export interface InventorySlotLine {
 export interface InventoryPanelData {
   empty: boolean;
   slots: InventorySlotLine[];
+  /** Capacidad de celdas del panel I (incluye vacías). */
+  maxSlots: number;
   /** Peso total / máx. */
   weight: number;
   maxWeight: number;
@@ -108,6 +110,7 @@ export function buildInventoryPanelData(inv: Inventory): InventoryPanelData {
   return {
     empty: slots.length === 0,
     slots,
+    maxSlots: inv.maxSlots,
     weight,
     maxWeight: inv.maxWeight,
     equipment,

@@ -80,6 +80,7 @@ describe("inventory panel click uses original slot index", () => {
   test("buildInventoryPanelData keeps original index through a qty=0 hole", () => {
     const data = buildInventoryPanelData(invWithHole());
     expect(data.empty).toBe(false);
+    expect(data.maxSlots).toBe(8);
     expect(data.slots.map((s) => s.id)).toEqual(["canned_food", "water_bottle"]);
     expect(data.slots.map((s) => s.index)).toEqual([0, 2]);
   });
@@ -126,7 +127,9 @@ describe("inventory panel click uses original slot index", () => {
     const inv = invWithHole();
     panel.sync({ open: true, data: buildInventoryPanelData(inv) });
 
-    const rows = [...root.querySelectorAll<HTMLElement>(".inv-slot")];
+    const rows = [
+      ...root.querySelectorAll<HTMLElement>(".inv-slot:not(.inv-slot-empty)"),
+    ];
     expect(rows.map((r) => r.dataset.index)).toEqual(["0", "2"]);
     expect(rows[1]?.dataset.id).toBe("water_bottle");
     expect(rows[1]?.style.cursor).toBe("grab");
@@ -147,7 +150,8 @@ describe("inventory panel click uses original slot index", () => {
       open: true,
       data: buildInventoryPanelData(createInventory()),
     });
-    expect(root.querySelector(".inv-slot")).toBeNull();
+    expect(root.querySelector(".inv-slot:not(.inv-slot-empty)")).toBeNull();
+    expect(root.querySelectorAll(".inv-slot-empty")).toHaveLength(8);
     expect(panel.consumeClick()).toBeNull();
 
     const inv = createInventory(8, 20, [{ id: "canned_food", qty: 1 }]);
@@ -513,6 +517,9 @@ describe("createInventoryPanel grid + icons", () => {
     expect(light.querySelector(".inv-slot-qty")).toBeNull();
     expect(light.querySelector(".inv-slot-icon svg")).toBeTruthy();
 
+    expect(root.querySelectorAll(".inv-slot")).toHaveLength(8);
+    expect(root.querySelectorAll(".inv-slot-empty")).toHaveLength(5);
+
     panel.dispose();
   });
 
@@ -533,6 +540,110 @@ describe("createInventoryPanel grid + icons", () => {
       new MouseEvent("click", { bubbles: true, cancelable: true }),
     );
     expect(panel.consumeClick()).toBe(1);
+    panel.dispose();
+  });
+
+  test("celdas vacías: ghost dashed + vacío; ocupadas sin cambio; no gestos en vacío", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "water_bottle", qty: 2 },
+    ]);
+    panel.sync({ open: true, data: buildInventoryPanelData(inv) });
+
+    const cells = [...root.querySelectorAll<HTMLElement>(".inv-slot")];
+    expect(cells).toHaveLength(8);
+    expect(root.querySelectorAll(".inv-slot-empty")).toHaveLength(6);
+
+    const food = slotAt(root, 0);
+    expect(food.classList.contains("inv-slot-empty")).toBe(false);
+    expect(food.title).toBe("lata de comida");
+    expect(food.getAttribute("aria-label")).toBe("lata de comida ×1");
+    const foodIcon = food.querySelector(".inv-slot-icon")?.innerHTML ?? "";
+    expect(foodIcon).toContain("<svg");
+    expect(foodIcon).not.toContain("stroke-dasharray");
+
+    const water = slotAt(root, 1);
+    expect(water.querySelector(".inv-slot-qty")?.textContent).toBe("2");
+    expect(water.classList.contains("inv-slot-empty")).toBe(false);
+
+    const empty = slotAt(root, 2);
+    const emptyIcon = empty.querySelector(".inv-slot-icon")?.innerHTML ?? "";
+    expect(empty.classList.contains("inv-slot-empty")).toBe(true);
+    expect(empty.dataset.id).toBeUndefined();
+    expect(empty.querySelector(".inv-slot-icon svg")).toBeTruthy();
+    expect(emptyIcon).toContain("stroke-dasharray");
+    expect(emptyIcon).toContain("M16 6.5");
+    expect(emptyIcon).not.toContain("M16 3.5");
+    expect(empty.querySelector(".inv-slot-qty")).toBeNull();
+    expect(empty.title).toBe("vacío");
+    expect(empty.getAttribute("aria-label")).toBe("vacío");
+
+    empty.dispatchEvent(
+      new MouseEvent("click", { bubbles: true, cancelable: true }),
+    );
+    expect(panel.consumeClick()).toBeNull();
+    empty.dispatchEvent(
+      new MouseEvent("dblclick", { bubbles: true, cancelable: true }),
+    );
+    expect(panel.consumeDblClick()).toBeNull();
+    empty.dispatchEvent(
+      new MouseEvent("contextmenu", { bubbles: true, cancelable: true }),
+    );
+    expect(panel.consumeInspect()).toBeNull();
+
+    clickRow(root, 1);
+    expect(panel.consumeClick()).toBe(1);
+    panel.dispose();
+  });
+
+  test("inventario vacío: maxSlots ghosts dashed + vacío; sin ocupados", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(6, 20);
+    panel.sync({ open: true, data: buildInventoryPanelData(inv) });
+
+    const cells = [...root.querySelectorAll<HTMLElement>(".inv-slot")];
+    expect(cells).toHaveLength(6);
+    for (const cell of cells) {
+      expect(cell.classList.contains("inv-slot-empty")).toBe(true);
+      const iconHtml = cell.querySelector(".inv-slot-icon")?.innerHTML ?? "";
+      expect(iconHtml).toContain("stroke-dasharray");
+      expect(iconHtml).toContain("M16 6.5");
+      expect(iconHtml).not.toContain("M16 3.5");
+      expect(cell.title).toBe("vacío");
+      expect(cell.getAttribute("aria-label")).toBe("vacío");
+      expect(cell.querySelector(".inv-slot-qty")).toBeNull();
+    }
+    expect(root.querySelector(".inv-empty")?.hidden).toBe(true);
+    expect(root.querySelector("ul.inv-list")?.hidden).toBe(false);
+    panel.dispose();
+  });
+
+  test("hueco qty=0 es celda vacía; drop en vacío no consumeDrag", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    panel.sync({ open: true, data: buildInventoryPanelData(invWithHole()) });
+
+    const hole = slotAt(root, 1);
+    expect(hole.classList.contains("inv-slot-empty")).toBe(true);
+    expect(hole.title).toBe("vacío");
+    expect(hole.querySelector(".inv-slot-icon")?.innerHTML).toContain(
+      "stroke-dasharray",
+    );
+
+    pointerOnRow(root, 0, "pointerdown");
+    pointerOnRow(root, 1, "pointerup");
+    expect(panel.consumeDrag()).toBeNull();
+    expect(panel.consumeClick()).toBeNull();
+
+    pointerOnRow(root, 0, "pointerdown");
+    pointerOnRow(root, 2, "pointerup");
+    expect(panel.consumeDrag()).toEqual({ from: 0, to: 2 });
     panel.dispose();
   });
 });

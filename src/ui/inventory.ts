@@ -1,7 +1,8 @@
 /**
  * Panel HTML de inventario (tecla I) — glass-dark estilo moodles/HUD.
  * Solo DOM; formato headless en items/inventoryPanelData.
- * Arrastrar fila→fila encola {from,to}; Game consumeDrag (swap, no usa).
+ * Grilla padded a maxSlots: ocupado = item SVG + qty; vacío = ghost dashed (`emptySlotIconSvg`).
+ * Arrastrar fila→fila encola {from,to}; Game consumeDrag (swap, no usa). Vacío no encola gestos.
  * Doble clic: consumeDblClick (usar slot); limpia pendingClick. Clic simple sigue usando.
  */
 
@@ -9,7 +10,7 @@ import {
   INVENTORY_EMPTY_MSG,
   type InventoryPanelData,
 } from "../items/inventoryPanelData";
-import { itemIconSvg } from "./itemIcons";
+import { emptySlotIconSvg, itemIconSvg } from "./itemIcons";
 
 export interface InventoryPanelView {
   open: boolean;
@@ -37,7 +38,7 @@ export interface InventoryPanel {
 
 function slotIndexFromEvent(e: Event): number | null {
   const el = (e.target as Element | null)?.closest?.(".inv-slot");
-  if (!el) return null;
+  if (!el || el.classList.contains("inv-slot-empty")) return null;
   const n = Number((el as HTMLElement).dataset.index);
   if (!Number.isFinite(n)) return null;
   return Math.trunc(n);
@@ -178,82 +179,90 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
         equip.appendChild(b);
       }
 
-      if (data.empty) {
-        empty.hidden = false;
-        list.replaceChildren();
-        list.hidden = true;
-      } else {
-        empty.hidden = true;
-        list.hidden = false;
-        list.replaceChildren();
-        for (const slot of data.slots) {
-          const li = document.createElement("li");
-          li.className = "inv-slot";
-          li.dataset.id = slot.id;
-          li.dataset.index = String(slot.index);
-          li.style.cursor = "grab";
-          li.addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (draggedThisGesture) {
-              draggedThisGesture = false;
-              return;
-            }
-            if (e.shiftKey) {
-              pendingSplit = slot.index;
-              pendingClick = null;
-              pendingMerge = null;
-            } else if (e.ctrlKey || e.metaKey) {
-              pendingMerge = slot.index;
-              pendingClick = null;
-              pendingSplit = null;
-            } else {
-              pendingClick = slot.index;
-              pendingSplit = null;
-              pendingMerge = null;
-            }
-          });
-          li.addEventListener("dblclick", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (draggedThisGesture) return;
-            const n = Number(li.dataset.index);
-            pendingDblClick = Number.isFinite(n) ? Math.trunc(n) : slot.index;
-            pendingClick = null;
-          });
-          li.addEventListener("contextmenu", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const n = Number(li.dataset.index);
-            pendingInspect = Number.isFinite(n) ? Math.trunc(n) : slot.index;
-          });
+      empty.hidden = true;
+      list.hidden = false;
+      list.replaceChildren();
+      const occupied = new Map(data.slots.map((s) => [s.index, s]));
+      for (let i = 0; i < data.maxSlots; i++) {
+        const slot = occupied.get(i);
+        const li = document.createElement("li");
+        li.className = "inv-slot";
+        li.dataset.index = String(i);
 
-          li.title = slot.name;
-          li.setAttribute("aria-label", `${slot.name} ×${slot.qty}`);
+        const icon = document.createElement("span");
+        icon.className = "inv-slot-icon";
 
-          const icon = document.createElement("span");
-          icon.className = "inv-slot-icon";
-          icon.innerHTML = itemIconSvg(slot.id);
+        if (!slot) {
+          li.classList.add("inv-slot-empty");
+          li.title = "vacío";
+          li.setAttribute("aria-label", "vacío");
+          icon.innerHTML = emptySlotIconSvg();
           li.append(icon);
-
-          if (slot.qty > 1) {
-            const qty = document.createElement("span");
-            qty.className = "inv-slot-qty";
-            qty.textContent = String(slot.qty);
-            li.append(qty);
-          }
-
           list.appendChild(li);
+          continue;
         }
-        const selected = view.selectedIndex;
-        list.querySelectorAll(".inv-slot").forEach((el) => {
-          const n = Number((el as HTMLElement).dataset.index);
-          el.classList.toggle(
-            "inv-slot-selected",
-            selected != null && Number.isFinite(n) && Math.trunc(n) === selected,
-          );
+
+        li.dataset.id = slot.id;
+        li.style.cursor = "grab";
+        li.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (draggedThisGesture) {
+            draggedThisGesture = false;
+            return;
+          }
+          if (e.shiftKey) {
+            pendingSplit = slot.index;
+            pendingClick = null;
+            pendingMerge = null;
+          } else if (e.ctrlKey || e.metaKey) {
+            pendingMerge = slot.index;
+            pendingClick = null;
+            pendingSplit = null;
+          } else {
+            pendingClick = slot.index;
+            pendingSplit = null;
+            pendingMerge = null;
+          }
         });
+        li.addEventListener("dblclick", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (draggedThisGesture) return;
+          const n = Number(li.dataset.index);
+          pendingDblClick = Number.isFinite(n) ? Math.trunc(n) : slot.index;
+          pendingClick = null;
+        });
+        li.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const n = Number(li.dataset.index);
+          pendingInspect = Number.isFinite(n) ? Math.trunc(n) : slot.index;
+        });
+
+        li.title = slot.name;
+        li.setAttribute("aria-label", `${slot.name} ×${slot.qty}`);
+        icon.innerHTML = itemIconSvg(slot.id);
+        li.append(icon);
+
+        if (slot.qty > 1) {
+          const qty = document.createElement("span");
+          qty.className = "inv-slot-qty";
+          qty.textContent = String(slot.qty);
+          li.append(qty);
+        }
+
+        list.appendChild(li);
       }
+      const selected = view.selectedIndex;
+      list.querySelectorAll(".inv-slot").forEach((el) => {
+        if (el.classList.contains("inv-slot-empty")) return;
+        const n = Number((el as HTMLElement).dataset.index);
+        el.classList.toggle(
+          "inv-slot-selected",
+          selected != null && Number.isFinite(n) && Math.trunc(n) === selected,
+        );
+      });
     },
     dispose() {
       window.removeEventListener("pointerup", onWindowLost);
