@@ -701,6 +701,11 @@ export class Game {
       this.hotbarSelected = stepHotbarIndex(this.hotbarSelected, wheel);
       this.hudAcc = 1;
     }
+    const clicked = this.hotbarHud.consumeClick();
+    if (clicked !== null) {
+      this.hotbarSelected = clicked;
+      this.hudAcc = 1;
+    }
 
     // Game-over: solo R reinicia / F9 carga (F5 no aplica)
     if (this.gameOver || !this.player.alive) {

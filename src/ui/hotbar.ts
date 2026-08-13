@@ -3,6 +3,7 @@
  * Lee `inv.slots[0..4]` y rellena vacíos; no muta el inventario.
  * `hotbarIndexFromKey` mapea Digit/Numpad 1–5 → índice; el bind vive en Input.
  * `stepHotbarIndex` cicla con rueda (wrap 0..4).
+ * Clic en slot: HotbarHud.consumeClick → Game.hotbarSelected.
  */
 
 import { getItemDef, type ItemId } from "../items/defs";

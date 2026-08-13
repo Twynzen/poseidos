@@ -1,12 +1,14 @@
 /**
  * Hotbar HUD: 5 slots glass-dark (Skills P1) bottom-center.
  * Solo DOM; datos en ui/hotbar. Clase `hotbar-selected` = slot activo (1–5).
+ * Clic encola índice; Game consume con consumeClick().
  */
 
 import { clampHotbarIndex, HOTBAR_SIZE, type HotbarSlot } from "./hotbar";
 
 export interface HotbarHud {
   sync(slots: ReadonlyArray<HotbarSlot>, selectedIndex?: number): void;
+  consumeClick(): number | null;
   dispose(): void;
 }
 
@@ -16,22 +18,35 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
   bar.setAttribute("aria-label", "Hotbar");
   root.appendChild(bar);
 
+  let pendingClick: number | null = null;
   const nodes: HTMLElement[] = [];
   for (let i = 0; i < HOTBAR_SIZE; i++) {
-    const el = document.createElement("div");
-    el.className = "hotbar-slot";
+    const slot = document.createElement("div");
+    slot.className = "hotbar-slot";
+    slot.dataset.hotbarIndex = String(i);
+    slot.style.cursor = "pointer";
+    slot.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      pendingClick = clampHotbarIndex(i);
+    });
     const key = document.createElement("span");
     key.className = "hotbar-key";
     const name = document.createElement("span");
     name.className = "hotbar-name";
     const qty = document.createElement("span");
     qty.className = "hotbar-qty";
-    el.append(key, name, qty);
-    bar.appendChild(el);
-    nodes.push(el);
+    slot.append(key, name, qty);
+    bar.appendChild(slot);
+    nodes.push(slot);
   }
 
   return {
+    consumeClick() {
+      const clicked = pendingClick;
+      pendingClick = null;
+      return clicked;
+    },
     sync(slots, selectedIndex) {
       const selected = clampHotbarIndex(selectedIndex ?? 0);
       for (let i = 0; i < HOTBAR_SIZE; i++) {
