@@ -3,6 +3,7 @@ import {
   LOOT_FLOATER_HUD_MS,
   LOOT_FLOATER_HUD_PLAY_CLASS,
   LOOT_FLOATER_HUD_ID,
+  createLootFloaterHud,
   showLootFloaterHud,
   type LootFloaterHudEl,
 } from "../src/ui/lootFloaterHud";
@@ -30,8 +31,8 @@ function makeEl(): LootFloaterHudEl & { classes: Set<string>; reads: number } {
 }
 
 describe("constantes", () => {
-  test("1.8s y clase loot-floater-play", () => {
-    expect(LOOT_FLOATER_HUD_MS).toBe(1800);
+  test("4s y clase loot-floater-play", () => {
+    expect(LOOT_FLOATER_HUD_MS).toBe(4000);
     expect(LOOT_FLOATER_HUD_PLAY_CLASS).toBe("loot-floater-play");
   });
 });
@@ -106,9 +107,20 @@ describe("showLootFloaterHud", () => {
     expect(inner.classes.has(LOOT_FLOATER_HUD_PLAY_CLASS)).toBe(true);
   });
 
+  test("showLootFloaterHud(label, bag)", () => {
+    const inner = makeEl();
+    const bag = {
+      querySelector: (sel: string) => (sel === "#loot-floater" ? inner : null),
+    };
+    showLootFloaterHud("+madera", bag);
+    expect(inner.textContent).toBe("+madera");
+    expect(inner.classes.has(LOOT_FLOATER_HUD_PLAY_CLASS)).toBe(true);
+  });
+
   test("bag sin #loot-floater → no-op", () => {
     const bag = { querySelector: () => null };
     expect(() => showLootFloaterHud(bag, "+scrap")).not.toThrow();
+    expect(() => showLootFloaterHud("+scrap", bag)).not.toThrow();
   });
 });
 
@@ -117,90 +129,134 @@ type LiveNode = {
   textContent: string;
   style: Record<string, string>;
   offsetWidth: number;
+  hidden?: boolean;
+  attributes: Record<string, string>;
   setAttribute: (name: string, value: string) => void;
+  removeAttribute: (name: string) => void;
+  remove: () => void;
+  querySelector?: (sel: string) => LiveNode | null;
+  appendChild?: (el: LiveNode) => LiveNode;
+  ownerDocument?: unknown;
 };
 
 function installFakeDocument() {
   const nodes = new Map<string, LiveNode>();
   const bodyKids: LiveNode[] = [];
   const headKids: LiveNode[] = [];
+
+  function makeNode(): LiveNode {
+    const el: LiveNode = {
+      id: "",
+      textContent: "",
+      style: {},
+      offsetWidth: 1,
+      attributes: {},
+      setAttribute(name, value) {
+        el.attributes[name] = value;
+      },
+      removeAttribute(name) {
+        delete el.attributes[name];
+        if (name === "hidden") el.hidden = false;
+      },
+      remove() {
+        const i = bodyKids.indexOf(el);
+        if (i >= 0) bodyKids.splice(i, 1);
+        if (el.id) nodes.delete(el.id);
+      },
+    };
+    return el;
+  }
+
+  const head = {
+    appendChild(el: LiveNode) {
+      if (el.id) nodes.set(el.id, el);
+      headKids.push(el);
+      return el;
+    },
+  };
+
+  const root: LiveNode & {
+    ownerDocument: unknown;
+    querySelector: (sel: string) => LiveNode | null;
+    appendChild: (el: LiveNode) => LiveNode;
+  } = Object.assign(makeNode(), {
+    ownerDocument: null as unknown,
+    querySelector(sel: string) {
+      return sel === "#loot-floater" ? (nodes.get(LOOT_FLOATER_HUD_ID) ?? null) : null;
+    },
+    appendChild(el: LiveNode) {
+      if (el.id) nodes.set(el.id, el);
+      const i = bodyKids.indexOf(el);
+      if (i >= 0) bodyKids.splice(i, 1);
+      bodyKids.push(el);
+      return el;
+    },
+  });
+
   const doc = {
     getElementById(id: string) {
       return nodes.get(id) ?? null;
     },
     createElement(_tag: string): LiveNode {
-      const el: LiveNode = {
-        id: "",
-        textContent: "",
-        style: {},
-        offsetWidth: 1,
-        setAttribute() {},
-      };
-      return el;
+      return makeNode();
     },
-    head: {
-      appendChild(el: LiveNode) {
-        if (el.id) nodes.set(el.id, el);
-        headKids.push(el);
-        return el;
-      },
-    },
-    body: {
-      appendChild(el: LiveNode) {
-        if (el.id) nodes.set(el.id, el);
-        const i = bodyKids.indexOf(el);
-        if (i >= 0) bodyKids.splice(i, 1);
-        bodyKids.push(el);
-        return el;
-      },
-    },
+    head,
+    body: root,
     _bodyKids: bodyKids,
     _headKids: headKids,
     _nodes: nodes,
   };
+  root.ownerDocument = doc;
   (globalThis as { document?: typeof doc }).document = doc;
-  return doc;
+  return { doc, root };
 }
 
-describe("live path (document)", () => {
+describe("createLootFloaterHud", () => {
   afterEach(() => {
     delete (globalThis as { document?: unknown }).document;
   });
 
-  test("crea #loot-floater al final de body con inline styles", () => {
-    const doc = installFakeDocument();
-    showLootFloaterHud("+scrap");
+  test("crea #loot-floater en root, display none, sin hidden", () => {
+    const { doc, root } = installFakeDocument();
+    createLootFloaterHud(root as unknown as HTMLElement);
     const el = doc.getElementById(LOOT_FLOATER_HUD_ID);
     expect(el).not.toBeNull();
-    expect(el!.textContent).toBe("+scrap");
+    expect(el!.style.display).toBe("none");
+    expect(el!.attributes.hidden).toBeUndefined();
     expect(el!.style.position).toBe("fixed");
     expect(el!.style.zIndex).toBe("9999");
-    expect(el!.style.font).toMatch(/36px/);
+    expect(el!.style.font).toMatch(/42px/);
     expect(el!.style.color).toBe("#ffe080");
-    expect(el!.style.animation).toMatch(/loot-float/);
-    expect(el!.style.animation).toMatch(/1\.8s/);
     expect(doc._bodyKids.at(-1)).toBe(el);
   });
 
-  test("reusa getElementById y re-append last", () => {
-    const doc = installFakeDocument();
-    showLootFloaterHud("+a");
+  test("show: display block, 4s loot-float, opaco 55%", () => {
+    const { doc, root } = installFakeDocument();
+    const hud = createLootFloaterHud(root as unknown as HTMLElement);
+    hud.show("+madera");
+    const el = doc.getElementById(LOOT_FLOATER_HUD_ID)!;
+    expect(el.textContent).toBe("+madera");
+    expect(el.style.display).toBe("block");
+    expect(el.attributes.hidden).toBeUndefined();
+    expect(el.style.animation).toMatch(/loot-float/);
+    expect(el.style.animation).toMatch(/4s/);
+    const kf = doc.getElementById("loot-floater-kf");
+    expect(kf).not.toBeNull();
+    expect(kf!.textContent).toMatch(/55%/);
+    expect(kf!.textContent).toMatch(/@keyframes loot-float/);
+  });
+
+  test("reusa #loot-floater y lo mueve al final del root", () => {
+    const { doc, root } = installFakeDocument();
+    const hud = createLootFloaterHud(root as unknown as HTMLElement);
     const first = doc.getElementById(LOOT_FLOATER_HUD_ID);
     const dummy = doc.createElement("div");
     dummy.id = "other";
-    doc.body.appendChild(dummy);
-    showLootFloaterHud("+b");
+    root.appendChild(dummy);
+    hud.show("+a");
+    hud.show("+b");
     const again = doc.getElementById(LOOT_FLOATER_HUD_ID);
     expect(again).toBe(first);
     expect(again!.textContent).toBe("+b");
-    expect(doc._bodyKids.at(-1)).toBe(again);
-  });
-
-  test("inyecta @keyframes loot-float", () => {
-    const doc = installFakeDocument();
-    showLootFloaterHud("+madera");
-    const style = doc.getElementById("loot-floater-keyframes");
-    expect(style).not.toBeNull();
-    expect(style!.textContent).toMatch(/@keyframes loot-float/);
   });
 });

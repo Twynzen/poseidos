@@ -1,21 +1,22 @@
 /**
- * Toast HTML `#loot-floater` — fallback si el Plane 3D no se ve.
- * Live: getElementById o crea el div, body last, estilos inline, @keyframes inyectados.
- * Tests: bag.querySelector("#loot-floater") / el.classList (reflow) sin tocar document.
+ * Toast HTML `#loot-floater` montado en el mismo uiRoot que moodles (body).
+ * Live: `createLootFloaterHud(root).show(label)` — display none/block, 4s, opaco ~55%.
+ * Tests: `showLootFloaterHud(label, bag)` / el.classList (sin jsdom).
  */
 
-/** Duración del toast (ms), alineada al TTL 1.8s del Plane. */
-export const LOOT_FLOATER_HUD_MS = 1800;
+/** Duración del toast live (ms). */
+export const LOOT_FLOATER_HUD_MS = 4000;
 
-/** Clase que dispara `animation: loot-float 1.8s` en el path de tests. */
+/** Clase que dispara la animación en el path de tests (bag / classList). */
 export const LOOT_FLOATER_HUD_PLAY_CLASS = "loot-floater-play";
 
 export const LOOT_FLOATER_HUD_ID = "loot-floater";
 
-const KEYFRAMES_STYLE_ID = "loot-floater-keyframes";
+const KEYFRAMES_STYLE_ID = "loot-floater-kf";
 
 const LOOT_FLOAT_KEYFRAMES = `@keyframes loot-float {
-  0% { opacity: 1; transform: translate(-50%, 16px); }
+  0% { opacity: 1; transform: translate(-50%, 8px); }
+  55% { opacity: 1; transform: translate(-50%, -18px); }
   100% { opacity: 0; transform: translate(-50%, -72px); }
 }`;
 
@@ -32,6 +33,11 @@ export type LootFloaterHudEl = {
 export type LootFloaterHudBag = {
   querySelector: (selector: string) => LootFloaterHudEl | null;
 };
+
+export interface LootFloaterHud {
+  show(label: string): void;
+  dispose(): void;
+}
 
 function playOnEl(el: LootFloaterHudEl, label: string): void {
   el.textContent = typeof label === "string" ? label : "";
@@ -51,13 +57,14 @@ function isHudBag(x: object): x is LootFloaterHudBag {
   );
 }
 
-function getDoc(): Document | undefined {
-  return (globalThis as { document?: Document }).document;
+function docOf(root: { ownerDocument?: Document | null }): Document | undefined {
+  return (
+    (root.ownerDocument as Document | null | undefined) ??
+    (globalThis as { document?: Document }).document
+  );
 }
 
-function injectLootFloatKeyframes(): void {
-  const document = getDoc();
-  if (!document) return;
+function injectLootFloatKeyframes(document: Document): void {
   if (document.getElementById(KEYFRAMES_STYLE_ID)) return;
   const style = document.createElement("style");
   style.id = KEYFRAMES_STYLE_ID;
@@ -66,54 +73,79 @@ function injectLootFloatKeyframes(): void {
 }
 
 function applyLiveStyles(el: HTMLElement): void {
+  el.removeAttribute("hidden");
   el.style.position = "fixed";
   el.style.left = "50%";
-  el.style.top = "36%";
-  el.style.zIndex = "9999";
-  el.style.font = "700 36px/1.1 ui-monospace, 'SF Mono', Menlo, Consolas, sans-serif";
-  el.style.color = "#ffe080";
-  el.style.pointerEvents = "none";
-  el.style.whiteSpace = "nowrap";
-  el.style.letterSpacing = "0.04em";
-  el.style.textShadow = "0 2px 14px #000, 0 0 10px rgba(0,0,0,0.85)";
+  el.style.top = "34%";
   el.style.transform = "translate(-50%, 0)";
+  el.style.zIndex = "9999";
+  el.style.pointerEvents = "none";
+  el.style.font = "800 42px/1 ui-monospace, monospace";
+  el.style.color = "#ffe080";
+  el.style.textShadow = "0 2px 14px #000, 0 0 22px rgba(255,224,128,.75)";
+  el.style.whiteSpace = "nowrap";
+  el.style.letterSpacing = "0.02em";
 }
 
-function ensureLiveEl(): HTMLElement | null {
-  const document = getDoc();
-  if (!document?.body) return null;
-  let el = document.getElementById(LOOT_FLOATER_HUD_ID);
-  if (!el) {
-    el = document.createElement("div");
-    el.id = LOOT_FLOATER_HUD_ID;
-    el.setAttribute("aria-hidden", "true");
-  }
-  document.body.appendChild(el);
+function ensureToastEl(root: HTMLElement, document: Document): HTMLElement {
+  const found =
+    (root.querySelector?.("#loot-floater") as HTMLElement | null) ??
+    document.getElementById(LOOT_FLOATER_HUD_ID);
+  const el = found ?? document.createElement("div");
+  el.id = LOOT_FLOATER_HUD_ID;
+  el.setAttribute("aria-hidden", "true");
+  el.removeAttribute("hidden");
   applyLiveStyles(el);
+  el.style.display = "none";
+  root.appendChild(el);
   return el;
 }
 
-function showLive(label: string): void {
-  injectLootFloatKeyframes();
-  const el = ensureLiveEl();
-  if (!el) return;
-  el.textContent = typeof label === "string" ? label : "";
-  el.style.animation = "none";
-  void el.offsetWidth;
-  el.style.animation = `loot-float ${LOOT_FLOATER_HUD_MS / 1000}s ease-out forwards`;
+/**
+ * Factory (mismo patrón que createMoodlesHud): monta `#loot-floater` en `root`.
+ * No usa el atributo `hidden` (display:none !important pelea con la animación).
+ */
+export function createLootFloaterHud(root: HTMLElement): LootFloaterHud {
+  const document = docOf(root);
+  if (!document) {
+    return {
+      show() {},
+      dispose() {},
+    };
+  }
+  injectLootFloatKeyframes(document);
+  const el = ensureToastEl(root, document);
+
+  return {
+    show(label: string) {
+      el.textContent = typeof label === "string" ? label : "";
+      el.removeAttribute("hidden");
+      el.style.display = "block";
+      el.style.animation = "none";
+      void el.offsetWidth;
+      el.style.animation = `loot-float ${LOOT_FLOATER_HUD_MS / 1000}s ease-out forwards`;
+    },
+    dispose() {
+      el.style.display = "none";
+      el.remove();
+    },
+  };
 }
 
 /**
- * Pone el label y reinicia la animación.
- * - Tests: `el` con classList, o bag con `querySelector("#loot-floater")`.
- * - Live (`el` null / label string): getElementById o crea `#loot-floater`.
+ * Path de tests: `showLootFloaterHud(el, label)` o `showLootFloaterHud(label, bag)`.
+ * Live no usa esto — game.ts llama `lootToast.show(...)`.
  */
 export function showLootFloaterHud(
   el: LootFloaterHudEl | LootFloaterHudBag | string | null | undefined,
-  label?: string,
+  label?: string | LootFloaterHudBag | LootFloaterHudEl | null,
 ): void {
   if (typeof el === "string") {
-    showLive(el);
+    if (label && typeof label === "object" && isHudBag(label)) {
+      const found = label.querySelector("#loot-floater");
+      if (!found) return;
+      playOnEl(found, el);
+    }
     return;
   }
   if (el && isHudEl(el)) {
@@ -124,9 +156,5 @@ export function showLootFloaterHud(
     const found = el.querySelector("#loot-floater");
     if (!found) return;
     playOnEl(found, typeof label === "string" ? label : "");
-    return;
-  }
-  if (typeof label === "string") {
-    showLive(label);
   }
 }

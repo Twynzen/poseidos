@@ -316,33 +316,27 @@
         );
       }
 
-      /* Loot toast DOM: JS pisa con inline (fixed / z 9999 / 36px / #ffe080) */
+      /* Loot toast: JS createLootFloaterHud pisa con inline; no usar [hidden] */
       #loot-floater {
+        display: none;
         position: fixed;
         left: 50%;
-        top: 36%;
+        top: 34%;
         transform: translate(-50%, 0);
         z-index: 9999;
         pointer-events: none;
-        opacity: 0;
         color: #ffe080;
-        font: 700 36px/1.1 ui-monospace, "SF Mono", Menlo, Consolas, sans-serif;
-        letter-spacing: 0.04em;
-        text-shadow: 0 2px 14px #000, 0 0 10px rgba(0,0,0,0.85);
+        font: 800 42px/1 ui-monospace, monospace;
+        text-shadow: 0 2px 14px #000, 0 0 22px rgba(255,224,128,.75);
         white-space: nowrap;
       }
       #loot-floater.loot-floater-play {
-        animation: loot-float 1.8s ease-out forwards;
+        animation: loot-float 4s ease-out forwards;
       }
       @keyframes loot-float {
-        0% {
-          opacity: 1;
-          transform: translate(-50%, 16px);
-        }
-        100% {
-          opacity: 0;
-          transform: translate(-50%, -72px);
-        }
+        0% { opacity: 1; transform: translate(-50%, 8px); }
+        55% { opacity: 1; transform: translate(-50%, -18px); }
+        100% { opacity: 0; transform: translate(-50%, -72px); }
       }
     </style>
   </head>

@@ -51,7 +51,9 @@ export {
   LOOT_FLOATER_HUD_MS,
   LOOT_FLOATER_HUD_PLAY_CLASS,
   LOOT_FLOATER_HUD_ID,
+  createLootFloaterHud,
   showLootFloaterHud,
+  type LootFloaterHud,
   type LootFloaterHudEl,
   type LootFloaterHudBag,
 } from "./lootFloaterHud";

@@ -70,16 +70,17 @@ import {
   createSpeechOverlay,
   createDialoguePanel,
   createMoodlesHud,
+  createLootFloaterHud,
   createInventoryPanel,
   formatHudStatus,
   HIT_FLASH_PEAK,
   createHitFlash,
   triggerHitFlash,
   tickHitFlash,
-  showLootFloaterHud,
   type SpeechOverlay,
   type DialoguePanel,
   type MoodlesHud,
+  type LootFloaterHud,
   type InventoryPanel,
   type HitFlash,
 } from "../ui";
@@ -152,6 +153,7 @@ export class Game {
   private dialogue: DialogueSession;
   private dialoguePanel: DialoguePanel;
   private moodlesHud: MoodlesHud;
+  private lootToast: LootFloaterHud;
   private inventoryPanel: InventoryPanel;
   private readonly hitFlashEl: HTMLElement | null;
   private readonly hitFlash: HitFlash;
@@ -225,6 +227,7 @@ export class Game {
     this.dialoguePanel = createDialoguePanel(uiRoot);
     this.dialoguePanel.onChoice((intent) => this.handleDialogueChoice(intent));
     this.moodlesHud = createMoodlesHud(uiRoot);
+    this.lootToast = createLootFloaterHud(uiRoot);
     this.inventoryPanel = createInventoryPanel(uiRoot);
     this.noise = new NoiseBus();
     this.spawnThreats();
@@ -266,6 +269,7 @@ export class Game {
     this.speechOverlay.dispose();
     this.dialoguePanel.dispose();
     this.moodlesHud.dispose();
+    this.lootToast.dispose();
     this.inventoryPanel.dispose();
     this.dialogue.close();
     this.speech.clear();
@@ -898,7 +902,7 @@ export class Game {
             `+${getItemDef(taken.id).name}`,
           );
           this.view.spawnLootFloater(lootLabel, this.player.x, this.player.y);
-          showLootFloaterHud(lootLabel);
+          this.lootToast.show(lootLabel);
           this.lastLootMsg = lootLabel;
           this.hudAcc = 1; // forzar refresh
         }
@@ -913,7 +917,7 @@ export class Game {
           `+${getItemDef(taken.id).name}`,
         );
         this.view.spawnLootFloater(lootLabel, this.player.x, this.player.y);
-        showLootFloaterHud(lootLabel);
+        this.lootToast.show(lootLabel);
         this.lastLootMsg = lootLabel;
         this.hudAcc = 1;
       }
