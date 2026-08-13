@@ -8,6 +8,7 @@ import {
   LOOT_NAMEPLATE_SCALE_Y,
   LOOT_NAMEPLATE_Y,
   lootNameplateIconKind,
+  lootNameplateInvEmpty,
   lootNameplateLabel,
   lootNameplateLeadId,
   lootNameplateOpacity,
@@ -102,29 +103,86 @@ describe("lootNameplateOpacity", () => {
 
 describe("lootNameplateVisible", () => {
   test("visible si opacity > 0; dist >= 10 oculto", () => {
-    expect(lootNameplateVisible(0)).toBe(true);
-    expect(lootNameplateVisible(9.99)).toBe(true);
-    expect(lootNameplateVisible(10)).toBe(false);
-    expect(lootNameplateVisible(11)).toBe(false);
+    expect(lootNameplateVisible(false, 0)).toBe(true);
+    expect(lootNameplateVisible(false, 9.99)).toBe(true);
+    expect(lootNameplateVisible(false, 10)).toBe(false);
+    expect(lootNameplateVisible(false, 11)).toBe(false);
   });
 
   test("empty → false; con loot → true", () => {
-    expect(lootNameplateVisible(0, true)).toBe(false);
-    expect(lootNameplateVisible(0, false)).toBe(true);
-    expect(lootNameplateVisible(5, true)).toBe(false);
+    expect(lootNameplateVisible(true, 0)).toBe(false);
+    expect(lootNameplateVisible(false, 0)).toBe(true);
+    expect(lootNameplateVisible(true, 5)).toBe(false);
   });
 
   test("NaN → false", () => {
-    expect(lootNameplateVisible(Number.NaN)).toBe(false);
+    expect(lootNameplateVisible(false, Number.NaN)).toBe(false);
   });
 
   test("Infinity → false", () => {
-    expect(lootNameplateVisible(Number.POSITIVE_INFINITY)).toBe(false);
+    expect(lootNameplateVisible(false, Number.POSITIVE_INFINITY)).toBe(false);
   });
 
   test("dist negativa en fade → true", () => {
-    expect(lootNameplateVisible(-0.4)).toBe(true);
-    expect(lootNameplateVisible(-0.4, true)).toBe(false);
+    expect(lootNameplateVisible(false, -0.4)).toBe(true);
+    expect(lootNameplateVisible(true, -0.4)).toBe(false);
+  });
+
+  test("visible(empty(inv), dist) oculta pila vacía; drop de vuelta muestra", () => {
+    const emptyInv = { slots: [] as { id: string; qty: number }[] };
+    const qty0 = { slots: [{ id: "wood", qty: 0 }] };
+    const full = { slots: [{ id: "wood", qty: 1 }] };
+    expect(lootNameplateVisible(lootNameplateInvEmpty(emptyInv), 0)).toBe(
+      false,
+    );
+    expect(lootNameplateVisible(lootNameplateInvEmpty(qty0), 0)).toBe(false);
+    expect(lootNameplateVisible(lootNameplateInvEmpty(full), 0)).toBe(true);
+    expect(lootNameplateVisible(lootNameplateInvEmpty(full), 10)).toBe(false);
+  });
+});
+
+describe("lootNameplateInvEmpty", () => {
+  test("null / undefined / slots vacíos → true", () => {
+    expect(lootNameplateInvEmpty(null)).toBe(true);
+    expect(lootNameplateInvEmpty(undefined)).toBe(true);
+    expect(lootNameplateInvEmpty({ slots: [] })).toBe(true);
+  });
+
+  test("todos qty 0 → true", () => {
+    expect(lootNameplateInvEmpty({ slots: [{ id: "wood", qty: 0 }] })).toBe(
+      true,
+    );
+    expect(
+      lootNameplateInvEmpty({
+        slots: [
+          { id: "wood", qty: 0 },
+          { id: "ammo", qty: 0 },
+        ],
+      }),
+    ).toBe(true);
+  });
+
+  test("algún qty > 0 → false", () => {
+    expect(lootNameplateInvEmpty({ slots: [{ id: "wood", qty: 1 }] })).toBe(
+      false,
+    );
+    expect(
+      lootNameplateInvEmpty({
+        slots: [
+          { id: "wood", qty: 0 },
+          { id: "ammo", qty: 2 },
+        ],
+      }),
+    ).toBe(false);
+  });
+
+  test("agujeros null / undefined no cuentan", () => {
+    expect(lootNameplateInvEmpty({ slots: [null, undefined] })).toBe(true);
+    expect(
+      lootNameplateInvEmpty({
+        slots: [null, { id: "wood", qty: 3 }],
+      }),
+    ).toBe(false);
   });
 });
 

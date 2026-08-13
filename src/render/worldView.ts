@@ -107,6 +107,7 @@ import {
   LOOT_NAMEPLATE_SCALE_X,
   LOOT_NAMEPLATE_SCALE_Y,
   LOOT_NAMEPLATE_Y,
+  lootNameplateInvEmpty,
   lootNameplateLabel,
   lootNameplateLeadId,
   lootNameplateOpacity,
@@ -163,6 +164,7 @@ export interface WorldView {
   /**
    * Anillo/nameplate ámbar para un contenedor (drop al suelo / refresh qty).
    * Si ya hay marcador con ese id, reemplaza el nameplate. `x`/`y` son tiles.
+   * `plate.visible` según `lootNameplateInvEmpty` + dist 0 (syncLootFocus aplica fade).
    */
   addLootMarker(
     id: string,
@@ -173,9 +175,9 @@ export interface WorldView {
   ): void;
   /**
    * Pulso de escala del loot más cercano en reach (anillo+badge visibles).
-   * Fuera de reach: scale 1; anillo/badge ocultos. Nameplate sigue.
+   * Fuera de reach: scale 1; anillo/badge ocultos. Nameplate sigue (salvo empty).
    * `emptyIds`: contenedores vacíos — grupo oculto, no reciben foco.
-   * Nameplate canvas: visible/opacity según dist (fade 10) y empty.
+   * Nameplate canvas: `plate.visible = lootNameplateVisible(empty, dist)`.
    */
   syncLootFocus(
     wx: number,
@@ -589,6 +591,7 @@ export function createWorldView(
       ? lootNameplateLabel(lootPileLabel(opts.inv, opts.name))
       : lootNameplateLabel(opts.name);
     const leadId = lootNameplateLeadId(opts.inv);
+    const empty = lootNameplateInvEmpty(opts.inv);
     const existing = lootMarkerGroups.find((e) => e.id === opts.id);
     if (existing) {
       const old = existing.group.getObjectByName("lootNameplate");
@@ -601,6 +604,7 @@ export function createWorldView(
         }
       }
       const nameplate = makeLootNameplateSprite(plate, leadId);
+      nameplate.visible = lootNameplateVisible(empty, 0);
       existing.group.add(nameplate);
       existing.nameplate = nameplate;
       return;
@@ -612,6 +616,7 @@ export function createWorldView(
     group.position.set(x, 0, y);
     attachRoleMarkers(group, "loot", markerShared);
     const nameplate = makeLootNameplateSprite(plate, leadId);
+    nameplate.visible = lootNameplateVisible(empty, 0);
     group.add(nameplate);
     scene.add(group);
     lootMarkerGroups.push({ group, nameplate, x, y, id: opts.id });
@@ -1416,7 +1421,7 @@ export function createWorldView(
         const vis = lootRingVisible(empty, d, LOOT_FOCUS_REACH);
         e.group.visible = !empty;
         setInteractRingVisible(e.group, vis);
-        e.nameplate.visible = lootNameplateVisible(d, empty);
+        e.nameplate.visible = lootNameplateVisible(empty, d);
         const plateMat = e.nameplate.material as THREE.SpriteMaterial;
         plateMat.opacity = lootNameplateOpacity(d);
         if (!vis) continue;

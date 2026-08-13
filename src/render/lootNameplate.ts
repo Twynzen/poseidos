@@ -49,14 +49,30 @@ export function lootNameplateOpacity(dist: number): number {
 
 /**
  * Visible si opacity > 0 y el contenedor no está vacío.
- * dist >= 10 / no finito / empty → false.
+ * empty / dist >= 10 / no finito → false.
+ * Firma igual que `lootRingVisible(empty, dist)`.
  */
-export function lootNameplateVisible(
-  dist: number,
-  empty = false,
-): boolean {
+export function lootNameplateVisible(empty: boolean, dist: number): boolean {
   if (empty) return false;
   return lootNameplateOpacity(dist) > 0;
+}
+
+/**
+ * True si no hay stacks o todos qty<=0.
+ * null / undefined / slots vacíos / agujeros → true.
+ */
+export function lootNameplateInvEmpty(
+  inv:
+    | { slots: ReadonlyArray<{ id: string; qty: number } | null | undefined> }
+    | null
+    | undefined,
+): boolean {
+  const slots = inv?.slots;
+  if (!Array.isArray(slots) || slots.length === 0) return true;
+  for (const s of slots) {
+    if (s && s.qty > 0) return false;
+  }
+  return true;
 }
 
 /** Primer stack con qty>0 e id string. Vacío / null / agujeros qty<=0 → null. */
