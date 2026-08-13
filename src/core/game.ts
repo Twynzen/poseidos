@@ -1013,10 +1013,11 @@ export class Game {
         this.hudAcc = 1;
       }
     }
-    if (this.input.consumeDrop()) {
+    const drop = this.input.consumeDrop();
+    if (drop) {
       const i = this.hotbarSelected;
       const stack = this.player.inventory.slots[i];
-      const qty = dropQty(stack?.qty, this.input.sprinting);
+      const qty = dropQty(stack?.qty, drop.whole);
       const taken = takeFromSlot(this.player.inventory, i, qty);
       if (taken) {
         const tx = Math.floor(this.player.x);
