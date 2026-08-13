@@ -141,6 +141,8 @@ import {
 } from "../world/indoor";
 import { WeatherSystem, rainNeedsMult } from "../world/weather";
 
+const RAIN_FILL_MSG = "recogiste agua de lluvia";
+
 export class Game {
   private readonly root: HTMLElement;
   private readonly hud: HTMLElement | null;
@@ -715,7 +717,7 @@ export class Game {
         )
       ) {
         playUse(this.interactPlayer, this.ambient.muted);
-        this.lastLootMsg = "recogiste agua de lluvia";
+        this.lastLootMsg = RAIN_FILL_MSG;
         this.lootToast.show(this.lastLootMsg);
         this.hudAcc = 1;
       }
@@ -1026,7 +1028,8 @@ export class Game {
           )
         ) {
           playUse(this.interactPlayer, this.ambient.muted);
-          this.lastLootMsg = "recogiste agua de lluvia";
+          this.lastLootMsg = RAIN_FILL_MSG;
+          this.lootToast.show(this.lastLootMsg);
           this.hudAcc = 1;
         }
       } else {

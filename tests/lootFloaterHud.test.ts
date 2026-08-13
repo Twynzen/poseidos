@@ -230,6 +230,14 @@ describe("createLootFloaterHud", () => {
     expect(doc._bodyKids.at(-1)).toBe(el);
   });
 
+  test('show("recogiste agua de lluvia") sets the toast element text', () => {
+    const { doc, root } = installFakeDocument();
+    const hud = createLootFloaterHud(root as unknown as HTMLElement);
+    hud.show("recogiste agua de lluvia");
+    const el = doc.getElementById(LOOT_FLOATER_HUD_ID)!;
+    expect(el.textContent).toBe("recogiste agua de lluvia");
+  });
+
   test("show: display block, 4s loot-float, opaco 55%", () => {
     const { doc, root } = installFakeDocument();
     const hud = createLootFloaterHud(root as unknown as HTMLElement);
