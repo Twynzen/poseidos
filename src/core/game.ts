@@ -40,6 +40,7 @@ import {
   dropOnTile,
   dropQty,
   dropToastLabel,
+  dropTargetTile,
   type ContainerRegistry,
 } from "../items";
 import {
@@ -1026,8 +1027,13 @@ export class Game {
       const qty = dropQty(stack?.qty, drop.whole);
       const taken = takeFromSlot(this.player.inventory, i, qty);
       if (taken) {
-        const tx = Math.floor(this.player.x);
-        const ty = Math.floor(this.player.y);
+        const { tx, ty } = dropTargetTile(
+          this.player.x,
+          this.player.y,
+          this.player.facingX,
+          this.player.facingY,
+          (x, y) => this.map.walkable(x, y),
+        );
         const id = `drop-${tx}-${ty}-${taken.id}`;
         const c = dropOnTile(this.containers, tx, ty, taken, id);
         this.view.addLootMarker(c.id, c.x, c.y, c.name);

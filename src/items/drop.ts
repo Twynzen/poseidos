@@ -1,6 +1,7 @@
 /**
- * Tirar del slot al tile (pila WorldContainer).
+ * Tirar del slot al tile de frente (pila WorldContainer).
  * U tira 1; Shift+U tira el stack entero (ver game.ts). G/E recogen 1; Shift+G el stack.
+ * Si el tile de facing no es walkable, cae en el tile del player.
  */
 
 import { getItemDef } from "./defs";
@@ -33,6 +34,46 @@ export function dropQty(
 export function dropToastLabel(name: string, qty: number): string {
   if (qty > 1) return `tiraste ${name} ×${qty}`;
   return `tiraste ${name}`;
+}
+
+function tileOrigin(v: number): number {
+  if (!Number.isFinite(v)) return 0;
+  return Math.floor(v);
+}
+
+/** Trunc facing a cardinal -1..1. No finito → 0. */
+function facingStep(v: number): number {
+  if (!Number.isFinite(v)) return 0;
+  const t = Math.trunc(v);
+  if (t > 1) return 1;
+  if (t < -1) return -1;
+  return t;
+}
+
+/**
+ * Tile destino al tirar: un paso en facing, o el tile del player.
+ * ox/oy = floor(px/py); no finito → 0.
+ * fx/fy = trunc facing, clamp -1..1; no finito → 0.
+ * candidate = (ox+fx, oy+fy). facing (0,0) → tile del player.
+ * Si `walkable` está y `walkable(tx,ty)` es false → (ox, oy).
+ */
+export function dropTargetTile(
+  px: number,
+  py: number,
+  facingX: number,
+  facingY: number,
+  walkable?: (tx: number, ty: number) => boolean,
+): { tx: number; ty: number } {
+  const ox = tileOrigin(px);
+  const oy = tileOrigin(py);
+  const fx = facingStep(facingX);
+  const fy = facingStep(facingY);
+  const tx = ox + fx;
+  const ty = oy + fy;
+  if (walkable && !walkable(tx, ty)) {
+    return { tx: ox, ty: oy };
+  }
+  return { tx, ty };
 }
 
 /**
