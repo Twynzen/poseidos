@@ -94,6 +94,7 @@ import {
   BLADES_PER_TILE,
   type GrassTile,
 } from "./windGrass";
+import { lootFocusMul, LOOT_FOCUS_REACH } from "./lootFocus";
 import type { TileMap } from "../world/tilemap";
 import type { Tile } from "../world/tile";
 import type { Chunk } from "../world/chunk";
@@ -130,6 +131,11 @@ export interface WorldView {
   ambient: THREE.AmbientLight;
   sun: THREE.DirectionalLight;
   syncPlayer(x: number, y: number): void;
+  /**
+   * Pulso de escala del loot más cercano en reach.
+   * Fuera de reach: scale 1. `dt` avanza el seno del pulso.
+   */
+  syncLootFocus(wx: number, wy: number, dt: number): void;
   /**
    * Locomocion visual: silueta locoBob o mixer GLB (Idle/Walk/Run).
    * No mueve el root mundo — solo locoRoot local (bob) o mixer + yaw.
@@ -433,15 +439,23 @@ export function createWorldView(
   scene.add(playerMesh);
 
   // Loot: anillo/badge ámbar por contenedor. Siempre visible (no FOV).
-  const lootMarkerGroups: THREE.Group[] = [];
+  interface LootMarkerEntry {
+    group: THREE.Group;
+    x: number;
+    y: number;
+  }
+  const lootMarkerGroups: LootMarkerEntry[] = [];
+  let lootFocusElapsed = 0;
   if (containers) {
     for (const c of containers.list) {
       const group = new THREE.Group();
       group.name = `lootMarker_${c.id}`;
-      group.position.set(c.x + 0.5, 0, c.y + 0.5);
+      const x = c.x + 0.5;
+      const y = c.y + 0.5;
+      group.position.set(x, 0, y);
       attachRoleMarkers(group, "loot", markerShared);
       scene.add(group);
-      lootMarkerGroups.push(group);
+      lootMarkerGroups.push({ group, x, y });
     }
   }
 
@@ -1062,6 +1076,25 @@ export function createWorldView(
       playerMesh.position.set(x, 0, y);
       placeFacingChevron();
     },
+    syncLootFocus(wx, wy, dt) {
+      const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
+      lootFocusElapsed += safeDt;
+      let best = -1;
+      let bestD = Infinity;
+      for (let i = 0; i < lootMarkerGroups.length; i++) {
+        const e = lootMarkerGroups[i]!;
+        const d = Math.hypot(wx - e.x, wy - e.y);
+        if (d <= LOOT_FOCUS_REACH && d < bestD) {
+          bestD = d;
+          best = i;
+        }
+      }
+      for (let i = 0; i < lootMarkerGroups.length; i++) {
+        const e = lootMarkerGroups[i]!;
+        const mul = i === best ? lootFocusMul(bestD, lootFocusElapsed) : 1;
+        e.group.scale.setScalar(mul);
+      }
+    },
     tickPlayerLoco(dt, moving, sprinting, faceX, faceZ) {
       setLocomotion(playerAnimator, { moving, sprinting });
       tickCharacterAnimator(playerAnimator, dt);
@@ -1286,8 +1319,8 @@ export function createWorldView(
       barricadeMat.dispose();
       barricadeEdgeMat.dispose();
       fogMat.dispose();
-      for (const group of lootMarkerGroups) {
-        scene.remove(group);
+      for (const entry of lootMarkerGroups) {
+        scene.remove(entry.group);
       }
       lootMarkerGroups.length = 0;
       for (const mesh of hostileMeshes.values()) {

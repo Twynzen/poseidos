@@ -1,0 +1,52 @@
+/**
+ * Escala + pulso del anillo de loot más cercano — headless.
+ * worldView aplica el mul al grupo del contenedor en reach.
+ */
+
+import { CONTAINER_REACH } from "../items";
+
+/** Radio de foco (= reach de loot). */
+export const LOOT_FOCUS_REACH = CONTAINER_REACH;
+
+/** Escala encima del contenedor (dist 0). */
+export const LOOT_FOCUS_SCALE_NEAR = 1.35;
+
+/** Escala en el borde de reach. */
+export const LOOT_FOCUS_SCALE_FAR = 1.12;
+
+/** Amplitud del seno. */
+export const LOOT_FOCUS_PULSE_AMP = 0.08;
+
+/** Velocidad angular del pulso (rad/s). */
+export const LOOT_FOCUS_PULSE_SPEED = 6;
+
+/** True si dist está en reach (incl. el borde). */
+export function lootFocusInReach(dist: number): boolean {
+  return Number.isFinite(dist) && dist <= LOOT_FOCUS_REACH;
+}
+
+/**
+ * 1.35 en dist 0 · 1.12 en reach 1.6 · 1.0 fuera.
+ * Lerp lineal entre near y far dentro de reach.
+ */
+export function lootFocusScale(dist: number): number {
+  if (!lootFocusInReach(dist)) return 1;
+  const d = Math.max(0, dist);
+  const t = LOOT_FOCUS_REACH > 0 ? d / LOOT_FOCUS_REACH : 1;
+  return (
+    LOOT_FOCUS_SCALE_NEAR +
+    (LOOT_FOCUS_SCALE_FAR - LOOT_FOCUS_SCALE_NEAR) * t
+  );
+}
+
+/** 1 + 0.08 * sin(elapsed * 6). */
+export function lootFocusPulse(elapsed: number): number {
+  const t = Number.isFinite(elapsed) ? elapsed : 0;
+  return 1 + LOOT_FOCUS_PULSE_AMP * Math.sin(t * LOOT_FOCUS_PULSE_SPEED);
+}
+
+/** scale * pulse si está en reach; si no, 1 (sin pulso). */
+export function lootFocusMul(dist: number, elapsed: number): number {
+  if (!lootFocusInReach(dist)) return 1;
+  return lootFocusScale(dist) * lootFocusPulse(elapsed);
+}
