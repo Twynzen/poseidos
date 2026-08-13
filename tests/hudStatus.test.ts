@@ -52,6 +52,7 @@ describe("formatHudStatus compact", () => {
     expect(CONTROLS_HELP).toMatch(/arrastrar hotbar/);
     expect(CONTROLS_HELP).toMatch(/doble clic usar/);
     expect(CONTROLS_HELP).toMatch(/clic der\. info/);
+    expect(CONTROLS_HELP).toContain("clic inv usar");
     expect(CONTROLS_HELP).toMatch(/Q usar slot/);
     expect(CONTROLS_HELP).toMatch(/G loot · Shift\+G stack/);
     expect(CONTROLS_HELP).toMatch(/U tirar/);

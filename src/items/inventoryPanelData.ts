@@ -25,6 +25,8 @@ export interface InventorySlotLine {
   weight: number;
   /** Línea lista para UI: "cuchillo ×1 (0.4kg)". */
   text: string;
+  /** Índice 0-based original en inventory.slots (no compactado). */
+  index: number;
 }
 
 export interface InventoryPanelData {
@@ -44,7 +46,7 @@ export interface InventoryPanelData {
 export function formatSlotLine(
   id: ItemId,
   qty: number,
-): InventorySlotLine {
+): Omit<InventorySlotLine, "index"> {
   const def = getItemDef(id);
   const weight = def.weight * qty;
   const w =
@@ -99,8 +101,8 @@ export function formatEquipmentLine(inv: Inventory): string {
 /** View-model completo para el panel (I). */
 export function buildInventoryPanelData(inv: Inventory): InventoryPanelData {
   const slots = inv.slots
-    .filter((s) => s.qty > 0)
-    .map((s) => formatSlotLine(s.id, s.qty));
+    .map((s, i) => ({ ...formatSlotLine(s.id, s.qty), index: i }))
+    .filter((s) => s.qty > 0);
   const weight = totalWeight(inv);
   const equipment = formatEquipment(inv);
   return {

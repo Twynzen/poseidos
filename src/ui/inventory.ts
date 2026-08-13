@@ -15,6 +15,8 @@ export interface InventoryPanelView {
 
 export interface InventoryPanel {
   sync(view: InventoryPanelView): void;
+  /** Último clic en fila; last-wins; consume y limpia. */
+  consumeClick(): number | null;
   dispose(): void;
 }
 
@@ -46,12 +48,20 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
 
   const hint = document.createElement("div");
   hint.className = "inv-hint";
-  hint.textContent = "I cerrar · Q usar/lluvia · L linterna · Espacio/V melee · X disparar";
+  hint.textContent =
+    "I cerrar · clic usar · Q usar/lluvia · L linterna · Espacio/V melee · X disparar";
 
   panel.append(head, weightEl, equip, empty, list, hint);
   root.appendChild(panel);
 
+  let pendingClick: number | null = null;
+
   return {
+    consumeClick() {
+      const clicked = pendingClick;
+      pendingClick = null;
+      return clicked;
+    },
     sync(view) {
       if (!view.open) {
         panel.hidden = true;
@@ -81,6 +91,13 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
           const li = document.createElement("li");
           li.className = "inv-slot";
           li.dataset.id = slot.id;
+          li.dataset.index = String(slot.index);
+          li.style.cursor = "pointer";
+          li.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            pendingClick = slot.index;
+          });
 
           const name = document.createElement("span");
           name.className = "inv-slot-name";

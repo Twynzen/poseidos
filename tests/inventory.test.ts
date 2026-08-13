@@ -477,7 +477,9 @@ describe("inventory panel data (headless UI format)", () => {
       "munición",
       "lata de comida",
     ]);
+    expect(data.slots.map((s) => s.index)).toEqual([0, 1, 2, 3, 4]);
     const food = data.slots.find((s) => s.id === "canned_food")!;
+    expect(food.index).toBe(4);
     expect(food.text).toContain("lata de comida ×2");
     expect(food.text).toContain("1.0kg");
     // crowbar dmg > knife → melee auto

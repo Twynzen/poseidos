@@ -80,6 +80,7 @@ import {
   createInventoryPanel,
   hotbarSlots,
   hotbarInspectLabel,
+  HOTBAR_SIZE,
   clampHotbarIndex,
   stepHotbarIndex,
   swapHotbarStacks,
@@ -749,6 +750,61 @@ export class Game {
     }
   }
 
+  /**
+   * Usa un slot de inventario por índice original (sin clamp).
+   * Clic en fila del panel I; slots 0–4 también seleccionan hotbar.
+   */
+  private useInventorySlot(index: number): void {
+    if (!Number.isFinite(index)) return;
+    const i = index;
+    const stack = this.player.inventory.slots[i];
+    if (!stack || stack.qty <= 0) return;
+    if (i >= 0 && i < HOTBAR_SIZE) {
+      this.hotbarSelected = i;
+    }
+    const outdoor = !isIndoor(this.map, this.player.x, this.player.y);
+    if (
+      stack.id === "empty_bottle" &&
+      canRefillFromRain(
+        this.weather.isRaining,
+        outdoor,
+        this.player.inventory,
+      )
+    ) {
+      if (
+        tryRefillFromRain(
+          this.weather.isRaining,
+          outdoor,
+          this.player.inventory,
+        )
+      ) {
+        playUse(this.interactPlayer, this.ambient.muted);
+        this.lastLootMsg = RAIN_FILL_MSG;
+        this.lootToast.show(this.lastLootMsg);
+        this.hudAcc = 1;
+      }
+      return;
+    }
+    const used = this.player.tryConsumeAt(i);
+    if (used) {
+      playUse(this.interactPlayer, this.ambient.muted);
+      this.lastLootMsg =
+        used === "food"
+          ? "comiste"
+          : used === "drink"
+            ? "bebiste"
+            : "vendaje +HP";
+      this.lootToast.show(this.lastLootMsg);
+      this.hudAcc = 1;
+    } else {
+      const use = getItemDef(stack.id).use;
+      if (use !== "food" && use !== "drink" && use !== "heal") {
+        this.lastLootMsg = "no se puede usar";
+        this.hudAcc = 1;
+      }
+    }
+  }
+
   private tick(dt: number): void {
     this.applyIsoZoomInput();
     const slot = this.input.consumeHotbar();
@@ -765,6 +821,7 @@ export class Game {
     const dragged = this.hotbarHud.consumeDrag();
     const inspected = this.hotbarHud.consumeInspect();
     const dbl = this.hotbarHud.consumeDblClick();
+    const invClick = this.inventoryPanel.consumeClick();
     if (dragged) {
       if (swapHotbarStacks(this.player.inventory, dragged.from, dragged.to)) {
         this.hotbarSelected = dragged.to;
@@ -1055,6 +1112,9 @@ export class Game {
     } else if (dbl !== null) {
       this.hotbarSelected = dbl;
       this.useHotbarSlot(dbl);
+    }
+    if (this.showInvDetail && invClick !== null) {
+      this.useInventorySlot(invClick);
     }
     if (this.input.consumeUse()) {
       const outdoor = !isIndoor(this.map, this.player.x, this.player.y);
