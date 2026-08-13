@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   CONTROLS_HELP,
+  formatHudDebugTokens,
   formatHudStatus,
   type HudStatusInput,
 } from "../src/ui/hudStatus";
@@ -21,18 +22,23 @@ function base(over: Partial<HudStatusInput> = {}): HudStatusInput {
   };
 }
 
+describe("formatHudDebugTokens", () => {
+  test("tile / chunks / fov compactos", () => {
+    expect(formatHudDebugTokens(base())).toBe("tile 10,12 · chunks 4/9 · fov 8");
+  });
+});
+
 describe("formatHudStatus compact", () => {
-  test("no incluye muro WASD por defecto", () => {
+  test("línea de jugador sin dump tile/chunks/fov", () => {
     const s = formatHudStatus(base());
     expect(s).not.toContain("WASD");
     expect(s).not.toContain(CONTROLS_HELP);
-    expect(s).toContain("día (21%)");
-    expect(s).toContain("mudos 3");
-    expect(s).toContain("poseídos 2");
-    expect(s).toContain("inv food×1");
-    expect(s).toContain("tile 10,12");
-    expect(s).toContain("chunks 4/9");
-    expect(s).toContain("fov 8");
+    expect(s).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(s).not.toContain("tile ");
+    expect(s).not.toContain("chunks ");
+    expect(s).not.toContain("fov ");
   });
 
   test("hint F1 ayuda en compacto", () => {
@@ -81,6 +87,13 @@ describe("formatHudStatus compact", () => {
     expect(CONTROLS_HELP).toMatch(/R descanso\/reinicio/);
     expect(CONTROLS_HELP).toMatch(/F1 ayuda/);
     expect(s).toMatch(/F1 cerrar ayuda/);
+    expect(s).toContain("tile 10,12 · chunks 4/9 · fov 8");
+    expect(s.endsWith("tile 10,12 · chunks 4/9 · fov 8 · F1 cerrar ayuda")).toBe(
+      true,
+    );
+    expect(s).toBe(
+      `${CONTROLS_HELP}\ndía (21%) · mudos 3 · poseídos 2 · inv food×1 (0.5kg) · tile 10,12 · chunks 4/9 · fov 8 · F1 cerrar ayuda`,
+    );
   });
 
   test("gameOver formato", () => {

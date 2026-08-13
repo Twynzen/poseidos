@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** inventory empty cells.
+- **Última rutina:** HUD debug quieter.
 - **Qué quedó (esta corrida):**
+  - **HUD debug quieter** `#hud` compacto = línea de jugador (día/fase, rain, indoor, mudos/poseídos, inv, cerca, hints/msg, `F1 ayuda`). Tokens `tile X,Y · chunks A/B · fov N` solo con F1 (`showHelp`), antes de `F1 cerrar ayuda`. `formatHudDebugTokens` helper. Sin widgets nuevos ni cambio de grupos CONTROLS_HELP.
   - **Inventory empty cells** panel I padded a `maxSlots`: celdas vacías (hueco qty=0 y capacidad libre) con ghost diamante gold dashed (`emptySlotIconSvg`, no el fallback unknown-item) + `title`/`aria-label` `vacío`. CSS `.inv-slot-empty` borde dashed gold/ghost y opacity ~0.82, como hotbar. Ocupados (SVG + qty) y gestos (clic / drag / split / merge / inspect / use) sin cambio; vacío no encola gestos.
   - **Hotbar empty-slot hint** celdas vacías 1–5 con ghost diamante gold dashed (`emptySlotIconSvg`, no el fallback unknown-item) + tecla + `title`/`aria-label` `vacío · N`. CSS borde dashed gold/ghost y opacity ~0.82 (antes 0.4). Ocupados (SVG + qty + tecla) y gestos (clic / drag / split / merge / inspect) sin cambio.
   - **Moodle glyphs SVG** pills con silueta inline (`moodleIconSvg`, viewBox 0 0 32 32, stroke gold `#e8c36a` como `itemIconSvg`): bowl / drop (fill azul) / ojo / cruz / bala / sol o luna. Labels ES y umbrales sin cambio; `MoodleView.glyph` unicode se queda headless. CSS `.moodle-glyph` 12px. **F1 lift** `#hud.hud-help ~ #moodles { bottom: 340px; }` para no tapar `Mundo:`.
@@ -38,6 +39,6 @@
 - **Controles:** WASD mover · **Shift correr** · **Espacio/V melee** · **X disparar** · E puerta/loot · G loot · **Shift+G stack** · **Q usar slot** (consumible seleccionado / lluvia outdoor) · **U tirar** · **Shift+U stack** · **U inv tirar** · **1-5 hotbar** (selección, highlight azul) · **rueda hotbar** (cicla slot, wrap) · **clic hotbar** · **arrastrar hotbar** · **doble clic usar** · **clic der. info** · **Shift+clic hotbar partir** · **Ctrl+clic hotbar juntar** · **clic inv usar** · **doble clic inv** · **arrastrar inv** · **clic der. inv** · **Shift+clic inv partir** · **Ctrl+clic inv juntar** · **I inventorio (panel; al empezar muestra kit inicial)** · B barricada · **C vendaje** · **H cocinar** · **T diálogo** (calmar / preguntar / amenazar / ofrecer comida / Distraer) · **L linterna** · **M mute ambient** · **+/- zoom** · R descanso/reinicio · **Z dormir** (cama o suelo indoor) · **F1 ayuda** · F5 guardar · F9 cargar · (boot) clic/Espacio saltar loading
 - **Fuera de este slice:** autogenerar modelos en Mesh2Motion (herramienta externa); WebSocket real; lobby UI browser; API LLM real; GTAO; samples de pisadas (sigue beep); samples ambient reales; samples combat reales (sigue beep); samples interact reales (sigue beep); samples speech reales (sigue beep); samples heartbeat reales (sigue beep)
 - **Dirección:** sandbox largo en Three.js (sim primero; render es vista); LLM solo stub/fallback; MP solo stub headless por ahora
-- **Siguiente subtarea concreta:** HUD debug line quieter.
+- **Siguiente subtarea concreta:** loot nameplate empty (hide orphan plate on empty containers).
 - **Bloqueos:** ninguno
 - **Entorno:** Bun; scripts `dev`, `build`, `test`

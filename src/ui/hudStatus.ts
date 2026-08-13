@@ -1,6 +1,6 @@
 /**
  * HUD de estado compacto (texto) — sin muro de controles por defecto.
- * F1 (showHelp) revela CONTROLS_HELP.
+ * F1 (showHelp) revela CONTROLS_HELP y tokens de debug (tile / chunks / fov).
  */
 
 export const CONTROLS_HELP = [
@@ -48,9 +48,23 @@ function joinParts(parts: Array<string | false | null | undefined>): string {
   return parts.filter((p): p is string => typeof p === "string" && p.length > 0).join(" · ");
 }
 
+export type HudDebugInput = Pick<
+  HudStatusInput,
+  "tileX" | "tileY" | "chunksLoaded" | "chunksTotal" | "fov"
+>;
+
+/** Tokens de debug: tile / chunks / fov. Solo van al HUD con showHelp. */
+export function formatHudDebugTokens(input: HudDebugInput): string {
+  return joinParts([
+    `tile ${input.tileX},${input.tileY}`,
+    `chunks ${input.chunksLoaded}/${input.chunksTotal}`,
+    `fov ${input.fov}`,
+  ]);
+}
+
 /**
- * Formato compacto por defecto (sin muro WASD).
- * Con showHelp: CONTROLS_HELP + línea de estado + F1 cerrar.
+ * Formato compacto por defecto (sin muro WASD ni dump tile/chunks/fov).
+ * Con showHelp: CONTROLS_HELP + línea de estado (debug tokens) + F1 cerrar.
  * Con gameOver: mensaje de muerte.
  */
 export function formatHudStatus(input: HudStatusInput): string {
@@ -76,9 +90,7 @@ export function formatHudStatus(input: HudStatusInput): string {
     input.talkHint?.trim() || null,
     input.dlgHint?.trim() || null,
     input.msg?.trim() || null,
-    `tile ${input.tileX},${input.tileY}`,
-    `chunks ${input.chunksLoaded}/${input.chunksTotal}`,
-    `fov ${input.fov}`,
+    input.showHelp ? formatHudDebugTokens(input) : null,
     input.showHelp ? "F1 cerrar ayuda" : "F1 ayuda",
   ]);
 
