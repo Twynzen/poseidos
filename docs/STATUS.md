@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** 2026-08-13 — Ctrl+clic en fila del inventario junta stacks del mismo ítem.
+- **Última rutina:** 2026-08-13 — Shift/Ctrl+clic en hotbar parte/junta stacks (sin abrir I).
 - **Qué quedó (esta corrida):**
+  - **Hotbar Shift+clic** = splitStack; **Ctrl/Cmd+clic** = mergeStack; mismos toasts que el panel I (`partiste … ×N` / `juntaste … ×N` / no se puede partir/juntar). No abre I ni selecciona el slot. Arrastrar entre slots no parte.
   - **Ctrl/Cmd+clic I** fusiona en el otro stack del mismo id con hueco; toast `juntaste … ×N`; si no hay par → "no se puede juntar".
   - **Shift+clic I** parte qty/2 al slot siguiente; toast `partiste … ×N`; qty 1 o inventario lleno → "no se puede partir".
   - **Clic der. I** muestra nombre · verbo (no consume); toast gold también en "no se puede usar".
@@ -17,9 +18,9 @@
   - **Refresh** drop merge y G/Shift+G actualizan el marcador existente (antes `addLootMarker` no-op si el id ya estaba).
   - **G loot** 1 del contenedor cercano (`lootOne` / `tryLoot`). **E/F** contextual sigue 1.
   - **Shift+G stack** toma el primer stack entero (`lootStack` / `transferStack`); toast/floater `+madera×6` / `+munición×8` si qty>1. Shift se captura en el keydown de G (no en el tick / `sprinting`).
-- **Controles:** WASD mover · **Shift correr** · **Espacio/V melee** · **X disparar** · E puerta/loot · G loot · **Shift+G stack** · **Q usar slot** (consumible seleccionado / lluvia outdoor) · **U tirar** · **Shift+U stack** · **1-5 hotbar** (selección, highlight azul) · **rueda hotbar** (cicla slot, wrap) · **clic hotbar** · **arrastrar hotbar** · **doble clic usar** · **clic der. info** · **clic inv usar** · **clic der. inv** · **Shift+clic inv partir** · **Ctrl+clic inv juntar** · **I inventorio (panel; al empezar muestra kit inicial)** · B barricada · **C vendaje** · **H cocinar** · **T diálogo** (calmar / preguntar / amenazar / ofrecer comida / Distraer) · **L linterna** · **M mute ambient** · **+/- zoom** · R descanso/reinicio · **Z dormir** (cama o suelo indoor) · **F1 ayuda** · F5 guardar · F9 cargar · (boot) clic/Espacio saltar loading
+- **Controles:** WASD mover · **Shift correr** · **Espacio/V melee** · **X disparar** · E puerta/loot · G loot · **Shift+G stack** · **Q usar slot** (consumible seleccionado / lluvia outdoor) · **U tirar** · **Shift+U stack** · **1-5 hotbar** (selección, highlight azul) · **rueda hotbar** (cicla slot, wrap) · **clic hotbar** · **arrastrar hotbar** · **doble clic usar** · **clic der. info** · **Shift+clic hotbar partir** · **Ctrl+clic hotbar juntar** · **clic inv usar** · **clic der. inv** · **Shift+clic inv partir** · **Ctrl+clic inv juntar** · **I inventorio (panel; al empezar muestra kit inicial)** · B barricada · **C vendaje** · **H cocinar** · **T diálogo** (calmar / preguntar / amenazar / ofrecer comida / Distraer) · **L linterna** · **M mute ambient** · **+/- zoom** · R descanso/reinicio · **Z dormir** (cama o suelo indoor) · **F1 ayuda** · F5 guardar · F9 cargar · (boot) clic/Espacio saltar loading
 - **Fuera de este slice:** autogenerar modelos en Mesh2Motion (herramienta externa); WebSocket real; lobby UI browser; API LLM real; GTAO; samples de pisadas (sigue beep); samples ambient reales; samples combat reales (sigue beep); samples interact reales (sigue beep); samples speech reales (sigue beep); samples heartbeat reales (sigue beep)
 - **Dirección:** sandbox largo en Three.js (sim primero; render es vista); LLM solo stub/fallback; MP solo stub headless por ahora
-- **Siguiente subtarea concreta:** screenshot I con dos munición ×4, Ctrl+clic → una ×8 + publicar.
+- **Siguiente subtarea concreta:** arrastrar filas del panel I para reordenar stacks (swap), mismo patrón que la hotbar.
 - **Bloqueos:** ninguno
 - **Entorno:** Bun; scripts `dev`, `build`, `test`

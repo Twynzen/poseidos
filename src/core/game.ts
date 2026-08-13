@@ -811,6 +811,34 @@ export class Game {
     }
   }
 
+  private toastSplit(index: number): void {
+    const split = splitStack(this.player.inventory, index);
+    if (split) {
+      const label = `partiste ${getItemDef(split.id as ItemId).name} ×${split.qty}`;
+      this.lastLootMsg = label;
+      this.lootToast.show(label);
+      this.hudAcc = 1;
+    } else {
+      this.lastLootMsg = "no se puede partir";
+      this.lootToast.show(this.lastLootMsg);
+      this.hudAcc = 1;
+    }
+  }
+
+  private toastMerge(index: number): void {
+    const merged = mergeStack(this.player.inventory, index);
+    if (merged) {
+      const label = `juntaste ${getItemDef(merged.id as ItemId).name} ×${merged.destQty}`;
+      this.lastLootMsg = label;
+      this.lootToast.show(label);
+      this.hudAcc = 1;
+    } else {
+      this.lastLootMsg = "no se puede juntar";
+      this.lootToast.show(this.lastLootMsg);
+      this.hudAcc = 1;
+    }
+  }
+
   private tick(dt: number): void {
     this.applyIsoZoomInput();
     const slot = this.input.consumeHotbar();
@@ -827,6 +855,8 @@ export class Game {
     const dragged = this.hotbarHud.consumeDrag();
     const inspected = this.hotbarHud.consumeInspect();
     const dbl = this.hotbarHud.consumeDblClick();
+    const hotbarSplitIdx = this.hotbarHud.consumeSplit();
+    const hotbarMergeIdx = this.hotbarHud.consumeMerge();
     const invClick = this.inventoryPanel.consumeClick();
     const invInspect = this.inventoryPanel.consumeInspect();
     const splitIdx = this.inventoryPanel.consumeSplit();
@@ -836,7 +866,11 @@ export class Game {
         this.hotbarSelected = dragged.to;
         this.hudAcc = 1;
       }
-    } else if (clicked !== null) {
+    } else if (
+      clicked !== null &&
+      hotbarSplitIdx === null &&
+      hotbarMergeIdx === null
+    ) {
       this.hotbarSelected = clicked;
       this.hudAcc = 1;
     }
@@ -1131,31 +1165,17 @@ export class Game {
       this.lootToast.show(label);
       this.hudAcc = 1;
     }
+    if (hotbarSplitIdx !== null) {
+      this.toastSplit(hotbarSplitIdx);
+    }
+    if (hotbarMergeIdx !== null) {
+      this.toastMerge(hotbarMergeIdx);
+    }
     if (this.showInvDetail && splitIdx !== null) {
-      const split = splitStack(this.player.inventory, splitIdx);
-      if (split) {
-        const label = `partiste ${getItemDef(split.id as ItemId).name} ×${split.qty}`;
-        this.lastLootMsg = label;
-        this.lootToast.show(label);
-        this.hudAcc = 1;
-      } else {
-        this.lastLootMsg = "no se puede partir";
-        this.lootToast.show(this.lastLootMsg);
-        this.hudAcc = 1;
-      }
+      this.toastSplit(splitIdx);
     }
     if (this.showInvDetail && mergeIdx !== null) {
-      const merged = mergeStack(this.player.inventory, mergeIdx);
-      if (merged) {
-        const label = `juntaste ${getItemDef(merged.id as ItemId).name} ×${merged.destQty}`;
-        this.lastLootMsg = label;
-        this.lootToast.show(label);
-        this.hudAcc = 1;
-      } else {
-        this.lastLootMsg = "no se puede juntar";
-        this.lootToast.show(this.lastLootMsg);
-        this.hudAcc = 1;
-      }
+      this.toastMerge(mergeIdx);
     }
     if (this.input.consumeUse()) {
       const outdoor = !isIndoor(this.map, this.player.x, this.player.y);

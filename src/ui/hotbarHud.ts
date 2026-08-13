@@ -2,6 +2,7 @@
  * Hotbar HUD: 5 slots glass-dark (Skills P1) bottom-center.
  * Solo DOM; datos en ui/hotbar. Clase `hotbar-selected` = slot activo (1–5).
  * Clic en slot: encola índice; Game consume con consumeClick().
+ * Shift+clic partir; Ctrl/Cmd+clic juntar. No abre I.
  * Doble clic: consumeDblClick (usar slot); no encola drag. Clic-select en esos clics OK.
  * Clic derecho: consumeInspect (info); no encola drag ni dblclick; no consume ítem.
  * Arrastrar de slot a slot: consumeDrag {from,to}; soltar fuera cancela (sin click-select).
@@ -16,6 +17,8 @@ export interface HotbarHud {
   consumeDblClick(): number | null;
   consumeDrag(): { from: number; to: number } | null;
   consumeInspect(): number | null;
+  consumeSplit(): number | null;
+  consumeMerge(): number | null;
   dispose(): void;
 }
 
@@ -29,9 +32,28 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
   let pendingDblClick: number | null = null;
   let pendingDrag: { from: number; to: number } | null = null;
   let pendingInspect: number | null = null;
+  let pendingSplit: number | null = null;
+  let pendingMerge: number | null = null;
   let dragFrom: number | null = null;
   let ignoreClick = false;
   const nodes: HTMLElement[] = [];
+
+  function enqueueSlotClick(i: number, e: MouseEvent): void {
+    const idx = clampHotbarIndex(i);
+    if (e.shiftKey) {
+      pendingSplit = idx;
+      pendingClick = null;
+      pendingMerge = null;
+    } else if (e.ctrlKey || e.metaKey) {
+      pendingMerge = idx;
+      pendingClick = null;
+      pendingSplit = null;
+    } else {
+      pendingClick = idx;
+      pendingSplit = null;
+      pendingMerge = null;
+    }
+  }
 
   function endDrag(): void {
     if (dragFrom !== null) {
@@ -77,7 +99,7 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
       const from = dragFrom;
       const to = clampHotbarIndex(i);
       if (to === from) {
-        pendingClick = to;
+        enqueueSlotClick(i, e);
       } else {
         pendingDrag = { from, to };
         pendingClick = null;
@@ -92,7 +114,7 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
         ignoreClick = false;
         return;
       }
-      pendingClick = clampHotbarIndex(i);
+      enqueueSlotClick(i, e);
     });
     slot.addEventListener("dblclick", (e) => {
       e.preventDefault();
@@ -135,6 +157,16 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
       const inspected = pendingInspect;
       pendingInspect = null;
       return inspected;
+    },
+    consumeSplit() {
+      const split = pendingSplit;
+      pendingSplit = null;
+      return split;
+    },
+    consumeMerge() {
+      const merge = pendingMerge;
+      pendingMerge = null;
+      return merge;
     },
     sync(slots, selectedIndex) {
       const selected = clampHotbarIndex(selectedIndex ?? 0);

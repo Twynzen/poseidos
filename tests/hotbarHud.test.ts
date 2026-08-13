@@ -7,9 +7,23 @@ import { createInventory, createStarterInventory } from "../src/items";
 import { hotbarSlots } from "../src/ui/hotbar";
 import { createHotbarHud } from "../src/ui/hotbarHud";
 
-function clickSlot(root: HTMLElement, index: number): void {
+function clickSlot(
+  root: HTMLElement,
+  index: number,
+  shiftKey = false,
+  ctrlKey = false,
+  metaKey = false,
+): void {
   const slot = root.querySelectorAll<HTMLElement>(".hotbar-slot")[index];
-  slot.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+  slot.dispatchEvent(
+    new MouseEvent("click", {
+      bubbles: true,
+      cancelable: true,
+      shiftKey,
+      ctrlKey,
+      metaKey,
+    }),
+  );
 }
 
 describe("hotbarHud consumeClick", () => {
@@ -79,9 +93,16 @@ describe("hotbarHud consumeClick", () => {
   });
 });
 
-function pointerOnSlot(root: HTMLElement, index: number, type: string): void {
+function pointerOnSlot(
+  root: HTMLElement,
+  index: number,
+  type: string,
+  extra: PointerEventInit = {},
+): void {
   const slot = root.querySelectorAll<HTMLElement>(".hotbar-slot")[index];
-  slot.dispatchEvent(new PointerEvent(type, { bubbles: true, cancelable: true }));
+  slot.dispatchEvent(
+    new PointerEvent(type, { bubbles: true, cancelable: true, ...extra }),
+  );
 }
 
 function dblclickSlot(root: HTMLElement, index: number): void {
@@ -277,6 +298,111 @@ describe("hotbarHud consumeInspect", () => {
     );
     expect(hud.consumeDrag()).toBeNull();
     expect(hud.consumeClick()).toBeNull();
+    hud.dispose();
+  });
+});
+
+describe("hotbarHud consumeSplit / consumeMerge", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  test("Shift+click slot → consumeSplit returns index, consumeClick/merge null", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    clickSlot(root, 2, true);
+    expect(hud.consumeSplit()).toBe(2);
+    expect(hud.consumeClick()).toBeNull();
+    expect(hud.consumeMerge()).toBeNull();
+    expect(hud.consumeSplit()).toBeNull();
+    hud.dispose();
+  });
+
+  test("two Shift+clicks without consume → last wins split", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    clickSlot(root, 1, true);
+    clickSlot(root, 4, true);
+    expect(hud.consumeSplit()).toBe(4);
+    expect(hud.consumeClick()).toBeNull();
+    expect(hud.consumeMerge()).toBeNull();
+    hud.dispose();
+  });
+
+  test("Ctrl+click → consumeMerge, consumeClick/split null", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    clickSlot(root, 3, false, true);
+    expect(hud.consumeMerge()).toBe(3);
+    expect(hud.consumeClick()).toBeNull();
+    expect(hud.consumeSplit()).toBeNull();
+    expect(hud.consumeMerge()).toBeNull();
+    hud.dispose();
+  });
+
+  test("Cmd+click → consumeMerge", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    clickSlot(root, 0, false, false, true);
+    expect(hud.consumeMerge()).toBe(0);
+    expect(hud.consumeClick()).toBeNull();
+    expect(hud.consumeSplit()).toBeNull();
+    hud.dispose();
+  });
+
+  test("normal click still consumeClick; split/merge null", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    clickSlot(root, 1);
+    expect(hud.consumeClick()).toBe(1);
+    expect(hud.consumeSplit()).toBeNull();
+    expect(hud.consumeMerge()).toBeNull();
+    hud.dispose();
+  });
+
+  test("cross-slot drag with shiftKey still consumeDrag, not split", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    pointerOnSlot(root, 0, "pointerdown", { shiftKey: true });
+    pointerOnSlot(root, 3, "pointerup", { shiftKey: true });
+    expect(hud.consumeDrag()).toEqual({ from: 0, to: 3 });
+    expect(hud.consumeSplit()).toBeNull();
+    expect(hud.consumeMerge()).toBeNull();
+    expect(hud.consumeClick()).toBeNull();
+    hud.dispose();
+  });
+
+  test("same-slot pointerup with shiftKey → consumeSplit, not click", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    pointerOnSlot(root, 2, "pointerdown", { shiftKey: true });
+    pointerOnSlot(root, 2, "pointerup", { shiftKey: true });
+    expect(hud.consumeSplit()).toBe(2);
+    expect(hud.consumeClick()).toBeNull();
+    expect(hud.consumeDrag()).toBeNull();
     hud.dispose();
   });
 });

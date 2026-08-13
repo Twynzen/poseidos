@@ -56,6 +56,8 @@ describe("formatHudStatus compact", () => {
     expect(CONTROLS_HELP).toContain("clic der. inv");
     expect(CONTROLS_HELP).toContain("Shift+clic inv partir");
     expect(CONTROLS_HELP).toContain("Ctrl+clic inv juntar");
+    expect(CONTROLS_HELP).toContain("Shift+clic hotbar partir");
+    expect(CONTROLS_HELP).toContain("Ctrl+clic hotbar juntar");
     expect(CONTROLS_HELP).toMatch(/Q usar slot/);
     expect(CONTROLS_HELP).toMatch(/G loot · Shift\+G stack/);
     expect(CONTROLS_HELP).toMatch(/U tirar/);
