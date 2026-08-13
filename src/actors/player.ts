@@ -20,6 +20,7 @@ import {
   ContainerRegistry,
   addItem,
   createStarterInventory,
+  dropTargetTile,
   findConsumableSlot,
   getItemDef,
   insertStackAt,
@@ -301,7 +302,14 @@ export class PlayerSim {
    */
   tryLoot(containers: ContainerRegistry): ItemStack | null {
     if (!this.alive) return null;
-    return containers.lootOne(this.x, this.y, this.inventory, CONTAINER_REACH);
+    const prefer = dropTargetTile(this.x, this.y, this.facingX, this.facingY);
+    return containers.lootOne(
+      this.x,
+      this.y,
+      this.inventory,
+      CONTAINER_REACH,
+      prefer,
+    );
   }
 
   /**
@@ -310,7 +318,14 @@ export class PlayerSim {
    */
   tryLootStack(containers: ContainerRegistry): ItemStack | null {
     if (!this.alive) return null;
-    return containers.lootStack(this.x, this.y, this.inventory, CONTAINER_REACH);
+    const prefer = dropTargetTile(this.x, this.y, this.facingX, this.facingY);
+    return containers.lootStack(
+      this.x,
+      this.y,
+      this.inventory,
+      CONTAINER_REACH,
+      prefer,
+    );
   }
 
   /**

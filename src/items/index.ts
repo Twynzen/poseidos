@@ -37,6 +37,7 @@ export {
   createContainerFromLoot,
   ContainerRegistry,
   type WorldContainer,
+  type LootPreferTile,
 } from "./containers";
 export {
   BARRICADE_WOOD_COST,

@@ -26,6 +26,14 @@ export interface WorldContainer {
 
 export const CONTAINER_REACH = 1.6;
 
+/** Tile preferido para loot (facing); null/omitido = solo distancia. */
+export type LootPreferTile = { tx: number; ty: number } | null;
+
+/** Distancia al centro del tile del contenedor. */
+function distToCenter(wx: number, wy: number, c: WorldContainer): number {
+  return Math.hypot(wx - (c.x + 0.5), wy - (c.y + 0.5));
+}
+
 /** True si hay al menos un slot y qty total > 0. */
 export function containerHasLoot(c: WorldContainer): boolean {
   return c.inv.slots.length > 0 && totalQty(c.inv) > 0;
@@ -77,18 +85,30 @@ export class ContainerRegistry {
     return this.list.find((c) => c.x === tx && c.y === ty) ?? null;
   }
 
-  /** Contenedor más cercano al punto mundo dentro de `reach`. */
+  /**
+   * Contenedor más cercano al punto mundo dentro de `reach`.
+   * Si `prefer` apunta a un tile con loot en reach, ese gana (facing / drop).
+   */
   nearest(
     wx: number,
     wy: number,
     reach = CONTAINER_REACH,
+    prefer?: LootPreferTile,
   ): WorldContainer | null {
+    if (prefer) {
+      const preferred = this.at(prefer.tx, prefer.ty);
+      if (
+        preferred &&
+        containerHasLoot(preferred) &&
+        distToCenter(wx, wy, preferred) <= reach
+      ) {
+        return preferred;
+      }
+    }
     let best: { c: WorldContainer; d: number } | null = null;
     for (const c of this.list) {
       if (!containerHasLoot(c)) continue;
-      const dx = wx - (c.x + 0.5);
-      const dy = wy - (c.y + 0.5);
-      const d = Math.hypot(dx, dy);
+      const d = distToCenter(wx, wy, c);
       if (d <= reach && (!best || d < best.d)) best = { c, d };
     }
     return best?.c ?? null;
@@ -103,8 +123,9 @@ export class ContainerRegistry {
     wy: number,
     dest: Inventory,
     reach = CONTAINER_REACH,
+    prefer?: LootPreferTile,
   ): ItemStack | null {
-    const c = this.nearest(wx, wy, reach);
+    const c = this.nearest(wx, wy, reach, prefer);
     if (!c || c.inv.slots.length === 0) return null;
     const taken = transferOne(c.inv, dest, 0);
     if (taken && containerHasLoot(c)) {
@@ -122,8 +143,9 @@ export class ContainerRegistry {
     wy: number,
     dest: Inventory,
     reach = CONTAINER_REACH,
+    prefer?: LootPreferTile,
   ): ItemStack | null {
-    const c = this.nearest(wx, wy, reach);
+    const c = this.nearest(wx, wy, reach, prefer);
     if (!c || c.inv.slots.length === 0) return null;
     const id = c.inv.slots[0]!.id;
     const added = transferStack(c.inv, dest, 0);

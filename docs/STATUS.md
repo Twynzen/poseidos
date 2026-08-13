@@ -1,8 +1,11 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** 2026-08-13 — U tira al tile de frente (fallback pies si no walkable). Siguiente: siguiente slice UI/survival chico.
+- **Última rutina:** 2026-08-13 — G / Shift+G / HUD cerca prefieren el contenedor del tile de frente si tiene loot en reach. Siguiente: siguiente slice UI/survival chico.
 - **Qué quedó (esta corrida):**
+  - **Loot facing** `ContainerRegistry.nearest(wx, wy, reach?, prefer?)`: si `prefer` `{tx,ty}` tiene loot y dist al centro ≤ reach, ese contenedor; si no, nearest por distancia (empate conserva el primero).
+  - **G / Shift+G / E-fallback** `tryLoot` / `tryLootStack` pasan `dropTargetTile(x, y, facingX, facingY)` (sin walkable) a `lootOne` / `lootStack`. Spawn 24.5,15.5 facing +Y: drop U en (24,16) empataba ~1.0 con madera (25,15) → ahora G toma el drop.
+  - **HUD `cerca:`** y refresh del nameplate usan el mismo `prefer`. Sin prefer / prefer vacío / prefer fuera de reach = comportamiento viejo.
   - **U tirar facing** 1 del slot hotbar al tile de frente (`player.facingX/Y`); si no es walkable o facing (0,0), tile del player. Spawn 24.5,15.5 facing +Y → (24,16).
   - **Shift+U stack** tira el stack entero al mismo tile destino.
   - **Nameplates más grandes** canvas 384×80, font 28px, escala 2.6×0.65, Y 1.55. Stroke oscuro + fill ámbar para que `×qty` se lea al spawn.

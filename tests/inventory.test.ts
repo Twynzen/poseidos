@@ -203,6 +203,46 @@ describe("containers + transfer", () => {
     expect(mixed.nearest(5.5, 5.5, CONTAINER_REACH)?.id).toBe("full");
   });
 
+  test("prefer facing tile: wood(25,15)+ammo(24,16) empate distancia", () => {
+    const woodAmmo = () =>
+      new ContainerRegistry([
+        createWorldContainer("wood", 25, 15, "pila de madera", [
+          { id: "wood", qty: 6 },
+        ]),
+        createWorldContainer("ammo", 24, 16, "munición", [
+          { id: "ammo", qty: 8 },
+        ]),
+      ]);
+    const wx = 24.5;
+    const wy = 15.5;
+
+    expect(
+      woodAmmo().nearest(wx, wy, CONTAINER_REACH, { tx: 24, ty: 16 })?.id,
+    ).toBe("ammo");
+
+    expect(woodAmmo().nearest(wx, wy, CONTAINER_REACH, null)?.id).toBe("wood");
+
+    const farPrefer = woodAmmo();
+    farPrefer.add(
+      createWorldContainer("far", 0, 0, "lejos", [{ id: "scrap", qty: 1 }]),
+    );
+    expect(
+      farPrefer.nearest(wx, wy, CONTAINER_REACH, { tx: 0, ty: 0 })?.id,
+    ).toBe("wood");
+
+    const destPrefer = createInventory();
+    const taken = woodAmmo().lootOne(wx, wy, destPrefer, CONTAINER_REACH, {
+      tx: 24,
+      ty: 16,
+    });
+    expect(taken).toEqual({ id: "ammo", qty: 1 });
+
+    const destOmit = createInventory();
+    const omitReg = woodAmmo();
+    expect(omitReg.nearest(wx, wy, CONTAINER_REACH)?.id).toBe("wood");
+    expect(omitReg.lootOne(wx, wy, destOmit)).toEqual({ id: "wood", qty: 1 });
+  });
+
   test("furniture tile caminable y no bloquea vista", () => {
     const f = makeFurniture();
     expect(f.kind).toBe("furniture");
@@ -276,6 +316,42 @@ describe("PlayerSim loot + consume", () => {
     expect(onePlayer.tryLoot(oneReg)).toEqual({ id: "ammo", qty: 1 });
     expect(onePlayer.inventory.slots[0]?.qty).toBe(1);
     expect(oneBox.inv.slots[0]?.qty).toBe(7);
+  });
+
+  test("tryLoot / tryLootStack prefer facing tile (spawn wood vs drop)", () => {
+    const piles = () =>
+      new ContainerRegistry([
+        createWorldContainer("wood", 25, 15, "pila de madera", [
+          { id: "wood", qty: 6 },
+        ]),
+        createWorldContainer("ammo", 24, 16, "munición", [
+          { id: "ammo", qty: 8 },
+        ]),
+      ]);
+    const facingY = new PlayerSim(
+      { x: 24.5, y: 15.5 },
+      undefined,
+      createInventory(8, 20),
+    );
+    expect(facingY.facingX).toBe(0);
+    expect(facingY.facingY).toBe(1);
+    expect(facingY.tryLoot(piles())?.id).toBe("ammo");
+
+    const stackPlayer = new PlayerSim(
+      { x: 24.5, y: 15.5 },
+      undefined,
+      createInventory(8, 20),
+    );
+    expect(stackPlayer.tryLootStack(piles())).toEqual({ id: "ammo", qty: 8 });
+
+    const facingX = new PlayerSim(
+      { x: 24.5, y: 15.5 },
+      undefined,
+      createInventory(8, 20),
+    );
+    facingX.facingX = 1;
+    facingX.facingY = 0;
+    expect(facingX.tryLoot(piles())?.id).toBe("wood");
   });
 });
 
