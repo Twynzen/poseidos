@@ -5,46 +5,44 @@ import {
 } from "../src/render/playerFacing";
 
 describe("PLAYER_GLTF_YAW_OFFSET", () => {
-  test("default 0 (atan2 ya alinea W→π)", () => {
-    expect(PLAYER_GLTF_YAW_OFFSET).toBe(0);
+  test("π (Soldier walk mira −Z local; S/+Z no moonwalk)", () => {
+    expect(PLAYER_GLTF_YAW_OFFSET).toBe(Math.PI);
   });
 });
 
 describe("playerGltfYawFromMove", () => {
-  test("cardinales: W=+Z negativo → π; E → ±π/2", () => {
-    expect(playerGltfYawFromMove(0, -1)).toBe(Math.atan2(0, -1));
-    expect(playerGltfYawFromMove(1, 0)).toBe(Math.atan2(1, 0));
-    expect(playerGltfYawFromMove(-1, 0)).toBe(Math.atan2(-1, 0));
-    expect(playerGltfYawFromMove(0, 1)).toBe(Math.atan2(0, 1));
+  test("atan2 cardinales con offset default (π)", () => {
+    expect(playerGltfYawFromMove(0, 1)).toBeCloseTo(Math.PI, 5);
+    expect(playerGltfYawFromMove(1, 0)).toBeCloseTo(Math.PI / 2 + Math.PI, 5);
+    expect(playerGltfYawFromMove(0, -1)).toBeCloseTo(Math.PI + Math.PI, 5);
+    expect(playerGltfYawFromMove(-1, 0)).toBeCloseTo(-Math.PI / 2 + Math.PI, 5);
   });
 
-  test("diagonal continua (ejes normalizados WASD), no snap cardinal", () => {
-    const inv = 1 / Math.SQRT2;
-    // W+D: x>0, z<0
-    const yawWd = playerGltfYawFromMove(inv, -inv);
-    expect(yawWd).toBe(Math.atan2(inv, -inv));
-    expect(yawWd).not.toBe(Math.atan2(1, 0));
-    expect(yawWd).not.toBe(Math.atan2(0, -1));
-    // W+A: x<0, z<0
-    const yawWa = playerGltfYawFromMove(-inv, -inv);
-    expect(yawWa).toBe(Math.atan2(-inv, -inv));
-    expect(yawWa).not.toBe(yawWd);
+  test("continuo diagonal (no snap cardinal)", () => {
+    const yaw = playerGltfYawFromMove(1, -1);
+    expect(yaw).not.toBeNull();
+    expect(yaw!).toBeCloseTo(Math.atan2(1, -1) + Math.PI, 5);
+    const wrapped = ((yaw! % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+    expect(wrapped).not.toBeCloseTo(0, 5);
+    expect(wrapped).not.toBeCloseTo(Math.PI / 2, 5);
+    expect(wrapped).not.toBeCloseTo(Math.PI, 5);
   });
 
-  test("null si ~0", () => {
+  test("offset explícito 0 (atan2 crudo, sin flip)", () => {
+    expect(playerGltfYawFromMove(0, -1, 0)).toBeCloseTo(Math.PI, 5);
+    expect(playerGltfYawFromMove(0, 1, 0)).toBeCloseTo(0, 5);
+    expect(playerGltfYawFromMove(1, 0, 0)).toBeCloseTo(Math.PI / 2, 5);
+  });
+
+  test("null si ~0 move o no finito", () => {
     expect(playerGltfYawFromMove(0, 0)).toBeNull();
-    expect(playerGltfYawFromMove(1e-12, -1e-12)).toBeNull();
-  });
-
-  test("null si no finitos", () => {
+    expect(playerGltfYawFromMove(1e-12, 0)).toBeNull();
     expect(playerGltfYawFromMove(Number.NaN, 1)).toBeNull();
-    expect(playerGltfYawFromMove(1, Number.NaN)).toBeNull();
-    expect(playerGltfYawFromMove(Number.POSITIVE_INFINITY, 0)).toBeNull();
+    expect(playerGltfYawFromMove(1, Number.POSITIVE_INFINITY)).toBeNull();
+    expect(playerGltfYawFromMove(1, 0, Number.NaN)).toBeNull();
   });
 
-  test("offset opcional se suma al atan2", () => {
-    const base = playerGltfYawFromMove(1, 0)!;
-    expect(playerGltfYawFromMove(1, 0, 0.25)).toBeCloseTo(base + 0.25);
-    expect(playerGltfYawFromMove(1, 0, PLAYER_GLTF_YAW_OFFSET)).toBe(base);
+  test("S (0,+1) con π: yaw π — walk clip alinea con sur", () => {
+    expect(playerGltfYawFromMove(0, 1)).toBeCloseTo(Math.PI, 5);
   });
 });

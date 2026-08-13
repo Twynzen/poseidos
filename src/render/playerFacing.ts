@@ -1,19 +1,27 @@
 /**
- * Yaw del GLB del player desde ejes de movimiento (mapa x / Three z).
- * Soldier forward = +Z; W => faceZ=-1 => atan2(0, -1) = π.
+ * Yaw visual del Soldier GLB del player (headless).
  *
- * `PLAYER_GLTF_YAW_OFFSET` es un knob de calibración documentado (default 0):
- * atan2 ya alinea W→π; sumar offset solo si un asset futuro tiene forward distinto.
+ * Convención mundo/input:
+ * - W → faceZ = −1 (Three −Z / norte mapa)
+ * - S → faceZ = +1 (Three +Z / sur mapa)
+ * - `atan2(faceX, faceZ)` con S (+Z) → 0
+ *
+ * El Soldier.glb (Mixamo-ish) camina hacia −Z local: con offset 0,
+ * S mueve el cuerpo al sur pero la animación camina al norte (moonwalk).
+ * `PLAYER_GLTF_YAW_OFFSET = π` alinea el clip walk con el delta.
+ *
+ * Chevron / linterna / muzzle usan el yaw ya offseteado — no reaplicar.
  */
 
-/** Knob de calibración (rad). Default 0 — atan2 ya maneja W→π. */
-export const PLAYER_GLTF_YAW_OFFSET = 0;
+/** Offset yaw (rad) añadido a atan2. π = GLB walk invertido vs +Z mundo. */
+export const PLAYER_GLTF_YAW_OFFSET = Math.PI;
 
-const FACE_EPS = 1e-8;
+const MOVE_EPS = 1e-8;
 
 /**
- * Yaw GLB desde ejes de movimiento vivos (no cardinal cuantizado).
- * `null` si ejes ~0 o no finitos (mantener yaw previo).
+ * Yaw Y (rad) para orientar el GLB del player según movimiento.
+ * `faceX` / `faceZ`: delta mapa X / mapa Y (= Three z), tip. ejes vivos.
+ * `null` si no hay dirección válida (conservar yaw previo).
  */
 export function playerGltfYawFromMove(
   faceX: number,
@@ -21,7 +29,7 @@ export function playerGltfYawFromMove(
   offset: number = PLAYER_GLTF_YAW_OFFSET,
 ): number | null {
   if (!Number.isFinite(faceX) || !Number.isFinite(faceZ)) return null;
-  if (Math.abs(faceX) < FACE_EPS && Math.abs(faceZ) < FACE_EPS) return null;
-  const off = Number.isFinite(offset) ? offset : 0;
-  return Math.atan2(faceX, faceZ) + off;
+  if (!Number.isFinite(offset)) return null;
+  if (Math.abs(faceX) < MOVE_EPS && Math.abs(faceZ) < MOVE_EPS) return null;
+  return Math.atan2(faceX, faceZ) + offset;
 }
