@@ -1,6 +1,7 @@
 /**
  * Iconos SVG inline del inventario (I) — siluetas geométricas dark-fantasy.
  * Headless: sin DOM ni archivos externos. Fallback diamante para id desconocido.
+ * Slot vacío: `emptySlotIconSvg` (diamante dashed, no el fallback).
  */
 
 const GOLD = "#e8c36a";
@@ -15,6 +16,11 @@ function svg(body: string): string {
 
 const FALLBACK = svg(
   `<path d="M16 3.5 28.5 16 16 28.5 3.5 16Z" fill="${FILL}"/>`,
+);
+
+/** Diamante gold dashed (ghost) para slot vacío. Distinto del fallback de id desconocido. */
+const EMPTY_SLOT = svg(
+  `<path d="M16 6.5 25.5 16 16 25.5 6.5 16Z" stroke-dasharray="2.4 2" opacity="0.55"/>`,
 );
 
 const ICONS: Record<string, string> = {
@@ -92,4 +98,9 @@ const ICONS: Record<string, string> = {
 /** Markup SVG inline para un item id. Id desconocido → diamante genérico. Nunca vacío. */
 export function itemIconSvg(id: string): string {
   return ICONS[id] ?? FALLBACK;
+}
+
+/** Ghost de celda vacía: diamante gold dashed, sin fill. No es el fallback unknown-item. */
+export function emptySlotIconSvg(): string {
+  return EMPTY_SLOT;
 }

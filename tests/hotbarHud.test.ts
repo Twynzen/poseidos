@@ -6,6 +6,7 @@ import { afterEach, describe, expect, test } from "vitest";
 import { createInventory, createStarterInventory } from "../src/items";
 import { hotbarSlots } from "../src/ui/hotbar";
 import { createHotbarHud } from "../src/ui/hotbarHud";
+import { emptySlotIconSvg, itemIconSvg } from "../src/ui/itemIcons";
 
 function slotAt(root: HTMLElement, index: number): HTMLElement {
   const slot = root.querySelectorAll<HTMLElement>(".hotbar-slot")[index];
@@ -420,7 +421,7 @@ describe("createHotbarHud icons", () => {
     root?.remove();
   });
 
-  test("slot ocupado tiene svg + title/aria-label; vacío no tiene svg; qty>1 badge", () => {
+  test("slot ocupado tiene svg + title/aria-label; vacío ghost + vacío · N; qty>1 badge", () => {
     root = document.createElement("div");
     document.body.appendChild(root);
     const hud = createHotbarHud(root);
@@ -432,6 +433,12 @@ describe("createHotbarHud icons", () => {
 
     const water = slotAt(root, 0);
     expect(water.querySelector(".hotbar-slot-icon svg")).toBeTruthy();
+    expect(water.querySelector(".hotbar-slot-icon")?.innerHTML).toBe(
+      itemIconSvg("water_bottle"),
+    );
+    expect(water.querySelector(".hotbar-slot-icon")?.innerHTML).not.toBe(
+      emptySlotIconSvg(),
+    );
     expect(water.title).toBe("botella de agua");
     expect(water.getAttribute("aria-label")).toBe("botella de agua ×1");
     expect(water.querySelector(".hotbar-qty")).toBeNull();
@@ -444,12 +451,36 @@ describe("createHotbarHud icons", () => {
 
     const empty = slotAt(root, 2);
     expect(empty.classList.contains("hotbar-empty")).toBe(true);
-    expect(empty.querySelector(".hotbar-slot-icon svg")).toBeNull();
+    expect(empty.querySelector(".hotbar-slot-icon svg")).toBeTruthy();
+    expect(empty.querySelector(".hotbar-slot-icon")?.innerHTML).toBe(emptySlotIconSvg());
+    expect(empty.querySelector(".hotbar-slot-icon")?.innerHTML).not.toBe(
+      itemIconSvg("not_an_item"),
+    );
     expect(empty.querySelector(".hotbar-qty")).toBeNull();
-    expect(empty.getAttribute("title")).toBeNull();
-    expect(empty.getAttribute("aria-label")).toBeNull();
+    expect(empty.title).toBe("vacío · 3");
+    expect(empty.getAttribute("aria-label")).toBe("vacío · 3");
     expect(empty.querySelector(".hotbar-key")?.textContent).toBe("3");
 
+    hud.dispose();
+  });
+
+  test("inventario vacío: 5 ghosts dashed + tecla + vacío · N", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createInventory()), 0);
+
+    for (let i = 0; i < 5; i++) {
+      const slot = slotAt(root, i);
+      expect(slot.classList.contains("hotbar-empty")).toBe(true);
+      expect(slot.querySelector(".hotbar-slot-icon")?.innerHTML).toBe(
+        emptySlotIconSvg(),
+      );
+      expect(slot.querySelector(".hotbar-key")?.textContent).toBe(String(i + 1));
+      expect(slot.title).toBe(`vacío · ${i + 1}`);
+      expect(slot.getAttribute("aria-label")).toBe(`vacío · ${i + 1}`);
+      expect(slot.querySelector(".hotbar-qty")).toBeNull();
+    }
     hud.dispose();
   });
 
