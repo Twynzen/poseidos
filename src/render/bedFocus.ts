@@ -48,3 +48,14 @@ export function bedFocusMul(dist: number, elapsed: number): number {
   if (!bedFocusInReach(dist)) return 1;
   return bedFocusScale(dist) * bedFocusPulse(elapsed);
 }
+
+/** Anillo rosa solo si la cama está en reach. */
+export function bedRingVisible(
+  dist: number,
+  reach: number = BED_FOCUS_REACH,
+): boolean {
+  if (!Number.isFinite(dist) || !Number.isFinite(reach) || reach <= 0) {
+    return false;
+  }
+  return dist <= reach;
+}

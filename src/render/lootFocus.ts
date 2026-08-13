@@ -51,7 +51,15 @@ export function lootFocusMul(dist: number, elapsed: number): number {
   return lootFocusScale(dist) * lootFocusPulse(elapsed);
 }
 
-/** True si el anillo debe verse (contenedor no vacío). */
-export function lootRingVisible(empty: boolean): boolean {
-  return !empty;
+/** Anillo ámbar solo si hay loot Y está en reach. */
+export function lootRingVisible(
+  empty: boolean,
+  dist: number,
+  reach: number = LOOT_FOCUS_REACH,
+): boolean {
+  if (empty) return false;
+  if (!Number.isFinite(dist) || !Number.isFinite(reach) || reach <= 0) {
+    return false;
+  }
+  return dist <= reach;
 }
