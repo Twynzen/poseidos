@@ -82,6 +82,43 @@
       .moodle[data-level="critical"] .moodle-value { color: #f87171; }
       .moodle[data-level="critical"] .moodle-label { color: #fca5a5; }
 
+      /* Hotbar: 5 slots bottom-center, glass-dark como moodles; no tapa #hud ni inv */
+      #hotbar {
+        position: absolute; left: 50%; bottom: 18px;
+        transform: translateX(-50%);
+        display: flex; flex-wrap: nowrap; gap: 6px;
+        z-index: 3; pointer-events: none;
+      }
+      .hotbar-slot {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 3px;
+        min-width: 68px; max-width: 86px;
+        padding: 6px 7px 5px;
+        border-radius: 10px;
+        font: 10px/1.15 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        letter-spacing: 0.04em;
+        color: var(--hud-text);
+        background: linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02)),
+          var(--hud-bg);
+        border: 1px solid var(--hud-border);
+        box-shadow: 0 8px 18px rgba(2, 6, 23, 0.35), inset 0 1px 0 rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px) saturate(140%);
+        -webkit-backdrop-filter: blur(10px) saturate(140%);
+      }
+      .hotbar-slot.hotbar-empty { opacity: 0.4; }
+      .hotbar-key {
+        color: var(--hud-accent); font-weight: 600; font-size: 9px;
+        letter-spacing: 0.1em;
+      }
+      .hotbar-name {
+        color: var(--hud-text); text-align: center;
+        text-transform: uppercase; font-weight: 600;
+        overflow: hidden; max-height: 2.3em;
+      }
+      .hotbar-qty {
+        color: var(--hud-accent); font-variant-numeric: tabular-nums; min-height: 1em;
+      }
+
       #speech-layer {
         position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 1;
       }

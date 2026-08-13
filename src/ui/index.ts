@@ -16,6 +16,20 @@ export {
 } from "./moodles";
 
 export {
+  HOTBAR_SIZE,
+  hotbarKey,
+  hotbarSlots,
+  type HotbarSlot,
+  type HotbarFilledSlot,
+  type HotbarEmptySlot,
+} from "./hotbar";
+
+export {
+  createHotbarHud,
+  type HotbarHud,
+} from "./hotbarHud";
+
+export {
   createInventoryPanel,
   type InventoryPanel,
   type InventoryPanelView,

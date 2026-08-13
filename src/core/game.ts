@@ -70,8 +70,10 @@ import {
   createSpeechOverlay,
   createDialoguePanel,
   createMoodlesHud,
+  createHotbarHud,
   createLootFloaterHud,
   createInventoryPanel,
+  hotbarSlots,
   formatHudStatus,
   HIT_FLASH_PEAK,
   createHitFlash,
@@ -80,6 +82,7 @@ import {
   type SpeechOverlay,
   type DialoguePanel,
   type MoodlesHud,
+  type HotbarHud,
   type LootFloaterHud,
   type InventoryPanel,
   type HitFlash,
@@ -153,6 +156,7 @@ export class Game {
   private dialogue: DialogueSession;
   private dialoguePanel: DialoguePanel;
   private moodlesHud: MoodlesHud;
+  private hotbarHud: HotbarHud;
   private lootToast: LootFloaterHud;
   private inventoryPanel: InventoryPanel;
   private readonly hitFlashEl: HTMLElement | null;
@@ -227,6 +231,7 @@ export class Game {
     this.dialoguePanel = createDialoguePanel(uiRoot);
     this.dialoguePanel.onChoice((intent) => this.handleDialogueChoice(intent));
     this.moodlesHud = createMoodlesHud(uiRoot);
+    this.hotbarHud = createHotbarHud(uiRoot);
     this.lootToast = createLootFloaterHud(uiRoot);
     this.inventoryPanel = createInventoryPanel(uiRoot);
     this.noise = new NoiseBus();
@@ -269,6 +274,7 @@ export class Game {
     this.speechOverlay.dispose();
     this.dialoguePanel.dispose();
     this.moodlesHud.dispose();
+    this.hotbarHud.dispose();
     this.lootToast.dispose();
     this.inventoryPanel.dispose();
     this.dialogue.close();
@@ -1209,6 +1215,7 @@ export class Game {
       });
       this.hud.classList.toggle("hud-help", this.showHelp);
       this.moodlesHud.sync(this.buildPlayerHudMoodles());
+      this.hotbarHud.sync(hotbarSlots(this.player.inventory));
       this.inventoryPanel.sync({
         open: false,
         data: buildInventoryPanelData(this.player.inventory),
@@ -1252,6 +1259,7 @@ export class Game {
       ? `diálogo ${this.dialogue.target}`
       : undefined;
     this.moodlesHud.sync(this.buildPlayerHudMoodles());
+    this.hotbarHud.sync(hotbarSlots(this.player.inventory));
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
     const safe =
       indoor && isSafehouseHint(this.map, this.player.x, this.player.y);
