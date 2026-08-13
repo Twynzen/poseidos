@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** Moodles con labels en español (Hambre/Sed/Cansancio/Vida/Balas).
+- **Última rutina:** Nameplates loot con icono (id del stack).
 - **Qué quedó (esta corrida):**
+  - **Nameplates loot** letrero con silueta gold canvas a la izquierda (`lootNameplateLeadId` + `paintLootNameplateIcon`); sin DOM ni raster SVG. Inventario / hotbar / moodles / anillos / facing sin cambio.
   - **Moodles HUD** pills más legibles (Hambre/Sed/Cansancio/Vida/Balas); DIA/NOC igual. CSS más compacto (una fila, font 9px) para que las palabras largas quepan. Umbrales sin cambio.
   - **Hotbar 1–5** slots cuadrados 52×52 con silueta SVG (`itemIconSvg`, mismo set que I) + badge qty>1; tecla 1–5; `title` / `aria-label`. Gestos iguales (clic / doble clic / arrastrar / Shift+partir / Ctrl+juntar / clic der. inspect). Sin cambio de panel I, anillos ni facing.
   - **Anillos ocultos fuera de alcance; nameplates loot siguen.** Aro ámbar loot / teal puerta / rosa cama solo si ese interactable está en reach (`LOOT`/`DOOR` 1.6, `BED` 1.5). `setInteractRingVisible` oculta ring+badge, no el sprite nameplate. Vacío sigue ocultando el grupo entero. Pulso solo al más cercano visible. Sin gestos nuevos ni cambio de constantes/inventario/hotbar/facing.
@@ -31,6 +32,6 @@
 - **Controles:** WASD mover · **Shift correr** · **Espacio/V melee** · **X disparar** · E puerta/loot · G loot · **Shift+G stack** · **Q usar slot** (consumible seleccionado / lluvia outdoor) · **U tirar** · **Shift+U stack** · **U inv tirar** · **1-5 hotbar** (selección, highlight azul) · **rueda hotbar** (cicla slot, wrap) · **clic hotbar** · **arrastrar hotbar** · **doble clic usar** · **clic der. info** · **Shift+clic hotbar partir** · **Ctrl+clic hotbar juntar** · **clic inv usar** · **doble clic inv** · **arrastrar inv** · **clic der. inv** · **Shift+clic inv partir** · **Ctrl+clic inv juntar** · **I inventorio (panel; al empezar muestra kit inicial)** · B barricada · **C vendaje** · **H cocinar** · **T diálogo** (calmar / preguntar / amenazar / ofrecer comida / Distraer) · **L linterna** · **M mute ambient** · **+/- zoom** · R descanso/reinicio · **Z dormir** (cama o suelo indoor) · **F1 ayuda** · F5 guardar · F9 cargar · (boot) clic/Espacio saltar loading
 - **Fuera de este slice:** autogenerar modelos en Mesh2Motion (herramienta externa); WebSocket real; lobby UI browser; API LLM real; GTAO; samples de pisadas (sigue beep); samples ambient reales; samples combat reales (sigue beep); samples interact reales (sigue beep); samples speech reales (sigue beep); samples heartbeat reales (sigue beep)
 - **Dirección:** sandbox largo en Three.js (sim primero; render es vista); LLM solo stub/fallback; MP solo stub headless por ahora
-- **Siguiente subtarea concreta:** nameplates loot con icono SVG, o polish visual chico.
+- **Siguiente subtarea concreta:** polish visual chico (toasts/cerca HUD, o F1 más claro).
 - **Bloqueos:** ninguno
 - **Entorno:** Bun; scripts `dev`, `build`, `test`

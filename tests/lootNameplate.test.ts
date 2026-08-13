@@ -5,10 +5,13 @@ import {
   LOOT_NAMEPLATE_SCALE_X,
   LOOT_NAMEPLATE_SCALE_Y,
   LOOT_NAMEPLATE_Y,
+  lootNameplateIconKind,
   lootNameplateLabel,
+  lootNameplateLeadId,
   lootNameplateOpacity,
   lootNameplateScale,
   lootNameplateVisible,
+  paintLootNameplateIcon,
   truncateLootLabel,
 } from "../src/render/lootNameplate";
 
@@ -112,5 +115,87 @@ describe("lootNameplateVisible", () => {
   test("dist negativa en fade → true", () => {
     expect(lootNameplateVisible(-0.4)).toBe(true);
     expect(lootNameplateVisible(-0.4, true)).toBe(false);
+  });
+});
+
+describe("lootNameplateLeadId", () => {
+  test("vacío / qty 0 → null", () => {
+    expect(lootNameplateLeadId(null)).toBeNull();
+    expect(lootNameplateLeadId(undefined)).toBeNull();
+    expect(lootNameplateLeadId({ slots: [] })).toBeNull();
+    expect(lootNameplateLeadId({ slots: [{ id: "wood", qty: 0 }] })).toBeNull();
+  });
+
+  test("water_bottle primero", () => {
+    expect(
+      lootNameplateLeadId({
+        slots: [{ id: "water_bottle", qty: 1 }, { id: "wood", qty: 2 }],
+      }),
+    ).toBe("water_bottle");
+  });
+
+  test("salta agujero vacío y toma wood", () => {
+    expect(
+      lootNameplateLeadId({
+        slots: [
+          { id: "cloth", qty: 0 },
+          { id: "wood", qty: 3 },
+        ],
+      }),
+    ).toBe("wood");
+  });
+});
+
+describe("lootNameplateIconKind", () => {
+  test("mapea ids conocidos; knife/cloth/unknown → diamond", () => {
+    expect(lootNameplateIconKind("water_bottle")).toBe("bottle");
+    expect(lootNameplateIconKind("empty_bottle")).toBe("bottle");
+    expect(lootNameplateIconKind("canned_food")).toBe("can");
+    expect(lootNameplateIconKind("wood")).toBe("wood");
+    expect(lootNameplateIconKind("ammo")).toBe("ammo");
+    expect(lootNameplateIconKind("pistol")).toBe("pistol");
+    expect(lootNameplateIconKind("flashlight")).toBe("flashlight");
+    expect(lootNameplateIconKind("knife")).toBe("diamond");
+    expect(lootNameplateIconKind("cloth")).toBe("diamond");
+    expect(lootNameplateIconKind("unknown")).toBe("diamond");
+  });
+});
+
+function mockNameplateCtx(): CanvasRenderingContext2D {
+  const noop = () => {};
+  return {
+    save: noop,
+    restore: noop,
+    translate: noop,
+    scale: noop,
+    beginPath: noop,
+    closePath: noop,
+    moveTo: noop,
+    lineTo: noop,
+    rect: noop,
+    fill: noop,
+    stroke: noop,
+    fillRect: noop,
+    strokeRect: noop,
+    fillStyle: "",
+    strokeStyle: "",
+    lineWidth: 1,
+    lineJoin: "round",
+    lineCap: "round",
+  } as unknown as CanvasRenderingContext2D;
+}
+
+describe("paintLootNameplateIcon", () => {
+  test("no tira con ids conocidos, unknown y ctx mínimo", () => {
+    const ctx = mockNameplateCtx();
+    expect(() => paintLootNameplateIcon(ctx, "water_bottle", 0, 0, 32)).not.toThrow();
+    expect(() => paintLootNameplateIcon(ctx, "canned_food", 0, 0, 22)).not.toThrow();
+    expect(() => paintLootNameplateIcon(ctx, "wood", 8, 8, 16)).not.toThrow();
+    expect(() => paintLootNameplateIcon(ctx, "ammo", 0, 0, 32)).not.toThrow();
+    expect(() => paintLootNameplateIcon(ctx, "pistol", 0, 0, 32)).not.toThrow();
+    expect(() => paintLootNameplateIcon(ctx, "flashlight", 0, 0, 32)).not.toThrow();
+    expect(() => paintLootNameplateIcon(ctx, "knife", 0, 0, 32)).not.toThrow();
+    expect(() => paintLootNameplateIcon(ctx, "unknown", 0, 0, 32)).not.toThrow();
+    expect(() => paintLootNameplateIcon(ctx, "", 0, 0, 0)).not.toThrow();
   });
 });
