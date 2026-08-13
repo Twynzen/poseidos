@@ -54,4 +54,34 @@ describe("starter kit", () => {
     expect(player.inventory.slots).toHaveLength(0);
     expect(hasFlashlight(player.inventory)).toBe(false);
   });
+
+  test("tryConsumeAt(0) bebe y deja empty_bottle", () => {
+    const player = new PlayerSim({ x: 1, y: 1 });
+    expect(player.inventory.slots[0]?.id).toBe("water_bottle");
+    expect(player.tryConsumeAt(0)).toBe("drink");
+    expect(player.inventory.slots.some((s) => s.id === "empty_bottle")).toBe(
+      true,
+    );
+  });
+
+  test("tryConsumeAt(3) pistola → null, pistola sigue", () => {
+    const player = new PlayerSim({ x: 1, y: 1 });
+    expect(player.inventory.slots[3]?.id).toBe("pistol");
+    expect(player.tryConsumeAt(3)).toBeNull();
+    expect(player.inventory.slots[3]?.id).toBe("pistol");
+    expect(player.inventory.slots[0]?.id).toBe("water_bottle");
+  });
+
+  test("tryConsumeAt(4) ammo → null", () => {
+    const player = new PlayerSim({ x: 1, y: 1 });
+    expect(player.inventory.slots[4]?.id).toBe("ammo");
+    expect(player.tryConsumeAt(4)).toBeNull();
+    expect(player.inventory.slots[4]?.id).toBe("ammo");
+    expect(player.inventory.slots[4]?.qty).toBe(8);
+  });
+
+  test("tryConsumeAt(99) → null", () => {
+    const player = new PlayerSim({ x: 1, y: 1 });
+    expect(player.tryConsumeAt(99)).toBeNull();
+  });
 });

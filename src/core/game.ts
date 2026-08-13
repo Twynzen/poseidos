@@ -956,7 +956,7 @@ export class Game {
           this.hudAcc = 1;
         }
       } else {
-        const used = this.player.tryConsume();
+        const used = this.player.tryConsumeAt(this.hotbarSelected);
         if (used) {
           playUse(this.interactPlayer, this.ambient.muted);
           this.lastLootMsg =
@@ -965,6 +965,10 @@ export class Game {
               : used === "drink"
                 ? "bebiste"
                 : "vendaje +HP";
+          this.lootToast.show(this.lastLootMsg);
+          this.hudAcc = 1;
+        } else {
+          this.lastLootMsg = "no se puede usar";
           this.hudAcc = 1;
         }
       }

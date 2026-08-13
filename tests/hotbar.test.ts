@@ -9,6 +9,7 @@ import {
   clampHotbarIndex,
   hotbarIndexFromKey,
   hotbarKey,
+  hotbarSlotIsConsumable,
   hotbarSlots,
 } from "../src/ui/hotbar";
 
@@ -123,5 +124,19 @@ describe("hotbarSlots", () => {
     expect(slots[3]).toEqual({ empty: true, index: 3, key: "4" });
     expect(slots[4]).toEqual({ empty: true, index: 4, key: "5" });
     expect(inv.slots).toHaveLength(2);
+  });
+});
+
+describe("hotbarSlotIsConsumable", () => {
+  test("drink true, empty false, pistol false", () => {
+    const slots = hotbarSlots(createStarterInventory());
+    expect(slots[0]?.empty).toBe(false);
+    expect(hotbarSlotIsConsumable(slots[0]!)).toBe(true);
+    expect(slots[3]?.empty).toBe(false);
+    if (!slots[3]?.empty) expect(slots[3].id).toBe("pistol");
+    expect(hotbarSlotIsConsumable(slots[3]!)).toBe(false);
+    expect(
+      hotbarSlotIsConsumable({ empty: true, index: 2, key: "3" }),
+    ).toBe(false);
   });
 });

@@ -305,20 +305,31 @@ export class PlayerSim {
 
   /**
    * Consume primer food/drink/heal del inventario y aplica eat/drink/heal.
-   * Tecla Q (game prioriza refill lluvia si aplica). `prefer` fuerza tipo.
+   * Tecla Q (game) usa tryConsumeAt(hotbarSelected); `prefer` fuerza tipo.
    * water_bottle → deja empty_bottle si cabe (si no cabe, se pierde el vacío).
    */
   tryConsume(prefer?: "food" | "drink" | "heal"): "food" | "drink" | "heal" | null {
     if (!this.alive) return null;
     const slot = findConsumableSlot(this.inventory, prefer);
     if (slot < 0) return null;
-    const stack = this.inventory.slots[slot]!;
+    return this.tryConsumeAt(slot);
+  }
+
+  /**
+   * Consume 1 unidad de `inventory.slots[slotIndex]` si es food/drink/heal.
+   * Fuera de rango / ausente / use none → null. Sin fallback a otro slot.
+   * water_bottle → deja empty_bottle si cabe (si no cabe, se pierde el vacío).
+   */
+  tryConsumeAt(slotIndex: number): "food" | "drink" | "heal" | null {
+    if (!this.alive) return null;
+    const stack = this.inventory.slots[slotIndex];
+    if (!stack || stack.qty <= 0) return null;
     const consumedId = stack.id;
     const def = getItemDef(consumedId);
     if (def.use !== "food" && def.use !== "drink" && def.use !== "heal") {
       return null;
     }
-    removeFromSlot(this.inventory, slot, 1);
+    removeFromSlot(this.inventory, slotIndex, 1);
     if (def.use === "food") {
       eat(this.needs, def.relief);
       if (def.fatigueRelief && def.fatigueRelief > 0) {

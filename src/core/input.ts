@@ -72,7 +72,7 @@ export class Input {
     return this.consumeJustPressed("KeyI");
   }
 
-  /** Q: refill botella bajo lluvia outdoor, o consumir food/drink/heal. */
+  /** Q: refill botella bajo lluvia outdoor, o usar el slot hotbar seleccionado. */
   consumeUse(): boolean {
     return this.consumeJustPressed("KeyQ");
   }

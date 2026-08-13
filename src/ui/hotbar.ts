@@ -91,3 +91,13 @@ export function hotbarSlots(inv: Inventory): HotbarSlot[] {
   }
   return out;
 }
+
+/**
+ * True solo si el slot está lleno y el ítem es food/drink/heal.
+ * Vacío, linterna, pistola, munición → false.
+ */
+export function hotbarSlotIsConsumable(slot: HotbarSlot): boolean {
+  if (slot.empty) return false;
+  const use = getItemDef(slot.id).use;
+  return use === "food" || use === "drink" || use === "heal";
+}

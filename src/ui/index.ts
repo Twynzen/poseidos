@@ -21,6 +21,7 @@ export {
   hotbarIndexFromKey,
   clampHotbarIndex,
   hotbarSlots,
+  hotbarSlotIsConsumable,
   type HotbarSlot,
   type HotbarFilledSlot,
   type HotbarEmptySlot,
