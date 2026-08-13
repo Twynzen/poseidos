@@ -50,6 +50,7 @@ import { tryApplyTouchKnockback } from "../combat";
 import { tileKey } from "../world/los";
 import { NoiseBus, type NoiseEvent } from "../world/noise";
 import { shouldShowNoiseRing } from "../render/noiseRings";
+import { lootFloaterLabel } from "../render/lootFloater";
 import {
   SpeechDirector,
   TrustLedger,
@@ -892,7 +893,9 @@ export class Game {
         if (taken) {
           playLoot(this.interactPlayer, this.ambient.muted);
           this.showNoiseRing(this.noise.emitLoot(this.player.x, this.player.y));
-          const lootLabel = `+${getItemDef(taken.id).name}`;
+          const lootLabel = lootFloaterLabel(
+            `+${getItemDef(taken.id).name}`,
+          );
           this.view.spawnLootFloater(lootLabel, this.player.x, this.player.y);
           this.lastLootMsg = lootLabel;
           this.hudAcc = 1; // forzar refresh
@@ -904,7 +907,9 @@ export class Game {
       if (taken) {
         playLoot(this.interactPlayer, this.ambient.muted);
         this.showNoiseRing(this.noise.emitLoot(this.player.x, this.player.y));
-        const lootLabel = `+${getItemDef(taken.id).name}`;
+        const lootLabel = lootFloaterLabel(
+          `+${getItemDef(taken.id).name}`,
+        );
         this.view.spawnLootFloater(lootLabel, this.player.x, this.player.y);
         this.lastLootMsg = lootLabel;
         this.hudAcc = 1;

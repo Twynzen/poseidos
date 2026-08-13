@@ -267,8 +267,9 @@ export interface WorldView {
   /** Avanza TTL / opacidad de tracers activos; limpia expirados. */
   tickTracers(dt: number): void;
   /**
-   * Texto ámbar de pickup (canvas 256×64) que sube y se desvanece.
-   * TTL 1.8s, rise 1.0 desde Y0 2.05. depthTest off, renderOrder 20.
+   * Texto ámbar de pickup (Plane 2.4×0.72, canvas 256×64) que sube y se desvanece.
+   * Hijo de playerMesh. TTL 1.8s, rise 1.0 desde Y0 2.05.
+   * frustumCulled off, renderOrder 20.
    */
   spawnLootFloater(label: string, x: number, y: number): void;
   /** Avanza age / Y / opacity de floaters; limpia expirados. */
@@ -850,15 +851,19 @@ export function createWorldView(
     liveTracers.length = 0;
   }
 
-  // Loot pickup floaters: canvas 256×64 ámbar, suben y fade en TTL 1.8s.
+  // Loot pickup floaters: Plane 2.4×0.72 canvas 256×64, hijo de playerMesh.
   interface LiveLootFloater {
-    sprite: THREE.Sprite;
-    mat: THREE.SpriteMaterial;
+    mesh: THREE.Mesh;
+    mat: THREE.MeshBasicMaterial;
     age: number;
   }
   const liveLootFloaters: LiveLootFloater[] = [];
+  const floaterGeo = new THREE.PlaneGeometry(2.4, 0.72);
+  // Frente a cámara iso (offset 12,14,12).
+  const FLOATER_YAW = Math.PI / 4;
+  const FLOATER_PITCH = -Math.atan2(14, Math.hypot(12, 12));
 
-  function makeFloaterSprite(label: string): THREE.Sprite {
+  function makeFloaterMesh(label: string): THREE.Mesh {
     const text = lootFloaterLabel(label);
     const canvas = document.createElement("canvas");
     canvas.width = 256;
@@ -877,36 +882,44 @@ export function createWorldView(
     }
     const map = new THREE.CanvasTexture(canvas);
     map.needsUpdate = true;
-    const mat = new THREE.SpriteMaterial({
+    const mat = new THREE.MeshBasicMaterial({
       map,
       transparent: true,
       depthTest: false,
       depthWrite: false,
+      side: THREE.DoubleSide,
     });
-    const sprite = new THREE.Sprite(mat);
-    sprite.name = "lootFloater";
-    sprite.scale.set(2.4, 0.72, 1);
-    sprite.renderOrder = 20;
-    return sprite;
+    const mesh = new THREE.Mesh(floaterGeo, mat);
+    mesh.name = "lootFloater";
+    mesh.frustumCulled = false;
+    mesh.renderOrder = 20;
+    mesh.rotation.order = "YXZ";
+    mesh.rotation.y = FLOATER_YAW;
+    mesh.rotation.x = FLOATER_PITCH;
+    return mesh;
   }
 
   function spawnLootFloater(label: string, x: number, y: number): void {
-    const sprite = makeFloaterSprite(label);
-    const mat = sprite.material as THREE.SpriteMaterial;
-    sprite.position.set(x, lootFloaterY(0), y);
+    const mesh = makeFloaterMesh(label);
+    const mat = mesh.material as THREE.MeshBasicMaterial;
+    mesh.position.set(
+      x - playerMesh.position.x,
+      lootFloaterY(0),
+      y - playerMesh.position.z,
+    );
     mat.opacity = lootFloaterOpacity(0);
-    scene.add(sprite);
-    liveLootFloaters.push({ sprite, mat, age: 0 });
+    playerMesh.add(mesh);
+    liveLootFloaters.push({ mesh, mat, age: 0 });
   }
 
   function tickLootFloaters(dt: number): void {
     for (let i = liveLootFloaters.length - 1; i >= 0; i--) {
       const f = liveLootFloaters[i]!;
       f.age += dt;
-      f.sprite.position.y = lootFloaterY(f.age);
+      f.mesh.position.y = lootFloaterY(f.age);
       f.mat.opacity = lootFloaterOpacity(f.age);
       if (!lootFloaterAlive(f.age)) {
-        scene.remove(f.sprite);
+        playerMesh.remove(f.mesh);
         f.mat.map?.dispose();
         f.mat.dispose();
         liveLootFloaters.splice(i, 1);
@@ -916,7 +929,7 @@ export function createWorldView(
 
   function clearLootFloaters(): void {
     for (const f of liveLootFloaters) {
-      scene.remove(f.sprite);
+      playerMesh.remove(f.mesh);
       f.mat.map?.dispose();
       f.mat.dispose();
     }
@@ -1600,6 +1613,7 @@ export function createWorldView(
       scene.remove(warmLight);
       clearTracers();
       clearLootFloaters();
+      floaterGeo.dispose();
       clearNoiseRings();
       clearRain();
       clearGrass();

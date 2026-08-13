@@ -1,6 +1,7 @@
 /**
  * Floater de pickup de loot — headless.
- * worldView aplica label/Y/opacity al Sprite canvas 256×64 ámbar.
+ * worldView aplica label/Y/opacity al Plane canvas 256×64 ámbar
+ * (hijo de playerMesh).
  */
 
 /** Duración del floater (s). */

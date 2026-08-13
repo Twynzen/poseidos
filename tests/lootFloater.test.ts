@@ -23,6 +23,7 @@ describe("lootFloaterLabel", () => {
   test("corto sin cambio", () => {
     expect(lootFloaterLabel("+scrap")).toBe("+scrap");
     expect(lootFloaterLabel("+canned_food")).toBe("+canned_food");
+    expect(lootFloaterLabel("+lata de comida")).toBe("+lata de comida");
   });
 
   test("exacto 16 sin cambio", () => {
