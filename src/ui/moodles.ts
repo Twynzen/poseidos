@@ -1,9 +1,11 @@
 /**
  * Moodles HUD: pills glass técnicas (Skills P1) junto al panel #hud.
- * Solo DOM; umbrales en actors/moodles.
+ * Solo DOM; umbrales en actors/moodles. Glifo = SVG (`moodleIconSvg`);
+ * MoodleView.glyph unicode se conserva headless para tests.
  */
 
 import type { MoodleView } from "../actors/moodles";
+import { moodleIconSvg } from "./moodleIcons";
 
 export interface MoodlesHud {
   sync(moodles: ReadonlyArray<MoodleView>): void;
@@ -50,7 +52,11 @@ export function createMoodlesHud(root: HTMLElement): MoodlesHud {
         const glyph = el.querySelector(".moodle-glyph");
         const label = el.querySelector(".moodle-label");
         const val = el.querySelector(".moodle-value");
-        if (glyph) glyph.textContent = m.glyph;
+        if (glyph) {
+          glyph.innerHTML = moodleIconSvg(m.id, {
+            night: m.id === "clock" && m.glyph === "☾",
+          });
+        }
         if (label) label.textContent = m.label;
         if (val) val.textContent = String(m.value);
         el.title = `${m.label} ${m.value} (${m.level})`;

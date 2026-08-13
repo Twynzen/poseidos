@@ -47,6 +47,7 @@
         z-index: 2; pointer-events: none;
         max-width: min(720px, calc(100% - 24px));
       }
+      #hud.hud-help ~ #moodles { bottom: 340px; }
       .moodle {
         display: inline-flex; align-items: center; gap: 5px;
         flex: 0 1 auto;
@@ -64,7 +65,12 @@
         backdrop-filter: blur(10px) saturate(140%);
         -webkit-backdrop-filter: blur(10px) saturate(140%);
       }
-      .moodle-glyph { font-size: 11px; opacity: 0.9; }
+      .moodle-glyph {
+        width: 12px; height: 12px; flex: 0 0 12px;
+        display: inline-flex; align-items: center; justify-content: center;
+        opacity: 0.9;
+      }
+      .moodle-glyph svg { width: 12px; height: 12px; display: block; }
       .moodle-label { color: var(--hud-muted); font-weight: 600; }
       .moodle-value { color: var(--hud-accent); font-variant-numeric: tabular-nums; min-width: 1.4em; }
       .moodle[data-level="ok"] {
