@@ -109,4 +109,4 @@ Siguiente: export Mesh2Motion real a `public/models/Survivor.glb`.
 | Manifest player | `PLAYER_SOLDIER_MANIFEST` — scale `1.25`, yOffset `0` |
 | Manifest poseído | `POSSESSED_SOLDIER_MANIFEST` — mismo url, id `possessed-soldier`, scale `1.25` |
 | Manifest mute | `MUTE_SOLDIER_MANIFEST` — mismo url, id `mute-soldier`, scale `1.25` |
-| Facing | Soldier +Z; yaw = `atan2(faceX, faceZ)` (W → −Z → π) |
+| Facing | Soldier walk −Z local; yaw = atan2 + PLAYER_GLTF_YAW_OFFSET (π). S/+Z → π, no moonwalk. Visual usa ejes vivos, no snap cardinal. |
