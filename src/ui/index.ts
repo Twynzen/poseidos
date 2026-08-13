@@ -47,3 +47,10 @@ export {
   type HitFlash,
 } from "./hitFlash";
 
+export {
+  LOOT_FLOATER_HUD_MS,
+  LOOT_FLOATER_HUD_PLAY_CLASS,
+  showLootFloaterHud,
+  type LootFloaterHudEl,
+} from "./lootFloaterHud";
+

@@ -315,11 +315,48 @@
           rgba(120, 0, 8, 0.95) 100%
         );
       }
+
+      /* Loot toast DOM: fallback visible si el Plane 3D no se ve (G/E) */
+      #loot-floater {
+        position: absolute;
+        left: 50%;
+        top: 38%;
+        transform: translate(-50%, 0);
+        z-index: 6;
+        pointer-events: none;
+        opacity: 0;
+        padding: 6px 14px;
+        border-radius: 999px;
+        color: #f0c060;
+        font: 600 16px/1.2 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        letter-spacing: 0.06em;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)),
+          rgba(15, 23, 42, 0.62);
+        border: 1px solid rgba(240, 192, 96, 0.4);
+        box-shadow: 0 10px 24px rgba(2, 6, 23, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px) saturate(140%);
+        -webkit-backdrop-filter: blur(10px) saturate(140%);
+        white-space: nowrap;
+      }
+      #loot-floater.loot-floater-play {
+        animation: loot-float 1.8s ease-out forwards;
+      }
+      @keyframes loot-float {
+        0% {
+          opacity: 1;
+          transform: translate(-50%, 12px);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -44px);
+        }
+      }
     </style>
   </head>
   <body>
     <div id="app"></div>
     <div id="hit-flash" aria-hidden="true"></div>
+    <div id="loot-floater" aria-hidden="true"></div>
     <div id="speech-layer"></div>
     <div id="hud">cargando… · F1 ayuda</div>
     <script type="module" src="/src/main.ts"></script>
