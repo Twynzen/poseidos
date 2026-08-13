@@ -56,6 +56,8 @@ describe("melee combat", () => {
     const player = new PlayerSim({ x: 5.5, y: 4.5 });
     player.facingX = 1;
     player.facingY = 0;
+    player.aimX = 1;
+    player.aimY = 0;
     const sim = new HostileSim({ speed: 0, visionRange: 0, hearRange: 0 });
     sim.add("mute", 6.4, 4.5);
     expect(sim.hostiles[0]!.health).toBe(HOSTILE_MAX_HEALTH);
@@ -145,6 +147,8 @@ describe("melee weapon variety", () => {
     const bare = new PlayerSim({ x: 5.5, y: 4.5 });
     bare.facingX = 1;
     bare.facingY = 0;
+    bare.aimX = 1;
+    bare.aimY = 0;
     const simBare = new HostileSim({ speed: 0, visionRange: 0, hearRange: 0 });
     simBare.add("a", 6.4, 4.5);
     const rBare = bare.tryMelee(simBare);
@@ -154,6 +158,8 @@ describe("melee weapon variety", () => {
     const armed = new PlayerSim({ x: 5.5, y: 4.5 });
     armed.facingX = 1;
     armed.facingY = 0;
+    armed.aimX = 1;
+    armed.aimY = 0;
     addItem(armed.inventory, "crowbar", 1);
     const simArmed = new HostileSim({ speed: 0, visionRange: 0, hearRange: 0 });
     simArmed.add("b", 6.4, 4.5);
@@ -269,6 +275,8 @@ describe("ranged stub", () => {
     );
     player.facingX = 1;
     player.facingY = 0;
+    player.aimX = 1;
+    player.aimY = 0;
     const sim = new HostileSim({ speed: 0, visionRange: 0, hearRange: 0 });
     sim.add("t", 8.5, 4.5);
     const hp = sim.hostiles[0]!.health;
@@ -293,6 +301,8 @@ describe("ranged stub", () => {
     const player = new PlayerSim({ x: 3.5, y: 4.5 }, undefined, inv);
     player.facingX = 1;
     player.facingY = 0;
+    player.aimX = 1;
+    player.aimY = 0;
     // HP alto: un tiro (45) no mata (HOSTILE_MAX_HEALTH=40)
     const sim = new HostileSim({
       speed: 0,
@@ -338,6 +348,8 @@ describe("ranged stub", () => {
     const player = new PlayerSim({ x: 3.5, y: 4.5 }, undefined, inv);
     player.facingX = 1;
     player.facingY = 0;
+    player.aimX = 1;
+    player.aimY = 0;
     const sim = new HostileSim({ speed: 0, visionRange: 0, hearRange: 0 });
     sim.add("blocked", 9.5, 4.5);
     const hp = sim.hostiles[0]!.health;
@@ -373,5 +385,109 @@ describe("ranged stub", () => {
     expect(p.rangedRange).toBe(7);
     expect(getItemDef("ammo").name).toBe("munición");
     expect(p.rangedDamage!).toBeGreaterThan(getItemDef("knife").meleeDamage!);
+  });
+});
+
+describe("combat aim continuo vs facing snap", () => {
+  test("move diagonal: aim = ejes raw, facing snap cardinal", () => {
+    const map = openMap();
+    const player = new PlayerSim({ x: 5.5, y: 4.5 });
+    expect(player.aimX).toBe(0);
+    expect(player.aimY).toBe(1);
+    expect(player.facingX).toBe(0);
+    expect(player.facingY).toBe(1);
+
+    player.move(0.05, { x: 1, z: 1 }, map);
+    expect(player.aimX).toBe(1);
+    expect(player.aimY).toBe(1);
+    // |x| >= |z| → snap este
+    expect(player.facingX).toBe(1);
+    expect(player.facingY).toBe(0);
+
+    player.move(0.05, { x: 0.4, z: 0.9 }, map);
+    expect(player.aimX).toBeCloseTo(0.4);
+    expect(player.aimY).toBeCloseTo(0.9);
+    expect(player.facingX).toBe(0);
+    expect(player.facingY).toBe(1);
+  });
+
+  test("tryShoot usa aim diagonal, no facing snap", () => {
+    const map = openMap(16, 14);
+    const inv = createInventory(8, 20);
+    addItem(inv, "pistol", 1);
+    addItem(inv, "ammo", 2);
+    const player = new PlayerSim({ x: 3.5, y: 4.5 }, undefined, inv);
+    const ox = player.x;
+    const oy = player.y;
+    player.move(0.02, { x: 1, z: 1 }, map);
+    player.x = ox;
+    player.y = oy;
+    expect(player.facingX).toBe(1);
+    expect(player.facingY).toBe(0);
+    expect(player.aimX).toBe(1);
+    expect(player.aimY).toBe(1);
+
+    // NNE: fuera del cono east (facing snap), dentro del cono diagonal (aim)
+    const sim = new HostileSim({
+      speed: 0,
+      visionRange: 0,
+      hearRange: 0,
+      maxHealth: 100,
+    });
+    sim.add("diag", 4.5, 9.5);
+    const targets = [{ id: "diag", x: 4.5, y: 9.5 }];
+    expect(
+      pickRangedTarget(player.x, player.y, player.facingX, player.facingY, targets, map),
+    ).toBeNull();
+    expect(
+      pickRangedTarget(player.x, player.y, player.aimX, player.aimY, targets, map)?.id,
+    ).toBe("diag");
+
+    const shot = player.tryShoot(sim, map);
+    expect(shot.kind).toBe("shot");
+    if (shot.kind === "shot") {
+      expect(shot.hit).toBe(true);
+      if (shot.hit) expect(shot.hostileId).toBe("diag");
+    }
+  });
+
+  test("tryMelee prioriza aim diagonal sobre facing snap", () => {
+    const map = openMap();
+    const player = new PlayerSim({ x: 5.5, y: 5.5 });
+    const ox = player.x;
+    const oy = player.y;
+    player.move(0.02, { x: 1, z: 1 }, map);
+    player.x = ox;
+    player.y = oy;
+    expect(player.facingX).toBe(1);
+    expect(player.facingY).toBe(0);
+    expect(player.aimX).toBe(1);
+    expect(player.aimY).toBe(1);
+
+    const sim = new HostileSim({ speed: 0, visionRange: 0, hearRange: 0 });
+    // Este (más cerca en eje snap) vs diagonal (aim)
+    sim.add("east", 6.55, 5.5);
+    sim.add("diag", 6.25, 6.25);
+
+    const byFacing = pickMeleeTarget(
+      player.x,
+      player.y,
+      player.facingX,
+      player.facingY,
+      sim.hostiles,
+    );
+    const byAim = pickMeleeTarget(
+      player.x,
+      player.y,
+      player.aimX,
+      player.aimY,
+      sim.hostiles,
+    );
+    expect(byFacing?.id).toBe("east");
+    expect(byAim?.id).toBe("diag");
+
+    const hit = player.tryMelee(sim);
+    expect(hit?.hostileId).toBe("diag");
+    expect(map.walkable(5, 5)).toBe(true);
   });
 });

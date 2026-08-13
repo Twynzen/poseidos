@@ -62,7 +62,7 @@ export type RangedAttackResult =
       /** Origen del tracer (player). */
       fromX: number;
       fromY: number;
-      /** Fin del tracer (facing × range si miss). */
+      /** Fin del tracer (aim × range si miss). */
       toX: number;
       toY: number;
     }
@@ -98,9 +98,12 @@ export class PlayerSim {
   readonly needs: NeedsState;
   readonly body: BodyState;
   readonly inventory: Inventory;
-  /** Última dirección de movimiento (tile step) para colocar barricadas / melee. */
+  /** Última dirección cardinal (tile step) para puertas / barricadas. */
   facingX = 0;
   facingY = 1;
+  /** Aim continuo (ejes raw) para melee / disparo. No snap cardinal. */
+  aimX = 0;
+  aimY = 1;
   /** Cooldown restante de ataque melee. */
   attackCd = 0;
 
@@ -136,7 +139,7 @@ export class PlayerSim {
   }
 
   /**
-   * Melee (Espacio/V): golpea hostil adyacente / facing.
+   * Melee (Espacio/V): golpea hostil adyacente / aim continuo.
    * Auto-usa la mejor arma melee del inventario (o puños).
    * Devuelve resultado del daño o null si no hay target / en cooldown / muerto.
    * Miss (sin target) arranca MELEE_WHIFF_COOLDOWN para no apilar swings.
@@ -148,8 +151,8 @@ export class PlayerSim {
     const pick = pickMeleeTarget(
       this.x,
       this.y,
-      this.facingX,
-      this.facingY,
+      this.aimX,
+      this.aimY,
       hostiles.hostiles,
       weapon.reach,
     );
@@ -165,7 +168,7 @@ export class PlayerSim {
 
   /**
    * Disparo (X): requiere pistola + ammo. Gasta 1 bala.
-   * Hit si hostil en facing + rango + LOS. Ruido lo emite Game.
+   * Hit si hostil en aim continuo + rango + LOS. Ruido lo emite Game.
    */
   tryShoot(hostiles: HostileSim, map: TileMap): RangedAttackResult {
     if (!this.alive) return { kind: "fail", message: "estás muerto" };
@@ -181,15 +184,15 @@ export class PlayerSim {
     const missTo = aimAlongFacing(
       fromX,
       fromY,
-      this.facingX,
-      this.facingY,
+      this.aimX,
+      this.aimY,
       ready.range,
     );
     const pick = pickRangedTarget(
       this.x,
       this.y,
-      this.facingX,
-      this.facingY,
+      this.aimX,
+      this.aimY,
       hostiles.hostiles,
       map,
       ready.range,
@@ -250,7 +253,10 @@ export class PlayerSim {
   ): number {
     if (!this.alive) return 0;
     if (axes.x === 0 && axes.z === 0) return 0;
-    // Facing cardinal: eje dominante del input
+    // Aim continuo: ejes raw (no snap)
+    this.aimX = axes.x;
+    this.aimY = axes.z;
+    // Facing cardinal: eje dominante del input (puertas / barricadas)
     if (Math.abs(axes.x) >= Math.abs(axes.z)) {
       this.facingX = axes.x > 0 ? 1 : -1;
       this.facingY = 0;
