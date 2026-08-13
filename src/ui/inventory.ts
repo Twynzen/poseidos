@@ -9,6 +9,7 @@ import {
   INVENTORY_EMPTY_MSG,
   type InventoryPanelData,
 } from "../items/inventoryPanelData";
+import { itemIconSvg } from "./itemIcons";
 
 export interface InventoryPanelView {
   open: boolean;
@@ -61,7 +62,7 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
   equip.setAttribute("aria-label", "Equipo");
 
   const list = document.createElement("ul");
-  list.className = "inv-list";
+  list.className = "inv-list inv-grid";
 
   const empty = document.createElement("div");
   empty.className = "inv-empty";
@@ -227,23 +228,21 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
             pendingInspect = Number.isFinite(n) ? Math.trunc(n) : slot.index;
           });
 
-          const name = document.createElement("span");
-          name.className = "inv-slot-name";
-          name.textContent = slot.name;
+          li.title = slot.name;
+          li.setAttribute("aria-label", `${slot.name} ×${slot.qty}`);
 
-          const qty = document.createElement("span");
-          qty.className = "inv-slot-qty";
-          qty.textContent = `×${slot.qty}`;
+          const icon = document.createElement("span");
+          icon.className = "inv-slot-icon";
+          icon.innerHTML = itemIconSvg(slot.id);
+          li.append(icon);
 
-          const w = document.createElement("span");
-          w.className = "inv-slot-weight";
-          const ww =
-            slot.weight < 0.1 && slot.weight > 0
-              ? slot.weight.toFixed(2)
-              : slot.weight.toFixed(1);
-          w.textContent = `${ww}kg`;
+          if (slot.qty > 1) {
+            const qty = document.createElement("span");
+            qty.className = "inv-slot-qty";
+            qty.textContent = String(slot.qty);
+            li.append(qty);
+          }
 
-          li.append(name, qty, w);
           list.appendChild(li);
         }
         const selected = view.selectedIndex;
