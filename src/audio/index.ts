@@ -48,3 +48,15 @@ export {
   type CombatBeepSpec,
   type CombatPlayer,
 } from "./combatPlayer";
+
+export {
+  shouldPlayInteractSfx,
+  interactBeepSpec,
+  createInteractPlayer,
+  playDoor,
+  playLoot,
+  playUse,
+  type InteractSfxKind,
+  type InteractBeepSpec,
+  type InteractPlayer,
+} from "./interactPlayer";

@@ -97,11 +97,16 @@ import {
   playMelee,
   playHit,
   playGun,
+  createInteractPlayer,
+  playDoor,
+  playLoot,
+  playUse,
   type AmbientBus,
   type FootstepsBus,
   type FootstepPlayer,
   type AmbientPlayer,
   type CombatPlayer,
+  type InteractPlayer,
 } from "../audio";
 import {
   computeNeedsDamage,
@@ -146,6 +151,7 @@ export class Game {
   private ambient: AmbientBus;
   private ambientPlayer: AmbientPlayer;
   private combatPlayer: CombatPlayer;
+  private interactPlayer: InteractPlayer;
   private footsteps: FootstepsBus;
   private footstepPlayer: FootstepPlayer;
   private readonly loop: GameLoop;
@@ -218,6 +224,7 @@ export class Game {
     this.ambient = createAmbientBus();
     this.ambientPlayer = createAmbientPlayer();
     this.combatPlayer = createCombatPlayer();
+    this.interactPlayer = createInteractPlayer();
     this.footsteps = createFootstepsBus();
     this.footstepPlayer = createFootstepPlayer();
     this.storage = browserStorage();
@@ -829,11 +836,13 @@ export class Game {
     if (this.input.consumeInteract()) {
       const result = this.player.tryToggleDoor(this.map);
       if (result) {
+        playDoor(this.interactPlayer, this.ambient.muted);
         this.view.syncDoor(result.x, result.y, result.open);
         this.showNoiseRing(this.noise.emitDoor(result.x + 0.5, result.y + 0.5));
       } else {
         const taken = this.player.tryLoot(this.containers);
         if (taken) {
+          playLoot(this.interactPlayer, this.ambient.muted);
           this.showNoiseRing(this.noise.emitLoot(this.player.x, this.player.y));
           this.lastLootMsg = `+${taken.id}`;
           this.hudAcc = 1; // forzar refresh
@@ -843,6 +852,7 @@ export class Game {
     if (this.input.consumeLoot()) {
       const taken = this.player.tryLoot(this.containers);
       if (taken) {
+        playLoot(this.interactPlayer, this.ambient.muted);
         this.showNoiseRing(this.noise.emitLoot(this.player.x, this.player.y));
         this.lastLootMsg = `+${taken.id}`;
         this.hudAcc = 1;
@@ -864,12 +874,14 @@ export class Game {
             this.player.inventory,
           )
         ) {
+          playUse(this.interactPlayer, this.ambient.muted);
           this.lastLootMsg = "recogiste agua de lluvia";
           this.hudAcc = 1;
         }
       } else {
         const used = this.player.tryConsume();
         if (used) {
+          playUse(this.interactPlayer, this.ambient.muted);
           this.lastLootMsg =
             used === "food"
               ? "comiste"
