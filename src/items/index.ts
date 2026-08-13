@@ -16,6 +16,7 @@ export {
   removeFromSlot,
   insertStackAt,
   splitStack,
+  mergeStack,
   findSlot,
   findConsumableSlot,
   transferOne,

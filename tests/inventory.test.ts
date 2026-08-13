@@ -11,6 +11,7 @@ import {
   getItemDef,
   insertStackAt,
   splitStack,
+  mergeStack,
   inventorySummary,
   LOOT_KITCHEN,
   LOOT_CABINET,
@@ -120,6 +121,46 @@ describe("inventory", () => {
     expect(splitStack(qty3, 0)).toEqual({ id: "ammo", qty: 1, toIndex: 1 });
     expect(qty3.slots[0]).toEqual({ id: "ammo", qty: 2 });
     expect(qty3.slots[1]).toEqual({ id: "ammo", qty: 1 });
+  });
+
+  test("mergeStack junta mismo id; unique qty 1 y flashlight maxStack 1 → null", () => {
+    const ammo8 = createInventory(8, 20, [{ id: "ammo", qty: 8 }]);
+    expect(splitStack(ammo8, 0)).toEqual({ id: "ammo", qty: 4, toIndex: 1 });
+    expect(ammo8.slots).toEqual([
+      { id: "ammo", qty: 4 },
+      { id: "ammo", qty: 4 },
+    ]);
+    expect(mergeStack(ammo8, 1)).toEqual({
+      id: "ammo",
+      qtyMoved: 4,
+      intoIndex: 0,
+      destQty: 8,
+    });
+    expect(ammo8.slots).toEqual([{ id: "ammo", qty: 8 }]);
+
+    const partial = createInventory(8, 20);
+    partial.slots.push({ id: "ammo", qty: 22 }, { id: "ammo", qty: 5 });
+    expect(mergeStack(partial, 1)).toEqual({
+      id: "ammo",
+      qtyMoved: 2,
+      intoIndex: 0,
+      destQty: 24,
+    });
+    expect(partial.slots[0]).toEqual({ id: "ammo", qty: 24 });
+    expect(partial.slots[1]).toEqual({ id: "ammo", qty: 3 });
+
+    const unique = createInventory(8, 20, [{ id: "ammo", qty: 1 }]);
+    expect(mergeStack(unique, 0)).toBeNull();
+    expect(unique.slots).toEqual([{ id: "ammo", qty: 1 }]);
+
+    const torch = createInventory(8, 20);
+    torch.slots.push({ id: "flashlight", qty: 1 }, { id: "flashlight", qty: 1 });
+    expect(mergeStack(torch, 0)).toBeNull();
+    expect(mergeStack(torch, 1)).toBeNull();
+    expect(torch.slots).toEqual([
+      { id: "flashlight", qty: 1 },
+      { id: "flashlight", qty: 1 },
+    ]);
   });
 
   test("transferOne mueve 1 unidad entre inventarios", () => {

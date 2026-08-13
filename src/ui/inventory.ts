@@ -21,6 +21,8 @@ export interface InventoryPanel {
   consumeInspect(): number | null;
   /** Último Shift+clic en fila (partir stack); last-wins; consume y limpia. */
   consumeSplit(): number | null;
+  /** Último Ctrl/Cmd+clic en fila (juntar stack); last-wins; consume y limpia. */
+  consumeMerge(): number | null;
   dispose(): void;
 }
 
@@ -53,7 +55,7 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
   const hint = document.createElement("div");
   hint.className = "inv-hint";
   hint.textContent =
-    "I cerrar · clic usar · Shift+clic partir · clic der. info · Q usar/lluvia · L linterna · Espacio/V melee · X disparar";
+    "I cerrar · clic usar · Shift+clic partir · Ctrl+clic juntar · clic der. info · Q usar/lluvia · L linterna · Espacio/V melee · X disparar";
 
   panel.append(head, weightEl, equip, empty, list, hint);
   root.appendChild(panel);
@@ -61,6 +63,7 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
   let pendingClick: number | null = null;
   let pendingInspect: number | null = null;
   let pendingSplit: number | null = null;
+  let pendingMerge: number | null = null;
 
   return {
     consumeClick() {
@@ -77,6 +80,11 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
       const split = pendingSplit;
       pendingSplit = null;
       return split;
+    },
+    consumeMerge() {
+      const merge = pendingMerge;
+      pendingMerge = null;
+      return merge;
     },
     sync(view) {
       if (!view.open) {
@@ -115,9 +123,15 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
             if (e.shiftKey) {
               pendingSplit = slot.index;
               pendingClick = null;
+              pendingMerge = null;
+            } else if (e.ctrlKey || e.metaKey) {
+              pendingMerge = slot.index;
+              pendingClick = null;
+              pendingSplit = null;
             } else {
               pendingClick = slot.index;
               pendingSplit = null;
+              pendingMerge = null;
             }
           });
           li.addEventListener("contextmenu", (e) => {

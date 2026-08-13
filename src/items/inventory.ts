@@ -174,6 +174,43 @@ export function splitStack(
   return { id, qty: half, toIndex: fromIndex + 1 };
 }
 
+/**
+ * Junta el stack en `fromIndex` en otro stack del mismo id con hueco.
+ * No usa addItem. Falla si no es apilable, qty < 1 o no hay par con room.
+ */
+export function mergeStack(
+  inv: Inventory,
+  fromIndex: number,
+): { id: string; qtyMoved: number; intoIndex: number; destQty: number } | null {
+  const from = inv.slots[fromIndex];
+  if (!from || from.qty < 1) return null;
+  const def = getItemDef(from.id);
+  if (!def.stackable || def.maxStack <= 1) return null;
+
+  let intoIndex = -1;
+  for (let i = 0; i < inv.slots.length; i++) {
+    if (i === fromIndex) continue;
+    const s = inv.slots[i];
+    if (s && s.id === from.id && s.qty < def.maxStack) {
+      intoIndex = i;
+      break;
+    }
+  }
+  if (intoIndex < 0) return null;
+
+  const dest = inv.slots[intoIndex]!;
+  const n = Math.min(from.qty, def.maxStack - dest.qty);
+  if (n < 1) return null;
+
+  dest.qty += n;
+  const destQty = dest.qty;
+  const id = from.id;
+  const emptied = from.qty <= n;
+  removeFromSlot(inv, fromIndex, n);
+  if (emptied && fromIndex < intoIndex) intoIndex -= 1;
+  return { id, qtyMoved: n, intoIndex, destQty };
+}
+
 /** Índice del primer stack con id, o -1. */
 export function findSlot(inv: Inventory, id: ItemId): number {
   return inv.slots.findIndex((s) => s.id === id);

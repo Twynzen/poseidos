@@ -25,13 +25,21 @@ function clickRow(
   root: HTMLElement,
   originalIndex: number,
   shiftKey = false,
+  ctrlKey = false,
+  metaKey = false,
 ): void {
   const li = root.querySelector<HTMLElement>(
     `.inv-slot[data-index="${originalIndex}"]`,
   );
   expect(li).toBeTruthy();
   li!.dispatchEvent(
-    new MouseEvent("click", { bubbles: true, cancelable: true, shiftKey }),
+    new MouseEvent("click", {
+      bubbles: true,
+      cancelable: true,
+      shiftKey,
+      ctrlKey,
+      metaKey,
+    }),
   );
 }
 
@@ -189,7 +197,27 @@ describe("inventory panel contextmenu inspects without using", () => {
     clickRow(root, 1, true);
     expect(panel.consumeSplit()).toBe(1);
     expect(panel.consumeClick()).toBeNull();
+    expect(panel.consumeMerge()).toBeNull();
     expect(panel.consumeSplit()).toBeNull();
+    panel.dispose();
+  });
+
+  test("Ctrl+click → consumeMerge, click/split null", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "ammo", qty: 8 },
+      { id: "water_bottle", qty: 1 },
+    ]);
+    panel.sync({ open: true, data: buildInventoryPanelData(inv) });
+
+    clickRow(root, 1, false, true);
+    expect(panel.consumeMerge()).toBe(1);
+    expect(panel.consumeClick()).toBeNull();
+    expect(panel.consumeSplit()).toBeNull();
+    expect(panel.consumeMerge()).toBeNull();
     panel.dispose();
   });
 
@@ -206,6 +234,7 @@ describe("inventory panel contextmenu inspects without using", () => {
     clickRow(root, 0);
     expect(panel.consumeClick()).toBe(0);
     expect(panel.consumeSplit()).toBeNull();
+    expect(panel.consumeMerge()).toBeNull();
     panel.dispose();
   });
 
@@ -224,6 +253,7 @@ describe("inventory panel contextmenu inspects without using", () => {
     clickRow(root, 2, true);
     expect(panel.consumeSplit()).toBe(2);
     expect(panel.consumeClick()).toBeNull();
+    expect(panel.consumeMerge()).toBeNull();
     expect(panel.consumeSplit()).toBeNull();
     panel.dispose();
   });

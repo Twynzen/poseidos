@@ -37,6 +37,7 @@ import {
   torchLightIntensity,
   getItemDef,
   splitStack,
+  mergeStack,
   takeFromSlot,
   dropOnTile,
   dropQty,
@@ -829,6 +830,7 @@ export class Game {
     const invClick = this.inventoryPanel.consumeClick();
     const invInspect = this.inventoryPanel.consumeInspect();
     const splitIdx = this.inventoryPanel.consumeSplit();
+    const mergeIdx = this.inventoryPanel.consumeMerge();
     if (dragged) {
       if (swapHotbarStacks(this.player.inventory, dragged.from, dragged.to)) {
         this.hotbarSelected = dragged.to;
@@ -1138,6 +1140,19 @@ export class Game {
         this.hudAcc = 1;
       } else {
         this.lastLootMsg = "no se puede partir";
+        this.lootToast.show(this.lastLootMsg);
+        this.hudAcc = 1;
+      }
+    }
+    if (this.showInvDetail && mergeIdx !== null) {
+      const merged = mergeStack(this.player.inventory, mergeIdx);
+      if (merged) {
+        const label = `juntaste ${getItemDef(merged.id as ItemId).name} ×${merged.destQty}`;
+        this.lastLootMsg = label;
+        this.lootToast.show(label);
+        this.hudAcc = 1;
+      } else {
+        this.lastLootMsg = "no se puede juntar";
         this.lootToast.show(this.lastLootMsg);
         this.hudAcc = 1;
       }
