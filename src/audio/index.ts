@@ -60,3 +60,12 @@ export {
   type InteractBeepSpec,
   type InteractPlayer,
 } from "./interactPlayer";
+
+export {
+  shouldPlaySpeechSfx,
+  speechBeepSpec,
+  createSpeechPlayer,
+  playSpeech,
+  type SpeechBeepSpec,
+  type SpeechPlayer,
+} from "./speechPlayer";

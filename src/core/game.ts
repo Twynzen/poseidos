@@ -101,12 +101,15 @@ import {
   playDoor,
   playLoot,
   playUse,
+  createSpeechPlayer,
+  playSpeech,
   type AmbientBus,
   type FootstepsBus,
   type FootstepPlayer,
   type AmbientPlayer,
   type CombatPlayer,
   type InteractPlayer,
+  type SpeechPlayer,
 } from "../audio";
 import {
   computeNeedsDamage,
@@ -152,6 +155,7 @@ export class Game {
   private ambientPlayer: AmbientPlayer;
   private combatPlayer: CombatPlayer;
   private interactPlayer: InteractPlayer;
+  private speechPlayer: SpeechPlayer;
   private footsteps: FootstepsBus;
   private footstepPlayer: FootstepPlayer;
   private readonly loop: GameLoop;
@@ -225,6 +229,7 @@ export class Game {
     this.ambientPlayer = createAmbientPlayer();
     this.combatPlayer = createCombatPlayer();
     this.interactPlayer = createInteractPlayer();
+    this.speechPlayer = createSpeechPlayer();
     this.footsteps = createFootstepsBus();
     this.footstepPlayer = createFootstepPlayer();
     this.storage = browserStorage();
@@ -574,6 +579,7 @@ export class Game {
       "dialogue",
       result.lineSource ?? "bank",
     );
+    playSpeech(this.speechPlayer, this.ambient.muted);
     const bias = this.memory.toneBias(id);
     if (bias && !proposal.lucidityBoost) this.speech.setMoodBias(id, bias);
     this.dialogueLastLine = result.line;
@@ -634,7 +640,10 @@ export class Game {
         id: h.id,
         seesPlayer: this.hostiles.seesPlayer(this.map, h, ptx, pty),
       }));
-    this.speech.tick(dt, entities);
+    const uttered = this.speech.tick(dt, entities);
+    for (let i = 0; i < uttered.length; i++) {
+      playSpeech(this.speechPlayer, this.ambient.muted);
+    }
   }
 
   private enterGameOver(): void {
