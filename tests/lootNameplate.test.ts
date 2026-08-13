@@ -1,6 +1,8 @@
 import { describe, expect, test } from "vitest";
 import {
   LOOT_NAMEPLATE_FADE_DIST,
+  LOOT_NAMEPLATE_ICON_PAD,
+  LOOT_NAMEPLATE_ICON_SIZE,
   LOOT_NAMEPLATE_MAX_CHARS,
   LOOT_NAMEPLATE_SCALE_X,
   LOOT_NAMEPLATE_SCALE_Y,
@@ -23,6 +25,14 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.6);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.65);
     expect(lootNameplateScale()).toEqual({ x: 2.6, y: 0.65 });
+  });
+
+  test("icon pad 56; size 52 (legible, no blob)", () => {
+    expect(LOOT_NAMEPLATE_ICON_PAD).toBe(56);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(52);
+    expect(LOOT_NAMEPLATE_ICON_PAD).toBeGreaterThanOrEqual(48);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBeGreaterThanOrEqual(48);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBeLessThanOrEqual(72);
   });
 });
 

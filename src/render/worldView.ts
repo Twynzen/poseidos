@@ -102,6 +102,8 @@ import {
 } from "./windGrass";
 import { lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
 import {
+  LOOT_NAMEPLATE_ICON_PAD,
+  LOOT_NAMEPLATE_ICON_SIZE,
   LOOT_NAMEPLATE_SCALE_X,
   LOOT_NAMEPLATE_SCALE_Y,
   LOOT_NAMEPLATE_Y,
@@ -533,9 +535,10 @@ export function createWorldView(
     const text = lootNameplateLabel(label);
     const hasIcon = typeof itemId === "string" && itemId.length > 0;
     const canvas = document.createElement("canvas");
-    const ICON_GUTTER = 28;
+    const ICON_PAD = LOOT_NAMEPLATE_ICON_PAD;
+    const iconSize = LOOT_NAMEPLATE_ICON_SIZE;
     const BASE_W = 384;
-    const W = hasIcon ? BASE_W + ICON_GUTTER : BASE_W;
+    const W = hasIcon ? BASE_W + ICON_PAD : BASE_W;
     const H = 80;
     canvas.width = W;
     canvas.height = H;
@@ -547,14 +550,15 @@ export function createWorldView(
       ctx.roundRect(12, 16, W - 24, 48, 10);
       ctx.fill();
       if (hasIcon) {
-        paintLootNameplateIcon(ctx, itemId, 22, (H - 32) / 2, 32);
+        const iconX = Math.max(0, (ICON_PAD - iconSize) / 2);
+        paintLootNameplateIcon(ctx, itemId, iconX, (H - iconSize) / 2, iconSize);
       }
       ctx.font = "600 28px ui-monospace, SF Mono, Menlo, Consolas, monospace";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.lineWidth = 3;
       ctx.strokeStyle = "rgba(0,0,0,0.7)";
-      const textX = hasIcon ? ICON_GUTTER + BASE_W / 2 : W / 2;
+      const textX = hasIcon ? ICON_PAD + BASE_W / 2 : W / 2;
       ctx.strokeText(text, textX, H / 2);
       ctx.fillStyle = "#f0c060";
       ctx.fillText(text, textX, H / 2);

@@ -16,6 +16,11 @@ export const LOOT_NAMEPLATE_Y = 1.55;
 export const LOOT_NAMEPLATE_SCALE_X = 2.6;
 export const LOOT_NAMEPLATE_SCALE_Y = 0.65;
 
+/** Padding izquierdo del canvas para la silueta gold. */
+export const LOOT_NAMEPLATE_ICON_PAD = 56;
+/** Tamaño de la silueta gold en el atlas (px). */
+export const LOOT_NAMEPLATE_ICON_SIZE = 52;
+
 export function lootNameplateScale(): { x: number; y: number } {
   return { x: LOOT_NAMEPLATE_SCALE_X, y: LOOT_NAMEPLATE_SCALE_Y };
 }
