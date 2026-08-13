@@ -50,7 +50,9 @@ export {
 export {
   LOOT_FLOATER_HUD_MS,
   LOOT_FLOATER_HUD_PLAY_CLASS,
+  LOOT_FLOATER_HUD_ID,
   showLootFloaterHud,
   type LootFloaterHudEl,
+  type LootFloaterHudBag,
 } from "./lootFloaterHud";
 

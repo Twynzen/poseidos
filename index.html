@@ -316,26 +316,19 @@
         );
       }
 
-      /* Loot toast DOM: fallback visible si el Plane 3D no se ve (G/E) */
+      /* Loot toast DOM: JS pisa con inline (fixed / z 9999 / 36px / #ffe080) */
       #loot-floater {
-        position: absolute;
+        position: fixed;
         left: 50%;
-        top: 38%;
+        top: 36%;
         transform: translate(-50%, 0);
-        z-index: 6;
+        z-index: 9999;
         pointer-events: none;
         opacity: 0;
-        padding: 6px 14px;
-        border-radius: 999px;
-        color: #f0c060;
-        font: 600 16px/1.2 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-        letter-spacing: 0.06em;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02)),
-          rgba(15, 23, 42, 0.62);
-        border: 1px solid rgba(240, 192, 96, 0.4);
-        box-shadow: 0 10px 24px rgba(2, 6, 23, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px) saturate(140%);
-        -webkit-backdrop-filter: blur(10px) saturate(140%);
+        color: #ffe080;
+        font: 700 36px/1.1 ui-monospace, "SF Mono", Menlo, Consolas, sans-serif;
+        letter-spacing: 0.04em;
+        text-shadow: 0 2px 14px #000, 0 0 10px rgba(0,0,0,0.85);
         white-space: nowrap;
       }
       #loot-floater.loot-floater-play {
@@ -344,11 +337,11 @@
       @keyframes loot-float {
         0% {
           opacity: 1;
-          transform: translate(-50%, 12px);
+          transform: translate(-50%, 16px);
         }
         100% {
           opacity: 0;
-          transform: translate(-50%, -44px);
+          transform: translate(-50%, -72px);
         }
       }
     </style>

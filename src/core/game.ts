@@ -155,7 +155,6 @@ export class Game {
   private inventoryPanel: InventoryPanel;
   private readonly hitFlashEl: HTMLElement | null;
   private readonly hitFlash: HitFlash;
-  private readonly lootFloaterEl: HTMLElement | null;
   private dialogueLastLine: string | null = null;
   private dialogueLastTone: string | null = null;
   private noise: NoiseBus;
@@ -198,7 +197,6 @@ export class Game {
     this.hud = document.querySelector("#hud");
     this.hitFlashEl = document.querySelector("#hit-flash");
     this.hitFlash = createHitFlash();
-    this.lootFloaterEl = document.querySelector("#loot-floater");
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -900,7 +898,7 @@ export class Game {
             `+${getItemDef(taken.id).name}`,
           );
           this.view.spawnLootFloater(lootLabel, this.player.x, this.player.y);
-          showLootFloaterHud(this.lootFloaterEl, lootLabel);
+          showLootFloaterHud(lootLabel);
           this.lastLootMsg = lootLabel;
           this.hudAcc = 1; // forzar refresh
         }
@@ -915,7 +913,7 @@ export class Game {
           `+${getItemDef(taken.id).name}`,
         );
         this.view.spawnLootFloater(lootLabel, this.player.x, this.player.y);
-        showLootFloaterHud(this.lootFloaterEl, lootLabel);
+        showLootFloaterHud(lootLabel);
         this.lastLootMsg = lootLabel;
         this.hudAcc = 1;
       }
