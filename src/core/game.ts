@@ -26,6 +26,7 @@ import {
 import {
   CONTAINER_REACH,
   inventorySummary,
+  totalQty,
   buildInventoryPanelData,
   findSlot,
   removeFromSlot,
@@ -707,7 +708,12 @@ export class Game {
     this.view.tickNoiseRings(dt);
       this.tickHitFlashOverlay(dt);
       this.view.syncPlayer(this.player.x, this.player.y);
-      this.view.syncLootFocus(this.player.x, this.player.y, dt);
+      this.view.syncLootFocus(
+        this.player.x,
+        this.player.y,
+        dt,
+        this.emptyLootIds(),
+      );
       // Mixer must keep ticking during freeze so death LoopOnce can play/clamp.
       this.view.tickPlayerLoco(dt, false, false);
       this.renderer.render(this.view.scene, this.view.camera);
@@ -790,7 +796,12 @@ export class Game {
       this.syncSpeechOverlay();
       this.tickHitFlashOverlay(dt);
       this.view.syncPlayer(this.player.x, this.player.y);
-      this.view.syncLootFocus(this.player.x, this.player.y, dt);
+      this.view.syncLootFocus(
+        this.player.x,
+        this.player.y,
+        dt,
+        this.emptyLootIds(),
+      );
       this.view.tickPlayerLoco(dt, false, false);
       this.renderer.render(this.view.scene, this.view.camera);
       this.refreshHud(true);
@@ -1027,7 +1038,12 @@ export class Game {
     this.view.syncVisibleChunks(this.player.x, this.player.y);
     this.applyFov();
     this.view.syncPlayer(this.player.x, this.player.y);
-    this.view.syncLootFocus(this.player.x, this.player.y, dt);
+    this.view.syncLootFocus(
+      this.player.x,
+      this.player.y,
+      dt,
+      this.emptyLootIds(),
+    );
     {
       const ax = this.input.axes;
       const moving = ax.x !== 0 || ax.z !== 0;
@@ -1055,6 +1071,15 @@ export class Game {
       this.hudAcc = 0;
       this.refreshHud(false);
     }
+  }
+
+  /** Ids de contenedores sin stacks o qty 0 — anillo de loot oculto. */
+  private emptyLootIds(): ReadonlySet<string> {
+    const ids = new Set<string>();
+    for (const c of this.containers.list) {
+      if (c.inv.slots.length === 0 || totalQty(c.inv) === 0) ids.add(c.id);
+    }
+    return ids;
   }
 
   /** Overlay `#hit-flash`: decay + opacity = intensity × peak. */

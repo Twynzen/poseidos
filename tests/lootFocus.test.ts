@@ -10,6 +10,7 @@ import {
   lootFocusMul,
   lootFocusPulse,
   lootFocusScale,
+  lootRingVisible,
 } from "../src/render/lootFocus";
 
 describe("constantes", () => {
@@ -83,5 +84,12 @@ describe("lootFocusInReach", () => {
     expect(lootFocusInReach(1.6)).toBe(true);
     expect(lootFocusInReach(1.61)).toBe(false);
     expect(lootFocusInReach(Number.NaN)).toBe(false);
+  });
+});
+
+describe("lootRingVisible", () => {
+  test("empty → false; con loot → true", () => {
+    expect(lootRingVisible(true)).toBe(false);
+    expect(lootRingVisible(false)).toBe(true);
   });
 });

@@ -94,7 +94,7 @@ import {
   BLADES_PER_TILE,
   type GrassTile,
 } from "./windGrass";
-import { lootFocusMul, LOOT_FOCUS_REACH } from "./lootFocus";
+import { lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
 import type { TileMap } from "../world/tilemap";
 import type { Tile } from "../world/tile";
 import type { Chunk } from "../world/chunk";
@@ -134,8 +134,14 @@ export interface WorldView {
   /**
    * Pulso de escala del loot más cercano en reach.
    * Fuera de reach: scale 1. `dt` avanza el seno del pulso.
+   * `emptyIds`: contenedores vacíos — anillo oculto, no reciben foco.
    */
-  syncLootFocus(wx: number, wy: number, dt: number): void;
+  syncLootFocus(
+    wx: number,
+    wy: number,
+    dt: number,
+    emptyIds?: ReadonlySet<string>,
+  ): void;
   /**
    * Locomocion visual: silueta locoBob o mixer GLB (Idle/Walk/Run).
    * No mueve el root mundo — solo locoRoot local (bob) o mixer + yaw.
@@ -438,11 +444,13 @@ export function createWorldView(
   playerMesh.position.set(0, 0, 0);
   scene.add(playerMesh);
 
-  // Loot: anillo/badge ámbar por contenedor. Siempre visible (no FOV).
+  // Loot: anillo/badge ámbar por contenedor. Siempre on (no FOV);
+  // syncLootFocus oculta ids vacíos.
   interface LootMarkerEntry {
     group: THREE.Group;
     x: number;
     y: number;
+    id: string;
   }
   const lootMarkerGroups: LootMarkerEntry[] = [];
   let lootFocusElapsed = 0;
@@ -455,7 +463,7 @@ export function createWorldView(
       group.position.set(x, 0, y);
       attachRoleMarkers(group, "loot", markerShared);
       scene.add(group);
-      lootMarkerGroups.push({ group, x, y });
+      lootMarkerGroups.push({ group, x, y, id: c.id });
     }
   }
 
@@ -1076,13 +1084,16 @@ export function createWorldView(
       playerMesh.position.set(x, 0, y);
       placeFacingChevron();
     },
-    syncLootFocus(wx, wy, dt) {
+    syncLootFocus(wx, wy, dt, emptyIds) {
       const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
       lootFocusElapsed += safeDt;
       let best = -1;
       let bestD = Infinity;
       for (let i = 0; i < lootMarkerGroups.length; i++) {
         const e = lootMarkerGroups[i]!;
+        const empty = !!emptyIds?.has(e.id);
+        e.group.visible = lootRingVisible(empty);
+        if (empty) continue;
         const d = Math.hypot(wx - e.x, wy - e.y);
         if (d <= LOOT_FOCUS_REACH && d < bestD) {
           bestD = d;
@@ -1091,6 +1102,10 @@ export function createWorldView(
       }
       for (let i = 0; i < lootMarkerGroups.length; i++) {
         const e = lootMarkerGroups[i]!;
+        if (emptyIds?.has(e.id)) {
+          e.group.scale.setScalar(1);
+          continue;
+        }
         const mul = i === best ? lootFocusMul(bestD, lootFocusElapsed) : 1;
         e.group.scale.setScalar(mul);
       }

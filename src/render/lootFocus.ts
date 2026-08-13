@@ -50,3 +50,8 @@ export function lootFocusMul(dist: number, elapsed: number): number {
   if (!lootFocusInReach(dist)) return 1;
   return lootFocusScale(dist) * lootFocusPulse(elapsed);
 }
+
+/** True si el anillo debe verse (contenedor no vacío). */
+export function lootRingVisible(empty: boolean): boolean {
+  return !empty;
+}
