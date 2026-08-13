@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** 2026-08-13 — nameplates de loot muestran qty del stack. Siguiente: siguiente slice UI/survival chico.
+- **Última rutina:** 2026-08-13 — nameplates de loot más grandes (×qty legible al spawn). Siguiente: siguiente slice UI/survival chico.
 - **Qué quedó (esta corrida):**
+  - **Nameplates más grandes** canvas 384×80, font 28px, escala 2.6×0.65, Y 1.55. Stroke oscuro + fill ámbar para que `×qty` se lea al spawn.
   - **Nameplate qty** 1 stack → `madera ×6` / `munición ×8`; qty 1 sin ×1. 2+ stacks → fallback ×total (`pila de madera ×12`).
   - **Refresh** drop merge y G/Shift+G actualizan el marcador existente (antes `addLootMarker` no-op si el id ya estaba).
   - **G loot** 1 del contenedor cercano (`lootOne` / `tryLoot`). **E/F** contextual sigue 1.

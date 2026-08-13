@@ -10,7 +10,15 @@ export const LOOT_NAMEPLATE_MAX_CHARS = 20;
 export const LOOT_NAMEPLATE_FADE_DIST = 10;
 
 /** Altura local Y del sprite sobre el grupo loot. */
-export const LOOT_NAMEPLATE_Y = 1.45;
+export const LOOT_NAMEPLATE_Y = 1.55;
+
+/** Escala world del sprite (canvas 384×80). */
+export const LOOT_NAMEPLATE_SCALE_X = 2.6;
+export const LOOT_NAMEPLATE_SCALE_Y = 0.65;
+
+export function lootNameplateScale(): { x: number; y: number } {
+  return { x: LOOT_NAMEPLATE_SCALE_X, y: LOOT_NAMEPLATE_SCALE_Y };
+}
 
 /** Corta el nombre a 20 chars (sin ellipsis). */
 export function lootNameplateLabel(label: string): string {

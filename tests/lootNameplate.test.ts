@@ -2,18 +2,24 @@ import { describe, expect, test } from "vitest";
 import {
   LOOT_NAMEPLATE_FADE_DIST,
   LOOT_NAMEPLATE_MAX_CHARS,
+  LOOT_NAMEPLATE_SCALE_X,
+  LOOT_NAMEPLATE_SCALE_Y,
   LOOT_NAMEPLATE_Y,
   lootNameplateLabel,
   lootNameplateOpacity,
+  lootNameplateScale,
   lootNameplateVisible,
   truncateLootLabel,
 } from "../src/render/lootNameplate";
 
 describe("constantes", () => {
-  test("max 20 chars; fade dist 10; y 1.45", () => {
+  test("max 20 chars; fade dist 10; y ~1.55; scale 2.6×0.65", () => {
     expect(LOOT_NAMEPLATE_MAX_CHARS).toBe(20);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(10);
-    expect(LOOT_NAMEPLATE_Y).toBe(1.45);
+    expect(LOOT_NAMEPLATE_Y).toBeCloseTo(1.55);
+    expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.6);
+    expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.65);
+    expect(lootNameplateScale()).toEqual({ x: 2.6, y: 0.65 });
   });
 });
 

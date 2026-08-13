@@ -102,6 +102,8 @@ import {
 } from "./windGrass";
 import { lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
 import {
+  LOOT_NAMEPLATE_SCALE_X,
+  LOOT_NAMEPLATE_SCALE_Y,
   LOOT_NAMEPLATE_Y,
   lootNameplateLabel,
   lootNameplateOpacity,
@@ -516,24 +518,28 @@ export function createWorldView(
   const lootMarkerGroups: LootMarkerEntry[] = [];
   let lootFocusElapsed = 0;
 
-  function createLootNameplateSprite(label: string): THREE.Sprite {
+  function makeLootNameplateSprite(label: string): THREE.Sprite {
     const text = lootNameplateLabel(label);
     const canvas = document.createElement("canvas");
-    canvas.width = 256;
-    canvas.height = 64;
+    const W = 384;
+    const H = 80;
+    canvas.width = W;
+    canvas.height = H;
     const ctx = canvas.getContext("2d");
     if (ctx) {
-      ctx.clearRect(0, 0, 256, 64);
+      ctx.clearRect(0, 0, W, H);
       ctx.fillStyle = "rgba(15, 23, 42, 0.72)";
-      ctx.fillRect(8, 12, 240, 40);
-      ctx.font = "600 26px ui-monospace, SF Mono, Menlo, Consolas, monospace";
+      ctx.beginPath();
+      ctx.roundRect(12, 16, 360, 48, 10);
+      ctx.fill();
+      ctx.font = "600 28px ui-monospace, SF Mono, Menlo, Consolas, monospace";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = "rgba(10, 10, 12, 0.85)";
-      ctx.strokeText(text, 128, 32);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = "rgba(0,0,0,0.7)";
+      ctx.strokeText(text, W / 2, H / 2);
       ctx.fillStyle = "#f0c060";
-      ctx.fillText(text, 128, 32);
+      ctx.fillText(text, W / 2, H / 2);
     }
     const map = new THREE.CanvasTexture(canvas);
     map.needsUpdate = true;
@@ -545,7 +551,7 @@ export function createWorldView(
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";
     sprite.position.set(0, LOOT_NAMEPLATE_Y, 0);
-    sprite.scale.set(1.6, 0.4, 1);
+    sprite.scale.set(LOOT_NAMEPLATE_SCALE_X, LOOT_NAMEPLATE_SCALE_Y, 1);
     sprite.renderOrder = 9;
     return sprite;
   }
@@ -571,7 +577,7 @@ export function createWorldView(
           mat.dispose();
         }
       }
-      const nameplate = createLootNameplateSprite(plate);
+      const nameplate = makeLootNameplateSprite(plate);
       existing.group.add(nameplate);
       existing.nameplate = nameplate;
       return;
@@ -582,7 +588,7 @@ export function createWorldView(
     const y = opts.y + 0.5;
     group.position.set(x, 0, y);
     attachRoleMarkers(group, "loot", markerShared);
-    const nameplate = createLootNameplateSprite(plate);
+    const nameplate = makeLootNameplateSprite(plate);
     group.add(nameplate);
     scene.add(group);
     lootMarkerGroups.push({ group, nameplate, x, y, id: opts.id });
