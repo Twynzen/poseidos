@@ -102,5 +102,5 @@ export {
   createStarterInventory,
 } from "./starterKit";
 
-export { takeFromSlot, dropOnTile } from "./drop";
+export { takeFromSlot, dropOnTile, dropQty, dropToastLabel } from "./drop";
 

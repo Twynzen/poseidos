@@ -4,8 +4,34 @@ import {
   createInventory,
   createStarterInventory,
   dropOnTile,
+  dropQty,
+  dropToastLabel,
   takeFromSlot,
 } from "../src/items";
+
+describe("dropQty", () => {
+  test("without wholeStack always 1", () => {
+    expect(dropQty(8, false)).toBe(1);
+  });
+
+  test("wholeStack with finite qty>=1 → trunc(qty)", () => {
+    expect(dropQty(8, true)).toBe(8);
+  });
+
+  test("wholeStack with undefined qty → 1", () => {
+    expect(dropQty(undefined, true)).toBe(1);
+  });
+});
+
+describe("dropToastLabel", () => {
+  test("qty>1 includes ×qty", () => {
+    expect(dropToastLabel("munición", 8)).toBe("tiraste munición ×8");
+  });
+
+  test("qty 1 has no multiplier", () => {
+    expect(dropToastLabel("botella de agua", 1)).toBe("tiraste botella de agua");
+  });
+});
 
 describe("takeFromSlot", () => {
   test("starter slot 0 → water×1, remaining kit shifts", () => {
@@ -27,6 +53,15 @@ describe("takeFromSlot", () => {
     expect(takeFromSlot(inv, 99)).toBeNull();
     expect(takeFromSlot(inv, -1)).toBeNull();
     expect(inv.slots[0]?.id).toBe("water_bottle");
+  });
+
+  test("starter ammo index 4 qty 8 → ammo×8, no ammo left", () => {
+    const inv = createStarterInventory();
+    expect(inv.slots[4]?.id).toBe("ammo");
+    expect(inv.slots[4]?.qty).toBe(8);
+    const taken = takeFromSlot(inv, 4, dropQty(inv.slots[4]?.qty, true));
+    expect(taken).toEqual({ id: "ammo", qty: 8 });
+    expect(inv.slots.find((s) => s.id === "ammo")).toBeUndefined();
   });
 });
 

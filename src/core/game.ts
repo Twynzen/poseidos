@@ -38,6 +38,8 @@ import {
   getItemDef,
   takeFromSlot,
   dropOnTile,
+  dropQty,
+  dropToastLabel,
   type ContainerRegistry,
 } from "../items";
 import {
@@ -1012,11 +1014,10 @@ export class Game {
       }
     }
     if (this.input.consumeDrop()) {
-      const taken = takeFromSlot(
-        this.player.inventory,
-        this.hotbarSelected,
-        1,
-      );
+      const i = this.hotbarSelected;
+      const stack = this.player.inventory.slots[i];
+      const qty = dropQty(stack?.qty, this.input.sprinting);
+      const taken = takeFromSlot(this.player.inventory, i, qty);
       if (taken) {
         const tx = Math.floor(this.player.x);
         const ty = Math.floor(this.player.y);
@@ -1024,7 +1025,7 @@ export class Game {
         const c = dropOnTile(this.containers, tx, ty, taken, id);
         this.view.addLootMarker(c.id, c.x, c.y, c.name);
         playLoot(this.interactPlayer, this.ambient.muted);
-        const label = `tiraste ${getItemDef(taken.id).name}`;
+        const label = dropToastLabel(getItemDef(taken.id).name, taken.qty);
         this.lootToast.show(label);
         this.lastLootMsg = label;
         this.hudAcc = 1;

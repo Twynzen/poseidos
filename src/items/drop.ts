@@ -1,6 +1,6 @@
 /**
- * Tirar 1 unidad del slot al tile (pila WorldContainer).
- * Tecla U (ver game.ts). G/E recogen con lootOne.
+ * Tirar del slot al tile (pila WorldContainer).
+ * U tira 1; Shift+U tira el stack entero (ver game.ts). G/E recogen con lootOne.
  */
 
 import { getItemDef } from "./defs";
@@ -15,6 +15,24 @@ import {
   type ContainerRegistry,
   type WorldContainer,
 } from "./containers";
+
+/** Cuántas unidades tirar: 1, o el stack entero si `wholeStack`. */
+export function dropQty(
+  stackQty: number | undefined,
+  wholeStack: boolean,
+): number {
+  if (!wholeStack) return 1;
+  if (typeof stackQty === "number" && Number.isFinite(stackQty) && stackQty >= 1) {
+    return Math.trunc(stackQty);
+  }
+  return 1;
+}
+
+/** Toast al tirar: `tiraste munición ×8` si qty>1, si no `tiraste <name>`. */
+export function dropToastLabel(name: string, qty: number): string {
+  if (qty > 1) return `tiraste ${name} ×${qty}`;
+  return `tiraste ${name}`;
+}
 
 /**
  * Quita hasta `qty` del slot. Devuelve `{id, qty}` o null si el slot no existe.

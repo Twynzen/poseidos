@@ -76,7 +76,7 @@ export class Input {
     return this.consumeJustPressed("KeyG");
   }
 
-  /** U: tirar 1 del slot hotbar al tile del player. */
+  /** U: tirar del slot hotbar al tile (1, o stack entero con Shift). */
   consumeDrop(): boolean {
     return this.consumeJustPressed("KeyU");
   }
