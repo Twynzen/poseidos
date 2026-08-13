@@ -65,11 +65,11 @@ export function moodleLevelForAmmo(qty: number): MoodleLevel {
 }
 
 const LABELS: Record<MoodleId, { label: string; glyph: string }> = {
-  hunger: { label: "HMB", glyph: "⬡" },
-  thirst: { label: "SED", glyph: "◈" },
-  fatigue: { label: "CAN", glyph: "◌" },
-  health: { label: "HP", glyph: "✚" },
-  ammo: { label: "BAL", glyph: "◉" },
+  hunger: { label: "Hambre", glyph: "⬡" },
+  thirst: { label: "Sed", glyph: "◈" },
+  fatigue: { label: "Cansancio", glyph: "◌" },
+  health: { label: "Vida", glyph: "✚" },
+  ammo: { label: "Balas", glyph: "◉" },
   clock: { label: "DIA", glyph: "☀" },
 };
 
