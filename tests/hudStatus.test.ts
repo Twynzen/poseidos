@@ -107,9 +107,9 @@ describe("formatHudStatus compact", () => {
     expect(bare).not.toContain("cerca:");
 
     const hinted = formatHudStatus(
-      base({ nearHint: "cerca: cocina [lata×2] G/E loot" }),
+      base({ nearHint: "cerca: cocina [lata×2] G/E recoger" }),
     );
-    expect(hinted).toContain("cerca: cocina [lata×2] G/E loot");
+    expect(hinted).toContain("cerca: cocina [lata×2] G/E recoger");
 
     expect(formatHudStatus(base({ nearHint: "" }))).not.toContain("cerca:");
     expect(formatHudStatus(base({ nearHint: "   " }))).not.toContain("cerca:");

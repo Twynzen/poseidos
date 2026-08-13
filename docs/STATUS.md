@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** Nameplate iconos más grandes (legibles).
+- **Última rutina:** Toast chip glass + cerca `G/E recoger`.
 - **Qué quedó (esta corrida):**
+  - **Toast loot** chip glass HUD (`createLootFloaterHud`): 20px, icono SVG + badge ×N, 2s; errores muted red. Cerca: `G/E recoger`. Inventario / hotbar / nameplates / anillos / facing sin cambio.
   - **Nameplates loot** silueta ~52px en el atlas (`LOOT_NAMEPLATE_ICON_SIZE` 52 / pad 56). Inventario / hotbar / moodles / anillos / facing sin cambio.
   - **Nameplates loot** letrero con silueta gold canvas a la izquierda (`lootNameplateLeadId` + `paintLootNameplateIcon`); sin DOM ni raster SVG. Inventario / hotbar / moodles / anillos / facing sin cambio.
   - **Moodles HUD** pills más legibles (Hambre/Sed/Cansancio/Vida/Balas); DIA/NOC igual. CSS más compacto (una fila, font 9px) para que las palabras largas quepan. Umbrales sin cambio.
@@ -33,6 +34,6 @@
 - **Controles:** WASD mover · **Shift correr** · **Espacio/V melee** · **X disparar** · E puerta/loot · G loot · **Shift+G stack** · **Q usar slot** (consumible seleccionado / lluvia outdoor) · **U tirar** · **Shift+U stack** · **U inv tirar** · **1-5 hotbar** (selección, highlight azul) · **rueda hotbar** (cicla slot, wrap) · **clic hotbar** · **arrastrar hotbar** · **doble clic usar** · **clic der. info** · **Shift+clic hotbar partir** · **Ctrl+clic hotbar juntar** · **clic inv usar** · **doble clic inv** · **arrastrar inv** · **clic der. inv** · **Shift+clic inv partir** · **Ctrl+clic inv juntar** · **I inventorio (panel; al empezar muestra kit inicial)** · B barricada · **C vendaje** · **H cocinar** · **T diálogo** (calmar / preguntar / amenazar / ofrecer comida / Distraer) · **L linterna** · **M mute ambient** · **+/- zoom** · R descanso/reinicio · **Z dormir** (cama o suelo indoor) · **F1 ayuda** · F5 guardar · F9 cargar · (boot) clic/Espacio saltar loading
 - **Fuera de este slice:** autogenerar modelos en Mesh2Motion (herramienta externa); WebSocket real; lobby UI browser; API LLM real; GTAO; samples de pisadas (sigue beep); samples ambient reales; samples combat reales (sigue beep); samples interact reales (sigue beep); samples speech reales (sigue beep); samples heartbeat reales (sigue beep)
 - **Dirección:** sandbox largo en Three.js (sim primero; render es vista); LLM solo stub/fallback; MP solo stub headless por ahora
-- **Siguiente subtarea concreta:** toasts/cerca HUD más claros, o F1.
+- **Siguiente subtarea concreta:** F1 help más escaneable.
 - **Bloqueos:** ninguno
 - **Entorno:** Bun; scripts `dev`, `build`, `test`

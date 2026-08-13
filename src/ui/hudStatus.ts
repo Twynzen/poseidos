@@ -13,7 +13,7 @@ export type HudStatusInput = {
   muteN: number;
   possN: number;
   invLine: string;
-  /** Sin separador inicial, p.ej. "cerca: chest […] G/E loot" */
+  /** Sin separador inicial, p.ej. "cerca: chest […] G/E recoger" */
   nearHint?: string;
   /** p.ej. "ruido run r6" */
   noiseHint?: string;
