@@ -7,6 +7,12 @@ import { createInventory, createStarterInventory } from "../src/items";
 import { hotbarSlots } from "../src/ui/hotbar";
 import { createHotbarHud } from "../src/ui/hotbarHud";
 
+function slotAt(root: HTMLElement, index: number): HTMLElement {
+  const slot = root.querySelectorAll<HTMLElement>(".hotbar-slot")[index];
+  expect(slot).toBeTruthy();
+  return slot;
+}
+
 function clickSlot(
   root: HTMLElement,
   index: number,
@@ -403,6 +409,66 @@ describe("hotbarHud consumeSplit / consumeMerge", () => {
     expect(hud.consumeSplit()).toBe(2);
     expect(hud.consumeClick()).toBeNull();
     expect(hud.consumeDrag()).toBeNull();
+    hud.dispose();
+  });
+});
+
+describe("createHotbarHud icons", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  test("slot ocupado tiene svg + title/aria-label; vacío no tiene svg; qty>1 badge", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    const inv = createInventory(8, 20, [
+      { id: "water_bottle", qty: 1 },
+      { id: "canned_food", qty: 2 },
+    ]);
+    hud.sync(hotbarSlots(inv), 0);
+
+    const water = slotAt(root, 0);
+    expect(water.querySelector(".hotbar-slot-icon svg")).toBeTruthy();
+    expect(water.title).toBe("botella de agua");
+    expect(water.getAttribute("aria-label")).toBe("botella de agua ×1");
+    expect(water.querySelector(".hotbar-qty")).toBeNull();
+    expect(water.querySelector(".hotbar-key")?.textContent).toBe("1");
+
+    const food = slotAt(root, 1);
+    expect(food.querySelector(".hotbar-slot-icon svg")).toBeTruthy();
+    expect(food.querySelector(".hotbar-qty")?.textContent).toBe("2");
+    expect(food.querySelector(".hotbar-key")?.textContent).toBe("2");
+
+    const empty = slotAt(root, 2);
+    expect(empty.classList.contains("hotbar-empty")).toBe(true);
+    expect(empty.querySelector(".hotbar-slot-icon svg")).toBeNull();
+    expect(empty.querySelector(".hotbar-qty")).toBeNull();
+    expect(empty.getAttribute("title")).toBeNull();
+    expect(empty.getAttribute("aria-label")).toBeNull();
+    expect(empty.querySelector(".hotbar-key")?.textContent).toBe("3");
+
+    hud.dispose();
+  });
+
+  test("click en icono SVG sigue consumeClick (burbuja al slot)", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    const inv = createInventory(8, 20, [
+      { id: "water_bottle", qty: 1 },
+      { id: "canned_food", qty: 2 },
+    ]);
+    hud.sync(hotbarSlots(inv), 0);
+
+    const icon = slotAt(root, 1).querySelector(".hotbar-slot-icon");
+    expect(icon).toBeTruthy();
+    icon!.dispatchEvent(
+      new MouseEvent("click", { bubbles: true, cancelable: true }),
+    );
+    expect(hud.consumeClick()).toBe(1);
     hud.dispose();
   });
 });

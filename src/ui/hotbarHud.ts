@@ -1,6 +1,7 @@
 /**
  * Hotbar HUD: 5 slots glass-dark (Skills P1) bottom-center.
  * Solo DOM; datos en ui/hotbar. Clase `hotbar-selected` = slot activo (1–5).
+ * Iconos SVG inline (`itemIconSvg`, mismo set que I); qty>1 en badge; teclas 1–5.
  * Clic en slot: encola índice; Game consume con consumeClick().
  * Shift+clic partir; Ctrl/Cmd+clic juntar. No abre I.
  * Doble clic: consumeDblClick (usar slot); no encola drag. Clic-select en esos clics OK.
@@ -10,6 +11,13 @@
  */
 
 import { clampHotbarIndex, HOTBAR_SIZE, type HotbarSlot } from "./hotbar";
+import { itemIconSvg } from "./itemIcons";
+
+type SlotNodes = { slot: HTMLElement; key: HTMLElement; icon: HTMLElement };
+
+function clearQtyBadge(slot: HTMLElement): void {
+  slot.querySelector(".hotbar-qty")?.remove();
+}
 
 export interface HotbarHud {
   sync(slots: ReadonlyArray<HotbarSlot>, selectedIndex?: number): void;
@@ -36,7 +44,7 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
   let pendingMerge: number | null = null;
   let dragFrom: number | null = null;
   let ignoreClick = false;
-  const nodes: HTMLElement[] = [];
+  const nodes: SlotNodes[] = [];
 
   function enqueueSlotClick(i: number, e: MouseEvent): void {
     const idx = clampHotbarIndex(i);
@@ -57,7 +65,7 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
 
   function endDrag(): void {
     if (dragFrom !== null) {
-      const el = nodes[dragFrom];
+      const el = nodes[dragFrom]?.slot;
       if (el) {
         el.classList.remove("hotbar-dragging");
         el.style.cursor = "grab";
@@ -128,13 +136,12 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
     });
     const key = document.createElement("span");
     key.className = "hotbar-key";
-    const name = document.createElement("span");
-    name.className = "hotbar-name";
-    const qty = document.createElement("span");
-    qty.className = "hotbar-qty";
-    slot.append(key, name, qty);
+    key.textContent = String(i + 1);
+    const icon = document.createElement("span");
+    icon.className = "hotbar-slot-icon";
+    slot.append(key, icon);
     bar.appendChild(slot);
-    nodes.push(slot);
+    nodes.push({ slot, key, icon });
   }
 
   return {
@@ -171,23 +178,29 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
     sync(slots, selectedIndex) {
       const selected = clampHotbarIndex(selectedIndex ?? 0);
       for (let i = 0; i < HOTBAR_SIZE; i++) {
-        const el = nodes[i];
+        const { slot, key, icon } = nodes[i];
         const view = slots[i];
-        const keyEl = el.querySelector(".hotbar-key");
-        const nameEl = el.querySelector(".hotbar-name");
-        const qtyEl = el.querySelector(".hotbar-qty");
-        el.classList.toggle("hotbar-selected", i === selected);
+        slot.classList.toggle("hotbar-selected", i === selected);
+        key.textContent = view?.key ?? String(i + 1);
         if (!view || view.empty) {
-          el.classList.add("hotbar-empty");
-          if (keyEl) keyEl.textContent = view?.key ?? String(i + 1);
-          if (nameEl) nameEl.textContent = "·";
-          if (qtyEl) qtyEl.textContent = "";
+          slot.classList.add("hotbar-empty");
+          icon.innerHTML = "";
+          clearQtyBadge(slot);
+          slot.removeAttribute("title");
+          slot.removeAttribute("aria-label");
           continue;
         }
-        el.classList.remove("hotbar-empty");
-        if (keyEl) keyEl.textContent = view.key;
-        if (nameEl) nameEl.textContent = view.name;
-        if (qtyEl) qtyEl.textContent = `×${view.qty}`;
+        slot.classList.remove("hotbar-empty");
+        icon.innerHTML = itemIconSvg(view.id);
+        slot.title = view.name;
+        slot.setAttribute("aria-label", `${view.name} ×${view.qty}`);
+        clearQtyBadge(slot);
+        if (view.qty > 1) {
+          const qty = document.createElement("span");
+          qty.className = "hotbar-qty";
+          qty.textContent = String(view.qty);
+          slot.append(qty);
+        }
       }
     },
     dispose() {
