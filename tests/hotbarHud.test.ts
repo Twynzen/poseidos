@@ -6,7 +6,6 @@ import { afterEach, describe, expect, test } from "vitest";
 import { createInventory, createStarterInventory } from "../src/items";
 import { hotbarSlots } from "../src/ui/hotbar";
 import { createHotbarHud } from "../src/ui/hotbarHud";
-import { emptySlotIconSvg, itemIconSvg } from "../src/ui/itemIcons";
 
 function slotAt(root: HTMLElement, index: number): HTMLElement {
   const slot = root.querySelectorAll<HTMLElement>(".hotbar-slot")[index];
@@ -432,13 +431,11 @@ describe("createHotbarHud icons", () => {
     hud.sync(hotbarSlots(inv), 0);
 
     const water = slotAt(root, 0);
+    const waterIcon = water.querySelector(".hotbar-slot-icon")?.innerHTML ?? "";
     expect(water.querySelector(".hotbar-slot-icon svg")).toBeTruthy();
-    expect(water.querySelector(".hotbar-slot-icon")?.innerHTML).toBe(
-      itemIconSvg("water_bottle"),
-    );
-    expect(water.querySelector(".hotbar-slot-icon")?.innerHTML).not.toBe(
-      emptySlotIconSvg(),
-    );
+    expect(waterIcon).toContain("<svg");
+    expect(waterIcon).toContain("M13 3.5h6v3.2");
+    expect(waterIcon).not.toContain("stroke-dasharray");
     expect(water.title).toBe("botella de agua");
     expect(water.getAttribute("aria-label")).toBe("botella de agua ×1");
     expect(water.querySelector(".hotbar-qty")).toBeNull();
@@ -450,12 +447,12 @@ describe("createHotbarHud icons", () => {
     expect(food.querySelector(".hotbar-key")?.textContent).toBe("2");
 
     const empty = slotAt(root, 2);
+    const emptyIcon = empty.querySelector(".hotbar-slot-icon")?.innerHTML ?? "";
     expect(empty.classList.contains("hotbar-empty")).toBe(true);
     expect(empty.querySelector(".hotbar-slot-icon svg")).toBeTruthy();
-    expect(empty.querySelector(".hotbar-slot-icon")?.innerHTML).toBe(emptySlotIconSvg());
-    expect(empty.querySelector(".hotbar-slot-icon")?.innerHTML).not.toBe(
-      itemIconSvg("not_an_item"),
-    );
+    expect(emptyIcon).toContain("stroke-dasharray");
+    expect(emptyIcon).toContain("M16 6.5");
+    expect(emptyIcon).not.toContain("M16 3.5");
     expect(empty.querySelector(".hotbar-qty")).toBeNull();
     expect(empty.title).toBe("vacío · 3");
     expect(empty.getAttribute("aria-label")).toBe("vacío · 3");
@@ -473,9 +470,10 @@ describe("createHotbarHud icons", () => {
     for (let i = 0; i < 5; i++) {
       const slot = slotAt(root, i);
       expect(slot.classList.contains("hotbar-empty")).toBe(true);
-      expect(slot.querySelector(".hotbar-slot-icon")?.innerHTML).toBe(
-        emptySlotIconSvg(),
-      );
+      const iconHtml = slot.querySelector(".hotbar-slot-icon")?.innerHTML ?? "";
+      expect(iconHtml).toContain("stroke-dasharray");
+      expect(iconHtml).toContain("M16 6.5");
+      expect(iconHtml).not.toContain("M16 3.5");
       expect(slot.querySelector(".hotbar-key")?.textContent).toBe(String(i + 1));
       expect(slot.title).toBe(`vacío · ${i + 1}`);
       expect(slot.getAttribute("aria-label")).toBe(`vacío · ${i + 1}`);
