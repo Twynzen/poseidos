@@ -66,15 +66,15 @@ export function createNeighborhood(size = 48): Neighborhood {
   if (map.getTile(24, 22)?.kind === "furniture") map.set(24, 22, makeBed());
 
   const spawn = { x: 24.5, y: 15.5 };
-  // Asegurar spawn libre
+  // Asegurar spawn libre (25,15 es pila de madera — dentro de CONTAINER_REACH)
   map.set(24, 15, makeFloor());
   map.set(23, 15, makeFloor());
-  map.set(25, 15, makeFloor());
+  map.set(26, 15, makeFloor());
 
   // Pila de madera cerca del spawn (demo craft/barricadas)
-  map.set(26, 15, makeFurniture());
+  map.set(25, 15, makeFurniture());
   containers.add(
-    createWorldContainer("madera-spawn", 26, 15, "pila de madera", [
+    createWorldContainer("madera-spawn", 25, 15, "pila de madera", [
       { id: "wood", qty: 6 },
       { id: "cloth", qty: 3 },
       { id: "scrap", qty: 3 },

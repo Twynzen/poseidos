@@ -3,6 +3,7 @@ import {
   BARRICADE_WOOD_COST,
   BANDAGE_CLOTH_COST,
   BANDAGE_SCRAP_COST,
+  CONTAINER_REACH,
   addItem,
   attemptBuildBarricade,
   barricadeFailMessage,
@@ -196,7 +197,13 @@ describe("neighborhood madera", () => {
     );
     expect(pile!.inv.slots.some((s) => s.id === "cloth")).toBe(true);
     expect(pile!.inv.slots.some((s) => s.id === "scrap")).toBe(true);
-    expect(map.getTile(pile!.x, pile!.y)?.kind).toBe("furniture");
+    expect(pile!.x).toBe(25);
+    expect(pile!.y).toBe(15);
+    expect(map.getTile(25, 15)?.kind).toBe("furniture");
+    expect(map.getTile(26, 15)?.kind).toBe("floor");
+    expect(containers.nearest(spawn.x, spawn.y, CONTAINER_REACH)?.id).toBe(
+      "madera-spawn",
+    );
     expect(map.canOccupy(spawn.x, spawn.y, PLAYER_RADIUS)).toBe(true);
 
     const player = new PlayerSim({ x: pile!.x + 0.5, y: pile!.y + 0.5 });

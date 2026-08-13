@@ -5,6 +5,7 @@ import { createNeighborhood } from "../src/world/neighborhood";
 import { PlayerSim, PLAYER_RADIUS } from "../src/actors/player";
 import { GameClock } from "../src/core/clock";
 import { DEFAULT_DAY_LENGTH_SEC } from "../src/core/config";
+import { CONTAINER_REACH } from "../src/items";
 
 describe("tiles", () => {
   test("walkable: floor sí, wall no, door según open", () => {
@@ -101,6 +102,16 @@ describe("neighborhood", () => {
     // Colisión: spawn sigue libre; escombros de calle intactos
     expect(map.getTile(15, 15)?.kind).toBe("wall");
     expect(map.getTile(28, 28)?.kind).toBe("wall");
+  });
+
+  test("madera-spawn en CONTAINER_REACH del spawn; 26,15 es floor", () => {
+    const { map, spawn, containers } = createNeighborhood(48);
+    expect(map.getTile(25, 15)?.kind).toBe("furniture");
+    expect(map.getTile(26, 15)?.kind).toBe("floor");
+    expect(containers.nearest(spawn.x, spawn.y, CONTAINER_REACH)?.id).toBe(
+      "madera-spawn",
+    );
+    expect(map.canOccupy(spawn.x, spawn.y, PLAYER_RADIUS)).toBe(true);
   });
 });
 
