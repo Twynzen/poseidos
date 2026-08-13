@@ -9,6 +9,7 @@ import {
   findConsumableSlot,
   fixedLoot,
   getItemDef,
+  insertStackAt,
   inventorySummary,
   LOOT_KITCHEN,
   LOOT_CABINET,
@@ -66,6 +67,34 @@ describe("inventory", () => {
     expect(inv.slots[0]?.qty).toBe(1);
     removeFromSlot(inv, 0, 99);
     expect(inv.slots[0]?.id).toBe("water_bottle");
+  });
+
+  test("insertStackAt no merge, clamp índice, sin chequeo de peso", () => {
+    const inv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "flashlight", qty: 1 },
+    ]);
+    insertStackAt(inv, 0, { id: "empty_bottle", qty: 1 });
+    expect(inv.slots.map((s) => s.id)).toEqual([
+      "empty_bottle",
+      "canned_food",
+      "flashlight",
+    ]);
+
+    insertStackAt(inv, -3, { id: "scrap", qty: 1 });
+    expect(inv.slots[0]?.id).toBe("scrap");
+
+    insertStackAt(inv, 99, { id: "wood", qty: 1 });
+    expect(inv.slots.at(-1)?.id).toBe("wood");
+
+    insertStackAt(inv, 1, { id: "scrap", qty: 2 });
+    expect(inv.slots.filter((s) => s.id === "scrap")).toHaveLength(2);
+    expect(inv.slots[1]).toEqual({ id: "scrap", qty: 2 });
+
+    const heavy = createInventory(8, 0.01);
+    insertStackAt(heavy, 0, { id: "wood", qty: 4 });
+    expect(heavy.slots[0]).toEqual({ id: "wood", qty: 4 });
+    expect(totalWeight(heavy)).toBeGreaterThan(heavy.maxWeight);
   });
 
   test("transferOne mueve 1 unidad entre inventarios", () => {

@@ -14,6 +14,7 @@ export {
   inventorySummary,
   addItem,
   removeFromSlot,
+  insertStackAt,
   findSlot,
   findConsumableSlot,
   transferOne,

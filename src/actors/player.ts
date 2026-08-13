@@ -22,6 +22,7 @@ import {
   createStarterInventory,
   findConsumableSlot,
   getItemDef,
+  insertStackAt,
   inventorySummary,
   removeFromSlot,
   totalWeight,
@@ -306,7 +307,8 @@ export class PlayerSim {
   /**
    * Consume primer food/drink/heal del inventario y aplica eat/drink/heal.
    * Tecla Q (game) usa tryConsumeAt(hotbarSelected); `prefer` fuerza tipo.
-   * water_bottle → deja empty_bottle si cabe (si no cabe, se pierde el vacío).
+   * water_bottle: última unidad → empty_bottle en el mismo índice;
+   * leftover → addItem (si no cabe, se pierde el vacío).
    */
   tryConsume(prefer?: "food" | "drink" | "heal"): "food" | "drink" | "heal" | null {
     if (!this.alive) return null;
@@ -318,13 +320,15 @@ export class PlayerSim {
   /**
    * Consume 1 unidad de `inventory.slots[slotIndex]` si es food/drink/heal.
    * Fuera de rango / ausente / use none → null. Sin fallback a otro slot.
-   * water_bottle → deja empty_bottle si cabe (si no cabe, se pierde el vacío).
+   * water_bottle última unidad → empty_bottle en el mismo índice (sticky);
+   * leftover qty → addItem (si no cabe, se pierde el vacío).
    */
   tryConsumeAt(slotIndex: number): "food" | "drink" | "heal" | null {
     if (!this.alive) return null;
     const stack = this.inventory.slots[slotIndex];
     if (!stack || stack.qty <= 0) return null;
     const consumedId = stack.id;
+    const lastOfStack = stack.qty <= 1;
     const def = getItemDef(consumedId);
     if (def.use !== "food" && def.use !== "drink" && def.use !== "heal") {
       return null;
@@ -341,7 +345,14 @@ export class PlayerSim {
       drink(this.needs, def.relief);
       // Solo water_bottle deja vacío; otros drinks futuros: mismo patrón si aplica.
       if (consumedId === "water_bottle") {
-        addItem(this.inventory, "empty_bottle", 1);
+        if (lastOfStack) {
+          insertStackAt(this.inventory, slotIndex, {
+            id: "empty_bottle",
+            qty: 1,
+          });
+        } else {
+          addItem(this.inventory, "empty_bottle", 1);
+        }
       }
       return "drink";
     }

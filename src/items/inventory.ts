@@ -137,6 +137,24 @@ export function removeFromSlot(
   return n;
 }
 
+/**
+ * Inserta `stack` en `slotIndex` sin merge ni chequeo de peso/slots.
+ * `slotIndex < 0` → 0; `slotIndex > length` → push.
+ */
+export function insertStackAt(
+  inv: Inventory,
+  slotIndex: number,
+  stack: ItemStack,
+): void {
+  const i =
+    slotIndex < 0
+      ? 0
+      : slotIndex > inv.slots.length
+        ? inv.slots.length
+        : slotIndex;
+  inv.slots.splice(i, 0, { id: stack.id, qty: stack.qty });
+}
+
 /** Índice del primer stack con id, o -1. */
 export function findSlot(inv: Inventory, id: ItemId): number {
   return inv.slots.findIndex((s) => s.id === id);

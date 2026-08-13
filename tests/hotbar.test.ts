@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { PlayerSim } from "../src/actors/player";
 import {
   createInventory,
   createStarterInventory,
@@ -107,6 +108,26 @@ describe("hotbarSlots", () => {
       "munición",
     ]);
     expect(inv.slots).toEqual(before);
+  });
+
+  test("tras tryConsumeAt(0) starter: vacía, lata, linterna, pistola, munición", () => {
+    const player = new PlayerSim({ x: 1, y: 1 });
+    expect(player.tryConsumeAt(0)).toBe("drink");
+    const slots = hotbarSlots(player.inventory);
+    expect(slots.map((s) => (s.empty ? null : s.id))).toEqual([
+      "empty_bottle",
+      "canned_food",
+      "flashlight",
+      "pistol",
+      "ammo",
+    ]);
+    expect(slots.map((s) => (s.empty ? null : s.name))).toEqual([
+      "botella vacía",
+      "lata de comida",
+      "linterna",
+      "pistola",
+      "munición",
+    ]);
   });
 
   test("2 stacks → 2 filled + 3 empty", () => {

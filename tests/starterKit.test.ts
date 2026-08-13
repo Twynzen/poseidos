@@ -55,13 +55,34 @@ describe("starter kit", () => {
     expect(hasFlashlight(player.inventory)).toBe(false);
   });
 
-  test("tryConsumeAt(0) bebe y deja empty_bottle", () => {
+  test("tryConsumeAt(0) bebe y deja empty_bottle en el mismo índice", () => {
     const player = new PlayerSim({ x: 1, y: 1 });
     expect(player.inventory.slots[0]?.id).toBe("water_bottle");
     expect(player.tryConsumeAt(0)).toBe("drink");
-    expect(player.inventory.slots.some((s) => s.id === "empty_bottle")).toBe(
-      true,
-    );
+    expect(player.inventory.slots[0]?.id).toBe("empty_bottle");
+    expect(player.inventory.slots[0]?.qty).toBe(1);
+    expect(player.inventory.slots[1]?.id).toBe("canned_food");
+    expect(player.inventory.slots.map((s) => s.id)).toEqual([
+      "empty_bottle",
+      "canned_food",
+      "flashlight",
+      "pistol",
+      "ammo",
+    ]);
+  });
+
+  test("tryConsumeAt leftover water_bottle: empty_bottle al final", () => {
+    const inv = createInventory(8, 20, [
+      { id: "water_bottle", qty: 2 },
+      { id: "canned_food", qty: 1 },
+      { id: "flashlight", qty: 1 },
+    ]);
+    const player = new PlayerSim({ x: 0, y: 0 }, { thirst: 80 }, inv);
+    expect(player.tryConsumeAt(0)).toBe("drink");
+    expect(player.inventory.slots[0]).toEqual({ id: "water_bottle", qty: 1 });
+    expect(player.inventory.slots[1]?.id).toBe("canned_food");
+    expect(player.inventory.slots[2]?.id).toBe("flashlight");
+    expect(player.inventory.slots[3]).toEqual({ id: "empty_bottle", qty: 1 });
   });
 
   test("tryConsumeAt(3) pistola → null, pistola sigue", () => {

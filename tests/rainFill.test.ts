@@ -52,7 +52,8 @@ describe("beber water_bottle → empty_bottle", () => {
     expect(player.tryConsume("drink")).toBe("drink");
     expect(player.needs.thirst).toBeCloseTo(70 - NEEDS_RELIEF.drink, 5);
     expect(findSlot(player.inventory, "water_bottle")).toBe(-1);
-    expect(findSlot(player.inventory, "empty_bottle")).toBeGreaterThanOrEqual(0);
+    expect(player.inventory.slots[0]?.id).toBe("empty_bottle");
+    expect(findSlot(player.inventory, "empty_bottle")).toBe(0);
     expect(player.inventory.slots.find((s) => s.id === "empty_bottle")?.qty).toBe(
       1,
     );
