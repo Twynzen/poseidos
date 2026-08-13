@@ -216,6 +216,9 @@ export class Game {
   private isoFrustum = ISO_FRUSTUM;
   /** Slot hotbar seleccionado (0–4). Default 0 = tecla 1, botella de agua. */
   private hotbarSelected = 0;
+  /** Debounce useInventorySlot: mismo índice en ~0.35s de clock.elapsed es no-op. */
+  private lastInvUseSlot: number | null = null;
+  private lastInvUseAt = Number.NEGATIVE_INFINITY;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -398,6 +401,8 @@ export class Game {
     this.weather = new WeatherSystem({ initial: "drizzle" });
     this.gameOver = false;
     this.showInvDetail = false;
+    this.lastInvUseSlot = null;
+    this.lastInvUseAt = Number.NEGATIVE_INFINITY;
     this.flashlightOn = false;
     this.needsDamageMsgCd = 0;
     this.hitFlash.intensity = 0;
@@ -758,13 +763,23 @@ export class Game {
 
   /**
    * Usa un slot de inventario por índice original (sin clamp).
-   * Clic en fila del panel I; slots 0–4 también seleccionan hotbar.
+   * Clic / doble clic en fila del panel I; slots 0–4 también seleccionan hotbar.
+   * Mismo índice dentro de ~0.35s de clock.elapsed es no-op (anti doble-consumo).
    */
   private useInventorySlot(index: number): void {
     if (!Number.isFinite(index)) return;
     const i = index;
+    const now = this.clock.elapsed;
+    if (
+      this.lastInvUseSlot === i &&
+      now - this.lastInvUseAt < 0.35
+    ) {
+      return;
+    }
     const stack = this.player.inventory.slots[i];
     if (!stack || stack.qty <= 0) return;
+    this.lastInvUseSlot = i;
+    this.lastInvUseAt = now;
     if (i >= 0 && i < HOTBAR_SIZE) {
       this.hotbarSelected = i;
     }
@@ -859,6 +874,7 @@ export class Game {
     const hotbarSplitIdx = this.hotbarHud.consumeSplit();
     const hotbarMergeIdx = this.hotbarHud.consumeMerge();
     const invClick = this.inventoryPanel.consumeClick();
+    const invDbl = this.inventoryPanel.consumeDblClick();
     const invInspect = this.inventoryPanel.consumeInspect();
     const splitIdx = this.inventoryPanel.consumeSplit();
     const mergeIdx = this.inventoryPanel.consumeMerge();
@@ -1168,6 +1184,9 @@ export class Game {
       ) {
         this.hudAcc = 1;
       }
+    }
+    if (this.showInvDetail && invDbl !== null) {
+      this.useInventorySlot(invDbl);
     }
     if (this.showInvDetail && invClick !== null) {
       this.useInventorySlot(invClick);

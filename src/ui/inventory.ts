@@ -2,6 +2,7 @@
  * Panel HTML de inventario (tecla I) — glass-dark estilo moodles/HUD.
  * Solo DOM; formato headless en items/inventoryPanelData.
  * Arrastrar fila→fila encola {from,to}; Game consumeDrag (swap, no usa).
+ * Doble clic: consumeDblClick (usar slot); limpia pendingClick. Clic simple sigue usando.
  */
 
 import {
@@ -18,6 +19,8 @@ export interface InventoryPanel {
   sync(view: InventoryPanelView): void;
   /** Último clic en fila; last-wins; consume y limpia. */
   consumeClick(): number | null;
+  /** Último doble clic en fila (usar); last-wins; consume y limpia. */
+  consumeDblClick(): number | null;
   /** Último clic derecho en fila (inspeccionar); last-wins; consume y limpia. */
   consumeInspect(): number | null;
   /** Último Shift+clic en fila (partir stack); last-wins; consume y limpia. */
@@ -66,12 +69,13 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
   const hint = document.createElement("div");
   hint.className = "inv-hint";
   hint.textContent =
-    "I cerrar · clic usar · arrastrar reordenar · Shift+clic partir · Ctrl+clic juntar · clic der. info · Q usar/lluvia · L linterna · Espacio/V melee · X disparar";
+    "I cerrar · clic usar · doble clic usar · arrastrar reordenar · Shift+clic partir · Ctrl+clic juntar · clic der. info · Q usar/lluvia · L linterna · Espacio/V melee · X disparar";
 
   panel.append(head, weightEl, equip, empty, list, hint);
   root.appendChild(panel);
 
   let pendingClick: number | null = null;
+  let pendingDblClick: number | null = null;
   let pendingInspect: number | null = null;
   let pendingSplit: number | null = null;
   let pendingMerge: number | null = null;
@@ -128,6 +132,11 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
       const clicked = pendingClick;
       pendingClick = null;
       return clicked;
+    },
+    consumeDblClick() {
+      const dbl = pendingDblClick;
+      pendingDblClick = null;
+      return dbl;
     },
     consumeInspect() {
       const inspected = pendingInspect;
@@ -200,6 +209,14 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
               pendingSplit = null;
               pendingMerge = null;
             }
+          });
+          li.addEventListener("dblclick", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (draggedThisGesture) return;
+            const n = Number(li.dataset.index);
+            pendingDblClick = Number.isFinite(n) ? Math.trunc(n) : slot.index;
+            pendingClick = null;
           });
           li.addEventListener("contextmenu", (e) => {
             e.preventDefault();

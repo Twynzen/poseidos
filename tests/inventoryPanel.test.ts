@@ -43,6 +43,16 @@ function clickRow(
   );
 }
 
+function dblclickRow(root: HTMLElement, originalIndex: number): void {
+  const li = root.querySelector<HTMLElement>(
+    `.inv-slot[data-index="${originalIndex}"]`,
+  );
+  expect(li).toBeTruthy();
+  li!.dispatchEvent(
+    new MouseEvent("dblclick", { bubbles: true, cancelable: true }),
+  );
+}
+
 function pointerOnRow(
   root: HTMLElement,
   originalIndex: number,
@@ -150,6 +160,69 @@ describe("inventory panel click uses original slot index", () => {
 
     const inv = createInventory(8, 20, [{ id: "canned_food", qty: 1 }]);
     panel.sync({ open: true, data: buildInventoryPanelData(inv) });
+    expect(panel.consumeClick()).toBeNull();
+    panel.dispose();
+  });
+});
+
+describe("inventory panel consumeDblClick", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  test("dblclick row → consumeDblClick returns that index; consumeClick null", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "flashlight", qty: 1 },
+      { id: "water_bottle", qty: 1 },
+    ]);
+    panel.sync({ open: true, data: buildInventoryPanelData(inv) });
+
+    dblclickRow(root, 1);
+    expect(panel.consumeDblClick()).toBe(1);
+    expect(panel.consumeClick()).toBeNull();
+    expect(panel.consumeDblClick()).toBeNull();
+    panel.dispose();
+  });
+
+  test("two dblclicks without consume → last wins", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "flashlight", qty: 1 },
+      { id: "water_bottle", qty: 1 },
+    ]);
+    panel.sync({ open: true, data: buildInventoryPanelData(inv) });
+
+    dblclickRow(root, 0);
+    dblclickRow(root, 2);
+    expect(panel.consumeDblClick()).toBe(2);
+    expect(panel.consumeClick()).toBeNull();
+    expect(panel.consumeDblClick()).toBeNull();
+    panel.dispose();
+  });
+
+  test("dblclick after click without consume: consumeDblClick set, consumeClick null", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "flashlight", qty: 1 },
+      { id: "water_bottle", qty: 1 },
+    ]);
+    panel.sync({ open: true, data: buildInventoryPanelData(inv) });
+
+    clickRow(root, 1);
+    dblclickRow(root, 1);
+    expect(panel.consumeDblClick()).toBe(1);
     expect(panel.consumeClick()).toBeNull();
     panel.dispose();
   });
