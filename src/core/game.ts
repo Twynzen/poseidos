@@ -91,9 +91,12 @@ import {
   describeFootsteps,
   createFootstepPlayer,
   syncFootstepPlayer,
+  createAmbientPlayer,
+  syncAmbientPlayer,
   type AmbientBus,
   type FootstepsBus,
   type FootstepPlayer,
+  type AmbientPlayer,
 } from "../audio";
 import {
   computeNeedsDamage,
@@ -136,6 +139,7 @@ export class Game {
   private clock: GameClock;
   private weather: WeatherSystem;
   private ambient: AmbientBus;
+  private ambientPlayer: AmbientPlayer;
   private footsteps: FootstepsBus;
   private footstepPlayer: FootstepPlayer;
   private readonly loop: GameLoop;
@@ -206,6 +210,7 @@ export class Game {
     this.clock = new GameClock(DEFAULT_DAY_LENGTH_SEC);
     this.weather = new WeatherSystem();
     this.ambient = createAmbientBus();
+    this.ambientPlayer = createAmbientPlayer();
     this.footsteps = createFootstepsBus();
     this.footstepPlayer = createFootstepPlayer();
     this.storage = browserStorage();
@@ -1018,7 +1023,7 @@ export class Game {
   }
 
 
-  /** Ambient stub: mute + niveles desde weather/clock/indoor/hostiles. */
+  /** Ambient stub + WebAudio layers; mute → gains 0. */
   private syncAmbient(dt: number): void {
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
     const threat = hostileNearby(
@@ -1037,6 +1042,7 @@ export class Game {
       },
       dt,
     );
+    syncAmbientPlayer(this.ambientPlayer, this.ambient);
   }
 
   /** Footsteps stub + WebAudio beeps; mute compartido con ambient. */

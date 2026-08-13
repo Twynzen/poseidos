@@ -28,3 +28,11 @@ export {
   type FootstepPlayer,
   type FootstepPlayerSync,
 } from "./footstepPlayer";
+
+export {
+  computeLayerGain,
+  shouldBeSilent,
+  createAmbientPlayer,
+  syncAmbientPlayer,
+  type AmbientPlayer,
+} from "./ambientPlayer";
