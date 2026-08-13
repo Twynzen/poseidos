@@ -257,7 +257,7 @@ interface ChunkMeshes {
  */
 export function createWorldView(
   map: TileMap,
-  _containers?: ContainerRegistry,
+  containers?: ContainerRegistry,
 ): WorldView {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0a0a0c);
@@ -431,6 +431,19 @@ export function createWorldView(
   attachRoleMarkers(playerMesh, "player", markerShared);
   playerMesh.position.set(0, 0, 0);
   scene.add(playerMesh);
+
+  // Loot: anillo/badge ámbar por contenedor. Siempre visible (no FOV).
+  const lootMarkerGroups: THREE.Group[] = [];
+  if (containers) {
+    for (const c of containers.list) {
+      const group = new THREE.Group();
+      group.name = `lootMarker_${c.id}`;
+      group.position.set(c.x + 0.5, 0, c.y + 0.5);
+      attachRoleMarkers(group, "loot", markerShared);
+      scene.add(group);
+      lootMarkerGroups.push(group);
+    }
+  }
 
   // Muzzle flash: esfera aditiva ~0.22 dia + PointLight (reutilizable).
   const MUZZLE_FORWARD = 0.48;
@@ -1273,6 +1286,10 @@ export function createWorldView(
       barricadeMat.dispose();
       barricadeEdgeMat.dispose();
       fogMat.dispose();
+      for (const group of lootMarkerGroups) {
+        scene.remove(group);
+      }
+      lootMarkerGroups.length = 0;
       for (const mesh of hostileMeshes.values()) {
         scene.remove(mesh);
       }
@@ -1450,8 +1467,10 @@ function attachRoleMarkers(
   // Escala distinta por glifo visual (mute más angular vía scale)
   if (role === "mute") icon.scale.set(0.7, 0.7, 1);
   else if (role === "possessed") icon.scale.set(0.85, 0.85, 1);
+  else if (role === "loot") icon.scale.set(0.8, 0.8, 1);
   badge.add(disc, icon);
-  badge.position.y = role === "player" ? 1.72 : 1.68;
+  badge.position.y =
+    role === "player" ? 1.72 : role === "loot" ? 1.12 : 1.68;
   root.add(badge);
 }
 

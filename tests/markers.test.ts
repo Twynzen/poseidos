@@ -23,6 +23,18 @@ describe("markers (badges + ground rings)", () => {
     expect(MARKER_PALETTE.possessed.glyph.length).toBeGreaterThan(0);
   });
 
+  test("paleta: loot ámbar (anillo 0xd4a03a, badge 0xf0c060, ▣)", () => {
+    const loot = paletteFor("loot");
+    expect(loot.ring).toBe(0xd4a03a);
+    expect(loot.badge).toBe(0xf0c060);
+    expect(loot.emissive).toBe(0x403010);
+    expect(loot.glyph).toBe("▣");
+    // ámbar: R y G dominantes sobre B
+    expect((loot.ring >> 16) & 0xff).toBeGreaterThan(loot.ring & 0xff);
+    expect((loot.ring >> 8) & 0xff).toBeGreaterThan(loot.ring & 0xff);
+    expect(MARKER_PALETTE.loot.glyph.length).toBeGreaterThan(0);
+  });
+
   test("solo visible en FOV (amenazas)", () => {
     expect(markerVisibleInFov(true)).toBe(true);
     expect(markerVisibleInFov(false)).toBe(false);
