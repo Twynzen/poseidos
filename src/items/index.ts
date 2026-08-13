@@ -102,7 +102,13 @@ export {
   createStarterInventory,
 } from "./starterKit";
 
-export { takeFromSlot, dropOnTile, dropQty, dropToastLabel } from "./drop";
+export {
+  takeFromSlot,
+  dropOnTile,
+  dropQty,
+  dropToastLabel,
+  dropTargetTile,
+} from "./drop";
 
 export { lootPileLabel } from "./lootLabel";
 
