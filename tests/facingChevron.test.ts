@@ -6,8 +6,8 @@ import {
 } from "../src/render/facingChevron";
 
 describe("constantes", () => {
-  test("dist 0.55 y yaw offset 0 (no re-aplica PLAYER_GLTF_YAW_OFFSET)", () => {
-    expect(FACING_CHEVRON_DIST).toBe(0.55);
+  test("dist 1.05 y yaw offset 0 (no re-aplica PLAYER_GLTF_YAW_OFFSET)", () => {
+    expect(FACING_CHEVRON_DIST).toBe(1.05);
     expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
   });
 });
