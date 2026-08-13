@@ -11,10 +11,10 @@ import {
 } from "../src/render/lootFloater";
 
 describe("constantes", () => {
-  test("TTL 1.8; rise 1.0; Y0 1.35; max 16 chars", () => {
+  test("TTL 1.8; rise 1.0; Y0 2.05; max 16 chars", () => {
     expect(LOOT_FLOATER_TTL).toBe(1.8);
     expect(LOOT_FLOATER_RISE).toBe(1.0);
-    expect(LOOT_FLOATER_Y0).toBe(1.35);
+    expect(LOOT_FLOATER_Y0).toBe(2.05);
     expect(LOOT_FLOATER_MAX_CHARS).toBe(16);
   });
 });

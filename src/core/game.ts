@@ -35,6 +35,7 @@ import {
   hasFlashlight,
   fovRadiusWithFlashlight,
   torchLightIntensity,
+  getItemDef,
   type ContainerRegistry,
 } from "../items";
 import {
@@ -891,8 +892,9 @@ export class Game {
         if (taken) {
           playLoot(this.interactPlayer, this.ambient.muted);
           this.showNoiseRing(this.noise.emitLoot(this.player.x, this.player.y));
-          this.view.spawnLootFloater(`+${taken.id}`, this.player.x, this.player.y);
-          this.lastLootMsg = `+${taken.id}`;
+          const lootLabel = `+${getItemDef(taken.id).name}`;
+          this.view.spawnLootFloater(lootLabel, this.player.x, this.player.y);
+          this.lastLootMsg = lootLabel;
           this.hudAcc = 1; // forzar refresh
         }
       }
@@ -902,8 +904,9 @@ export class Game {
       if (taken) {
         playLoot(this.interactPlayer, this.ambient.muted);
         this.showNoiseRing(this.noise.emitLoot(this.player.x, this.player.y));
-        this.view.spawnLootFloater(`+${taken.id}`, this.player.x, this.player.y);
-        this.lastLootMsg = `+${taken.id}`;
+        const lootLabel = `+${getItemDef(taken.id).name}`;
+        this.view.spawnLootFloater(lootLabel, this.player.x, this.player.y);
+        this.lastLootMsg = lootLabel;
         this.hudAcc = 1;
       }
     }

@@ -1,6 +1,6 @@
 /**
  * Floater de pickup de loot — headless.
- * worldView aplica label/Y/opacity al Sprite canvas 128×48 ámbar.
+ * worldView aplica label/Y/opacity al Sprite canvas 256×64 ámbar.
  */
 
 /** Duración del floater (s). */
@@ -9,8 +9,8 @@ export const LOOT_FLOATER_TTL = 1.8;
 /** Subida vertical en mundo a lo largo del TTL. */
 export const LOOT_FLOATER_RISE = 1.0;
 
-/** Altura inicial Y (chest). */
-export const LOOT_FLOATER_Y0 = 1.35;
+/** Altura inicial Y (sobre silueta / nameplate). */
+export const LOOT_FLOATER_Y0 = 2.05;
 
 /** Máximo de caracteres del label. */
 export const LOOT_FLOATER_MAX_CHARS = 16;

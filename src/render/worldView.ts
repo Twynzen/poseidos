@@ -267,8 +267,8 @@ export interface WorldView {
   /** Avanza TTL / opacidad de tracers activos; limpia expirados. */
   tickTracers(dt: number): void;
   /**
-   * Texto ámbar de pickup (canvas 128×48) que sube y se desvanece.
-   * TTL 1.8s, rise 1.0 desde Y0 1.35.
+   * Texto ámbar de pickup (canvas 256×64) que sube y se desvanece.
+   * TTL 1.8s, rise 1.0 desde Y0 2.05. depthTest off, renderOrder 20.
    */
   spawnLootFloater(label: string, x: number, y: number): void;
   /** Avanza age / Y / opacity de floaters; limpia expirados. */
@@ -850,7 +850,7 @@ export function createWorldView(
     liveTracers.length = 0;
   }
 
-  // Loot pickup floaters: canvas 128×48 ámbar, suben y fade en TTL 1.8s.
+  // Loot pickup floaters: canvas 256×64 ámbar, suben y fade en TTL 1.8s.
   interface LiveLootFloater {
     sprite: THREE.Sprite;
     mat: THREE.SpriteMaterial;
@@ -858,39 +858,40 @@ export function createWorldView(
   }
   const liveLootFloaters: LiveLootFloater[] = [];
 
-  function createLootFloaterSprite(label: string): THREE.Sprite {
+  function makeFloaterSprite(label: string): THREE.Sprite {
     const text = lootFloaterLabel(label);
     const canvas = document.createElement("canvas");
-    canvas.width = 128;
-    canvas.height = 48;
+    canvas.width = 256;
+    canvas.height = 64;
     const ctx = canvas.getContext("2d");
     if (ctx) {
-      ctx.clearRect(0, 0, 128, 48);
-      ctx.font = "600 18px ui-monospace, SF Mono, Menlo, Consolas, monospace";
+      ctx.clearRect(0, 0, 256, 64);
+      ctx.font = "600 26px ui-monospace, SF Mono, Menlo, Consolas, monospace";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.lineWidth = 4;
       ctx.strokeStyle = "rgba(10, 10, 12, 0.85)";
-      ctx.strokeText(text, 64, 24);
+      ctx.strokeText(text, 128, 32);
       ctx.fillStyle = "#f0c060";
-      ctx.fillText(text, 64, 24);
+      ctx.fillText(text, 128, 32);
     }
     const map = new THREE.CanvasTexture(canvas);
     map.needsUpdate = true;
     const mat = new THREE.SpriteMaterial({
       map,
       transparent: true,
+      depthTest: false,
       depthWrite: false,
     });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootFloater";
-    sprite.scale.set(0.8, 0.3, 1);
-    sprite.renderOrder = 10;
+    sprite.scale.set(2.4, 0.72, 1);
+    sprite.renderOrder = 20;
     return sprite;
   }
 
   function spawnLootFloater(label: string, x: number, y: number): void {
-    const sprite = createLootFloaterSprite(label);
+    const sprite = makeFloaterSprite(label);
     const mat = sprite.material as THREE.SpriteMaterial;
     sprite.position.set(x, lootFloaterY(0), y);
     mat.opacity = lootFloaterOpacity(0);
