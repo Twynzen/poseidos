@@ -102,6 +102,7 @@ import {
 } from "./windGrass";
 import { lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
 import { doorFocusMul, DOOR_FOCUS_REACH } from "./doorFocus";
+import { bedFocusMul, BED_FOCUS_REACH } from "./bedFocus";
 import type { TileMap } from "../world/tilemap";
 import type { Tile } from "../world/tile";
 import type { Chunk } from "../world/chunk";
@@ -154,6 +155,11 @@ export interface WorldView {
    * Fuera de reach: scale 1. `dt` avanza el seno del pulso.
    */
   syncDoorFocus(wx: number, wy: number, dt: number): void;
+  /**
+   * Pulso de escala de la cama más cercana en reach.
+   * Fuera de reach: scale 1. `dt` avanza el seno del pulso.
+   */
+  syncBedFocus(wx: number, wy: number, dt: number): void;
   /**
    * Locomocion visual: silueta locoBob o mixer GLB (Idle/Walk/Run).
    * No mueve el root mundo — solo locoRoot local (bob) o mixer + yaw.
@@ -510,6 +516,27 @@ export function createWorldView(
     attachRoleMarkers(group, "door", markerShared);
     scene.add(group);
     doorMarkerGroups.push({ group, x, y });
+  });
+
+  // Bed: anillo/badge rosa por tile cama. Siempre on (no FOV).
+  // Neighborhood: (6,6) y (24,22).
+  interface BedMarkerEntry {
+    group: THREE.Group;
+    x: number;
+    y: number;
+  }
+  const bedMarkerGroups: BedMarkerEntry[] = [];
+  let bedFocusElapsed = 0;
+  map.forEach((tx, ty, tile) => {
+    if (tile.variant !== "bed") return;
+    const group = new THREE.Group();
+    group.name = `bedMarker_${tx}_${ty}`;
+    const x = tx + 0.5;
+    const y = ty + 0.5;
+    group.position.set(x, 0, y);
+    attachRoleMarkers(group, "bed", markerShared);
+    scene.add(group);
+    bedMarkerGroups.push({ group, x, y });
   });
 
   // Muzzle flash: esfera aditiva ~0.22 dia + PointLight (reutilizable).
@@ -1203,6 +1230,25 @@ export function createWorldView(
         e.group.scale.setScalar(mul);
       }
     },
+    syncBedFocus(wx, wy, dt) {
+      const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
+      bedFocusElapsed += safeDt;
+      let best = -1;
+      let bestD = Infinity;
+      for (let i = 0; i < bedMarkerGroups.length; i++) {
+        const e = bedMarkerGroups[i]!;
+        const d = Math.hypot(wx - e.x, wy - e.y);
+        if (d <= BED_FOCUS_REACH && d < bestD) {
+          bestD = d;
+          best = i;
+        }
+      }
+      for (let i = 0; i < bedMarkerGroups.length; i++) {
+        const e = bedMarkerGroups[i]!;
+        const mul = i === best ? bedFocusMul(bestD, bedFocusElapsed) : 1;
+        e.group.scale.setScalar(mul);
+      }
+    },
     tickPlayerLoco(dt, moving, sprinting, faceX, faceZ) {
       setLocomotion(playerAnimator, { moving, sprinting });
       tickCharacterAnimator(playerAnimator, dt);
@@ -1451,6 +1497,10 @@ export function createWorldView(
         scene.remove(entry.group);
       }
       doorMarkerGroups.length = 0;
+      for (const entry of bedMarkerGroups) {
+        scene.remove(entry.group);
+      }
+      bedMarkerGroups.length = 0;
       for (const mesh of hostileMeshes.values()) {
         scene.remove(mesh);
       }

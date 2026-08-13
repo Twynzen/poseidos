@@ -1,0 +1,94 @@
+import { describe, expect, test } from "vitest";
+import {
+  BED_FOCUS_PULSE_AMP,
+  BED_FOCUS_PULSE_SPEED,
+  BED_FOCUS_REACH,
+  BED_FOCUS_SCALE_FAR,
+  BED_FOCUS_SCALE_NEAR,
+  bedFocusInReach,
+  bedFocusMul,
+  bedFocusPulse,
+  bedFocusScale,
+} from "../src/render/bedFocus";
+
+describe("constantes", () => {
+  test("reach 1.5; near 1.35; far 1.12; pulse 0.08 / 6", () => {
+    expect(BED_FOCUS_REACH).toBe(1.5);
+    expect(BED_FOCUS_SCALE_NEAR).toBe(1.35);
+    expect(BED_FOCUS_SCALE_FAR).toBe(1.12);
+    expect(BED_FOCUS_PULSE_AMP).toBe(0.08);
+    expect(BED_FOCUS_PULSE_SPEED).toBe(6);
+  });
+});
+
+describe("bedFocusScale", () => {
+  test("1.35 en dist 0; 1.12 en reach; 1.0 fuera", () => {
+    expect(bedFocusScale(0)).toBe(1.35);
+    expect(bedFocusScale(1.5)).toBeCloseTo(1.12, 10);
+    expect(bedFocusScale(1.51)).toBe(1);
+    expect(bedFocusScale(10)).toBe(1);
+  });
+
+  test("lerp lineal dentro de reach", () => {
+    // midpoint 0.75: 1.35 + (1.12-1.35)*0.5 = 1.235
+    expect(bedFocusScale(0.75)).toBeCloseTo(1.235, 10);
+    const t = 0.25;
+    const expected = 1.35 + (1.12 - 1.35) * t;
+    expect(bedFocusScale(1.5 * t)).toBeCloseTo(expected, 10);
+  });
+
+  test("NaN / no finito → 1 (fuera)", () => {
+    expect(bedFocusScale(Number.NaN)).toBe(1);
+    expect(bedFocusScale(Number.POSITIVE_INFINITY)).toBe(1);
+  });
+
+  test("dist negativa se clampa a 0 → 1.35", () => {
+    expect(bedFocusScale(-0.4)).toBe(1.35);
+    expect(bedFocusInReach(-0.4)).toBe(true);
+  });
+});
+
+describe("bedFocusPulse", () => {
+  test("1 + 0.08 * sin(elapsed * 6)", () => {
+    expect(bedFocusPulse(0)).toBe(1);
+    // sin(π/2) = 1 → 1.08
+    expect(bedFocusPulse(Math.PI / 12)).toBeCloseTo(1.08, 10);
+    // sin(π) = 0 → 1
+    expect(bedFocusPulse(Math.PI / 6)).toBeCloseTo(1, 10);
+    // sin(3π/2) = -1 → 0.92
+    expect(bedFocusPulse(Math.PI / 4)).toBeCloseTo(0.92, 10);
+  });
+
+  test("NaN elapsed trata como 0", () => {
+    expect(bedFocusPulse(Number.NaN)).toBe(1);
+  });
+
+  test("Infinity elapsed trata como 0", () => {
+    expect(bedFocusPulse(Number.POSITIVE_INFINITY)).toBe(1);
+  });
+});
+
+describe("bedFocusMul", () => {
+  test("en reach: scale * pulse", () => {
+    const elapsed = Math.PI / 12; // pulse = 1.08
+    expect(bedFocusMul(0, elapsed)).toBeCloseTo(1.35 * 1.08, 10);
+    expect(bedFocusMul(1.5, elapsed)).toBeCloseTo(1.12 * 1.08, 10);
+    expect(bedFocusMul(0.75, 0)).toBeCloseTo(1.235, 10);
+  });
+
+  test("fuera de reach: 1 (sin pulso)", () => {
+    const elapsed = Math.PI / 12; // pulse ≠ 1
+    expect(bedFocusMul(1.51, elapsed)).toBe(1);
+    expect(bedFocusMul(8, elapsed)).toBe(1);
+    expect(bedFocusMul(Number.NaN, elapsed)).toBe(1);
+  });
+});
+
+describe("bedFocusInReach", () => {
+  test("incluye el borde; excluye más allá", () => {
+    expect(bedFocusInReach(0)).toBe(true);
+    expect(bedFocusInReach(1.5)).toBe(true);
+    expect(bedFocusInReach(1.51)).toBe(false);
+    expect(bedFocusInReach(Number.NaN)).toBe(false);
+  });
+});

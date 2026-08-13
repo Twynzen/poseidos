@@ -47,6 +47,29 @@ describe("markers (badges + ground rings)", () => {
     expect(MARKER_PALETTE.door.glyph.length).toBeGreaterThan(0);
   });
 
+  test("paleta: bed rosa (anillo 0xe07090, badge 0xffa0b8, ▭)", () => {
+    const bed = paletteFor("bed");
+    expect(bed.ring).toBe(0xe07090);
+    expect(bed.badge).toBe(0xffa0b8);
+    expect(bed.emissive).toBe(0x401018);
+    expect(bed.glyph).toBe("▭");
+    // rosa: R dominante sobre G y B
+    expect((bed.ring >> 16) & 0xff).toBeGreaterThan((bed.ring >> 8) & 0xff);
+    expect((bed.ring >> 16) & 0xff).toBeGreaterThan(bed.ring & 0xff);
+    expect(MARKER_PALETTE.bed.glyph.length).toBeGreaterThan(0);
+  });
+
+  test("roles: player mute possessed loot door bed", () => {
+    expect(Object.keys(MARKER_PALETTE)).toEqual([
+      "player",
+      "mute",
+      "possessed",
+      "loot",
+      "door",
+      "bed",
+    ]);
+  });
+
   test("solo visible en FOV (amenazas)", () => {
     expect(markerVisibleInFov(true)).toBe(true);
     expect(markerVisibleInFov(false)).toBe(false);
