@@ -152,6 +152,11 @@ export interface WorldView {
   sun: THREE.DirectionalLight;
   syncPlayer(x: number, y: number): void;
   /**
+   * Anillo/nameplate ámbar para un contenedor nuevo (drop al suelo).
+   * No-op si ya hay marcador con ese id. `x`/`y` son tiles.
+   */
+  addLootMarker(id: string, x: number, y: number, name: string): void;
+  /**
    * Pulso de escala del loot más cercano en reach.
    * Fuera de reach: scale 1. `dt` avanza el seno del pulso.
    * `emptyIds`: contenedores vacíos — anillo oculto, no reciben foco.
@@ -542,18 +547,28 @@ export function createWorldView(
     return sprite;
   }
 
+  function addLootMarker(opts: {
+    id: string;
+    x: number;
+    y: number;
+    name: string;
+  }): void {
+    if (lootMarkerGroups.some((e) => e.id === opts.id)) return;
+    const group = new THREE.Group();
+    group.name = `lootMarker_${opts.id}`;
+    const x = opts.x + 0.5;
+    const y = opts.y + 0.5;
+    group.position.set(x, 0, y);
+    attachRoleMarkers(group, "loot", markerShared);
+    const nameplate = createLootNameplateSprite(opts.name);
+    group.add(nameplate);
+    scene.add(group);
+    lootMarkerGroups.push({ group, nameplate, x, y, id: opts.id });
+  }
+
   if (containers) {
     for (const c of containers.list) {
-      const group = new THREE.Group();
-      group.name = `lootMarker_${c.id}`;
-      const x = c.x + 0.5;
-      const y = c.y + 0.5;
-      group.position.set(x, 0, y);
-      attachRoleMarkers(group, "loot", markerShared);
-      const nameplate = createLootNameplateSprite(c.name);
-      group.add(nameplate);
-      scene.add(group);
-      lootMarkerGroups.push({ group, nameplate, x, y, id: c.id });
+      addLootMarker({ id: c.id, x: c.x, y: c.y, name: c.name });
     }
   }
 
@@ -1328,6 +1343,9 @@ export function createWorldView(
     syncPlayer(x, y) {
       playerMesh.position.set(x, 0, y);
       placeFacingChevron();
+    },
+    addLootMarker(id, x, y, name) {
+      addLootMarker({ id, x, y, name });
     },
     syncLootFocus(wx, wy, dt, emptyIds) {
       const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;

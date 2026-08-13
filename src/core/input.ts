@@ -1,7 +1,7 @@
 /**
  * Teclado WASD → ejes · Shift correr.
  * E/F interactuar (puerta; si no, loot contextual).
- * G loot explícito · I panel inventario · Q consumir · 1–5 hotbar (selección) · rueda hotbar · R descanso / reinicio game-over.
+ * G loot explícito · I panel inventario · Q consumir · U tirar · 1–5 hotbar (selección) · rueda hotbar · R descanso / reinicio game-over.
  * Z dormir (safehouse) · B barricada · C vendaje (craft) · H cocinar · T diálogo poseído · Espacio/V melee · X disparar · L linterna · M mute ambient · +/- zoom iso · F1 ayuda · F5 guardar · F9 cargar.
  */
 export class Input {
@@ -74,6 +74,11 @@ export class Input {
   /** G: loot / tomar 1 del contenedor cercano. */
   consumeLoot(): boolean {
     return this.consumeJustPressed("KeyG");
+  }
+
+  /** U: tirar 1 del slot hotbar al tile del player. */
+  consumeDrop(): boolean {
+    return this.consumeJustPressed("KeyU");
   }
 
   /** I: toggle detalle de inventario en HUD. */

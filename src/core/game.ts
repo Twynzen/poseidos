@@ -36,6 +36,8 @@ import {
   fovRadiusWithFlashlight,
   torchLightIntensity,
   getItemDef,
+  takeFromSlot,
+  dropOnTile,
   type ContainerRegistry,
 } from "../items";
 import {
@@ -1006,6 +1008,25 @@ export class Game {
         this.view.spawnLootFloater(lootLabel, this.player.x, this.player.y);
         this.lootToast.show(lootLabel);
         this.lastLootMsg = lootLabel;
+        this.hudAcc = 1;
+      }
+    }
+    if (this.input.consumeDrop()) {
+      const taken = takeFromSlot(
+        this.player.inventory,
+        this.hotbarSelected,
+        1,
+      );
+      if (taken) {
+        const tx = Math.floor(this.player.x);
+        const ty = Math.floor(this.player.y);
+        const id = `drop-${tx}-${ty}-${taken.id}`;
+        const c = dropOnTile(this.containers, tx, ty, taken, id);
+        this.view.addLootMarker(c.id, c.x, c.y, c.name);
+        playLoot(this.interactPlayer, this.ambient.muted);
+        const label = `tiraste ${getItemDef(taken.id).name}`;
+        this.lootToast.show(label);
+        this.lastLootMsg = label;
         this.hudAcc = 1;
       }
     }
