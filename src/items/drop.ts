@@ -15,6 +15,7 @@ import {
   type ContainerRegistry,
   type WorldContainer,
 } from "./containers";
+import { lootPileLabel } from "./lootLabel";
 
 /** Cuántas unidades tirar: 1, o el stack entero si `wholeStack`. */
 export function dropQty(
@@ -61,18 +62,19 @@ export function dropOnTile(
   stack: ItemStack,
   id: string,
 ): WorldContainer {
-  const existing = containers.at(tx, ty);
-  if (existing) {
-    addItem(existing.inv, stack.id, stack.qty);
-    return existing;
+  let c = containers.at(tx, ty);
+  if (c) {
+    addItem(c.inv, stack.id, stack.qty);
+  } else {
+    c = createWorldContainer(
+      id,
+      tx,
+      ty,
+      getItemDef(stack.id).name,
+      [stack],
+    );
+    containers.add(c);
   }
-  const created = createWorldContainer(
-    id,
-    tx,
-    ty,
-    getItemDef(stack.id).name,
-    [stack],
-  );
-  containers.add(created);
-  return created;
+  c.name = lootPileLabel(c.inv, getItemDef(stack.id).name);
+  return c;
 }

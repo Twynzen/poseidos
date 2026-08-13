@@ -996,6 +996,7 @@ export class Game {
           this.lootToast.show(lootLabel);
           this.lastLootMsg = lootLabel;
           this.hudAcc = 1; // forzar refresh
+          this.refreshNearestLootMarker();
         }
       }
     }
@@ -1015,6 +1016,7 @@ export class Game {
         this.lootToast.show(lootLabel);
         this.lastLootMsg = lootLabel;
         this.hudAcc = 1;
+        this.refreshNearestLootMarker();
       }
     }
     const drop = this.input.consumeDrop();
@@ -1222,6 +1224,17 @@ export class Game {
       if (!containerHasLoot(c)) ids.add(c.id);
     }
     return ids;
+  }
+
+  /** Re-pinta el nameplate del contenedor cercano (qty tras G/E/Shift+G). */
+  private refreshNearestLootMarker(): void {
+    const c = this.containers.nearest(
+      this.player.x,
+      this.player.y,
+      CONTAINER_REACH,
+    );
+    if (!c) return;
+    this.view.addLootMarker(c.id, c.x, c.y, c.name);
   }
 
   /** Overlay `#hit-flash`: decay + opacity = intensity × peak. */

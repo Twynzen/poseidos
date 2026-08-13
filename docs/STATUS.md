@@ -1,8 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** 2026-08-13 — Shift+G loot del stack entero. G sigue 1; E sigue 1. Siguiente: siguiente slice UI/survival chico.
+- **Última rutina:** 2026-08-13 — nameplates de loot muestran qty del stack. Siguiente: siguiente slice UI/survival chico.
 - **Qué quedó (esta corrida):**
+  - **Nameplate qty** 1 stack → `madera ×6` / `munición ×8`; qty 1 sin ×1. 2+ stacks → fallback ×total (`pila de madera ×12`).
+  - **Refresh** drop merge y G/Shift+G actualizan el marcador existente (antes `addLootMarker` no-op si el id ya estaba).
   - **G loot** 1 del contenedor cercano (`lootOne` / `tryLoot`). **E/F** contextual sigue 1.
   - **Shift+G stack** toma el primer stack entero (`lootStack` / `transferStack`); toast/floater `+madera×6` / `+munición×8` si qty>1. Shift se captura en el keydown de G (no en el tick / `sprinting`).
   - **U tirar** 1 del slot hotbar al tile del player (WorldContainer). **Shift+U stack** tira el stack entero.

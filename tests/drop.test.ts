@@ -103,6 +103,7 @@ describe("dropOnTile", () => {
     expect(again).toBe(first);
     expect(again.inv.slots).toHaveLength(1);
     expect(again.inv.slots[0]).toEqual({ id: "water_bottle", qty: 2 });
+    expect(again.name).toBe("botella de agua ×2");
   });
 
   test("drop other tile → second container", () => {

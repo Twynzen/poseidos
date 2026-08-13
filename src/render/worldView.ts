@@ -103,9 +103,9 @@ import {
 import { lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
 import {
   LOOT_NAMEPLATE_Y,
+  lootNameplateLabel,
   lootNameplateOpacity,
   lootNameplateVisible,
-  truncateLootLabel,
 } from "./lootNameplate";
 import {
   lootFloaterAlive,
@@ -122,7 +122,10 @@ import { chunkKey } from "../world/chunk";
 import { tileKey } from "../world/los";
 import { isIndoor } from "../world/indoor";
 import type { GameClock } from "../core/clock";
-import type { ContainerRegistry } from "../items";
+import {
+  lootPileLabel,
+  type ContainerRegistry,
+} from "../items";
 
 const WALL_COLOR = 0x5a5348;
 const DOOR_CLOSED = 0x8b5a2b;
@@ -152,8 +155,8 @@ export interface WorldView {
   sun: THREE.DirectionalLight;
   syncPlayer(x: number, y: number): void;
   /**
-   * Anillo/nameplate ámbar para un contenedor nuevo (drop al suelo).
-   * No-op si ya hay marcador con ese id. `x`/`y` son tiles.
+   * Anillo/nameplate ámbar para un contenedor (drop al suelo / refresh qty).
+   * Si ya hay marcador con ese id, reemplaza el nameplate. `x`/`y` son tiles.
    */
   addLootMarker(id: string, x: number, y: number, name: string): void;
   /**
@@ -514,7 +517,7 @@ export function createWorldView(
   let lootFocusElapsed = 0;
 
   function createLootNameplateSprite(label: string): THREE.Sprite {
-    const text = truncateLootLabel(label);
+    const text = lootNameplateLabel(label);
     const canvas = document.createElement("canvas");
     canvas.width = 256;
     canvas.height = 64;
@@ -552,15 +555,34 @@ export function createWorldView(
     x: number;
     y: number;
     name: string;
+    inv?: { slots: ReadonlyArray<{ id: string; qty: number }> };
   }): void {
-    if (lootMarkerGroups.some((e) => e.id === opts.id)) return;
+    const plate = opts.inv
+      ? lootNameplateLabel(lootPileLabel(opts.inv, opts.name))
+      : lootNameplateLabel(opts.name);
+    const existing = lootMarkerGroups.find((e) => e.id === opts.id);
+    if (existing) {
+      const old = existing.group.getObjectByName("lootNameplate");
+      if (old) {
+        existing.group.remove(old);
+        if (old instanceof THREE.Sprite) {
+          const mat = old.material as THREE.SpriteMaterial;
+          mat.map?.dispose();
+          mat.dispose();
+        }
+      }
+      const nameplate = createLootNameplateSprite(plate);
+      existing.group.add(nameplate);
+      existing.nameplate = nameplate;
+      return;
+    }
     const group = new THREE.Group();
     group.name = `lootMarker_${opts.id}`;
     const x = opts.x + 0.5;
     const y = opts.y + 0.5;
     group.position.set(x, 0, y);
     attachRoleMarkers(group, "loot", markerShared);
-    const nameplate = createLootNameplateSprite(opts.name);
+    const nameplate = createLootNameplateSprite(plate);
     group.add(nameplate);
     scene.add(group);
     lootMarkerGroups.push({ group, nameplate, x, y, id: opts.id });
@@ -568,7 +590,13 @@ export function createWorldView(
 
   if (containers) {
     for (const c of containers.list) {
-      addLootMarker({ id: c.id, x: c.x, y: c.y, name: c.name });
+      addLootMarker({
+        id: c.id,
+        x: c.x,
+        y: c.y,
+        name: c.name,
+        inv: c.inv,
+      });
     }
   }
 

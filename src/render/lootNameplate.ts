@@ -4,7 +4,7 @@
  */
 
 /** Máximo de caracteres del label. */
-export const LOOT_NAMEPLATE_MAX_CHARS = 16;
+export const LOOT_NAMEPLATE_MAX_CHARS = 20;
 
 /** Distancia a la que el nameplate llega a opacity 0. */
 export const LOOT_NAMEPLATE_FADE_DIST = 10;
@@ -12,11 +12,15 @@ export const LOOT_NAMEPLATE_FADE_DIST = 10;
 /** Altura local Y del sprite sobre el grupo loot. */
 export const LOOT_NAMEPLATE_Y = 1.45;
 
-/** Corta el nombre a 16 chars (sin ellipsis). */
-export function truncateLootLabel(label: string): string {
+/** Corta el nombre a 20 chars (sin ellipsis). */
+export function lootNameplateLabel(label: string): string {
   if (typeof label !== "string") return "";
   if (label.length <= LOOT_NAMEPLATE_MAX_CHARS) return label;
   return label.slice(0, LOOT_NAMEPLATE_MAX_CHARS);
+}
+
+export function truncateLootLabel(label: string): string {
+  return lootNameplateLabel(label);
 }
 
 /**

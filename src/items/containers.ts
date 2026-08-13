@@ -2,6 +2,7 @@
  * Contenedores del mundo (muebles / chests) con inventario propio.
  */
 
+import { getItemDef } from "./defs";
 import {
   createInventory,
   totalQty,
@@ -10,6 +11,7 @@ import {
   type Inventory,
   type ItemStack,
 } from "./inventory";
+import { lootPileLabel } from "./lootLabel";
 import { rollLoot, type LootEntry } from "./loot";
 
 export interface WorldContainer {
@@ -104,7 +106,11 @@ export class ContainerRegistry {
   ): ItemStack | null {
     const c = this.nearest(wx, wy, reach);
     if (!c || c.inv.slots.length === 0) return null;
-    return transferOne(c.inv, dest, 0);
+    const taken = transferOne(c.inv, dest, 0);
+    if (taken && containerHasLoot(c)) {
+      refreshContainerLabel(c, getItemDef(taken.id).name);
+    }
+    return taken;
   }
 
   /**
@@ -122,6 +128,19 @@ export class ContainerRegistry {
     const id = c.inv.slots[0]!.id;
     const added = transferStack(c.inv, dest, 0);
     if (added <= 0) return null;
+    if (containerHasLoot(c)) {
+      refreshContainerLabel(c, getItemDef(id).name);
+    }
     return { id, qty: added };
   }
+}
+
+/**
+ * Actualiza `c.name` tras loot. 1 stack restante usa el def name
+ * (ignora fallback sucio con ×N). 2+ usa el fallback limpio del contenedor.
+ */
+function refreshContainerLabel(c: WorldContainer, itemName: string): void {
+  const fallback =
+    typeof c.name === "string" ? c.name.replace(/ ×\d+$/, "") : "";
+  c.name = lootPileLabel(c.inv, fallback || itemName);
 }

@@ -3,38 +3,51 @@ import {
   LOOT_NAMEPLATE_FADE_DIST,
   LOOT_NAMEPLATE_MAX_CHARS,
   LOOT_NAMEPLATE_Y,
+  lootNameplateLabel,
   lootNameplateOpacity,
   lootNameplateVisible,
   truncateLootLabel,
 } from "../src/render/lootNameplate";
 
 describe("constantes", () => {
-  test("max 16 chars; fade dist 10; y 1.45", () => {
-    expect(LOOT_NAMEPLATE_MAX_CHARS).toBe(16);
+  test("max 20 chars; fade dist 10; y 1.45", () => {
+    expect(LOOT_NAMEPLATE_MAX_CHARS).toBe(20);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(10);
     expect(LOOT_NAMEPLATE_Y).toBe(1.45);
   });
 });
 
-describe("truncateLootLabel", () => {
+describe("lootNameplateLabel", () => {
   test("corto sin cambio", () => {
+    expect(lootNameplateLabel("cocina")).toBe("cocina");
+    expect(lootNameplateLabel("pila de madera")).toBe("pila de madera");
     expect(truncateLootLabel("cocina")).toBe("cocina");
-    expect(truncateLootLabel("pila de madera")).toBe("pila de madera");
   });
 
-  test("exacto 16 sin cambio", () => {
-    const s = "1234567890123456";
-    expect(s.length).toBe(16);
+  test("pila de madera ×12 cabe en 20", () => {
+    expect(lootNameplateLabel("pila de madera ×12")).toBe("pila de madera ×12");
+    expect("pila de madera ×12".length).toBe(18);
+  });
+
+  test("exacto 20 sin cambio", () => {
+    const s = "12345678901234567890";
+    expect(s.length).toBe(20);
+    expect(lootNameplateLabel(s)).toBe(s);
     expect(truncateLootLabel(s)).toBe(s);
   });
 
-  test("más de 16 → slice a 16", () => {
-    expect(truncateLootLabel("12345678901234567")).toBe("1234567890123456");
-    expect(truncateLootLabel("pila de madera extra")).toBe("pila de madera e");
-    expect(truncateLootLabel("pila de madera extra").length).toBe(16);
+  test("más de 20 → slice a 20", () => {
+    expect(lootNameplateLabel("123456789012345678901")).toBe(
+      "12345678901234567890",
+    );
+    expect(lootNameplateLabel("pila de madera extra!")).toBe(
+      "pila de madera extra",
+    );
+    expect(lootNameplateLabel("pila de madera extra!").length).toBe(20);
   });
 
   test('vacío → ""', () => {
+    expect(lootNameplateLabel("")).toBe("");
     expect(truncateLootLabel("")).toBe("");
   });
 });

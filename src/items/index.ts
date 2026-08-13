@@ -104,3 +104,5 @@ export {
 
 export { takeFromSlot, dropOnTile, dropQty, dropToastLabel } from "./drop";
 
+export { lootPileLabel } from "./lootLabel";
+
