@@ -103,6 +103,10 @@ import {
   playUse,
   createSpeechPlayer,
   playSpeech,
+  createHeartbeatBus,
+  tickHeartbeat,
+  createHeartbeatPlayer,
+  playHeartbeat,
   type AmbientBus,
   type FootstepsBus,
   type FootstepPlayer,
@@ -110,6 +114,8 @@ import {
   type CombatPlayer,
   type InteractPlayer,
   type SpeechPlayer,
+  type HeartbeatBus,
+  type HeartbeatPlayer,
 } from "../audio";
 import {
   computeNeedsDamage,
@@ -156,6 +162,8 @@ export class Game {
   private combatPlayer: CombatPlayer;
   private interactPlayer: InteractPlayer;
   private speechPlayer: SpeechPlayer;
+  private heartbeat: HeartbeatBus;
+  private heartbeatPlayer: HeartbeatPlayer;
   private footsteps: FootstepsBus;
   private footstepPlayer: FootstepPlayer;
   private readonly loop: GameLoop;
@@ -230,6 +238,8 @@ export class Game {
     this.combatPlayer = createCombatPlayer();
     this.interactPlayer = createInteractPlayer();
     this.speechPlayer = createSpeechPlayer();
+    this.heartbeat = createHeartbeatBus();
+    this.heartbeatPlayer = createHeartbeatPlayer();
     this.footsteps = createFootstepsBus();
     this.footstepPlayer = createFootstepPlayer();
     this.storage = browserStorage();
@@ -687,6 +697,7 @@ export class Game {
       }
       this.input.endFrame();
       this.syncAmbient(dt);
+      this.syncHeartbeat(dt);
       this.syncFootsteps(dt, 0, false);
       this.syncLighting();
       this.syncRainVisual(dt);
@@ -771,6 +782,7 @@ export class Game {
     if (!this.player.alive) {
       this.enterGameOver();
       this.input.endFrame();
+      this.syncHeartbeat(dt);
       this.syncHostileView(dt);
       this.syncSpeechOverlay();
       this.tickHitFlashOverlay(dt);
@@ -1014,6 +1026,7 @@ export class Game {
     }
     this.syncHostileView(dt);
     this.syncAmbient(dt);
+    this.syncHeartbeat(dt);
     this.syncFootsteps(dt, moved, sprint);
     this.syncLighting();
     this.syncRainVisual(dt);
@@ -1053,6 +1066,12 @@ export class Game {
     });
   }
 
+
+  /** Low-HP heartbeat: tick headless + beep si `{beat}` y no mute. */
+  private syncHeartbeat(dt: number): void {
+    const { beat } = tickHeartbeat(this.heartbeat, this.player.health, dt);
+    if (beat) playHeartbeat(this.heartbeatPlayer, this.ambient.muted);
+  }
 
   /** Ambient stub + WebAudio layers; mute → gains 0. */
   private syncAmbient(dt: number): void {

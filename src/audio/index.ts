@@ -69,3 +69,20 @@ export {
   type SpeechBeepSpec,
   type SpeechPlayer,
 } from "./speechPlayer";
+
+export {
+  HEARTBEAT_HP_RATIO,
+  heartbeatIntervalSec,
+  createHeartbeatBus,
+  tickHeartbeat,
+  type HeartbeatBus,
+} from "./heartbeat";
+
+export {
+  shouldPlayHeartbeatSfx,
+  heartbeatBeepSpec,
+  createHeartbeatPlayer,
+  playHeartbeat,
+  type HeartbeatBeepSpec,
+  type HeartbeatPlayer,
+} from "./heartbeatPlayer";
