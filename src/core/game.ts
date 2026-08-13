@@ -74,6 +74,7 @@ import {
   createLootFloaterHud,
   createInventoryPanel,
   hotbarSlots,
+  stepHotbarIndex,
   formatHudStatus,
   HIT_FLASH_PEAK,
   createHitFlash,
@@ -693,6 +694,11 @@ export class Game {
     const slot = this.input.consumeHotbar();
     if (slot !== null) {
       this.hotbarSelected = slot;
+      this.hudAcc = 1;
+    }
+    const wheel = this.input.consumeHotbarWheel();
+    if (wheel !== null) {
+      this.hotbarSelected = stepHotbarIndex(this.hotbarSelected, wheel);
       this.hudAcc = 1;
     }
 

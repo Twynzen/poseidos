@@ -1,14 +1,16 @@
 /**
  * Teclado WASD → ejes · Shift correr.
  * E/F interactuar (puerta; si no, loot contextual).
- * G loot explícito · I panel inventario · Q consumir · 1–5 hotbar (selección) · R descanso / reinicio game-over.
+ * G loot explícito · I panel inventario · Q consumir · 1–5 hotbar (selección) · rueda hotbar · R descanso / reinicio game-over.
  * Z dormir (safehouse) · B barricada · C vendaje (craft) · H cocinar · T diálogo poseído · Espacio/V melee · X disparar · L linterna · M mute ambient · +/- zoom iso · F1 ayuda · F5 guardar · F9 cargar.
  */
 export class Input {
   private readonly keys = new Set<string>();
   private readonly pressed = new Set<string>();
+  private wheel: -1 | 1 | null = null;
   private readonly onDown: (e: KeyboardEvent) => void;
   private readonly onUp: (e: KeyboardEvent) => void;
+  private readonly onWheel: (e: WheelEvent) => void;
 
   constructor() {
     this.onDown = (e) => {
@@ -24,8 +26,15 @@ export class Input {
     this.onUp = (e) => {
       this.keys.delete(e.code);
     };
+    this.onWheel = (e) => {
+      if (!hotbarWheelTarget(e.target)) return;
+      e.preventDefault();
+      if (e.deltaY > 0) this.wheel = 1;
+      else if (e.deltaY < 0) this.wheel = -1;
+    };
     window.addEventListener("keydown", this.onDown);
     window.addEventListener("keyup", this.onUp);
+    window.addEventListener("wheel", this.onWheel, { passive: false });
   }
 
   get axes(): { x: number; z: number } {
@@ -90,6 +99,16 @@ export class Input {
       if (this.consumeJustPressed(`Numpad${i}`)) return i - 1;
     }
     return null;
+  }
+
+  /**
+   * Rueda hotbar: deltaY>0 → +1 (siguiente), deltaY<0 → -1 (anterior).
+   * Una vez por frame; null si no hubo rueda capturada.
+   */
+  consumeHotbarWheel(): -1 | 1 | null {
+    const d = this.wheel;
+    this.wheel = null;
+    return d;
   }
 
   /**
@@ -190,10 +209,20 @@ export class Input {
   /** Llamar al final del tick para no acumular edges viejos. */
   endFrame(): void {
     this.pressed.clear();
+    this.wheel = null;
   }
 
   dispose(): void {
     window.removeEventListener("keydown", this.onDown);
     window.removeEventListener("keyup", this.onUp);
+    window.removeEventListener("wheel", this.onWheel);
   }
+}
+
+/** preventDefault / ciclo solo si el target es body o está dentro de `#app`. */
+function hotbarWheelTarget(target: EventTarget | null): boolean {
+  if (target === document.body) return true;
+  if (!(target instanceof Node)) return false;
+  const app = document.getElementById("app");
+  return app !== null && app.contains(target);
 }

@@ -7,6 +7,7 @@ import {
 import {
   HOTBAR_SIZE,
   clampHotbarIndex,
+  stepHotbarIndex,
   hotbarIndexFromKey,
   hotbarKey,
   hotbarSlotIsConsumable,
@@ -40,6 +41,17 @@ describe("clampHotbarIndex", () => {
     expect(clampHotbarIndex(2.7)).toBe(2);
     expect(clampHotbarIndex(Number.NaN)).toBe(0);
     expect(clampHotbarIndex(-0.2)).toBe(0);
+  });
+});
+
+describe("stepHotbarIndex", () => {
+  test("avanza, wrap y NaN", () => {
+    expect(stepHotbarIndex(0, 1)).toBe(1);
+    expect(stepHotbarIndex(4, 1)).toBe(0);
+    expect(stepHotbarIndex(0, -1)).toBe(4);
+    expect(stepHotbarIndex(2, 0)).toBe(2);
+    expect(stepHotbarIndex(2, 3)).toBe(0);
+    expect(stepHotbarIndex(Number.NaN, 1)).toBe(1);
   });
 });
 

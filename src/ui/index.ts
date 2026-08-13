@@ -20,6 +20,7 @@ export {
   hotbarKey,
   hotbarIndexFromKey,
   clampHotbarIndex,
+  stepHotbarIndex,
   hotbarSlots,
   hotbarSlotIsConsumable,
   type HotbarSlot,

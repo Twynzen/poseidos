@@ -2,6 +2,7 @@
  * Hotbar display-only (5 slots, estilo PZ). Headless: no DOM.
  * Lee `inv.slots[0..4]` y rellena vacíos; no muta el inventario.
  * `hotbarIndexFromKey` mapea Digit/Numpad 1–5 → índice; el bind vive en Input.
+ * `stepHotbarIndex` cicla con rueda (wrap 0..4).
  */
 
 import { getItemDef, type ItemId } from "../items/defs";
@@ -65,6 +66,19 @@ export function clampHotbarIndex(index: number): number {
   if (!Number.isFinite(index) || index <= 0) return 0;
   const i = Math.trunc(index);
   return i >= HOTBAR_SIZE ? HOTBAR_SIZE - 1 : i;
+}
+
+/**
+ * Avanza/retrocede el slot con wrap 0..HOTBAR_SIZE-1.
+ * Clamp `current`; `Math.trunc(delta)`; módulo para wrap.
+ * NaN current → 0; delta 0 → sin cambio; NaN delta → current (ya clamp).
+ */
+export function stepHotbarIndex(current: number, delta: number): number {
+  const i = clampHotbarIndex(current);
+  if (!Number.isFinite(delta)) return i;
+  const d = Math.trunc(delta);
+  if (d === 0) return i;
+  return ((i + d) % HOTBAR_SIZE + HOTBAR_SIZE) % HOTBAR_SIZE;
 }
 
 /**
