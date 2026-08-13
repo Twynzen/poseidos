@@ -25,8 +25,8 @@ import {
 } from "../render/cameraConfig";
 import {
   CONTAINER_REACH,
+  containerHasLoot,
   inventorySummary,
-  totalQty,
   buildInventoryPanelData,
   findSlot,
   removeFromSlot,
@@ -1073,11 +1073,11 @@ export class Game {
     }
   }
 
-  /** Ids de contenedores sin stacks o qty 0 — anillo de loot oculto. */
+  /** Ids de contenedores sin loot — anillo de loot oculto. */
   private emptyLootIds(): ReadonlySet<string> {
     const ids = new Set<string>();
     for (const c of this.containers.list) {
-      if (c.inv.slots.length === 0 || totalQty(c.inv) === 0) ids.add(c.id);
+      if (!containerHasLoot(c)) ids.add(c.id);
     }
     return ids;
   }
@@ -1202,9 +1202,10 @@ export class Game {
       this.player.y,
       CONTAINER_REACH,
     );
-    const nearHint = near
-      ? `cerca: ${near.name} [${inventorySummary(near.inv)}] G/E loot`
-      : undefined;
+    const nearHint =
+      near && containerHasLoot(near)
+        ? `cerca: ${near.name} [${inventorySummary(near.inv)}] G/E loot`
+        : undefined;
     const invLine = `inv ${this.player.invSummary()} (${this.player.invWeight().toFixed(1)}kg)`;
     const invDetailHint = this.showInvDetail ? "I cerrar inv" : undefined;
     this.syncInventoryPanel();

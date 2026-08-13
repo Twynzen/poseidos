@@ -31,6 +31,7 @@ export {
 } from "./loot";
 export {
   CONTAINER_REACH,
+  containerHasLoot,
   createWorldContainer,
   createContainerFromLoot,
   ContainerRegistry,

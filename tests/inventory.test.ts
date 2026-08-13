@@ -3,6 +3,7 @@ import {
   addItem,
   CONTAINER_REACH,
   ContainerRegistry,
+  containerHasLoot,
   createInventory,
   createWorldContainer,
   findConsumableSlot,
@@ -120,6 +121,7 @@ describe("containers + transfer", () => {
         { id: "water_bottle", qty: 1 },
       ]),
     ]);
+    expect(containerHasLoot(reg.list[0]!)).toBe(true);
     expect(reg.nearest(5.4, 5.2, CONTAINER_REACH)?.id).toBe("c1");
     expect(reg.nearest(0, 0, CONTAINER_REACH)).toBeNull();
 
@@ -128,6 +130,28 @@ describe("containers + transfer", () => {
     expect(taken).toEqual({ id: "canned_food", qty: 1 });
     expect(dest.slots[0]?.qty).toBe(1);
     expect(reg.at(5, 5)?.inv.slots[0]?.qty).toBe(1);
+  });
+
+  test("containerHasLoot y nearest saltan vacíos (slots o qty 0)", () => {
+    const empty = createWorldContainer("empty", 5, 5, "caja");
+    expect(empty.inv.slots).toHaveLength(0);
+    expect(containerHasLoot(empty)).toBe(false);
+
+    const qty0 = createWorldContainer("qty0", 5, 5, "caja");
+    qty0.inv.slots.push({ id: "scrap", qty: 0 });
+    expect(qty0.inv.slots.length).toBe(1);
+    expect(containerHasLoot(qty0)).toBe(false);
+
+    const full = createWorldContainer("full", 6, 5, "cocina", [
+      { id: "scrap", qty: 1 },
+    ]);
+    expect(containerHasLoot(full)).toBe(true);
+
+    const onlyEmpty = new ContainerRegistry([empty, qty0]);
+    expect(onlyEmpty.nearest(5.5, 5.5, CONTAINER_REACH)).toBeNull();
+
+    const mixed = new ContainerRegistry([empty, qty0, full]);
+    expect(mixed.nearest(5.5, 5.5, CONTAINER_REACH)?.id).toBe("full");
   });
 
   test("furniture tile caminable y no bloquea vista", () => {

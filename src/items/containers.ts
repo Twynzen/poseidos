@@ -4,6 +4,7 @@
 
 import {
   createInventory,
+  totalQty,
   transferOne,
   type Inventory,
   type ItemStack,
@@ -21,6 +22,11 @@ export interface WorldContainer {
 }
 
 export const CONTAINER_REACH = 1.6;
+
+/** True si hay al menos un slot y qty total > 0. */
+export function containerHasLoot(c: WorldContainer): boolean {
+  return c.inv.slots.length > 0 && totalQty(c.inv) > 0;
+}
 
 export function createWorldContainer(
   id: string,
@@ -76,6 +82,7 @@ export class ContainerRegistry {
   ): WorldContainer | null {
     let best: { c: WorldContainer; d: number } | null = null;
     for (const c of this.list) {
+      if (!containerHasLoot(c)) continue;
       const dx = wx - (c.x + 0.5);
       const dy = wy - (c.y + 0.5);
       const d = Math.hypot(dx, dy);

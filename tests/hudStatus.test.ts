@@ -83,6 +83,19 @@ describe("formatHudStatus compact", () => {
     expect(inn).toContain("safehouse cama");
   });
 
+  test("nearHint cerca: solo si hay loot; vacío/blank no aparece", () => {
+    const bare = formatHudStatus(base());
+    expect(bare).not.toContain("cerca:");
+
+    const hinted = formatHudStatus(
+      base({ nearHint: "cerca: cocina [lata×2] G/E loot" }),
+    );
+    expect(hinted).toContain("cerca: cocina [lata×2] G/E loot");
+
+    expect(formatHudStatus(base({ nearHint: "" }))).not.toContain("cerca:");
+    expect(formatHudStatus(base({ nearHint: "   " }))).not.toContain("cerca:");
+  });
+
   test("audioHint compacto", () => {
     const bare = formatHudStatus(base());
     expect(bare).not.toContain("♪");
