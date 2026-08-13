@@ -19,6 +19,8 @@ export interface InventoryPanel {
   consumeClick(): number | null;
   /** Último clic derecho en fila (inspeccionar); last-wins; consume y limpia. */
   consumeInspect(): number | null;
+  /** Último Shift+clic en fila (partir stack); last-wins; consume y limpia. */
+  consumeSplit(): number | null;
   dispose(): void;
 }
 
@@ -51,13 +53,14 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
   const hint = document.createElement("div");
   hint.className = "inv-hint";
   hint.textContent =
-    "I cerrar · clic usar · clic der. info · Q usar/lluvia · L linterna · Espacio/V melee · X disparar";
+    "I cerrar · clic usar · Shift+clic partir · clic der. info · Q usar/lluvia · L linterna · Espacio/V melee · X disparar";
 
   panel.append(head, weightEl, equip, empty, list, hint);
   root.appendChild(panel);
 
   let pendingClick: number | null = null;
   let pendingInspect: number | null = null;
+  let pendingSplit: number | null = null;
 
   return {
     consumeClick() {
@@ -69,6 +72,11 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
       const inspected = pendingInspect;
       pendingInspect = null;
       return inspected;
+    },
+    consumeSplit() {
+      const split = pendingSplit;
+      pendingSplit = null;
+      return split;
     },
     sync(view) {
       if (!view.open) {
@@ -104,7 +112,13 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
           li.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
-            pendingClick = slot.index;
+            if (e.shiftKey) {
+              pendingSplit = slot.index;
+              pendingClick = null;
+            } else {
+              pendingClick = slot.index;
+              pendingSplit = null;
+            }
           });
           li.addEventListener("contextmenu", (e) => {
             e.preventDefault();

@@ -10,6 +10,7 @@ import {
   fixedLoot,
   getItemDef,
   insertStackAt,
+  splitStack,
   inventorySummary,
   LOOT_KITCHEN,
   LOOT_CABINET,
@@ -95,6 +96,30 @@ describe("inventory", () => {
     insertStackAt(heavy, 0, { id: "wood", qty: 4 });
     expect(heavy.slots[0]).toEqual({ id: "wood", qty: 4 });
     expect(totalWeight(heavy)).toBeGreaterThan(heavy.maxWeight);
+  });
+
+  test("splitStack parte a la mitad al slot siguiente; no consume", () => {
+    const ammo8 = createInventory(8, 20, [{ id: "ammo", qty: 8 }]);
+    expect(splitStack(ammo8, 0)).toEqual({ id: "ammo", qty: 4, toIndex: 1 });
+    expect(ammo8.slots).toEqual([
+      { id: "ammo", qty: 4 },
+      { id: "ammo", qty: 4 },
+    ]);
+
+    const qty1 = createInventory(8, 20, [{ id: "ammo", qty: 1 }]);
+    expect(splitStack(qty1, 0)).toBeNull();
+    expect(qty1.slots).toEqual([{ id: "ammo", qty: 1 }]);
+
+    const full = createInventory(1, 20, [{ id: "ammo", qty: 8 }]);
+    expect(full.slots).toHaveLength(1);
+    expect(full.maxSlots).toBe(1);
+    expect(splitStack(full, 0)).toBeNull();
+    expect(full.slots).toEqual([{ id: "ammo", qty: 8 }]);
+
+    const qty3 = createInventory(8, 20, [{ id: "ammo", qty: 3 }]);
+    expect(splitStack(qty3, 0)).toEqual({ id: "ammo", qty: 1, toIndex: 1 });
+    expect(qty3.slots[0]).toEqual({ id: "ammo", qty: 2 });
+    expect(qty3.slots[1]).toEqual({ id: "ammo", qty: 1 });
   });
 
   test("transferOne mueve 1 unidad entre inventarios", () => {

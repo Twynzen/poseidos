@@ -155,6 +155,25 @@ export function insertStackAt(
   inv.slots.splice(i, 0, { id: stack.id, qty: stack.qty });
 }
 
+/**
+ * Parte el stack en `fromIndex` a la mitad y lo inserta en el slot siguiente.
+ * No mergea (no usa addItem). Falla si qty < 2 o inventario lleno.
+ */
+export function splitStack(
+  inv: Inventory,
+  fromIndex: number,
+): { id: string; qty: number; toIndex: number } | null {
+  const slot = inv.slots[fromIndex];
+  if (!slot || slot.qty < 2) return null;
+  const half = Math.floor(slot.qty / 2);
+  if (half < 1) return null;
+  if (inv.slots.length >= inv.maxSlots) return null;
+  const id = slot.id;
+  removeFromSlot(inv, fromIndex, half);
+  insertStackAt(inv, fromIndex + 1, { id, qty: half });
+  return { id, qty: half, toIndex: fromIndex + 1 };
+}
+
 /** Índice del primer stack con id, o -1. */
 export function findSlot(inv: Inventory, id: ItemId): number {
   return inv.slots.findIndex((s) => s.id === id);

@@ -36,12 +36,14 @@ import {
   fovRadiusWithFlashlight,
   torchLightIntensity,
   getItemDef,
+  splitStack,
   takeFromSlot,
   dropOnTile,
   dropQty,
   dropToastLabel,
   dropTargetTile,
   type ContainerRegistry,
+  type ItemId,
 } from "../items";
 import {
   HostileSim,
@@ -826,6 +828,7 @@ export class Game {
     const dbl = this.hotbarHud.consumeDblClick();
     const invClick = this.inventoryPanel.consumeClick();
     const invInspect = this.inventoryPanel.consumeInspect();
+    const splitIdx = this.inventoryPanel.consumeSplit();
     if (dragged) {
       if (swapHotbarStacks(this.player.inventory, dragged.from, dragged.to)) {
         this.hotbarSelected = dragged.to;
@@ -1125,6 +1128,19 @@ export class Game {
       this.lastLootMsg = label;
       this.lootToast.show(label);
       this.hudAcc = 1;
+    }
+    if (this.showInvDetail && splitIdx !== null) {
+      const split = splitStack(this.player.inventory, splitIdx);
+      if (split) {
+        const label = `partiste ${getItemDef(split.id as ItemId).name} ×${split.qty}`;
+        this.lastLootMsg = label;
+        this.lootToast.show(label);
+        this.hudAcc = 1;
+      } else {
+        this.lastLootMsg = "no se puede partir";
+        this.lootToast.show(this.lastLootMsg);
+        this.hudAcc = 1;
+      }
     }
     if (this.input.consumeUse()) {
       const outdoor = !isIndoor(this.map, this.player.x, this.player.y);
