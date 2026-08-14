@@ -1,9 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** niebla de noche un poco más fina.
+- **Última rutina:** cielo de noche un poco menos vacío.
 - **Qué quedó (esta corrida):**
-  - **Fog noche un poco menos densa; luces/lluvia iguales.** `FOG_NEAR_NIGHT` 23 / `FOG_FAR_NIGHT` 59 (era 20 / 50). Día `FOG_NEAR_DAY` 38 / `FOG_FAR_DAY` 100 igual. `fogNearFar` interpola night→day con `daylight`. `AMBIENT_INTENSITY_NIGHT` 0.24 / `SUN_INTENSITY_NIGHT` 0.16 y `RAIN_OPACITY_NIGHT_ADD` 0.30 sin cambio. Cámara / nameplates / anillos / chevron / linterna / HUD / inventario / teclas / gestos sin cambio.
+  - **Sky/fog color noche un poco más azul-gris; fog near/far y luces iguales.** `skyRgb` noche `SKY_NIGHT` 0.07/0.09/0.14 (era 0.04/0.05/0.09). Día `SKY_DAY` 0.26/0.33/0.47 igual. `FOG_NEAR_NIGHT` 23 / `FOG_FAR_NIGHT` 59 y día 38/100 iguales. `AMBIENT_INTENSITY_NIGHT` 0.24 / `SUN_INTENSITY_NIGHT` 0.16 sin cambio. Cámara / nameplates / anillos / chevron / lluvia / linterna / HUD / inventario / teclas / gestos sin cambio.
   - **Night opacity add 0.20→0.30; count/largo iguales.** `RAIN_OPACITY_NIGHT_ADD` 0.3 (era 0.2). Opacity día `0.22 + i×0.45` igual; noche `+0.30 × nightMix`. `RAIN_COUNT` 36, largo día 0.55 / noche 0.72, width 0.03, color `0xa8c4e0`, hide ≤ 0.02, active min 6 y night cut 0.22 iguales. `game.ts` sigue pasando `clock.daylight` a `syncRain`. Weather sim sin cambio. Cámara / nameplates / anillos / chevron / luces / linterna / HUD / inventario / teclas / gestos sin cambio.
   - **Nameplate loot stroke 3→4.5; font 34 / Y / fade iguales.** `makeLootNameplateSprite` `ctx.lineWidth` 4.5 (era 3, ~1.5×). `strokeStyle` `rgba(0,0,0,0.7)` y fill `#f0c060` iguales. Font `600 34px`, canvas 384×80, scale 2.6×0.65, Y 2.15, fade 6.5, empty-hide, icon 64 / pad 68 sin cambio. Cámara / anillos / pulso / badges / chevron / luces / lluvia / linterna / HUD / inventario / teclas / gestos sin cambio.
   - **Nameplate loot font 28→34px; Y/fade/iconos iguales.** `makeLootNameplateSprite` `ctx.font` `600 34px` (era 28px). Canvas 384×80 (34px no clippea el pill 48px / atlas 80), scale 2.6×0.65, Y 2.15, fade 6.5, empty-hide, mid-scale 0.55, icon 64 / pad 68 sin cambio. Cámara / anillos / pulso / badges / chevron / luces / lluvia / linterna / HUD / inventario / teclas / gestos sin cambio.

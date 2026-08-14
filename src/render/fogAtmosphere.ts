@@ -74,19 +74,23 @@ export function fogNearFar(daylight: number): FogNearFar {
 
 /**
  * Color de cielo / fog (0..1).
- * Noche oscura azul-violeta; dawn naranja/rosa; día frío claro; dusk ámbar/rojo.
+ * Noche azul-gris un poco más alta que el void 0.04/0.05/0.09 (horizonte se lee);
+ * día frío claro igual (0.26 / 0.33 / 0.47). Dawn naranja/rosa; dusk ámbar/rojo.
  */
+export const SKY_NIGHT: Rgb = { r: 0.07, g: 0.09, b: 0.14 };
+export const SKY_DAY: Rgb = { r: 0.26, g: 0.33, b: 0.47 };
+
 export function skyRgb(phase: number, daylight: number): Rgb {
   const d = clamp01(daylight);
   const p = wrap01(phase);
   const dawn = dawnWarmth(p);
   const dusk = duskWarmth(p);
 
-  // Base: noche azul-violeta → día cielo frío más claro.
+  // Base: noche azul-gris → día cielo frío más claro (día sin cambio).
   const base: Rgb = {
-    r: 0.04 + d * 0.22,
-    g: 0.05 + d * 0.28,
-    b: 0.09 + d * 0.38,
+    r: SKY_NIGHT.r + d * (SKY_DAY.r - SKY_NIGHT.r),
+    g: SKY_NIGHT.g + d * (SKY_DAY.g - SKY_NIGHT.g),
+    b: SKY_NIGHT.b + d * (SKY_DAY.b - SKY_NIGHT.b),
   };
 
   // Amanecer: naranja / rosa suave.
