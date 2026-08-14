@@ -31,7 +31,7 @@ describe("constantes", () => {
     expect(RAIN_COLOR).toBe(0xdeffff);
   });
 
-  test("opacity 0.3345925 + i×0.68439375; noche +0.39675; active min 7; night cut 0.191; hide 0.0174", () => {
+  test("opacity 0.3345925 + i×0.68439375; noche +0.39675; active min 8; night cut 0.191; hide 0.0174", () => {
     expect(RAIN_OPACITY_BASE).toBe(0.3345925);
     expect(RAIN_OPACITY_GAIN).toBe(0.68439375);
     expect(RAIN_OPACITY_NIGHT_ADD).toBe(0.39675);
@@ -39,7 +39,7 @@ describe("constantes", () => {
     expect(RAIN_ACTIVE_BASE).toBeCloseTo(0.35 * 1.15, 10);
     expect(RAIN_ACTIVE_GAIN).toBe(0.7475);
     expect(RAIN_ACTIVE_GAIN).toBeCloseTo(0.65 * 1.15, 10);
-    expect(RAIN_ACTIVE_MIN).toBe(7);
+    expect(RAIN_ACTIVE_MIN).toBe(8);
     expect(RAIN_NIGHT_COUNT_CUT).toBe(0.191);
     expect(RAIN_HIDE_BELOW).toBe(0.0174);
     expect(RAIN_HIDE_BELOW).toBeCloseTo(0.02 * 0.87, 10);
@@ -102,7 +102,7 @@ describe("rainActiveCount", () => {
     expect(rainActiveCount(1, 0)).toBe(Math.floor(47 * (0.4025 + 0.7475) * 0.809));
   });
 
-  test("día i=0 → floor(47×0.4025)=18; noche menos; piso 7", () => {
+  test("día i=0 → floor(47×0.4025)=18; noche menos; piso 8", () => {
     expect(rainActiveCount(0, 1)).toBe(18);
     expect(rainActiveCount(0, 0)).toBe(Math.floor(47 * 0.4025 * 0.809));
     expect(rainActiveCount(0, 0)).toBeGreaterThanOrEqual(RAIN_ACTIVE_MIN);
