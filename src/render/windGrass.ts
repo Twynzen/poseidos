@@ -35,6 +35,9 @@ export const WIND_SPEED_Z_MUL = 1.5755;
 /** Multiplicador Z de la fase del viento (relativo a phase). 1.7 × 1.15 para leer de noche. */
 export const WIND_PHASE_Z_MUL = 1.955;
 
+/** Paso de seed de viento entre hojas vecinas. 0.17 × 1.15 para desincronizar de noche. */
+export const BLADE_WIND_SEED_STEP = 0.1955;
+
 /** Escala Y base de la hoja. 0.75 × 1.15 para leer de noche. */
 export const BLADE_SY_BASE = 0.8625;
 
@@ -173,7 +176,7 @@ export function bladePoseAt(
   time: number,
 ): BladePose {
   const base = bladeBasePose(tx, ty, bladeIndex, seed);
-  const wind = bladeWind(time, seed + bladeIndex * 0.17);
+  const wind = bladeWind(time, seed + bladeIndex * BLADE_WIND_SEED_STEP);
   return {
     x: base.x + wind.dx,
     y: base.y,
