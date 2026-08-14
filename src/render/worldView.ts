@@ -1874,13 +1874,6 @@ function attachRoleMarkers(
   shared: MarkerSharedResources,
 ): void {
   const pal = paletteFor(role);
-  const ringMat = new THREE.MeshBasicMaterial({
-    color: pal.ring,
-    transparent: true,
-    opacity: markerRingOpacity(role),
-    side: THREE.DoubleSide,
-    depthWrite: false,
-  });
   const badgeMat = new THREE.MeshStandardMaterial({
     color: pal.badge,
     emissive: pal.emissive,
@@ -1905,13 +1898,24 @@ function attachRoleMarkers(
     side: THREE.DoubleSide,
     depthWrite: false,
   });
-  shared.mats.push(ringMat, badgeMat, iconMat);
+  shared.mats.push(badgeMat, iconMat);
 
-  const ring = new THREE.Mesh(shared.ringGeo, ringMat);
-  ring.name = "groundRing";
-  ring.rotation.x = -Math.PI / 2;
-  ring.position.y = 0.04;
-  root.add(ring);
+  // Player: sin aro de suelo (queda el chevron). Otros roles sí llevan groundRing.
+  if (role !== "player") {
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: pal.ring,
+      transparent: true,
+      opacity: markerRingOpacity(role),
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    });
+    shared.mats.push(ringMat);
+    const ring = new THREE.Mesh(shared.ringGeo, ringMat);
+    ring.name = "groundRing";
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.y = 0.04;
+    root.add(ring);
+  }
 
   const badge = new THREE.Group();
   badge.name = "floatBadge";
