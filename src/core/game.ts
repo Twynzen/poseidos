@@ -1115,7 +1115,6 @@ export class Game {
           const lootLabel = lootFloaterLabel(
             `+${getItemDef(taken.id).name}`,
           );
-          this.view.spawnLootFloater(lootLabel, this.player.x, this.player.y);
           this.lootToast.show(lootLabel, taken.id);
           this.lastLootMsg = lootLabel;
           this.hudAcc = 1; // forzar refresh
@@ -1135,7 +1134,6 @@ export class Game {
           `+${getItemDef(taken.id).name}`,
           taken.qty,
         );
-        this.view.spawnLootFloater(lootLabel, this.player.x, this.player.y);
         this.lootToast.show(lootLabel, taken.id);
         this.lastLootMsg = lootLabel;
         this.hudAcc = 1;
