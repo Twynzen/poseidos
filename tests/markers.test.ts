@@ -113,24 +113,25 @@ describe("markers (badges + ground rings)", () => {
     }
   });
 
-  test("loot/door/bed usan aro interact 0.55–0.78; player no", () => {
+  test("loot/door/bed usan aro interact 0.55–0.897; player no", () => {
     expect(INTERACT_RING_INNER).toBeCloseTo(0.55, 5);
-    expect(INTERACT_RING_OUTER).toBeCloseTo(0.78, 5);
+    expect(INTERACT_RING_OUTER).toBe(0.897);
+    expect(INTERACT_RING_OUTER).toBeCloseTo(0.78 * 1.15, 5);
     for (const role of ["loot", "door", "bed"] as const) {
       expect(markerUsesInteractRing(role)).toBe(true);
       const r = markerRingRadii(role);
       expect(r.inner).toBeCloseTo(0.55, 5);
-      expect(r.outer).toBeCloseTo(0.78, 5);
+      expect(r.outer).toBeCloseTo(0.897, 5);
     }
     expect(markerUsesInteractRing("player")).toBe(false);
     expect(markerRingOpacity("player")).toBe(0);
   });
 
-  test("mute/possessed usan aro threat 0.50–0.68; interact sigue 0.55–0.78", () => {
+  test("mute/possessed usan aro threat 0.50–0.68; interact sigue 0.55–0.897", () => {
     expect(THREAT_RING_INNER).toBeCloseTo(0.50, 5);
     expect(THREAT_RING_OUTER).toBeCloseTo(0.68, 5);
     expect(INTERACT_RING_INNER).toBeCloseTo(0.55, 5);
-    expect(INTERACT_RING_OUTER).toBeCloseTo(0.78, 5);
+    expect(INTERACT_RING_OUTER).toBeCloseTo(0.897, 5);
     for (const role of ["mute", "possessed"] as const) {
       expect(markerUsesInteractRing(role)).toBe(false);
       const r = markerRingRadii(role);
@@ -145,7 +146,7 @@ describe("markers (badges + ground rings)", () => {
     expect(THREAT_RING_OUTER).toBeCloseTo(0.68, 5);
     expect(MARKER_RING_OPACITY).toBeCloseTo(0.598, 5);
     expect(INTERACT_RING_INNER).toBeCloseTo(0.55, 5);
-    expect(INTERACT_RING_OUTER).toBeCloseTo(0.78, 5);
+    expect(INTERACT_RING_OUTER).toBeCloseTo(0.897, 5);
     const src = readFileSync(resolve(process.cwd(), "src/render/worldView.ts"), "utf8");
     expect(src).not.toMatch(/threatFocus/i);
     expect(src).not.toMatch(/THREAT_FOCUS_PULSE|THREAT_RING_PULSE/);
