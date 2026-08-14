@@ -11,7 +11,7 @@ export const RAIN_COUNT = 41;
 export const RAIN_STREAK_WIDTH = 0.0375;
 
 /** Largo Y de día (tiles). Geo base. */
-export const RAIN_STREAK_LENGTH_DAY = 0.55;
+export const RAIN_STREAK_LENGTH_DAY = 0.6325;
 
 /** Largo Y de noche (tiles). worldView aplica scaleY. */
 export const RAIN_STREAK_LENGTH_NIGHT = 0.828;
@@ -60,7 +60,7 @@ export function rainStreakLength(daylight: number): number {
   );
 }
 
-/** scaleY sobre geo de largo día. Día = 1; noche d=0 → 0.828/0.55. */
+/** scaleY sobre geo de largo día. Día = 1; noche d=0 → 0.828/0.6325. */
 export function rainStreakScaleY(daylight: number): number {
   return rainStreakLength(daylight) / RAIN_STREAK_LENGTH_DAY;
 }
