@@ -26,8 +26,8 @@ export interface LocoBobOutput {
   phase: number;
 }
 
-/** Idle: casi quieto — respiración suave. */
-export const IDLE_FREQ_HZ = 0.35;
+/** Idle: casi quieto — respiración suave. 0.35 × 1.15 para leer de noche. */
+export const IDLE_FREQ_HZ = 0.4025;
 /** Bob vertical idle. 0.0138 × 1.15 para leer de noche. */
 export const IDLE_BOB_AMP = 0.01587;
 export const IDLE_LEAN_AMP = 0;

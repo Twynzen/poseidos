@@ -42,7 +42,7 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(WALK_BOB_AMP).toBeCloseTo(0.06325 * 1.15, 10);
     expect(SPRINT_BOB_AMP).toBe(0.119025);
     expect(SPRINT_BOB_AMP).toBeCloseTo(0.1035 * 1.15, 10);
-    expect(IDLE_FREQ_HZ).toBe(0.35);
+    expect(IDLE_FREQ_HZ).toBe(0.4025);
     expect(WALK_FREQ_HZ).toBe(1.7825);
     expect(SPRINT_FREQ_HZ).toBe(2.7025);
   });
@@ -55,7 +55,7 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(IDLE_BOB_AMP).toBe(0.01587);
     expect(WALK_BOB_AMP).toBe(0.0727375);
     expect(SPRINT_BOB_AMP).toBe(0.119025);
-    expect(IDLE_FREQ_HZ).toBe(0.35);
+    expect(IDLE_FREQ_HZ).toBe(0.4025);
     expect(WALK_FREQ_HZ).toBe(1.7825);
     expect(SPRINT_FREQ_HZ).toBe(2.7025);
   });
@@ -69,7 +69,7 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(WALK_SWAY_AMP).toBe(0.0462875);
     expect(IDLE_BOB_AMP).toBe(0.01587);
     expect(WALK_BOB_AMP).toBe(0.0727375);
-    expect(IDLE_FREQ_HZ).toBe(0.35);
+    expect(IDLE_FREQ_HZ).toBe(0.4025);
     expect(WALK_FREQ_HZ).toBe(1.7825);
     expect(SPRINT_FREQ_HZ).toBe(2.7025);
   });
@@ -83,7 +83,7 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(WALK_SWAY_AMP).toBe(0.0462875);
     expect(IDLE_BOB_AMP).toBe(0.01587);
     expect(WALK_BOB_AMP).toBe(0.0727375);
-    expect(IDLE_FREQ_HZ).toBe(0.35);
+    expect(IDLE_FREQ_HZ).toBe(0.4025);
     expect(WALK_FREQ_HZ).toBe(1.7825);
     expect(SPRINT_FREQ_HZ).toBe(2.7025);
   });
@@ -101,7 +101,7 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(WALK_SWAY_AMP).toBe(0.0462875);
     expect(IDLE_LEAN_AMP).toBe(0);
     expect(IDLE_SWAY_AMP).toBe(0.01058);
-    expect(IDLE_FREQ_HZ).toBe(0.35);
+    expect(IDLE_FREQ_HZ).toBe(0.4025);
     expect(WALK_FREQ_HZ).toBe(1.7825);
   });
 
@@ -118,7 +118,24 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(SPRINT_SWAY_AMP).toBe(0.066125);
     expect(IDLE_LEAN_AMP).toBe(0);
     expect(IDLE_SWAY_AMP).toBe(0.01058);
-    expect(IDLE_FREQ_HZ).toBe(0.35);
+    expect(IDLE_FREQ_HZ).toBe(0.4025);
+    expect(SPRINT_FREQ_HZ).toBe(2.7025);
+  });
+
+  test("idle freq 0.35 × 1.15; amp/walk/sprint iguales", () => {
+    expect(IDLE_FREQ_HZ).toBe(0.4025);
+    expect(IDLE_FREQ_HZ).toBeCloseTo(0.35 * 1.15, 10);
+    expect(locoFreqHz({ moving: false, sprinting: false })).toBe(IDLE_FREQ_HZ);
+    expect(IDLE_BOB_AMP).toBe(0.01587);
+    expect(IDLE_LEAN_AMP).toBe(0);
+    expect(IDLE_SWAY_AMP).toBe(0.01058);
+    expect(WALK_BOB_AMP).toBe(0.0727375);
+    expect(WALK_LEAN_AMP).toBe(0.0529);
+    expect(WALK_SWAY_AMP).toBe(0.0462875);
+    expect(SPRINT_BOB_AMP).toBe(0.119025);
+    expect(SPRINT_LEAN_AMP).toBe(0.092575);
+    expect(SPRINT_SWAY_AMP).toBe(0.066125);
+    expect(WALK_FREQ_HZ).toBe(1.7825);
     expect(SPRINT_FREQ_HZ).toBe(2.7025);
   });
 
@@ -133,7 +150,7 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(WALK_SWAY_AMP).toBe(0.0462875);
     expect(SPRINT_LEAN_AMP).toBe(0.092575);
     expect(SPRINT_SWAY_AMP).toBe(0.066125);
-    expect(IDLE_FREQ_HZ).toBe(0.35);
+    expect(IDLE_FREQ_HZ).toBe(0.4025);
     expect(WALK_FREQ_HZ).toBe(1.7825);
     expect(SPRINT_FREQ_HZ).toBe(2.7025);
   });
@@ -149,7 +166,7 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(IDLE_SWAY_AMP).toBe(0.01058);
     expect(SPRINT_LEAN_AMP).toBe(0.092575);
     expect(SPRINT_SWAY_AMP).toBe(0.066125);
-    expect(IDLE_FREQ_HZ).toBe(0.35);
+    expect(IDLE_FREQ_HZ).toBe(0.4025);
     expect(WALK_FREQ_HZ).toBe(1.7825);
     expect(SPRINT_FREQ_HZ).toBe(2.7025);
   });
@@ -165,7 +182,7 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(IDLE_SWAY_AMP).toBe(0.01058);
     expect(SPRINT_LEAN_AMP).toBe(0.092575);
     expect(SPRINT_SWAY_AMP).toBe(0.066125);
-    expect(IDLE_FREQ_HZ).toBe(0.35);
+    expect(IDLE_FREQ_HZ).toBe(0.4025);
     expect(WALK_FREQ_HZ).toBe(1.7825);
     expect(SPRINT_FREQ_HZ).toBe(2.7025);
   });
@@ -181,7 +198,7 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(IDLE_SWAY_AMP).toBe(0.01058);
     expect(SPRINT_LEAN_AMP).toBe(0.092575);
     expect(SPRINT_SWAY_AMP).toBe(0.066125);
-    expect(IDLE_FREQ_HZ).toBe(0.35);
+    expect(IDLE_FREQ_HZ).toBe(0.4025);
     expect(WALK_FREQ_HZ).toBe(1.7825);
     expect(SPRINT_FREQ_HZ).toBe(2.7025);
   });
@@ -197,7 +214,7 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(WALK_SWAY_AMP).toBe(0.0462875);
     expect(IDLE_LEAN_AMP).toBe(0);
     expect(IDLE_SWAY_AMP).toBe(0.01058);
-    expect(IDLE_FREQ_HZ).toBe(0.35);
+    expect(IDLE_FREQ_HZ).toBe(0.4025);
     expect(WALK_FREQ_HZ).toBe(1.7825);
     expect(SPRINT_FREQ_HZ).toBe(2.7025);
   });
