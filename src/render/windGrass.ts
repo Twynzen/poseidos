@@ -29,6 +29,9 @@ export const WIND_YAW = 0.3703;
 /** Velocidad del viento (rad/s en el argumento de sin). 2.76 × 1.15 para leer de noche. */
 export const WIND_SPEED = 3.174;
 
+/** Multiplicador Z de la velocidad del viento (relativo a WIND_SPEED). 1.37 × 1.15 para leer de noche. */
+export const WIND_SPEED_Z_MUL = 1.5755;
+
 export interface GrassTile {
   tx: number;
   ty: number;
@@ -133,7 +136,7 @@ export function bladeWind(
 ): { dx: number; dz: number; dyaw: number } {
   const phase = seed * Math.PI * 2;
   const w = Math.sin(time * WIND_SPEED + phase);
-  const w2 = Math.sin(time * (WIND_SPEED * 1.37) + phase * 1.7);
+  const w2 = Math.sin(time * (WIND_SPEED * WIND_SPEED_Z_MUL) + phase * 1.7);
   return {
     dx: w * WIND_SWAY,
     dz: w2 * WIND_SWAY * WIND_SWAY_Z_MUL,
