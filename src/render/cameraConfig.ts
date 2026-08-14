@@ -1,10 +1,10 @@
 /**
  * Cámara ortográfica isométrica compartida (creación + resize).
  * Frustum half-extent: ~8–12 tiles de radio útil sin claustrofobia.
- * Antes 16 (personaje ~15px); 10 ≈ 1.6× zoom in.
+ * Legacy 16 (personaje ~15px); 8 es más cerca que 10 (≈2× vs 1.6× zoom in).
  * Zoom runtime: +/- ajusta frustum en pasos de 1 (min 6 / max 16).
  */
-export const ISO_FRUSTUM = 10;
+export const ISO_FRUSTUM = 8;
 export const ISO_FRUSTUM_MIN = 6;
 export const ISO_FRUSTUM_MAX = 16;
 export const ISO_FRUSTUM_STEP = 1;
