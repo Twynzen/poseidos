@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** nameplate de loot un poco más alto.
+- **Última rutina:** aros de amenaza un poco más grandes.
 - **Qué quedó (esta corrida):**
+  - **threat ring 0.42/0.58 → 0.50/0.68; interact 0.55/0.78 igual.** `THREAT_RING_INNER/OUTER` 0.50 / 0.68 (mute/possessed). `INTERACT_RING_INNER/OUTER` siguen 0.55 / 0.78 (loot/door/bed). `markerUsesInteractRing` / `markerRingRadii` iguales (threat path sigue `THREAT_*`). worldView `ringGeo` vs `interactRingGeo`. Player foot ring opacity 0; loot badge 0; nameplate Y 2.15; door/bed/mute/possessed badge Y 2.0. Cámara / escala / luces / lluvia / linterna / E/Z / colores / pulso / teclas / gestos sin cambio.
   - **LOOT_NAMEPLATE_Y 1.85→2.15; badge loot sigue oculto; anillo igual.** `makeLootNameplateSprite` sigue `sprite.position.set(0, LOOT_NAMEPLATE_Y, 0)`. Fade 6.5, empty-hide, mid-scale 0.55 e iconos sin cambio. `LOOT_BADGE_OPACITY` 0; player badge sigue 0. Door/bed/mute/possessed siguen 1 (Y 2.0). Letter/disc size, cámara, escala, aros, luces, lluvia, linterna, teclas y gestos sin cambio.
   - **LOOT_BADGE_OPACITY 0; anillo y nameplate iguales; player badge sigue oculto.** `markerBadgeOpacity("loot")` 0; player sigue 0. Door/bed/mute/possessed siguen 1 (Y 2.0). `attachRoleMarkers` no crea `floatBadge` si opacity ≤ 0 (el aro loot sí). Nameplate Y 1.85. Letter/disc size, cámara, escala, aros, luces, lluvia, linterna, teclas y gestos sin cambio.
   - **mute/possessed badge Y 1.68→2.0; door/bed igual 2.0; loot badge 1.12; player hidden.** `muteBadgeY` / `possessedBadgeY` 2.0. `attachRoleMarkers` usa esos knobs solo para mute/possessed. Badge letter/disc size sin cambio. Cámara / escala / aros / luces / lluvia / linterna / teclas / gestos sin cambio.
