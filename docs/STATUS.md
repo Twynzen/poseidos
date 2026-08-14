@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** pulso del anillo de loot un poco más fuerte
-- **Siguiente:** leftover visual polish chico — bump `BED_FOCUS_PULSE_AMP` (currently 0.0575) ×1.15 so the bed ring pulse reads a bit stronger at night. Do not change bed scales/reach/speed, loot/door pulse, looks, sky/fog/sun/ambient, or controls. No new widgets.
+- **Última rutina:** pulso del anillo de cama un poco más fuerte
+- **Siguiente:** leftover visual polish chico — bump `DOOR_FOCUS_PULSE_AMP` (currently 0.0575) ×1.15 so the door ring pulse reads a bit stronger at night. Do not change door scales/reach/speed, loot/bed pulse, looks, sky/fog/sun/ambient, or controls. No new widgets.
 - **Qué quedó (esta corrida):**
+  - **BED_FOCUS_PULSE_AMP 0.0575→0.066125; reach/scale/speed/loot/door/looks/sky/fog/sol/teclas iguales.**
   - **LOOT_FOCUS_PULSE_AMP 0.0575→0.066125; reach/scale/speed/bed/door/looks/sky/fog/sol/teclas iguales.**
   - **doorBadgeY 2.3→2.645; reach/scale/pulse/bed/loot/looks/sky/fog/sol/teclas iguales.**
   - **bedBadgeY 2.3→2.645; reach/scale/pulse/door/loot/looks/sky/fog/sol/teclas iguales.**
