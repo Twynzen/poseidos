@@ -10,8 +10,8 @@ export const FACING_CHEVRON_DIST = 1.587;
 /** Largo del triángulo de suelo (tiles). 0.92575 × 1.15 para leer facing de noche. */
 export const FACING_CHEVRON_LEN = 1.0646125;
 
-/** Semi-ancho del triángulo de suelo (tiles). 0.322 × 1.15 para leer facing de noche. */
-export const FACING_CHEVRON_HW = 0.3703;
+/** Semi-ancho del triángulo de suelo (tiles). 0.3703 × 1.15 para leer facing de noche. */
+export const FACING_CHEVRON_HW = 0.425845;
 
 /**
  * Knob de calibración (rad). Default 0 — yaw 0 ya apunta +Z.
