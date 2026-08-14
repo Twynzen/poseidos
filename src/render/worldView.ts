@@ -1,5 +1,10 @@
 import * as THREE from "three";
-import { markerRingOpacity, paletteFor, type MarkerRole } from "./markers";
+import {
+  markerBadgeOpacity,
+  markerRingOpacity,
+  paletteFor,
+  type MarkerRole,
+} from "./markers";
 import {
   FACING_CHEVRON_COLOR,
   FACING_CHEVRON_OPACITY,
@@ -1879,6 +1884,8 @@ function attachRoleMarkers(
     roughness: 0.45,
     metalness: 0.1,
     side: THREE.DoubleSide,
+    transparent: role === "player",
+    opacity: markerBadgeOpacity(role),
   });
   const letterMap =
     role === "door"
