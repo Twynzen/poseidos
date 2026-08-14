@@ -4,8 +4,8 @@
  * No re-aplica PLAYER_GLTF_YAW_OFFSET: el yaw ya lo incluye (atan2 + offset).
  */
 
-/** Distancia del chevron al origen del player (tiles). */
-export const FACING_CHEVRON_DIST = 1.2;
+/** Distancia del chevron al origen del player (tiles). 1.2 × 1.15 para no quedar bajo el Soldier. */
+export const FACING_CHEVRON_DIST = 1.38;
 
 /** Largo del triángulo de suelo (tiles). 0.70 × 1.15 para Soldier 1.5. */
 export const FACING_CHEVRON_LEN = 0.805;

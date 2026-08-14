@@ -10,8 +10,9 @@ import {
 } from "../src/render/facingChevron";
 
 describe("constantes", () => {
-  test("dist/size nudged para Soldier 1.5; yaw offset 0 (no double-apply)", () => {
-    expect(FACING_CHEVRON_DIST).toBe(1.2);
+  test("dist 1.38 (1.2 × 1.15); size/yaw sin cambio (no double-apply)", () => {
+    expect(FACING_CHEVRON_DIST).toBe(1.38);
+    expect(FACING_CHEVRON_DIST).toBeCloseTo(1.2 * 1.15, 5);
     expect(FACING_CHEVRON_LEN).toBeCloseTo(0.805, 5);
     expect(FACING_CHEVRON_LEN).toBeCloseTo(0.7 * 1.15, 5);
     expect(FACING_CHEVRON_HW).toBeCloseTo(0.322, 5);
