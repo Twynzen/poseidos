@@ -62,6 +62,58 @@ describe("tintFromTile", () => {
     expect(g).toBeGreaterThan(b);
     expect(OUTDOOR_GRASS_BASE).toBeGreaterThan(0);
   });
+
+  test("first outdoor swatch from OUTDOOR_GRASS_BASE 0x3d4f35 × 1.15", () => {
+    expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
+    const r0 = (OUTDOOR_GRASS_BASE >> 16) & 0xff;
+    const g0 = (OUTDOOR_GRASS_BASE >> 8) & 0xff;
+    const b0 = OUTDOOR_GRASS_BASE & 0xff;
+    expect(r0).toBe(0x46);
+    expect(g0).toBe(0x5b);
+    expect(b0).toBe(0x3d);
+    expect(Math.round(0x3d * 1.15)).toBe(r0);
+    expect(Math.round(0x4f * 1.15)).toBe(g0);
+    expect(Math.round(0x35 * 1.15)).toBe(b0);
+
+    let found = false;
+    for (let y = 0; y < 32 && !found; y++) {
+      for (let x = 0; x < 32 && !found; x++) {
+        const t = tileSeed01(x, y);
+        if (Math.floor(t * 8) !== 0) continue;
+        const j = tileSeed01(y, x);
+        const dr = Math.floor((j - 0.5) * 12);
+        const dg = Math.floor((t - 0.5) * 10);
+        const db = Math.floor((j * t - 0.25) * 8);
+        const clamp = (n: number) => Math.max(0, Math.min(255, n | 0));
+        const expected =
+          (clamp(r0 + dr) << 16) | (clamp(g0 + dg) << 8) | clamp(b0 + db);
+        expect(tintFromTile(x, y, true)).toBe(expected);
+        found = true;
+      }
+    }
+    expect(found).toBe(true);
+
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/floorStyle.ts"),
+      "utf8",
+    );
+    expect(src).toContain("(OUTDOOR_GRASS_BASE >> 16) & 0xff");
+    expect(src).toContain("(OUTDOOR_GRASS_BASE >> 8) & 0xff");
+    expect(src).toContain("OUTDOOR_GRASS_BASE & 0xff");
+    expect(src).toContain("[0x45, 0x58, 0x38]");
+    expect(src).toContain("[0x34, 0x42, 0x2e]");
+    expect(src).toContain("[0x4a, 0x52, 0x3a]");
+    expect(src).toContain("[0x3e, 0x4a, 0x36]");
+    expect(src).toContain("[0x52, 0x5a, 0x40]");
+    expect(src).toContain("[0x2e, 0x3c, 0x2a]");
+    expect(src).toContain("[0x48, 0x5e, 0x3c]");
+    expect(src).not.toContain("[0x3a, 0x4e, 0x32]");
+    expect(INDOOR_FLOOR_COLOR).toBe(0x2a2e38);
+    expect(WALL_COLOR).toBe(0x5a5348);
+    expect(WALL_BASE_COLOR).toBe(0x1a1c22);
+    expect(GROUND_NIGHT_LIFT).toBe(1.6675);
+    expect(AO_MAX_DARKEN).toBe(0.261);
+  });
 });
 
 describe("aoFactor + applyAo", () => {
@@ -71,7 +123,7 @@ describe("aoFactor + applyAo", () => {
     expect(GROUND_NIGHT_LIFT).toBe(1.6675);
     expect(GROUND_NIGHT_LIFT).toBeCloseTo(1.45 * 1.15, 10);
     expect(INDOOR_FLOOR_COLOR).toBe(0x2a2e38);
-    expect(OUTDOOR_GRASS_BASE).toBe(0x3d4f35);
+    expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
     expect(WALL_COLOR).toBe(0x5a5348);
     expect(WALL_BASE_COLOR).toBe(0x1a1c22);
     expect(applyAo(0xffffff, 0)).toBe(0xffffff);
@@ -161,7 +213,7 @@ describe("night ground albedo lift", () => {
     const day = applyNightGroundLift(OUTDOOR_GRASS_BASE, 1);
     const night = applyNightGroundLift(OUTDOOR_GRASS_BASE, 0);
     expect(day).toBe(OUTDOOR_GRASS_BASE);
-    expect(night).toBe(0x668458);
+    expect(night).toBe(0x759866);
     const nr = (night >> 16) & 0xff;
     const ng = (night >> 8) & 0xff;
     const nb = night & 0xff;
@@ -185,7 +237,7 @@ describe("night leftover indoor floor albedo lift", () => {
   test("indoor ya comparte floorMatByColor + lift 1.6675; day = identity", () => {
     expect(GROUND_NIGHT_LIFT).toBe(1.6675);
     expect(INDOOR_FLOOR_COLOR).toBe(0x2a2e38);
-    expect(OUTDOOR_GRASS_BASE).toBe(0x3d4f35);
+    expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
     expect(tintFromTile(0, 0, false)).toBe(INDOOR_FLOOR_COLOR);
     expect(floorColorAt(1, 1, false, 0, 0)).toBe(INDOOR_FLOOR_COLOR);
     expect(applyNightGroundLift(INDOOR_FLOOR_COLOR, 1)).toBe(INDOOR_FLOOR_COLOR);
