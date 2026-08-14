@@ -12,6 +12,7 @@ import {
   FLASHLIGHT_SPOT_COLOR,
   FLASHLIGHT_SPOT_PENUMBRA,
   FLASHLIGHT_WEDGE_COLOR,
+  FLASHLIGHT_WEDGE_FAR_R,
   FLASHLIGHT_WEDGE_OPACITY_BASE,
   FLASHLIGHT_WEDGE_OPACITY_GAIN,
   flashlightConeAngle,
@@ -33,6 +34,22 @@ describe("constantes", () => {
     expect(FLASHLIGHT_CONE_Y).toBe(0.12167);
     expect(FLASHLIGHT_CONE_Y).toBeCloseTo(0.1058 * 1.15, 10);
     expect(FLASHLIGHT_CONE_YAW_OFFSET).toBe(0);
+  });
+
+  test("far R 0.184 (0.16 × 1.15); G/B/apex/eps/length/half-width/Y/penumbra/intensity/colors/opacity sin cambio", () => {
+    expect(FLASHLIGHT_WEDGE_FAR_R).toBe(0.184);
+    expect(FLASHLIGHT_WEDGE_FAR_R).toBeCloseTo(0.16 * 1.15, 10);
+    expect(FLASHLIGHT_CONE_VISIBLE_EPS).toBe(0.0174);
+    expect(FLASHLIGHT_CONE_LENGTH).toBe(6.387675);
+    expect(FLASHLIGHT_CONE_HALF_WIDTH).toBe(1.3687875);
+    expect(FLASHLIGHT_CONE_Y).toBe(0.12167);
+    expect(FLASHLIGHT_SPOT_PENUMBRA).toBe(0.2645);
+    expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(3.6501);
+    expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.83648125);
+    expect(FLASHLIGHT_WEDGE_COLOR).toBe(0xefffff);
+    expect(FLASHLIGHT_SPOT_COLOR).toBe(0xf8ffff);
+    expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.727375);
+    expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.3345925);
   });
 
   test("visible eps 0.0174 (0.02 × 0.87); length/half-width/Y/penumbra/intensity/colors/opacity sin cambio", () => {
@@ -285,7 +302,7 @@ describe("flashlightConeVisible / flashlightWedgeOpacity", () => {
 });
 
 describe("flashlightWedgeVertexColors", () => {
-  test("ápice más brillante que el extremo lejano (tip → far fade)", () => {
+  test("ápice más brillante que el extremo lejano (tip → far fade); far R 0.184", () => {
     const c = flashlightWedgeVertexColors();
     expect(c.length).toBe(9);
     const tip = c[0]! + c[1]! + c[2]!;
@@ -296,5 +313,13 @@ describe("flashlightWedgeVertexColors", () => {
     expect(c[0]).toBe(1);
     expect(c[1]).toBe(1);
     expect(c[2]).toBe(1);
+    expect(c[3]).toBeCloseTo(0.184, 5);
+    expect(c[3]).toBeCloseTo(FLASHLIGHT_WEDGE_FAR_R, 5);
+    expect(c[4]).toBeCloseTo(0.22, 5);
+    expect(c[5]).toBeCloseTo(0.3, 5);
+    expect(c[6]).toBeCloseTo(0.184, 5);
+    expect(c[6]).toBeCloseTo(FLASHLIGHT_WEDGE_FAR_R, 5);
+    expect(c[7]).toBeCloseTo(0.22, 5);
+    expect(c[8]).toBeCloseTo(0.3, 5);
   });
 });
