@@ -7,7 +7,7 @@
 export const LOOT_NAMEPLATE_MAX_CHARS = 20;
 
 /** Distancia a la que el nameplate llega a opacity 0. */
-export const LOOT_NAMEPLATE_FADE_DIST = 6.5;
+export const LOOT_NAMEPLATE_FADE_DIST = 5.5;
 
 /** Altura local Y del sprite sobre el grupo loot. */
 export const LOOT_NAMEPLATE_Y = 2.15;
@@ -22,7 +22,7 @@ export const LOOT_NAMEPLATE_ICON_PAD = 68;
 export const LOOT_NAMEPLATE_ICON_SIZE = 64;
 
 /**
- * 1 en dist ≤ 2 · lerp 1 → 0.55 de 2 a fade 6.5 · 0.55 más allá.
+ * 1 en dist ≤ 2 · lerp 1 → 0.55 de 2 a fade 5.5 · 0.55 más allá.
  * Omitido / no finito → 1.
  */
 export function lootNameplateScale(dist?: number): number {
@@ -45,7 +45,7 @@ export function truncateLootLabel(label: string): string {
 }
 
 /**
- * 1 en dist ≤ 2 · lerp 1 → 0 de 2 a fade 6.5 · 0 en fade y más allá.
+ * 1 en dist ≤ 2 · lerp 1 → 0 de 2 a fade 5.5 · 0 en fade y más allá.
  * Fuera / no finito → 0. Dist negativa se clampa a 0.
  */
 export function lootNameplateOpacity(dist: number): number {
@@ -58,7 +58,7 @@ export function lootNameplateOpacity(dist: number): number {
 
 /**
  * Visible si opacity > 0 y el contenedor no está vacío.
- * empty / dist >= 6.5 / no finito → false.
+ * empty / dist >= 5.5 / no finito → false.
  * Firma igual que `lootRingVisible(empty, dist)`.
  */
 export function lootNameplateVisible(empty: boolean, dist: number): boolean {
