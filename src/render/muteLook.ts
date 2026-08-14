@@ -30,8 +30,8 @@ export const MUTE_ACCENT_EMISSIVE = 0x1a2218;
 export const MUTE_CRUSHED_BODY = 0x4a5648;
 /** Roughness alto = look mate / usado. 0.7656 × 0.87 para leer el cuerpo de noche. */
 export const MUTE_BODY_ROUGHNESS = 0.666072;
-/** Roughness acento visor. 0.5 × 0.87 para leer el visor de noche. */
-export const MUTE_ACCENT_ROUGHNESS = 0.435;
+/** Roughness acento visor. 0.435 × 0.87 para leer el visor de noche. */
+export const MUTE_ACCENT_ROUGHNESS = 0.37845;
 /** Intensidad del cuerpo. 1 × 1.15 para leer la silueta de noche. */
 export const MUTE_BODY_EMISSIVE_INTENSITY = 1.15;
 /** Intensidad del acento. 0.4025 × 1.15 para leer el visor de noche. */
