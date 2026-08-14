@@ -14,8 +14,8 @@ import { Color, MeshStandardMaterial } from "three";
 export const POSSESSED_BODY_COLOR = 0x3a2838;
 /** Multiply sobre color existente cuando hay map (mantiene variación). */
 export const POSSESSED_MAP_TINT = 0x8a6a82;
-/** Emisión cuerpo muy baja: silueta violeta-oscura, sin glow. */
-export const POSSESSED_BODY_EMISSIVE = 0x1a1018;
+/** Emisión cuerpo baja: silueta violeta-oscura de noche, sin glow. */
+export const POSSESSED_BODY_EMISSIVE = 0x21141e;
 /** Acento head/visor: rojo-violeta. */
 export const POSSESSED_ACCENT = 0x8a2a55;
 /** Alias del acento (mismo valor). */

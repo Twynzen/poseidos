@@ -36,7 +36,7 @@ describe("possessedLook constants", () => {
   test("split knobs: fill levantado, map tint, crushed lock, emisivos", () => {
     expect(POSSESSED_BODY_COLOR).toBe(0x3a2838);
     expect(POSSESSED_MAP_TINT).toBe(0x8a6a82);
-    expect(POSSESSED_BODY_EMISSIVE).toBe(0x1a1018);
+    expect(POSSESSED_BODY_EMISSIVE).toBe(0x21141e);
     expect(POSSESSED_ACCENT).toBe(0x8a2a55);
     expect(POSSESSED_ACCENT_COLOR).toBe(POSSESSED_ACCENT);
     expect(POSSESSED_ACCENT_EMISSIVE).toBe(0x4a1028);
