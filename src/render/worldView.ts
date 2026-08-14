@@ -44,6 +44,7 @@ import {
   type TracerPoint,
 } from "./tracers";
 import {
+  NOISE_RING_INNER,
   createNoiseRing,
   ringColorHex,
   ringOpacity,
@@ -999,8 +1000,8 @@ export function createWorldView(
   // Noise rings: pool pequeño de anillos en el suelo (feedback de ruido).
   const NOISE_RING_POOL = 8;
   const NOISE_RING_Y = 0.05;
-  // RingGeometry unitario (outer≈1); scale = radius * ringScale.
-  const noiseRingGeo = new THREE.RingGeometry(0.82, 1, 48);
+  // RingGeometry unitario (outer=1); scale = radius * ringScale.
+  const noiseRingGeo = new THREE.RingGeometry(NOISE_RING_INNER, 1, 48);
   noiseRingGeo.rotateX(-Math.PI / 2); // plano XZ
   interface PooledNoiseRing {
     mesh: THREE.Mesh;

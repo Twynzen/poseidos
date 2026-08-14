@@ -1,6 +1,10 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   DEFAULT_NOISE_RING_LIFE,
+  NOISE_RING_INNER,
+  NOISE_RING_WIDTH,
   RUN_NOISE_RING_MIN_AGE,
   createNoiseRing,
   ringColorHex,
@@ -12,6 +16,28 @@ import {
   shouldSpawnNoiseRing,
   tickNoiseRing,
 } from "../src/render/noiseRings";
+
+describe("constantes", () => {
+  test("vida 0.85 / run cooldown 0.4", () => {
+    expect(DEFAULT_NOISE_RING_LIFE).toBe(0.85);
+    expect(RUN_NOISE_RING_MIN_AGE).toBe(0.4);
+  });
+
+  test("grosor 0.18 × 1.25; worldView usa el knob (no magic 0.82)", () => {
+    expect(NOISE_RING_WIDTH).toBe(0.225);
+    expect(NOISE_RING_WIDTH).toBeCloseTo(0.18 * 1.25, 10);
+    expect(NOISE_RING_INNER).toBe(0.775);
+    expect(NOISE_RING_INNER).toBeCloseTo(1 - NOISE_RING_WIDTH, 10);
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain(
+      "new THREE.RingGeometry(NOISE_RING_INNER, 1, 48)",
+    );
+    expect(viewSrc).not.toMatch(/RingGeometry\(0\.82\b/);
+  });
+});
 
 describe("noiseRings (headless)", () => {
   test("createNoiseRing defaults", () => {
