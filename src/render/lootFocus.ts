@@ -17,8 +17,8 @@ export const LOOT_FOCUS_SCALE_FAR = 1.288;
 /** Amplitud del seno (0.0575 × 1.15, para leerse de noche). */
 export const LOOT_FOCUS_PULSE_AMP = 0.066125;
 
-/** Velocidad angular del pulso (rad/s). */
-export const LOOT_FOCUS_PULSE_SPEED = 6;
+/** Velocidad angular del pulso (rad/s; 6 × 1.15, para leerse de noche). */
+export const LOOT_FOCUS_PULSE_SPEED = 6.9;
 
 /** True si dist está en reach (incl. el borde). */
 export function lootFocusInReach(dist: number): boolean {
@@ -39,7 +39,7 @@ export function lootFocusScale(dist: number): number {
   );
 }
 
-/** 1 + 0.066125 * sin(elapsed * 6). */
+/** 1 + 0.066125 * sin(elapsed * 6.9). */
 export function lootFocusPulse(elapsed: number): number {
   const t = Number.isFinite(elapsed) ? elapsed : 0;
   return 1 + LOOT_FOCUS_PULSE_AMP * Math.sin(t * LOOT_FOCUS_PULSE_SPEED);
