@@ -24,13 +24,13 @@ import {
 } from "../src/render/flashlightCone";
 
 describe("constantes", () => {
-  test("length 6.387675, half-width 1.3687875, Y 0.1058 y yaw offset 0 (no re-aplica PLAYER_GLTF_YAW_OFFSET)", () => {
+  test("length 6.387675, half-width 1.3687875, Y 0.12167 y yaw offset 0 (no re-aplica PLAYER_GLTF_YAW_OFFSET)", () => {
     expect(FLASHLIGHT_CONE_LENGTH).toBe(6.387675);
     expect(FLASHLIGHT_CONE_LENGTH).toBeCloseTo(5.5545 * 1.15, 10);
     expect(FLASHLIGHT_CONE_HALF_WIDTH).toBe(1.3687875);
     expect(FLASHLIGHT_CONE_HALF_WIDTH).toBeCloseTo(1.19025 * 1.15, 10);
-    expect(FLASHLIGHT_CONE_Y).toBe(0.1058);
-    expect(FLASHLIGHT_CONE_Y).toBeCloseTo(0.092 * 1.15, 10);
+    expect(FLASHLIGHT_CONE_Y).toBe(0.12167);
+    expect(FLASHLIGHT_CONE_Y).toBeCloseTo(0.1058 * 1.15, 10);
     expect(FLASHLIGHT_CONE_YAW_OFFSET).toBe(0);
   });
 
@@ -41,7 +41,7 @@ describe("constantes", () => {
     expect(FLASHLIGHT_WEDGE_COLOR & 0xff).toBe(0xff);
     expect(FLASHLIGHT_CONE_LENGTH).toBe(6.387675);
     expect(FLASHLIGHT_CONE_HALF_WIDTH).toBe(1.3687875);
-    expect(FLASHLIGHT_CONE_Y).toBe(0.1058);
+    expect(FLASHLIGHT_CONE_Y).toBe(0.12167);
     expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.727375);
     expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.29095);
     expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(3.174);
@@ -63,7 +63,7 @@ describe("constantes", () => {
     expect(FLASHLIGHT_WEDGE_COLOR).toBe(0xefffff);
     expect(FLASHLIGHT_CONE_LENGTH).toBe(6.387675);
     expect(FLASHLIGHT_CONE_HALF_WIDTH).toBe(1.3687875);
-    expect(FLASHLIGHT_CONE_Y).toBe(0.1058);
+    expect(FLASHLIGHT_CONE_Y).toBe(0.12167);
     expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.727375);
     expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.29095);
     expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(3.174);
