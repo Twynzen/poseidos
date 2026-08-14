@@ -4,10 +4,10 @@
  */
 
 /** Máximo de caracteres del label. */
-export const LOOT_FLOATER_MAX_CHARS = 16;
+export const LOOT_FLOATER_MAX_CHARS = 18;
 
 /**
- * Corta el label a 16 chars (sin ellipsis).
+ * Corta el label a 18 chars (sin ellipsis).
  * Si `qty > 1`, sufijo `×qty` (`+madera×6`).
  */
 export function lootFloaterLabel(label: string, qty?: number): string {
