@@ -93,9 +93,9 @@ describe("rainStreakOpacity", () => {
 });
 
 describe("rainActiveCount", () => {
-  test("día i=1 → 41; noche d=0 recorta ×0.809", () => {
-    expect(rainActiveCount(1, 1)).toBe(41);
-    expect(rainActiveCount(1, 0)).toBe(Math.floor(41 * 0.809));
+  test("día i=1 → floor(41×1.0525)=43; noche d=0 recorta ×0.809", () => {
+    expect(rainActiveCount(1, 1)).toBe(43);
+    expect(rainActiveCount(1, 0)).toBe(Math.floor(41 * (0.4025 + 0.65) * 0.809));
   });
 
   test("día i=0 → floor(41×0.4025)=16; noche menos; piso 7", () => {
