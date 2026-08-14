@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { doorBadgeY } from "../src/render/doorFocus";
@@ -16,6 +16,7 @@ import {
   POSSESSED_BADGE_OPACITY,
   THREAT_RING_INNER,
   THREAT_RING_OUTER,
+  THREAT_RING_PULSE_AMP,
   markerBadgeOpacity,
   markerRingOpacity,
   markerRingRadii,
@@ -135,6 +136,25 @@ describe("markers (badges + ground rings)", () => {
       expect(r.inner).toBeCloseTo(0.50, 5);
       expect(r.outer).toBeCloseTo(0.68, 5);
     }
+  });
+
+  test("aros mute/possessed no pulsan (amp 0); radios/opacity iguales", () => {
+    expect(THREAT_RING_PULSE_AMP).toBe(0);
+    expect(THREAT_RING_INNER).toBeCloseTo(0.50, 5);
+    expect(THREAT_RING_OUTER).toBeCloseTo(0.68, 5);
+    expect(MARKER_RING_OPACITY).toBeCloseTo(0.52, 5);
+    expect(INTERACT_RING_INNER).toBeCloseTo(0.55, 5);
+    expect(INTERACT_RING_OUTER).toBeCloseTo(0.78, 5);
+    const src = readFileSync(resolve(process.cwd(), "src/render/worldView.ts"), "utf8");
+    expect(src).not.toMatch(/threatFocus/i);
+    expect(src).not.toMatch(/THREAT_FOCUS_PULSE|THREAT_RING_PULSE/);
+    const start = src.indexOf("syncHostiles(entities");
+    expect(start).toBeGreaterThan(-1);
+    const hostiles = src.slice(start, src.indexOf("syncDoor(tx", start));
+    expect(hostiles).not.toMatch(/FocusMul|FocusPulse|PULSE_AMP/);
+    expect(existsSync(resolve(process.cwd(), "src/render/threatFocus.ts"))).toBe(
+      false,
+    );
   });
 
   test("badge player/loot/mute/possessed oculto (0); door/bed 1", () => {
