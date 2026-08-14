@@ -34,6 +34,7 @@ import {
   SKY_WARM_MIX,
   SKY_WARM_NIGHT_ADD,
   skyRgb,
+  SUN_DAY_G,
   SUN_DAY_R,
   SUN_INTENSITY_GAIN,
   SUN_INTENSITY_NIGHT,
@@ -257,7 +258,7 @@ describe("ambientRgb night mix", () => {
 });
 
 describe("sunRgb night mix", () => {
-  test("knobs: night r subtract 0.15 × 0.87; g subtract 0.2 × 0.87; b add 0.12 × 1.15; warm r 0.12 × 1.15; warm g 0.02 × 1.15; warm b 0.14 × 1.15; day r 0.91 × 1.15", () => {
+  test("knobs: night r subtract 0.15 × 0.87; g subtract 0.2 × 0.87; b add 0.12 × 1.15; warm r 0.12 × 1.15; warm g 0.02 × 1.15; warm b 0.14 × 1.15; day r 0.91 × 1.15; day g 0.88 × 1.15", () => {
     expect(SUN_NIGHT_R_SUB).toBe(0.1305);
     expect(SUN_NIGHT_R_SUB).toBeCloseTo(0.15 * 0.87, 10);
     expect(SUN_NIGHT_G_SUB).toBe(0.174);
@@ -273,13 +274,16 @@ describe("sunRgb night mix", () => {
     expect(SUN_DAY_R).toBe(0.91 * 1.15);
     expect(SUN_DAY_R).toBeCloseTo(0.91 * 1.15, 10);
     expect(SUN_DAY_R).toBeCloseTo(1.0465, 10);
+    expect(SUN_DAY_G).toBe(0.88 * 1.15);
+    expect(SUN_DAY_G).toBeCloseTo(0.88 * 1.15, 10);
+    expect(SUN_DAY_G).toBeCloseTo(1.012, 10);
   });
 
   test("d=0 → night r/g/b follow knobs; b add 0.138", () => {
     const night = sunRgb(0, 0);
     expect(night.r).toBeCloseTo(SUN_DAY_R - SUN_NIGHT_R_SUB, 10);
-    expect(night.g).toBeCloseTo(0.88 - SUN_NIGHT_G_SUB, 10);
-    expect(night.g).toBeCloseTo(0.88 - 0.174, 10);
+    expect(night.g).toBeCloseTo(SUN_DAY_G - SUN_NIGHT_G_SUB, 10);
+    expect(night.g).toBeCloseTo(SUN_DAY_G - 0.174, 10);
     expect(night.b).toBeCloseTo(0.82 + SUN_NIGHT_B_ADD, 10);
     expect(night.b).toBeCloseTo(0.82 + 0.138, 10);
   });
@@ -292,10 +296,10 @@ describe("sunRgb night mix", () => {
     const dawn = sunRgb(1, dawnPhase);
     const dusk = sunRgb(1, duskPhase);
     expect(dawn.r).toBeCloseTo(Math.min(1, SUN_DAY_R + dawnWarm * SUN_WARM_R), 10);
-    expect(dawn.g).toBeCloseTo(0.88 + dawnWarm * SUN_WARM_G, 10);
+    expect(dawn.g).toBeCloseTo(Math.min(1, SUN_DAY_G + dawnWarm * SUN_WARM_G), 10);
     expect(dawn.b).toBeCloseTo(0.82 - dawnWarm * SUN_WARM_B, 10);
     expect(dusk.r).toBeCloseTo(Math.min(1, SUN_DAY_R + duskWarm * SUN_WARM_R), 10);
-    expect(dusk.g).toBeCloseTo(0.88 + duskWarm * SUN_WARM_G, 10);
+    expect(dusk.g).toBeCloseTo(Math.min(1, SUN_DAY_G + duskWarm * SUN_WARM_G), 10);
     expect(dusk.b).toBeCloseTo(0.82 - duskWarm * SUN_WARM_B, 10);
   });
 });
