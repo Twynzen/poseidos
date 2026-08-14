@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** base de pasto outdoor un poco más clara
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After outdoor grass base, look at INDOOR_FLOOR_COLOR in src/render/floorStyle.ts (currently `0x2a2e38`) — bump ×1.15 per RGB channel so indoor floors read a bit brighter at night. Do not change outdoor grass base, walls/doors/furniture, AO/night lift, grass blades/wind, rain, tracers, impact, muzzle, melee/hit-lean, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** piso indoor un poco más claro
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After indoor floor, look at WALL_COLOR in src/render/floorStyle.ts (currently `0x5a5348`) — bump ×1.15 per RGB channel so walls read a bit brighter at night. Do not change indoor/outdoor floor, wall base, doors/furniture, AO/night lift, grass blades/wind, rain, tracers, impact, muzzle, melee/hit-lean, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **INDOOR_FLOOR_COLOR 0x2a2e38→0x303540; outdoor/walls/doors/AO/lift/grass/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **OUTDOOR_GRASS_BASE 0x3d4f35→0x465b3d; indoor/walls/doors/AO/lift/grass/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **BLADES_PER_TILE 3→4; radius/max/seed/sy/xz/y/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **BLADE_WIND_SEED_STEP 0.17→0.1955; phase/y/xz/sy/radius/max/blades/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**

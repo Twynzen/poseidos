@@ -45,6 +45,27 @@ describe("tintFromTile", () => {
     expect(tintFromTile(99, 12, false)).toBe(INDOOR_FLOOR_COLOR);
   });
 
+  test("INDOOR_FLOOR_COLOR 0x2a2e38 × 1.15; tintFromTile indoor still uses it", () => {
+    expect(INDOOR_FLOOR_COLOR).toBe(0x303540);
+    const r = (INDOOR_FLOOR_COLOR >> 16) & 0xff;
+    const g = (INDOOR_FLOOR_COLOR >> 8) & 0xff;
+    const b = INDOOR_FLOOR_COLOR & 0xff;
+    expect(r).toBe(0x30);
+    expect(g).toBe(0x35);
+    expect(b).toBe(0x40);
+    expect(Math.round(0x2a * 1.15)).toBe(r);
+    expect(Math.round(0x2e * 1.15)).toBe(g);
+    expect(Math.round(0x38 * 1.15)).toBe(b);
+    expect(tintFromTile(0, 0, false)).toBe(INDOOR_FLOOR_COLOR);
+    expect(tintFromTile(99, 12, false)).toBe(INDOOR_FLOOR_COLOR);
+    expect(floorColorAt(1, 1, false, 0, 0)).toBe(INDOOR_FLOOR_COLOR);
+    expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
+    expect(WALL_COLOR).toBe(0x5a5348);
+    expect(WALL_BASE_COLOR).toBe(0x1a1c22);
+    expect(GROUND_NIGHT_LIFT).toBe(1.6675);
+    expect(AO_MAX_DARKEN).toBe(0.261);
+  });
+
   test("outdoor varía por tile (verdes/grises distintos)", () => {
     const colors = new Set<number>();
     for (let y = 0; y < 8; y++) {
@@ -108,7 +129,7 @@ describe("tintFromTile", () => {
     expect(src).toContain("[0x2e, 0x3c, 0x2a]");
     expect(src).toContain("[0x48, 0x5e, 0x3c]");
     expect(src).not.toContain("[0x3a, 0x4e, 0x32]");
-    expect(INDOOR_FLOOR_COLOR).toBe(0x2a2e38);
+    expect(INDOOR_FLOOR_COLOR).toBe(0x303540);
     expect(WALL_COLOR).toBe(0x5a5348);
     expect(WALL_BASE_COLOR).toBe(0x1a1c22);
     expect(GROUND_NIGHT_LIFT).toBe(1.6675);
@@ -122,7 +143,7 @@ describe("aoFactor + applyAo", () => {
     expect(AO_MAX_DARKEN).toBeCloseTo(0.3 * 0.87, 10);
     expect(GROUND_NIGHT_LIFT).toBe(1.6675);
     expect(GROUND_NIGHT_LIFT).toBeCloseTo(1.45 * 1.15, 10);
-    expect(INDOOR_FLOOR_COLOR).toBe(0x2a2e38);
+    expect(INDOOR_FLOOR_COLOR).toBe(0x303540);
     expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
     expect(WALL_COLOR).toBe(0x5a5348);
     expect(WALL_BASE_COLOR).toBe(0x1a1c22);
@@ -236,7 +257,7 @@ describe("night ground albedo lift", () => {
 describe("night leftover indoor floor albedo lift", () => {
   test("indoor ya comparte floorMatByColor + lift 1.6675; day = identity", () => {
     expect(GROUND_NIGHT_LIFT).toBe(1.6675);
-    expect(INDOOR_FLOOR_COLOR).toBe(0x2a2e38);
+    expect(INDOOR_FLOOR_COLOR).toBe(0x303540);
     expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
     expect(tintFromTile(0, 0, false)).toBe(INDOOR_FLOOR_COLOR);
     expect(floorColorAt(1, 1, false, 0, 0)).toBe(INDOOR_FLOOR_COLOR);
@@ -255,7 +276,7 @@ describe("night leftover indoor floor albedo lift", () => {
 
   test("noche indoor más claro; mismo multiply 1.6675 (sin segundo lift)", () => {
     const night = applyNightGroundLift(INDOOR_FLOOR_COLOR, 0);
-    expect(night).toBe(0x464d5d);
+    expect(night).toBe(0x50586b);
     const nr = (night >> 16) & 0xff;
     const ng = (night >> 8) & 0xff;
     const nb = night & 0xff;
