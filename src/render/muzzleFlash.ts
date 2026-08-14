@@ -7,8 +7,8 @@
 
 /** Duración del flash (s). 0.12 × 1.15 para leer de noche. */
 export const MUZZLE_FLASH_DURATION = 0.138;
-/** Intensidad pico (u=0). Opacity del mesh = intensity (ya 1 al trigger). */
-export const MUZZLE_FLASH_PEAK = 1;
+/** Intensidad pico (u=0). 1 × 1.15 para leer de noche. Opacity del mesh = intensity. */
+export const MUZZLE_FLASH_PEAK = 1.15;
 /** Radio de la esfera aditiva (tiles). 0.1375 × 1.15 para leer de noche. */
 export const MUZZLE_FLASH_RADIUS = 0.158125;
 /** Pico de PointLight en worldView. 2.75 × 1.15 para leer de noche. */
@@ -22,7 +22,7 @@ export interface MuzzleFlashState {
 }
 
 export interface MuzzleFlashOutput {
-  /** 0–1. Pico 1 al trigger; ease-out sine hasta 0. */
+  /** Pico MUZZLE_FLASH_PEAK al trigger; ease-out sine hasta 0. */
   intensity: number;
   active: boolean;
 }

@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** melee swing yaw un poco más fuerte
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After melee swing yaw, look at MUZZLE_FLASH_PEAK in src/render/muzzleFlash.ts (currently `1`) ×1.15 so the muzzle flash reads a bit stronger at night. Do not change melee duration/angle, hit-lean, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** muzzle flash un poco más fuerte (peak)
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After muzzle flash peak, look at IMPACT_SPARK_PEAK in src/render/impactSpark.ts (currently `1`) ×1.15 so the impact spark reads a bit stronger at night. Do not change muzzle duration/radius/light, melee/hit-lean, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **MUZZLE_FLASH_PEAK 1→1.15; duration/radius/light/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **MELEE_SWING_YAW_RATIO 0.5→0.575; duration/angle/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **HIT_LEAN_YAW_RATIO 0.5→0.575; duration/angle/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **IDLE_FREQ_HZ 0.35→0.4025; amp/walk/sprint/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
