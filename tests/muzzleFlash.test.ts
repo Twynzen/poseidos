@@ -31,16 +31,18 @@ describe("constantes", () => {
     expect(viewSrc).not.toMatch(/SphereGeometry\(0\.11\b/);
   });
 
-  test("luz PointLight 2.2 × 1.25; worldView usa el knob (no magic 2.2)", () => {
-    expect(MUZZLE_LIGHT_PEAK).toBe(2.75);
-    expect(MUZZLE_LIGHT_PEAK).toBeCloseTo(2.2 * 1.25, 10);
+  test("luz PointLight 2.75 × 1.15; worldView usa el knob (no magic 2.2/2.75)", () => {
+    expect(MUZZLE_LIGHT_PEAK).toBe(3.1625);
+    expect(MUZZLE_LIGHT_PEAK).toBeCloseTo(2.75 * 1.15, 10);
     const viewSrc = readFileSync(
       resolve(process.cwd(), "src/render/worldView.ts"),
       "utf8",
     );
     expect(viewSrc).toContain("MUZZLE_LIGHT_PEAK * out.intensity");
     expect(viewSrc).not.toMatch(/const MUZZLE_LIGHT_PEAK = 2\.2/);
+    expect(viewSrc).not.toMatch(/const MUZZLE_LIGHT_PEAK = 2\.75/);
     expect(viewSrc).not.toMatch(/muzzleLight\.intensity = .*\b2\.2\b/);
+    expect(viewSrc).not.toMatch(/muzzleLight\.intensity = .*\b2\.75\b/);
   });
 });
 
