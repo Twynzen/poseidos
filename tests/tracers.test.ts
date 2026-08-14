@@ -17,12 +17,13 @@ import {
 } from "../src/render/tracers";
 
 describe("constantes", () => {
-  test("TTL 0.22 × 1.15 / altura 1.2075 × 1.15 / rango 0.15–0.35", () => {
+  test("TTL 0.22 × 1.15 / altura 1.2075 × 1.15 / rango 0.1725–0.35", () => {
     expect(DEFAULT_TRACER_TTL).toBe(0.253);
     expect(DEFAULT_TRACER_TTL).toBeCloseTo(0.22 * 1.15, 10);
     expect(TRACER_HEIGHT).toBe(1.388625);
     expect(TRACER_HEIGHT).toBeCloseTo(1.2075 * 1.15, 10);
-    expect(TRACER_TTL_MIN).toBe(0.15);
+    expect(TRACER_TTL_MIN).toBe(0.1725);
+    expect(TRACER_TTL_MIN).toBeCloseTo(0.15 * 1.15, 10);
     expect(TRACER_TTL_MAX).toBe(0.35);
   });
 
@@ -56,7 +57,7 @@ describe("tracers (geometría headless)", () => {
     expect(p.y).toBeCloseTo(5, 5);
   });
 
-  test("clampTracerTtl respeta 0.15–0.35", () => {
+  test("clampTracerTtl respeta 0.1725–0.35", () => {
     expect(clampTracerTtl(0.01)).toBe(TRACER_TTL_MIN);
     expect(clampTracerTtl(1)).toBe(TRACER_TTL_MAX);
     expect(clampTracerTtl(DEFAULT_TRACER_TTL)).toBe(DEFAULT_TRACER_TTL);
