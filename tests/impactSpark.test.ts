@@ -12,8 +12,9 @@ import {
 } from "../src/render/impactSpark";
 
 describe("constantes", () => {
-  test("duración 0.22s y pico 1", () => {
-    expect(IMPACT_SPARK_DURATION).toBe(0.22);
+  test("duración 0.22 × 1.15 y pico 1", () => {
+    expect(IMPACT_SPARK_DURATION).toBe(0.253);
+    expect(IMPACT_SPARK_DURATION).toBeCloseTo(0.22 * 1.15, 10);
     expect(IMPACT_SPARK_PEAK).toBe(1);
   });
 
