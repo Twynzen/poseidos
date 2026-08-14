@@ -157,14 +157,15 @@ export function sunRgb(daylight: number, phase: number): Rgb {
 /**
  * Intensidad AmbientLight / DirectionalLight (headless).
  * Floor de noche más alto para que albedo survivor/possessed/mute se lea;
- * gain de ambient y sol sin cambio (noon 0.736 / 1.224).
+ * gain de ambient un poco más alto (0.529 = 0.46 × 1.15) para que noche-amanecer se lea;
+ * floor/sol sin cambio (noon 0.805 / 1.224).
  */
 export const AMBIENT_INTENSITY_NIGHT = 0.276;
-export const AMBIENT_INTENSITY_GAIN = 0.46;
+export const AMBIENT_INTENSITY_GAIN = 0.529;
 export const SUN_INTENSITY_NIGHT = 0.184;
 export const SUN_INTENSITY_GAIN = 1.04;
 
-/** Ambient: 0.276 + d * 0.46 (noche ~0.313 @ d=0.08; noon 0.736). */
+/** Ambient: 0.276 + d * 0.529 (noche ~0.318 @ d=0.08; noon 0.805). */
 export function nightAmbientIntensity(daylight: number): number {
   return AMBIENT_INTENSITY_NIGHT + clamp01(daylight) * AMBIENT_INTENSITY_GAIN;
 }
