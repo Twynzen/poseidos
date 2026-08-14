@@ -29,9 +29,9 @@ describe("constantes", () => {
     expect(RAIN_COLOR).toBe(0xa8c4e0);
   });
 
-  test("opacity 0.22 + i×0.45; noche +0.30; active min 6; night cut 0.22; hide 0.02", () => {
+  test("opacity 0.22 + i×0.5175; noche +0.30; active min 6; night cut 0.22; hide 0.02", () => {
     expect(RAIN_OPACITY_BASE).toBe(0.22);
-    expect(RAIN_OPACITY_GAIN).toBe(0.45);
+    expect(RAIN_OPACITY_GAIN).toBe(0.5175);
     expect(RAIN_OPACITY_NIGHT_ADD).toBe(0.3);
     expect(RAIN_ACTIVE_MIN).toBe(6);
     expect(RAIN_NIGHT_COUNT_CUT).toBe(0.22);
@@ -80,12 +80,12 @@ describe("rainNightMix / length / scaleY", () => {
 });
 
 describe("rainStreakOpacity", () => {
-  test("día: 0.22 + i×0.45; noche suma +0.30 × nightMix", () => {
+  test("día: 0.22 + i×0.5175; noche suma +0.30 × nightMix", () => {
     expect(rainStreakOpacity(0, 1)).toBeCloseTo(0.22, 10);
-    expect(rainStreakOpacity(1, 1)).toBeCloseTo(0.22 + 0.45, 10);
-    expect(rainStreakOpacity(1, 0)).toBeCloseTo(0.22 + 0.45 + 0.3, 10);
-    expect(rainStreakOpacity(0.5, 0)).toBeCloseTo(0.22 + 0.5 * 0.45 + 0.3, 10);
-    expect(rainStreakOpacity(1, 0.08)).toBeCloseTo(0.67 + 0.3 * 0.92, 10);
+    expect(rainStreakOpacity(1, 1)).toBeCloseTo(0.22 + 0.5175, 10);
+    expect(rainStreakOpacity(1, 0)).toBeCloseTo(0.22 + 0.5175 + 0.3, 10);
+    expect(rainStreakOpacity(0.5, 0)).toBeCloseTo(0.22 + 0.5 * 0.5175 + 0.3, 10);
+    expect(rainStreakOpacity(1, 0.08)).toBeCloseTo(0.22 + 0.5175 + 0.3 * 0.92, 10);
   });
 });
 
