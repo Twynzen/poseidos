@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   AMBIENT_INTENSITY_GAIN,
   AMBIENT_INTENSITY_NIGHT,
+  AMBIENT_NIGHT_R_SUB,
   ambientRgb,
   atmosphereFor,
   DAWN_TINT_B,
@@ -185,6 +186,20 @@ describe("night / noon light intensity floors", () => {
     expect(nightSunIntensity(0)).toBe(0.2116);
     expect(nightAmbientIntensity(-1)).toBe(0.3174);
     expect(nightSunIntensity(2)).toBeCloseTo(1.587, 10);
+  });
+});
+
+describe("ambientRgb night mix", () => {
+  test("knobs: night r subtract 0.18 × 0.87; g/b iguales", () => {
+    expect(AMBIENT_NIGHT_R_SUB).toBe(0.1566);
+    expect(AMBIENT_NIGHT_R_SUB).toBeCloseTo(0.18 * 0.87, 10);
+  });
+
+  test("d=0 → night r follows AMBIENT_NIGHT_R_SUB; g subtract 0.06 / b add 0.14", () => {
+    const night = ambientRgb(0, 0);
+    expect(night.r).toBeCloseTo(0x6a / 255 - AMBIENT_NIGHT_R_SUB, 10);
+    expect(night.g).toBeCloseTo(0x6a / 255 - 0.06, 10);
+    expect(night.b).toBeCloseTo(0x78 / 255 + 0.14, 10);
   });
 });
 
