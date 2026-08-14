@@ -35,9 +35,9 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(WALK_BOB_AMP).toBeLessThan(SPRINT_BOB_AMP);
   });
 
-  test("idle bob amp 0.0138; walk/sprint/freq iguales", () => {
-    expect(IDLE_BOB_AMP).toBe(0.0138);
-    expect(IDLE_BOB_AMP).toBeCloseTo(0.012 * 1.15, 10);
+  test("idle bob amp 0.01587; walk/sprint/freq iguales", () => {
+    expect(IDLE_BOB_AMP).toBe(0.01587);
+    expect(IDLE_BOB_AMP).toBeCloseTo(0.0138 * 1.15, 10);
     expect(WALK_BOB_AMP).toBe(0.06325);
     expect(WALK_BOB_AMP).toBeCloseTo(0.055 * 1.15, 10);
     expect(SPRINT_BOB_AMP).toBe(0.1035);
@@ -52,7 +52,7 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(WALK_LEAN_AMP).toBeCloseTo(0.04 * 1.15, 10);
     expect(WALK_SWAY_AMP).toBe(0.04025);
     expect(WALK_SWAY_AMP).toBeCloseTo(0.035 * 1.15, 10);
-    expect(IDLE_BOB_AMP).toBe(0.0138);
+    expect(IDLE_BOB_AMP).toBe(0.01587);
     expect(WALK_BOB_AMP).toBe(0.06325);
     expect(SPRINT_BOB_AMP).toBe(0.1035);
     expect(IDLE_FREQ_HZ).toBe(0.35);
@@ -67,7 +67,7 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(SPRINT_BOB_AMP).toBe(0.1035);
     expect(WALK_LEAN_AMP).toBe(0.046);
     expect(WALK_SWAY_AMP).toBe(0.04025);
-    expect(IDLE_BOB_AMP).toBe(0.0138);
+    expect(IDLE_BOB_AMP).toBe(0.01587);
     expect(WALK_BOB_AMP).toBe(0.06325);
     expect(IDLE_FREQ_HZ).toBe(0.35);
     expect(WALK_FREQ_HZ).toBe(1.55);
@@ -81,7 +81,7 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(SPRINT_BOB_AMP).toBe(0.1035);
     expect(WALK_LEAN_AMP).toBe(0.046);
     expect(WALK_SWAY_AMP).toBe(0.04025);
-    expect(IDLE_BOB_AMP).toBe(0.0138);
+    expect(IDLE_BOB_AMP).toBe(0.01587);
     expect(WALK_BOB_AMP).toBe(0.06325);
     expect(IDLE_FREQ_HZ).toBe(0.35);
     expect(WALK_FREQ_HZ).toBe(1.55);
@@ -92,7 +92,7 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(IDLE_SWAY_AMP).toBe(0.0092);
     expect(IDLE_SWAY_AMP).toBeCloseTo(0.008 * 1.15, 10);
     expect(IDLE_LEAN_AMP).toBe(0);
-    expect(IDLE_BOB_AMP).toBe(0.0138);
+    expect(IDLE_BOB_AMP).toBe(0.01587);
     expect(WALK_BOB_AMP).toBe(0.06325);
     expect(SPRINT_BOB_AMP).toBe(0.1035);
     expect(WALK_LEAN_AMP).toBe(0.046);

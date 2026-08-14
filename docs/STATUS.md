@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** chevron de facing un poco más ancho
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After chevron HW, look at IDLE_BOB_AMP in locoBob.ts (0.0138) ×1.15 so idle breath reads a bit more at night. Do not change walk/sprint/freq, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** respiración idle un poco más visible
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After idle bob, look at IDLE_SWAY_AMP (0.0092) ×1.15 so idle sway reads a bit more at night. Do not change walk/sprint/freq/bob, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **IDLE_BOB_AMP 0.0138→0.01587; sway/walk/sprint/freq/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **FACING_CHEVRON_HW 0.425845→0.48972175; dist/len/color/opacity/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **FACING_CHEVRON_LEN 1.0646125→1.224304375; dist/hw/color/opacity/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **FACING_CHEVRON_DIST 1.587→1.82505; len/hw/color/opacity/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
