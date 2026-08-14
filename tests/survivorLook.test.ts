@@ -28,7 +28,7 @@ describe("survivorLook constants", () => {
   test("split knobs: fill claro, map tint, crushed lock, emisivos", () => {
     expect(SURVIVOR_BODY_COLOR).toBe(0x9f9381);
     expect(SURVIVOR_MAP_TINT).toBe(0xe6d8c1);
-    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x23201b);
+    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
     expect(SURVIVOR_ACCENT).toBe(0xa39c8c);
     expect(SURVIVOR_ACCENT_COLOR).toBe(SURVIVOR_ACCENT);
     expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
@@ -59,6 +59,29 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBeLessThan(0.3);
   });
 
+  test("body emissive 0x23201b × 1.15/canal → 0x28251f; body/map-tint/accent/roughness/intensity/crushed iguales", () => {
+    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
+    const r = (SURVIVOR_BODY_EMISSIVE >> 16) & 0xff;
+    const g = (SURVIVOR_BODY_EMISSIVE >> 8) & 0xff;
+    const b = SURVIVOR_BODY_EMISSIVE & 0xff;
+    expect(r).toBe(0x28);
+    expect(g).toBe(0x25);
+    expect(b).toBe(0x1f);
+    expect(Math.round((0x23 * 115) / 100)).toBe(r);
+    expect(Math.round((0x20 * 115) / 100)).toBe(g);
+    expect(Math.round((0x1b * 115) / 100)).toBe(b);
+    expect(SURVIVOR_BODY_COLOR).toBe(0x9f9381);
+    expect(SURVIVOR_MAP_TINT).toBe(0xe6d8c1);
+    expect(SURVIVOR_ACCENT).toBe(0xa39c8c);
+    expect(SURVIVOR_ACCENT_COLOR).toBe(SURVIVOR_ACCENT);
+    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
+    expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
+    expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.620658);
+    expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.340605);
+    expect(SURVIVOR_BODY_EMISSIVE_INTENSITY).toBe(1.15);
+    expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBe(0.198375);
+  });
+
   test("map tint 0xc8bca8 × 1.15/canal → 0xe6d8c1; body/emissive/accent/roughness/intensity/crushed iguales", () => {
     expect(SURVIVOR_MAP_TINT).toBe(0xe6d8c1);
     const r = (SURVIVOR_MAP_TINT >> 16) & 0xff;
@@ -71,7 +94,7 @@ describe("survivorLook constants", () => {
     expect(Math.round((0xbc * 115) / 100)).toBe(g);
     expect(Math.round((0xa8 * 115) / 100)).toBe(b);
     expect(SURVIVOR_BODY_COLOR).toBe(0x9f9381);
-    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x23201b);
+    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
     expect(SURVIVOR_ACCENT).toBe(0xa39c8c);
     expect(SURVIVOR_ACCENT_COLOR).toBe(SURVIVOR_ACCENT);
     expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
@@ -94,7 +117,7 @@ describe("survivorLook constants", () => {
     expect(Math.round((0x80 * 115) / 100)).toBe(g);
     expect(Math.round((0x70 * 115) / 100)).toBe(b);
     expect(SURVIVOR_MAP_TINT).toBe(0xe6d8c1);
-    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x23201b);
+    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
     expect(SURVIVOR_ACCENT).toBe(0xa39c8c);
     expect(SURVIVOR_ACCENT_COLOR).toBe(SURVIVOR_ACCENT);
     expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
@@ -110,7 +133,7 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_BODY_EMISSIVE_INTENSITY).toBeCloseTo(1 * 1.15, 10);
     expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBe(0.198375);
     expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
-    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x23201b);
+    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
     expect(SURVIVOR_BODY_COLOR).toBe(0x9f9381);
     expect(SURVIVOR_MAP_TINT).toBe(0xe6d8c1);
     expect(SURVIVOR_ACCENT).toBe(0xa39c8c);
@@ -123,7 +146,7 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBe(0.198375);
     expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBeCloseTo(0.1725 * 1.15, 10);
     expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
-    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x23201b);
+    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
     expect(SURVIVOR_BODY_COLOR).toBe(0x9f9381);
     expect(SURVIVOR_MAP_TINT).toBe(0xe6d8c1);
     expect(SURVIVOR_ACCENT).toBe(0xa39c8c);
@@ -139,7 +162,7 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_MAP_TINT).toBe(0xe6d8c1);
     expect(SURVIVOR_ACCENT).toBe(0xa39c8c);
     expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
-    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x23201b);
+    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
     expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBe(0.198375);
     expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
   });
@@ -153,7 +176,7 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_MAP_TINT).toBe(0xe6d8c1);
     expect(SURVIVOR_ACCENT).toBe(0xa39c8c);
     expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
-    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x23201b);
+    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
     expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBe(0.198375);
     expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
   });
