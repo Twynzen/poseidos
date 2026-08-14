@@ -17,10 +17,11 @@ import {
 } from "../src/render/tracers";
 
 describe("constantes", () => {
-  test("TTL 0.22 × 1.15 / altura 1.05 / rango 0.15–0.35", () => {
+  test("TTL 0.22 × 1.15 / altura 1.05 × 1.15 / rango 0.15–0.35", () => {
     expect(DEFAULT_TRACER_TTL).toBe(0.253);
     expect(DEFAULT_TRACER_TTL).toBeCloseTo(0.22 * 1.15, 10);
-    expect(TRACER_HEIGHT).toBe(1.05);
+    expect(TRACER_HEIGHT).toBe(1.2075);
+    expect(TRACER_HEIGHT).toBeCloseTo(1.05 * 1.15, 10);
     expect(TRACER_TTL_MIN).toBe(0.15);
     expect(TRACER_TTL_MAX).toBe(0.35);
   });
