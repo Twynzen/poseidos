@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** sun day-base g un poco más brillante
-- **Siguiente:** leftover visual polish chico — extract the historic sun day-base b `0.82` in `sunRgb` (`b = 0.82 + nightMix * SUN_NIGHT_B_ADD`) to `SUN_DAY_B` and bump ×1.15 so day sun reads a bit brighter. Do not change r/g bases, night mix, warm deltas, sky/fog/ambient, or controls. No new widgets.
+- **Última rutina:** sun day-base b un poco más brillante
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After sun day r/g/b, look at `GROUND_NIGHT_LIFT` in floor/worldView (currently 1.45) and bump ×1.15 so night ground reads a bit brighter. Do not change sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **SUN_DAY_B 0.82→0.943; r/g/night-mix/warm/sky/fog/ambient/teclas iguales.**
   - **SUN_DAY_G 0.88→1.012; r/b/night-mix/warm/sky/fog/ambient/teclas iguales.**
   - **SUN_DAY_R 0.91→1.0465; g/b/night-mix/warm/sky/fog/ambient/teclas iguales.**
   - **AMBIENT_DAY_R (0x6a/255)→×1.15 (~0.47804); g/b/night-mix/warm/sky/fog/sol/teclas iguales.**
