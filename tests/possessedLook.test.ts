@@ -65,8 +65,8 @@ describe("possessedLook constants", () => {
     expect(POSSESSED_ACCENT_ROUGHNESS).toBeLessThan(POSSESSED_BODY_ROUGHNESS);
     expect(POSSESSED_BODY_EMISSIVE_INTENSITY).toBe(1.15);
     expect(POSSESSED_BODY_EMISSIVE_INTENSITY).toBeCloseTo(1 * 1.15, 10);
-    expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(0.9775);
-    expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBeCloseTo(0.85 * 1.15, 10);
+    expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(1.124125);
+    expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBeCloseTo(0.9775 * 1.15, 10);
     expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBeGreaterThan(0.5);
     expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBeLessThan(1.2);
     expect(POSSESSED_ACCENT_EMISSIVE & 0xff0000).toBeGreaterThan(0);
@@ -79,7 +79,7 @@ describe("possessedLook constants", () => {
   test("body emissive intensity 1 × 1.15; color/looks iguales", () => {
     expect(POSSESSED_BODY_EMISSIVE_INTENSITY).toBe(1.15);
     expect(POSSESSED_BODY_EMISSIVE_INTENSITY).toBeCloseTo(1 * 1.15, 10);
-    expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(0.9775);
+    expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(1.124125);
     expect(POSSESSED_ACCENT_EMISSIVE).toBe(0x4a1028);
     expect(POSSESSED_BODY_EMISSIVE).toBe(0x21141e);
     expect(POSSESSED_BODY_COLOR).toBe(0x3a2838);
@@ -90,9 +90,9 @@ describe("possessedLook constants", () => {
     expect(POSSESSED_CRUSHED_BODY).toBe(0x1c141c);
   });
 
-  test("accent emissive intensity 0.85 × 1.15; color/looks iguales", () => {
-    expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(0.9775);
-    expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBeCloseTo(0.85 * 1.15, 10);
+  test("accent emissive intensity 0.9775 × 1.15; color/looks iguales", () => {
+    expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(1.124125);
+    expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBeCloseTo(0.9775 * 1.15, 10);
     expect(POSSESSED_ACCENT_EMISSIVE).toBe(0x4a1028);
     expect(POSSESSED_BODY_EMISSIVE).toBe(0x21141e);
     expect(POSSESSED_BODY_COLOR).toBe(0x3a2838);
@@ -111,7 +111,7 @@ describe("possessedLook constants", () => {
     expect(POSSESSED_ACCENT).toBe(0x8a2a55);
     expect(POSSESSED_ACCENT_EMISSIVE).toBe(0x4a1028);
     expect(POSSESSED_BODY_EMISSIVE).toBe(0x21141e);
-    expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(0.9775);
+    expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(1.124125);
     expect(POSSESSED_CRUSHED_BODY).toBe(0x1c141c);
   });
 
@@ -125,7 +125,7 @@ describe("possessedLook constants", () => {
     expect(POSSESSED_ACCENT).toBe(0x8a2a55);
     expect(POSSESSED_ACCENT_EMISSIVE).toBe(0x4a1028);
     expect(POSSESSED_BODY_EMISSIVE).toBe(0x21141e);
-    expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(0.9775);
+    expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(1.124125);
     expect(POSSESSED_CRUSHED_BODY).toBe(0x1c141c);
   });
 });
