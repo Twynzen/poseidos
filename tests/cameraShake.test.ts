@@ -13,9 +13,10 @@ function expectedMag(t: number): number {
 }
 
 describe("constantes", () => {
-  test("duración 0.2s y amplitud 0.1", () => {
+  test("duración 0.2s y amplitud 0.1 × 1.25", () => {
     expect(CAMERA_SHAKE_DURATION).toBe(0.2);
-    expect(CAMERA_SHAKE_AMP).toBe(0.1);
+    expect(CAMERA_SHAKE_AMP).toBe(0.125);
+    expect(CAMERA_SHAKE_AMP).toBeCloseTo(0.1 * 1.25, 10);
   });
 });
 
