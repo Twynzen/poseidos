@@ -43,8 +43,8 @@ export const BARRICADE_EDGE = 0x8a6239;
  */
 export const GROUND_NIGHT_LIFT = 1.45;
 
-/** Máximo oscurecimiento por fake AO (fracción RGB). */
-export const AO_MAX_DARKEN = 0.3;
+/** Máximo oscurecimiento por fake AO (fracción RGB). 0.3 × 0.87 para leer el suelo de noche. */
+export const AO_MAX_DARKEN = 0.261;
 
 /** Umbral de sólidos cercanos para tratar un floor como outdoor (misma idea que indoor). */
 export const OUTDOOR_SOLID_THRESHOLD = INDOOR_SOLID_THRESHOLD;
