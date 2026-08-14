@@ -11,7 +11,7 @@ export interface TracerPoint {
 /** Duración por defecto del tracer (~flash corto). */
 export const DEFAULT_TRACER_TTL = 0.253;
 /** Rango visual de TTL permitido. */
-export const TRACER_TTL_MIN = 0.15;
+export const TRACER_TTL_MIN = 0.1725;
 export const TRACER_TTL_MAX = 0.35;
 /** Altura de la línea en mundo (chest). */
 export const TRACER_HEIGHT = 1.388625;
