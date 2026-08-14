@@ -18,13 +18,13 @@ function expectedMag(t: number): number {
 }
 
 describe("constantes", () => {
-  test("freq 42 × 1.15; duración 0.2 × 1.15 y amplitud 0.1 × 1.25", () => {
+  test("freq 42 × 1.15; duración 0.2 × 1.15 y amplitud 0.125 × 1.15", () => {
     expect(CAMERA_SHAKE_FREQ).toBe(48.3);
     expect(CAMERA_SHAKE_FREQ).toBeCloseTo(42 * 1.15, 10);
     expect(CAMERA_SHAKE_DURATION).toBe(0.23);
     expect(CAMERA_SHAKE_DURATION).toBeCloseTo(0.2 * 1.15, 10);
-    expect(CAMERA_SHAKE_AMP).toBe(0.125);
-    expect(CAMERA_SHAKE_AMP).toBeCloseTo(0.1 * 1.25, 10);
+    expect(CAMERA_SHAKE_AMP).toBe(0.14375);
+    expect(CAMERA_SHAKE_AMP).toBeCloseTo(0.125 * 1.15, 10);
   });
 });
 

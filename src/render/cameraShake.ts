@@ -1,14 +1,14 @@
 /**
  * Camera shake al toque hostil — headless.
  * worldView aplica offsetX/offsetZ a camera.position; lookAt queda en el player.
- * Envelope: sine decay (1−t)·sin(2π t · FREQ/42) en CAMERA_SHAKE_DURATION, amp 0.125.
+ * Envelope: sine decay (1−t)·sin(2π t · FREQ/42) en CAMERA_SHAKE_DURATION, amp 0.14375.
  * Dirección XZ unitaria vía RNG inyectable en trigger (tests deterministas).
  */
 
 /** Duración del shake (s). 0.2 × 1.15 para leer de noche. */
 export const CAMERA_SHAKE_DURATION = 0.23;
-/** Amplitud pico (unidades mundo, ejes XZ). 0.1 × 1.25 para leer de noche. */
-export const CAMERA_SHAKE_AMP = 0.125;
+/** Amplitud pico (unidades mundo, ejes XZ). 0.125 × 1.15 para leer de noche. */
+export const CAMERA_SHAKE_AMP = 0.14375;
 /** Frecuencia del sine (base 42 = 1 ciclo). 42 × 1.15 para leer de noche. */
 export const CAMERA_SHAKE_FREQ = 48.3;
 
