@@ -41,7 +41,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(39.1);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
-    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
     expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.7475);
@@ -73,7 +73,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(39.1);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
-    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
     expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.7475);
@@ -106,7 +106,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(39.1);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
-    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
     expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.7475);
@@ -139,7 +139,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(39.1);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
-    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
     expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.7475);
@@ -169,7 +169,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(39.1);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
-    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
     expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.7475);
@@ -196,7 +196,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(39.1);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
-    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
     expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.7475);
@@ -220,7 +220,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_STROKE_PX).toBeCloseTo(4.5 * 1.15, 5);
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(39.1);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
-    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
     expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.7475);
@@ -244,7 +244,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(39.1);
     expect(LOOT_NAMEPLATE_FONT_PX).toBeCloseTo(34 * 1.15, 5);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
-    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
     expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.7475);
@@ -271,7 +271,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_NEAR_DIST).toBe(2.3);
     expect(LOOT_NAMEPLATE_NEAR_DIST).toBeCloseTo(2 * 1.15, 5);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
-    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
     expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.7475);
@@ -298,9 +298,9 @@ describe("constantes", () => {
     expect(src).not.toMatch(/if \(d <= 2\) return 1/);
   });
 
-  test("mid-scale 0.552 (0.48 × 1.15); fade/Y/iconos/scale/font/teclas sin cambio", () => {
-    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
-    expect(LOOT_NAMEPLATE_MID_SCALE).toBeCloseTo(0.48 * 1.15, 5);
+  test("mid-scale 0.6348 (0.552 × 1.15); fade/Y/iconos/scale/font/teclas sin cambio", () => {
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBeCloseTo(0.552 * 1.15, 5);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
     expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
@@ -310,13 +310,13 @@ describe("constantes", () => {
     expect(lootNameplateScale(LOOT_NAMEPLATE_FADE_DIST)).toBe(
       LOOT_NAMEPLATE_MID_SCALE,
     );
-    expect(lootNameplateScale(LOOT_NAMEPLATE_FADE_DIST)).toBe(0.552);
+    expect(lootNameplateScale(LOOT_NAMEPLATE_FADE_DIST)).toBe(0.6348);
   });
 
   test("fade dist 7.27375 (6.325 × 1.15); iconos/scale/Y/mid-scale/font/teclas sin cambio", () => {
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBeCloseTo(6.325 * 1.15, 5);
-    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
     expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.7475);
@@ -331,7 +331,7 @@ describe("constantes", () => {
   test("scaleY 0.7475 (0.65 × 1.15); X/fade/mid-scale/font/iconos sin cambio", () => {
     expect(LOOT_NAMEPLATE_MAX_CHARS).toBe(20);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
-    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
     expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
     expect(LOOT_NAMEPLATE_Y).toBeCloseTo(2.15 * 1.15, 5);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
@@ -489,7 +489,7 @@ describe("lootNameplateOpacity", () => {
 });
 
 describe("lootNameplateScale", () => {
-  test("1 en dist ≤ 2.3 (in-reach 1.6); 0.552 en fade 7.27375 y más allá", () => {
+  test("1 en dist ≤ 2.3 (in-reach 1.6); 0.6348 en fade 7.27375 y más allá", () => {
     expect(lootNameplateScale(0)).toBe(1);
     expect(lootNameplateScale(1.6)).toBe(1);
     expect(lootNameplateScale(2)).toBe(1);
@@ -498,10 +498,10 @@ describe("lootNameplateScale", () => {
     expect(lootNameplateScale(7.27376)).toBe(LOOT_NAMEPLATE_MID_SCALE);
     expect(lootNameplateScale(8)).toBe(LOOT_NAMEPLATE_MID_SCALE);
     expect(lootNameplateScale(80)).toBe(LOOT_NAMEPLATE_MID_SCALE);
-    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
   });
 
-  test("lerp lineal 1 → 0.552 de 2.3 a fade 7.27375", () => {
+  test("lerp lineal 1 → 0.6348 de 2.3 a fade 7.27375", () => {
     const mid = (LOOT_NAMEPLATE_NEAR_DIST + LOOT_NAMEPLATE_FADE_DIST) / 2;
     const expectedMid = 1 + (LOOT_NAMEPLATE_MID_SCALE - 1) * 0.5;
     expect(lootNameplateScale(mid)).toBeCloseTo(expectedMid, 10);
