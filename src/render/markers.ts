@@ -75,8 +75,8 @@ export function markerRingOpacity(role: MarkerRole): number {
 /** Radio interior del aro loot/puerta/cama. 0.4785 × 0.87 para leerse de noche. */
 export const INTERACT_RING_INNER = 0.416295;
 
-/** Radio exterior del aro loot/puerta/cama. 0.78 × 1.15 para leerse de noche. */
-export const INTERACT_RING_OUTER = 0.897;
+/** Radio exterior del aro loot/puerta/cama. 0.897 × 1.15 para leerse de noche. */
+export const INTERACT_RING_OUTER = 1.03155;
 
 /** Radio interior del aro mute/possessed. 0.50 × 0.87 para leerse de noche. */
 export const THREAT_RING_INNER = 0.435;
