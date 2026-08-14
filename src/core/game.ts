@@ -1414,16 +1414,18 @@ export class Game {
     );
   }
 
-  /** Re-pinta el nameplate del contenedor cercano (qty tras G/E/Shift+G). */
+  /**
+   * Re-pinta nameplates en reach (qty tras G/E/Shift+G).
+   * Incluye pilas vacías: `nearest()` las salta y el plate huérfano no se actualizaba.
+   */
   private refreshNearestLootMarker(): void {
-    const c = this.containers.nearest(
-      this.player.x,
-      this.player.y,
-      CONTAINER_REACH,
-      this.lootPreferTile(),
-    );
-    if (!c) return;
-    this.view.addLootMarker(c.id, c.x, c.y, c.name, c.inv);
+    const wx = this.player.x;
+    const wy = this.player.y;
+    for (const c of this.containers.list) {
+      const d = Math.hypot(wx - (c.x + 0.5), wy - (c.y + 0.5));
+      if (d > CONTAINER_REACH) continue;
+      this.view.addLootMarker(c.id, c.x, c.y, c.name, c.inv);
+    }
   }
 
   /** Overlay `#hit-flash`: decay + opacity = intensity × peak. */
