@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** título del inventario en oro, como los slots.
+- **Última rutina:** chevron de facing en oro, como el HUD.
 - **Qué quedó (esta corrida):**
+  - **FACING_CHEVRON_COLOR 0x9ef0ff→0xe8c36a; tamaño/opacity/yaw iguales.** worldView mesh sigue el knob (`color: FACING_CHEVRON_COLOR`). `FACING_CHEVRON_OPACITY` 0.55, DIST 1.2, LEN 0.805, HW 0.322, YAW_OFFSET 0 sin cambio. Cámara / escala / anillos / nameplates / badges / luces / lluvia / linterna / inventario / hotbar / teclas / gestos sin cambio.
   - **`.inv-head` `#e8c36a`; badges/gestos/hotbar iguales.** Título del panel I en oro Diablo (antes `--hud-accent` `#60a5fa`). Font-size / letter-spacing / uppercase / margin iguales. `.inv-badge` borde azul de equipo sin cambio. Hotbar selected gold, slot sizes, empty dashed, qty, iconos y gestos sin cambio. Cámara / markers / anillos / nameplates / luces / lluvia / linterna sin cambio.
   - **`.hotbar-selected` gold como `.inv-slot-selected`; tecla del slot activo `#e8c36a`.** Gestos iguales. `hotbarHud` solo togglea la clase; CSS en `index.html`. Slot 52×52, empty dashed, qty, iconos y gestos sin cambio. Inventario / cámara / markers / anillos / nameplates / luces / lluvia / linterna sin cambio.
   - **threat ring 0.42/0.58 → 0.50/0.68; interact 0.55/0.78 igual.** `THREAT_RING_INNER/OUTER` 0.50 / 0.68 (mute/possessed). `INTERACT_RING_INNER/OUTER` siguen 0.55 / 0.78 (loot/door/bed). `markerUsesInteractRing` / `markerRingRadii` iguales (threat path sigue `THREAT_*`). worldView `ringGeo` vs `interactRingGeo`. Player foot ring opacity 0; loot badge 0; nameplate Y 2.15; door/bed/mute/possessed badge Y 2.0. Cámara / escala / luces / lluvia / linterna / E/Z / colores / pulso / teclas / gestos sin cambio.
