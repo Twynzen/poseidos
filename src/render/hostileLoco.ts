@@ -12,6 +12,12 @@ export const HOSTILE_LOCO_IDLE_DIST = 0.02;
 export const HOSTILE_LOCO_RUN_SPEED = 3.5;
 
 /**
+ * Bob vertical mute/poseído: no hay (solo clasifica idle/walk/run → clips GLB).
+ * 0 = lock; no inventar bounce. Player locoBob no se reusa aquí.
+ */
+export const HOSTILE_LOCO_BOB_AMP = 0;
+
+/**
  * Clasifica idle/walk/run desde desplazamiento horizontal y dt.
  * - hypot(dx,dz) ≤ IDLE_DIST → idle
  * - dt≤0 / no finito → idle (primer frame / tick inválido)

@@ -1,5 +1,8 @@
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
+  HOSTILE_LOCO_BOB_AMP,
   HOSTILE_LOCO_IDLE_DIST,
   HOSTILE_LOCO_RUN_SPEED,
   hostileLocoFromDelta,
@@ -47,5 +50,29 @@ describe("hostileLocoFromDelta", () => {
   test("constantes coherentes", () => {
     expect(HOSTILE_LOCO_IDLE_DIST).toBe(0.02);
     expect(HOSTILE_LOCO_RUN_SPEED).toBe(3.5);
+  });
+
+  test("sin bob/lean/sway — lock HOSTILE_LOCO_BOB_AMP 0; clasifica igual", () => {
+    expect(HOSTILE_LOCO_BOB_AMP).toBe(0);
+    expect(HOSTILE_LOCO_IDLE_DIST).toBe(0.02);
+    expect(HOSTILE_LOCO_RUN_SPEED).toBe(3.5);
+    const locoSrc = readFileSync(
+      resolve(process.cwd(), "src/render/hostileLoco.ts"),
+      "utf8",
+    );
+    expect(locoSrc).not.toMatch(/LEAN_AMP|SWAY_AMP|WALK_BOB|IDLE_BOB|SPRINT_BOB/);
+    expect(locoSrc).not.toMatch(/from ["']\.\/locoBob["']/);
+    const view = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const start = view.indexOf("syncHostiles(entities");
+    expect(start).toBeGreaterThan(-1);
+    const hostiles = view.slice(start, view.indexOf("syncDoor(tx", start));
+    expect(hostiles).toMatch(/hostileLocoFromDelta/);
+    expect(hostiles).not.toMatch(/tickLocoBob|bobY|HOSTILE_LOCO_BOB_AMP|locoBob/);
+    expect(existsSync(resolve(process.cwd(), "src/render/hostileBob.ts"))).toBe(
+      false,
+    );
   });
 });
