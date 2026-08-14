@@ -33,6 +33,7 @@ import {
   SUN_NIGHT_B_ADD,
   SUN_NIGHT_G_SUB,
   SUN_NIGHT_R_SUB,
+  SUN_WARM_B,
   SUN_WARM_G,
   SUN_WARM_R,
   sunRgb,
@@ -234,7 +235,7 @@ describe("ambientRgb night mix", () => {
 });
 
 describe("sunRgb night mix", () => {
-  test("knobs: night r subtract 0.15 × 0.87; g subtract 0.2 × 0.87; b add 0.12 × 1.15; warm r 0.12 × 1.15; warm g 0.02 × 1.15", () => {
+  test("knobs: night r subtract 0.15 × 0.87; g subtract 0.2 × 0.87; b add 0.12 × 1.15; warm r 0.12 × 1.15; warm g 0.02 × 1.15; warm b 0.14 × 1.15", () => {
     expect(SUN_NIGHT_R_SUB).toBe(0.1305);
     expect(SUN_NIGHT_R_SUB).toBeCloseTo(0.15 * 0.87, 10);
     expect(SUN_NIGHT_G_SUB).toBe(0.174);
@@ -245,6 +246,8 @@ describe("sunRgb night mix", () => {
     expect(SUN_WARM_R).toBeCloseTo(0.12 * 1.15, 10);
     expect(SUN_WARM_G).toBe(0.023);
     expect(SUN_WARM_G).toBeCloseTo(0.02 * 1.15, 10);
+    expect(SUN_WARM_B).toBe(0.161);
+    expect(SUN_WARM_B).toBeCloseTo(0.14 * 1.15, 10);
   });
 
   test("d=0 → night r/g/b follow knobs; b add 0.138", () => {
@@ -256,7 +259,7 @@ describe("sunRgb night mix", () => {
     expect(night.b).toBeCloseTo(0.82 + 0.138, 10);
   });
 
-  test("dawn/dusk sun follows SUN_WARM_R / SUN_WARM_G", () => {
+  test("dawn/dusk sun follows SUN_WARM_R / SUN_WARM_G / SUN_WARM_B", () => {
     const dawnPhase = 0.275;
     const duskPhase = 0.725;
     const dawnWarm = dawnWarmth(dawnPhase);
@@ -265,10 +268,10 @@ describe("sunRgb night mix", () => {
     const dusk = sunRgb(1, duskPhase);
     expect(dawn.r).toBeCloseTo(Math.min(1, 0.91 + dawnWarm * SUN_WARM_R), 10);
     expect(dawn.g).toBeCloseTo(0.88 + dawnWarm * SUN_WARM_G, 10);
-    expect(dawn.b).toBeCloseTo(0.82 - dawnWarm * 0.14, 10);
+    expect(dawn.b).toBeCloseTo(0.82 - dawnWarm * SUN_WARM_B, 10);
     expect(dusk.r).toBeCloseTo(Math.min(1, 0.91 + duskWarm * SUN_WARM_R), 10);
     expect(dusk.g).toBeCloseTo(0.88 + duskWarm * SUN_WARM_G, 10);
-    expect(dusk.b).toBeCloseTo(0.82 - duskWarm * 0.14, 10);
+    expect(dusk.b).toBeCloseTo(0.82 - duskWarm * SUN_WARM_B, 10);
   });
 });
 
