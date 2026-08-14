@@ -72,6 +72,36 @@ export function markerRingOpacity(role: MarkerRole): number {
   return role === "player" ? PLAYER_FOOT_RING_OPACITY : MARKER_RING_OPACITY;
 }
 
+/** Radio interior del aro loot/puerta/cama (queda fuera del Soldier 1.5). */
+export const INTERACT_RING_INNER = 0.55;
+
+/** Radio exterior del aro loot/puerta/cama. */
+export const INTERACT_RING_OUTER = 0.78;
+
+/** Radio interior del aro mute/possessed (sin cambio). */
+export const THREAT_RING_INNER = 0.42;
+
+/** Radio exterior del aro mute/possessed (sin cambio). */
+export const THREAT_RING_OUTER = 0.58;
+
+export interface MarkerRingRadii {
+  inner: number;
+  outer: number;
+}
+
+/** loot/door/bed usan el aro más grande; player/mute/possessed no. */
+export function markerUsesInteractRing(role: MarkerRole): boolean {
+  return role === "loot" || role === "door" || role === "bed";
+}
+
+/** Radios del aro de suelo. Player no monta mesh (opacity 0). */
+export function markerRingRadii(role: MarkerRole): MarkerRingRadii {
+  if (markerUsesInteractRing(role)) {
+    return { inner: INTERACT_RING_INNER, outer: INTERACT_RING_OUTER };
+  }
+  return { inner: THREAT_RING_INNER, outer: THREAT_RING_OUTER };
+}
+
 /** Opacidad del badge flotante para roles no-player (loot/door/bed/mute/possessed). */
 export const MARKER_BADGE_OPACITY = 1;
 
