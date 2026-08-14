@@ -31,7 +31,7 @@ describe("constantes", () => {
     expect(RAIN_COLOR).toBe(0xc1e1ff);
   });
 
-  test("opacity 0.29095 + i×0.595125; noche +0.345; active min 7; night cut 0.191; hide 0.02", () => {
+  test("opacity 0.29095 + i×0.595125; noche +0.345; active min 7; night cut 0.191; hide 0.0174", () => {
     expect(RAIN_OPACITY_BASE).toBe(0.29095);
     expect(RAIN_OPACITY_GAIN).toBe(0.595125);
     expect(RAIN_OPACITY_NIGHT_ADD).toBe(0.345);
@@ -41,7 +41,8 @@ describe("constantes", () => {
     expect(RAIN_ACTIVE_GAIN).toBeCloseTo(0.65 * 1.15, 10);
     expect(RAIN_ACTIVE_MIN).toBe(7);
     expect(RAIN_NIGHT_COUNT_CUT).toBe(0.191);
-    expect(RAIN_HIDE_BELOW).toBe(0.02);
+    expect(RAIN_HIDE_BELOW).toBe(0.0174);
+    expect(RAIN_HIDE_BELOW).toBeCloseTo(0.02 * 0.87, 10);
   });
 });
 
@@ -110,10 +111,10 @@ describe("rainActiveCount", () => {
 });
 
 describe("rainStreaksHidden", () => {
-  test("hide ≤ 0.02; visible por encima", () => {
+  test("hide ≤ 0.0174; visible por encima", () => {
     expect(rainStreaksHidden(0)).toBe(true);
-    expect(rainStreaksHidden(0.02)).toBe(true);
-    expect(rainStreaksHidden(0.021)).toBe(false);
+    expect(rainStreaksHidden(0.0174)).toBe(true);
+    expect(rainStreaksHidden(0.02)).toBe(false);
     expect(rainStreaksHidden(1)).toBe(false);
     expect(rainStreaksHidden(Number.NaN)).toBe(true);
   });
