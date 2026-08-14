@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** aros loot/puerta/cama un poco más grandes.
+- **Última rutina:** badges E/Z un poco más altos.
 - **Qué quedó (esta corrida):**
+  - **door/bed badge Y 1.12→2.0; letras igual; loot nameplate igual.** `doorBadgeY` / `bedBadgeY` 2.0. `attachRoleMarkers` usa esos knobs solo para puerta/cama. E/Z font 80 / scale 2.4 / disc 1.5 sin cambio. Loot nameplate Y 1.85; loot badge Y 1.12; mute/possessed 1.68. Player badge sigue oculto. Cámara / escala / aros / luces / lluvia / linterna / teclas / gestos sin cambio.
   - **interact 0.55–0.78; player hidden; chevron igual.** `INTERACT_RING_INNER/OUTER` 0.55 / 0.78 (loot/door/bed). `THREAT_RING_INNER/OUTER` 0.42 / 0.58 (mute/possessed, sin cambio). `markerUsesInteractRing` / `markerRingRadii`. worldView `interactRingGeo` vs `ringGeo`. Player sin mesh de aro (`PLAYER_FOOT_RING_OPACITY` 0). Chevron / cámara / escala / nameplate Y / luces / lluvia / linterna / teclas / gestos sin cambio.
   - **Y 1.55→1.85; fade/iconos/empty-hide igual.** `LOOT_NAMEPLATE_Y` 1.85 (era 1.55). `makeLootNameplateSprite` sigue `sprite.position.set(0, LOOT_NAMEPLATE_Y, 0)`. Fade 6.5, empty-hide, mid-scale 0.55 e iconos sin cambio. Cámara / escala / chevron / luces / lluvia / linterna / teclas / gestos sin cambio.
   - **dist/size nudged; opacity/yaw igual.** `FACING_CHEVRON_DIST` 1.2 (era 1.05). `FACING_CHEVRON_LEN` 0.805 (era 0.70, ×1.15). `FACING_CHEVRON_HW` 0.322 (era 0.28). worldView mesh usa esos knobs (sin magic numbers). `FACING_CHEVRON_OPACITY` 0.55 y `FACING_CHEVRON_YAW_OFFSET` 0 sin cambio; siempre visible. Cámara / escala / luces / lluvia / markers / linterna / teclas / gestos sin cambio.
