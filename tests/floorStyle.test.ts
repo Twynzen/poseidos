@@ -123,7 +123,7 @@ describe("tintFromTile", () => {
     expect(src).toContain("OUTDOOR_GRASS_BASE & 0xff");
     expect(src).toContain("[0x4f, 0x65, 0x40]");
     expect(src).toContain("[0x3c, 0x4c, 0x35]");
-    expect(src).toContain("[0x4a, 0x52, 0x3a]");
+    expect(src).toContain("[0x55, 0x5e, 0x43]");
     expect(src).toContain("[0x3e, 0x4a, 0x36]");
     expect(src).toContain("[0x52, 0x5a, 0x40]");
     expect(src).toContain("[0x2e, 0x3c, 0x2a]");
@@ -131,6 +131,7 @@ describe("tintFromTile", () => {
     expect(src).not.toContain("[0x3a, 0x4e, 0x32]");
     expect(src).not.toContain("[0x45, 0x58, 0x38]");
     expect(src).not.toContain("[0x34, 0x42, 0x2e]");
+    expect(src).not.toContain("[0x4a, 0x52, 0x3a]");
     expect(INDOOR_FLOOR_COLOR).toBe(0x303540);
     expect(WALL_COLOR).toBe(0x685f53);
     expect(WALL_BASE_COLOR).toBe(0x1e2027);
@@ -172,12 +173,13 @@ describe("tintFromTile", () => {
     expect(src).not.toContain("[0x45, 0x58, 0x38]");
     expect(src).toContain("(OUTDOOR_GRASS_BASE >> 16) & 0xff");
     expect(src).toContain("[0x3c, 0x4c, 0x35]");
-    expect(src).toContain("[0x4a, 0x52, 0x3a]");
+    expect(src).toContain("[0x55, 0x5e, 0x43]");
     expect(src).toContain("[0x3e, 0x4a, 0x36]");
     expect(src).toContain("[0x52, 0x5a, 0x40]");
     expect(src).toContain("[0x2e, 0x3c, 0x2a]");
     expect(src).toContain("[0x48, 0x5e, 0x3c]");
     expect(src).not.toContain("[0x34, 0x42, 0x2e]");
+    expect(src).not.toContain("[0x4a, 0x52, 0x3a]");
     expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
     expect(INDOOR_FLOOR_COLOR).toBe(0x303540);
     expect(WALL_COLOR).toBe(0x685f53);
@@ -220,7 +222,55 @@ describe("tintFromTile", () => {
     expect(src).not.toContain("[0x34, 0x42, 0x2e]");
     expect(src).toContain("(OUTDOOR_GRASS_BASE >> 16) & 0xff");
     expect(src).toContain("[0x4f, 0x65, 0x40]");
-    expect(src).toContain("[0x4a, 0x52, 0x3a]");
+    expect(src).toContain("[0x55, 0x5e, 0x43]");
+    expect(src).toContain("[0x3e, 0x4a, 0x36]");
+    expect(src).toContain("[0x52, 0x5a, 0x40]");
+    expect(src).toContain("[0x2e, 0x3c, 0x2a]");
+    expect(src).toContain("[0x48, 0x5e, 0x3c]");
+    expect(src).not.toContain("[0x4a, 0x52, 0x3a]");
+    expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
+    expect(INDOOR_FLOOR_COLOR).toBe(0x303540);
+    expect(WALL_COLOR).toBe(0x685f53);
+    expect(WALL_BASE_COLOR).toBe(0x1e2027);
+    expect(GROUND_NIGHT_LIFT).toBe(1.6675);
+    expect(AO_MAX_DARKEN).toBe(0.261);
+  });
+
+  test("fourth outdoor swatch 0x4a523a × 1.15", () => {
+    const r0 = 0x55;
+    const g0 = 0x5e;
+    const b0 = 0x43;
+    expect(Math.round(0x4a * 1.15)).toBe(r0);
+    expect(Math.round(0x52 * 1.15)).toBe(g0);
+    expect(Math.round(0x3a * 1.15)).toBe(b0);
+
+    let found = false;
+    for (let y = 0; y < 32 && !found; y++) {
+      for (let x = 0; x < 32 && !found; x++) {
+        const t = tileSeed01(x, y);
+        if (Math.floor(t * 8) !== 3) continue;
+        const j = tileSeed01(y, x);
+        const dr = Math.floor((j - 0.5) * 12);
+        const dg = Math.floor((t - 0.5) * 10);
+        const db = Math.floor((j * t - 0.25) * 8);
+        const clamp = (n: number) => Math.max(0, Math.min(255, n | 0));
+        const expected =
+          (clamp(r0 + dr) << 16) | (clamp(g0 + dg) << 8) | clamp(b0 + db);
+        expect(tintFromTile(x, y, true)).toBe(expected);
+        found = true;
+      }
+    }
+    expect(found).toBe(true);
+
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/floorStyle.ts"),
+      "utf8",
+    );
+    expect(src).toContain("[0x55, 0x5e, 0x43]");
+    expect(src).not.toContain("[0x4a, 0x52, 0x3a]");
+    expect(src).toContain("(OUTDOOR_GRASS_BASE >> 16) & 0xff");
+    expect(src).toContain("[0x4f, 0x65, 0x40]");
+    expect(src).toContain("[0x3c, 0x4c, 0x35]");
     expect(src).toContain("[0x3e, 0x4a, 0x36]");
     expect(src).toContain("[0x52, 0x5a, 0x40]");
     expect(src).toContain("[0x2e, 0x3c, 0x2a]");
