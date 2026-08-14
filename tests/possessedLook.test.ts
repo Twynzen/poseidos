@@ -17,6 +17,7 @@ import {
   POSSESSED_ACCENT_ROUGHNESS,
   POSSESSED_BODY_COLOR,
   POSSESSED_BODY_EMISSIVE,
+  POSSESSED_BODY_EMISSIVE_INTENSITY,
   POSSESSED_BODY_ROUGHNESS,
   POSSESSED_CRUSHED_BODY,
   POSSESSED_FALLBACK_EMISSIVE,
@@ -62,6 +63,8 @@ describe("possessedLook constants", () => {
     expect(POSSESSED_ACCENT_ROUGHNESS).toBe(0.348);
     expect(POSSESSED_ACCENT_ROUGHNESS).toBeCloseTo(0.4 * 0.87, 10);
     expect(POSSESSED_ACCENT_ROUGHNESS).toBeLessThan(POSSESSED_BODY_ROUGHNESS);
+    expect(POSSESSED_BODY_EMISSIVE_INTENSITY).toBe(1.15);
+    expect(POSSESSED_BODY_EMISSIVE_INTENSITY).toBeCloseTo(1 * 1.15, 10);
     expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(0.9775);
     expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBeCloseTo(0.85 * 1.15, 10);
     expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBeGreaterThan(0.5);
@@ -71,6 +74,20 @@ describe("possessedLook constants", () => {
     const crushR = (POSSESSED_CRUSHED_BODY >> 16) & 0xff;
     const bodyR = (POSSESSED_BODY_COLOR >> 16) & 0xff;
     expect(bodyR).toBeGreaterThan(crushR);
+  });
+
+  test("body emissive intensity 1 × 1.15; color/looks iguales", () => {
+    expect(POSSESSED_BODY_EMISSIVE_INTENSITY).toBe(1.15);
+    expect(POSSESSED_BODY_EMISSIVE_INTENSITY).toBeCloseTo(1 * 1.15, 10);
+    expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(0.9775);
+    expect(POSSESSED_ACCENT_EMISSIVE).toBe(0x4a1028);
+    expect(POSSESSED_BODY_EMISSIVE).toBe(0x21141e);
+    expect(POSSESSED_BODY_COLOR).toBe(0x3a2838);
+    expect(POSSESSED_MAP_TINT).toBe(0x8a6a82);
+    expect(POSSESSED_ACCENT).toBe(0x8a2a55);
+    expect(POSSESSED_BODY_ROUGHNESS).toBe(0.7656);
+    expect(POSSESSED_ACCENT_ROUGHNESS).toBe(0.348);
+    expect(POSSESSED_CRUSHED_BODY).toBe(0x1c141c);
   });
 
   test("accent emissive intensity 0.85 × 1.15; color/looks iguales", () => {
@@ -151,7 +168,7 @@ describe("applyPossessedLook", () => {
     expect(tintedBody.color.getHex()).not.toBe(POSSESSED_CRUSHED_BODY);
     expect(tintedBody.emissive.getHex()).toBe(POSSESSED_BODY_EMISSIVE);
     expect(tintedBody.emissive.getHex()).not.toBe(POSSESSED_FALLBACK_EMISSIVE);
-    expect(tintedBody.emissiveIntensity).toBeGreaterThan(0);
+    expect(tintedBody.emissiveIntensity).toBe(POSSESSED_BODY_EMISSIVE_INTENSITY);
     expect(tintedVisor.color.getHex()).toBe(POSSESSED_ACCENT);
     expect(tintedVisor.emissive.getHex()).toBe(POSSESSED_ACCENT_EMISSIVE);
     expect(tintedVisor.emissiveIntensity).toBe(
