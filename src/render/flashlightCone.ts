@@ -35,7 +35,7 @@ export const FLASHLIGHT_WEDGE_OPACITY_BASE = 0.727375;
 export const FLASHLIGHT_WEDGE_OPACITY_GAIN = 0.3345925;
 
 /** Umbral de intensidad para mostrar cono / luces. */
-const FLASHLIGHT_CONE_VISIBLE_EPS = 0.02;
+export const FLASHLIGHT_CONE_VISIBLE_EPS = 0.0174;
 
 /**
  * Knob de calibración (rad). Default 0 — yaw 0 ya apunta +Z.
@@ -146,7 +146,7 @@ export function flashlightConeWedgePoints(
   return flashlightConeWedge(yaw, length, halfWidth);
 }
 
-/** ¿Cono / luces visibles? Mismo umbral que syncTorchLight (intensity > 0.02). */
+/** ¿Cono / luces visibles? Mismo umbral que syncTorchLight (intensity > 0.0174). */
 export function flashlightConeVisible(intensity: number): boolean {
   return Number.isFinite(intensity) && intensity > FLASHLIGHT_CONE_VISIBLE_EPS;
 }

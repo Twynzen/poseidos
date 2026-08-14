@@ -4,6 +4,7 @@ import { describe, expect, test } from "vitest";
 import {
   FLASHLIGHT_CONE_HALF_WIDTH,
   FLASHLIGHT_CONE_LENGTH,
+  FLASHLIGHT_CONE_VISIBLE_EPS,
   FLASHLIGHT_CONE_Y,
   FLASHLIGHT_CONE_YAW_OFFSET,
   FLASHLIGHT_FILL_INTENSITY_MUL,
@@ -32,6 +33,21 @@ describe("constantes", () => {
     expect(FLASHLIGHT_CONE_Y).toBe(0.12167);
     expect(FLASHLIGHT_CONE_Y).toBeCloseTo(0.1058 * 1.15, 10);
     expect(FLASHLIGHT_CONE_YAW_OFFSET).toBe(0);
+  });
+
+  test("visible eps 0.0174 (0.02 × 0.87); length/half-width/Y/penumbra/intensity/colors/opacity sin cambio", () => {
+    expect(FLASHLIGHT_CONE_VISIBLE_EPS).toBe(0.0174);
+    expect(FLASHLIGHT_CONE_VISIBLE_EPS).toBeCloseTo(0.02 * 0.87, 10);
+    expect(FLASHLIGHT_CONE_LENGTH).toBe(6.387675);
+    expect(FLASHLIGHT_CONE_HALF_WIDTH).toBe(1.3687875);
+    expect(FLASHLIGHT_CONE_Y).toBe(0.12167);
+    expect(FLASHLIGHT_SPOT_PENUMBRA).toBe(0.2645);
+    expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(3.6501);
+    expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.83648125);
+    expect(FLASHLIGHT_WEDGE_COLOR).toBe(0xefffff);
+    expect(FLASHLIGHT_SPOT_COLOR).toBe(0xf8ffff);
+    expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.727375);
+    expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.3345925);
   });
 
   test("color 0xefffff (0xd0eaff × 1.15, g/b clamp); length/half-width/Y/opacities/spot/fill/penumbra sin cambio (no double-apply)", () => {
@@ -237,9 +253,11 @@ describe("flashlightConeWedgePoints", () => {
 });
 
 describe("flashlightConeVisible / flashlightWedgeOpacity", () => {
-  test("visible solo si intensity > 0.02", () => {
+  test("visible solo si intensity > 0.0174", () => {
     expect(flashlightConeVisible(0)).toBe(false);
-    expect(flashlightConeVisible(0.02)).toBe(false);
+    expect(flashlightConeVisible(0.0174)).toBe(false);
+    expect(flashlightConeVisible(FLASHLIGHT_CONE_VISIBLE_EPS)).toBe(false);
+    expect(flashlightConeVisible(0.02)).toBe(true);
     expect(flashlightConeVisible(0.021)).toBe(true);
     expect(flashlightConeVisible(1.5)).toBe(true);
     expect(flashlightConeVisible(Number.NaN)).toBe(false);
@@ -247,7 +265,7 @@ describe("flashlightConeVisible / flashlightWedgeOpacity", () => {
 
   test("opacity 0 off; on = base + intensity × gain", () => {
     expect(flashlightWedgeOpacity(0)).toBe(0);
-    expect(flashlightWedgeOpacity(0.02)).toBe(0);
+    expect(flashlightWedgeOpacity(0.0174)).toBe(0);
     expect(flashlightWedgeOpacity(1)).toBeCloseTo(
       Math.min(
         1,
