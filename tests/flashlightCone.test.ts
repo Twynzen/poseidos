@@ -42,7 +42,7 @@ describe("constantes", () => {
     expect(FLASHLIGHT_CONE_LENGTH).toBe(5.5545);
     expect(FLASHLIGHT_CONE_HALF_WIDTH).toBe(1.19025);
     expect(FLASHLIGHT_CONE_Y).toBe(0.1058);
-    expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.6325);
+    expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.727375);
     expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.29095);
     expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(3.174);
     expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.727375);
@@ -64,7 +64,7 @@ describe("constantes", () => {
     expect(FLASHLIGHT_CONE_LENGTH).toBe(5.5545);
     expect(FLASHLIGHT_CONE_HALF_WIDTH).toBe(1.19025);
     expect(FLASHLIGHT_CONE_Y).toBe(0.1058);
-    expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.6325);
+    expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.727375);
     expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.29095);
     expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(3.174);
     expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.727375);
@@ -77,7 +77,7 @@ describe("constantes", () => {
     expect(viewSrc).toContain("torchSpot.color.setHex(FLASHLIGHT_SPOT_COLOR)");
   });
 
-  test("haz: penumbra 0.23, spot ×3.174, fill ×0.727375, cuña 0xefffff opacity 0.6325/0.29095", () => {
+  test("haz: penumbra 0.23, spot ×3.174, fill ×0.727375, cuña 0xefffff opacity 0.727375/0.29095", () => {
     expect(FLASHLIGHT_SPOT_PENUMBRA).toBe(0.23);
     expect(FLASHLIGHT_SPOT_PENUMBRA).toBeCloseTo(0.2 * 1.15, 10);
     expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(3.174);
@@ -86,8 +86,8 @@ describe("constantes", () => {
     expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBeCloseTo(0.6325 * 1.15, 10);
     expect(FLASHLIGHT_WEDGE_COLOR).toBe(0xefffff);
     expect(FLASHLIGHT_SPOT_COLOR).toBe(0xf8ffff);
-    expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.6325);
-    expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBeCloseTo(0.55 * 1.15, 10);
+    expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.727375);
+    expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBeCloseTo(0.6325 * 1.15, 10);
     expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.29095);
     expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBeCloseTo(0.253 * 1.15, 10);
     const viewSrc = readFileSync(
@@ -249,7 +249,10 @@ describe("flashlightConeVisible / flashlightWedgeOpacity", () => {
     expect(flashlightWedgeOpacity(0)).toBe(0);
     expect(flashlightWedgeOpacity(0.02)).toBe(0);
     expect(flashlightWedgeOpacity(1)).toBeCloseTo(
-      FLASHLIGHT_WEDGE_OPACITY_BASE + FLASHLIGHT_WEDGE_OPACITY_GAIN,
+      Math.min(
+        1,
+        FLASHLIGHT_WEDGE_OPACITY_BASE + FLASHLIGHT_WEDGE_OPACITY_GAIN,
+      ),
       10,
     );
     expect(flashlightWedgeOpacity(1.5)).toBeCloseTo(
