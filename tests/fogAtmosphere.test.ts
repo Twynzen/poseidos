@@ -107,11 +107,11 @@ describe("skyRgb cinematic", () => {
     expect(night.r + night.g + night.b).toBeLessThan(0.45);
   });
 
-  test("knobs: noche r 0.07 × 1.15; g/b/día iguales", () => {
-    expect(SKY_NIGHT).toEqual({ r: 0.0805, g: 0.09, b: 0.14 });
+  test("knobs: noche g 0.09 × 1.15; r/b/día iguales", () => {
+    expect(SKY_NIGHT).toEqual({ r: 0.0805, g: 0.1035, b: 0.14 });
     expect(SKY_NIGHT.r).toBe(0.0805);
-    expect(SKY_NIGHT.r).toBeCloseTo(0.07 * 1.15, 10);
-    expect(SKY_NIGHT.g).toBe(0.09);
+    expect(SKY_NIGHT.g).toBe(0.1035);
+    expect(SKY_NIGHT.g).toBeCloseTo(0.09 * 1.15, 10);
     expect(SKY_NIGHT.b).toBe(0.14);
     expect(SKY_DAY).toEqual({ r: 0.26, g: 0.33, b: 0.47 });
   });
