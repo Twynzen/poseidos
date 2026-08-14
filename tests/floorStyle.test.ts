@@ -3,9 +3,13 @@ import {
   aoFactor,
   applyAo,
   applyNightGroundLift,
+  BED_COLOR,
   countAoNeighbors,
+  DOOR_CLOSED,
+  DOOR_OPEN,
   floorColorAt,
   floorIsOutdoor,
+  FURNITURE_COLOR,
   GROUND_NIGHT_LIFT,
   INDOOR_FLOOR_COLOR,
   isAoOccluder,
@@ -180,5 +184,38 @@ describe("night wall albedo lift", () => {
     expect(nr).toBeGreaterThan(dr);
     expect(ng).toBeGreaterThan(dg);
     expect(nb).toBeGreaterThan(db);
+  });
+});
+
+describe("night leftover prop albedo lift", () => {
+  test("doors/beds/furniture reuse ground lift; day = identity", () => {
+    expect(GROUND_NIGHT_LIFT).toBe(1.45);
+    expect(DOOR_CLOSED).toBe(0x8b5a2b);
+    expect(DOOR_OPEN).toBe(0xc4a35a);
+    expect(FURNITURE_COLOR).toBe(0x6b4f2a);
+    expect(BED_COLOR).toBe(0x4a1f3d);
+    expect(applyNightGroundLift(DOOR_CLOSED, 1)).toBe(DOOR_CLOSED);
+    expect(applyNightGroundLift(DOOR_OPEN, 1)).toBe(DOOR_OPEN);
+    expect(applyNightGroundLift(FURNITURE_COLOR, 1)).toBe(FURNITURE_COLOR);
+    expect(applyNightGroundLift(BED_COLOR, 1)).toBe(BED_COLOR);
+  });
+
+  test("noche props más claros; mismo multiply 1.45", () => {
+    expect(applyNightGroundLift(DOOR_CLOSED, 0)).toBe(0xca833e);
+    expect(applyNightGroundLift(DOOR_OPEN, 0)).toBe(0xffec83);
+    expect(applyNightGroundLift(FURNITURE_COLOR, 0)).toBe(0x9b733d);
+    expect(applyNightGroundLift(BED_COLOR, 0)).toBe(0x6b2d58);
+    for (const base of [DOOR_CLOSED, DOOR_OPEN, FURNITURE_COLOR, BED_COLOR]) {
+      const night = applyNightGroundLift(base, 0);
+      const nr = (night >> 16) & 0xff;
+      const ng = (night >> 8) & 0xff;
+      const nb = night & 0xff;
+      const dr = (base >> 16) & 0xff;
+      const dg = (base >> 8) & 0xff;
+      const db = base & 0xff;
+      expect(nr).toBeGreaterThan(dr);
+      expect(ng).toBeGreaterThan(dg);
+      expect(nb).toBeGreaterThan(db);
+    }
   });
 });
