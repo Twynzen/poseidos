@@ -5,6 +5,7 @@ import {
   LOOT_NAMEPLATE_FADE_DIST,
   LOOT_NAMEPLATE_FILL,
   LOOT_NAMEPLATE_GOLD_FILL,
+  LOOT_NAMEPLATE_GOLD_STROKE,
   LOOT_NAMEPLATE_FONT_PX,
   LOOT_NAMEPLATE_ICON_PAD,
   LOOT_NAMEPLATE_ICON_SIZE,
@@ -29,6 +30,38 @@ import {
 } from "../src/render/lootNameplate";
 
 describe("constantes", () => {
+  test("GOLD_STROKE #ffe07a (#e8c36a ×1.15); icon-stroke/text/plate/gold/fill/stroke/font/fade/mid-scale/icon/pad/scale/Y sin cambio", () => {
+    expect(LOOT_NAMEPLATE_GOLD_STROKE).toBe("#ffe07a");
+    expect(LOOT_NAMEPLATE_ICON_STROKE).toBe(1.725);
+    expect(LOOT_NAMEPLATE_TEXT_STROKE).toBe("rgba(0,0,0,0.805)");
+    expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.828)");
+    expect(LOOT_NAMEPLATE_GOLD_FILL).toBe("rgba(232,195,106,0.368)");
+    expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");
+    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
+    expect(LOOT_NAMEPLATE_FONT_PX).toBe(39.1);
+    expect(LOOT_NAMEPLATE_FADE_DIST).toBe(6.325);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
+    expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
+    expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
+    expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.7475);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_PAD).toBe(78.2);
+  });
+
+  test("paintLootNameplateIcon usa LOOT_NAMEPLATE_GOLD_STROKE", () => {
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/lootNameplate.ts"),
+      "utf8",
+    );
+    expect(src).toContain("ctx.strokeStyle = LOOT_NAMEPLATE_GOLD_STROKE");
+    expect(src).not.toMatch(/const GOLD_STROKE = /);
+    expect(src).not.toMatch(/ctx\.strokeStyle = "#e8c36a"/);
+    const ctx = mockNameplateCtx();
+    paintLootNameplateIcon(ctx, "wood", 0, 0, 32);
+    expect(ctx.strokeStyle).toBe(LOOT_NAMEPLATE_GOLD_STROKE);
+    expect(ctx.strokeStyle).toBe("#ffe07a");
+  });
+
   test("ICON_STROKE 1.725 (1.5 × 1.15); text/plate/gold/fill/stroke/font/fade/mid-scale/icon/pad/scale/Y sin cambio", () => {
     expect(LOOT_NAMEPLATE_ICON_STROKE).toBe(1.725);
     expect(LOOT_NAMEPLATE_ICON_STROKE).toBeCloseTo(1.5 * 1.15, 5);

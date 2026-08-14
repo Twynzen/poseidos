@@ -131,7 +131,8 @@ export type LootNameplateIconKind =
   | "flashlight"
   | "diamond";
 
-const GOLD_STROKE = "#e8c36a";
+/** Stroke gold de la silueta del icono. #e8c36a ×1.15 por canal (r clamp) para leer de noche. */
+export const LOOT_NAMEPLATE_GOLD_STROKE = "#ffe07a";
 /** Fill gold de la silueta del icono. 0.32 × 1.15 para leer de noche. */
 export const LOOT_NAMEPLATE_GOLD_FILL = "rgba(232,195,106,0.368)";
 
@@ -173,7 +174,7 @@ export function paintLootNameplateIcon(
     ctx.save();
     ctx.translate(x, y);
     ctx.scale(s / 32, s / 32);
-    ctx.strokeStyle = GOLD_STROKE;
+    ctx.strokeStyle = LOOT_NAMEPLATE_GOLD_STROKE;
     ctx.fillStyle = LOOT_NAMEPLATE_GOLD_FILL;
     ctx.lineWidth = LOOT_NAMEPLATE_ICON_STROKE;
     ctx.lineJoin = "round";
