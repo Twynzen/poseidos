@@ -18,9 +18,9 @@ export const LOOT_NAMEPLATE_MID_SCALE = 0.6348;
 /** Altura local Y del sprite sobre el grupo loot. 2.4725 × 1.15 para despejar el mesh de noche. */
 export const LOOT_NAMEPLATE_Y = 2.843375;
 
-/** Escala world del sprite (canvas 384×80). 2.99 × 1.15 / 0.65 × 1.15 para leer el label de noche. */
+/** Escala world del sprite (canvas 384×80). 2.99 × 1.15 / 0.7475 × 1.15 para leer el label de noche. */
 export const LOOT_NAMEPLATE_SCALE_X = 3.4385;
-export const LOOT_NAMEPLATE_SCALE_Y = 0.7475;
+export const LOOT_NAMEPLATE_SCALE_Y = 0.859625;
 
 /** Padding izquierdo del canvas para la silueta gold. 68 × 1.15 para leer de noche. */
 export const LOOT_NAMEPLATE_ICON_PAD = 78.2;
