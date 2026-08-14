@@ -88,7 +88,7 @@ export function tintFromTile(x: number, y: number, outdoor: boolean): number {
       OUTDOOR_GRASS_BASE & 0xff,
     ], // verde musgo
     [0x4f, 0x65, 0x40], // verde medio
-    [0x34, 0x42, 0x2e], // verde oscuro
+    [0x3c, 0x4c, 0x35], // verde oscuro
     [0x4a, 0x52, 0x3a], // verde-gris
     [0x3e, 0x4a, 0x36], // gris verdoso
     [0x52, 0x5a, 0x40], // seco / rastrojo
