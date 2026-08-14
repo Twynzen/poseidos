@@ -108,7 +108,7 @@ export const muteBadgeY = 2.0;
 /** Altura world del floatBadge poseído (queda por encima del Soldier 1.5). */
 export const possessedBadgeY = 2.0;
 
-/** Opacidad del badge flotante para door/bed/mute/possessed. */
+/** Opacidad del badge flotante para door/bed (E/Z). */
 export const MARKER_BADGE_OPACITY = 1;
 
 /** Opacidad del badge del player (0 = oculto; el chevron queda). */
@@ -117,10 +117,18 @@ export const PLAYER_BADGE_OPACITY = 0;
 /** Opacidad del badge flotante de loot (0 = oculto; queda el nameplate). */
 export const LOOT_BADGE_OPACITY = 0;
 
-/** Badge player/loot 0 (oculto); door/bed/mute/possessed 1. */
+/** Opacidad del badge flotante mute (0 = oculto; quedan look + aro). */
+export const MUTE_BADGE_OPACITY = 0;
+
+/** Opacidad del badge flotante poseído (0 = oculto; quedan look + aro). */
+export const POSSESSED_BADGE_OPACITY = 0;
+
+/** Badge player/loot/mute/possessed 0 (oculto); door/bed 1. */
 export function markerBadgeOpacity(role: MarkerRole): number {
   if (role === "player") return PLAYER_BADGE_OPACITY;
   if (role === "loot") return LOOT_BADGE_OPACITY;
+  if (role === "mute") return MUTE_BADGE_OPACITY;
+  if (role === "possessed") return POSSESSED_BADGE_OPACITY;
   return MARKER_BADGE_OPACITY;
 }
 
