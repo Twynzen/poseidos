@@ -11,8 +11,8 @@ export const LOOT_FOCUS_REACH = CONTAINER_REACH;
 /** Escala encima del contenedor (dist 0; 1.35 × 1.15, para leerse de noche). */
 export const LOOT_FOCUS_SCALE_NEAR = 1.5525;
 
-/** Escala en el borde de reach. */
-export const LOOT_FOCUS_SCALE_FAR = 1.12;
+/** Escala en el borde de reach (1.12 × 1.15, para leerse de noche). */
+export const LOOT_FOCUS_SCALE_FAR = 1.288;
 
 /** Amplitud del seno. */
 export const LOOT_FOCUS_PULSE_AMP = 0.05;
@@ -26,7 +26,7 @@ export function lootFocusInReach(dist: number): boolean {
 }
 
 /**
- * 1.5525 en dist 0 · 1.12 en reach 1.6 · 1.0 fuera.
+ * 1.5525 en dist 0 · 1.288 en reach 1.6 · 1.0 fuera.
  * Lerp lineal entre near y far dentro de reach.
  */
 export function lootFocusScale(dist: number): number {
