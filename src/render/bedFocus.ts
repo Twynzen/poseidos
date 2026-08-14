@@ -12,8 +12,8 @@ export const BED_FOCUS_SCALE_NEAR = 1.5525;
 /** Escala en el borde de reach (1.12 × 1.15, para leerse de noche). */
 export const BED_FOCUS_SCALE_FAR = 1.288;
 
-/** Amplitud del seno. */
-export const BED_FOCUS_PULSE_AMP = 0.05;
+/** Amplitud del seno (0.05 × 1.15, para leerse de noche). */
+export const BED_FOCUS_PULSE_AMP = 0.0575;
 
 /** Velocidad angular del pulso (rad/s). */
 export const BED_FOCUS_PULSE_SPEED = 6;
@@ -52,7 +52,7 @@ export function bedFocusScale(dist: number): number {
   );
 }
 
-/** 1 + 0.05 * sin(elapsed * 6). */
+/** 1 + 0.0575 * sin(elapsed * 6). */
 export function bedFocusPulse(elapsed: number): number {
   const t = Number.isFinite(elapsed) ? elapsed : 0;
   return 1 + BED_FOCUS_PULSE_AMP * Math.sin(t * BED_FOCUS_PULSE_SPEED);
