@@ -26,12 +26,13 @@ describe("constantes", () => {
     expect(BED_FOCUS_PULSE_SPEED).toBe(6);
   });
 
-  test("bedBadgeLabel es Z; font 80; letter 2.4; disc 1.5; Y 2.0", () => {
+  test("bedBadgeLabel es Z; font 80; letter 2.4; disc 1.5; Y 2.3", () => {
     expect(bedBadgeLabel).toBe("Z");
     expect(bedBadgeFontPx).toBe(80);
     expect(bedBadgeLetterScale).toBe(2.4);
     expect(bedBadgeDiscScale).toBe(1.5);
-    expect(bedBadgeY).toBe(2.0);
+    expect(bedBadgeY).toBe(2.3);
+    expect(bedBadgeY).toBeCloseTo(2.0 * 1.15, 10);
   });
 });
 

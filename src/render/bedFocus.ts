@@ -31,7 +31,7 @@ export const bedBadgeLetterScale = 2.4;
 export const bedBadgeDiscScale = 1.5;
 
 /** Altura world del floatBadge Z (queda por encima del Soldier 1.5). */
-export const bedBadgeY = 2.0;
+export const bedBadgeY = 2.3;
 
 /** True si dist está en reach (incl. el borde). */
 export function bedFocusInReach(dist: number): boolean {
