@@ -31,7 +31,7 @@ export const doorBadgeLetterScale = 2.4;
 export const doorBadgeDiscScale = 1.5;
 
 /** Altura world del floatBadge E (queda por encima del Soldier 1.5). */
-export const doorBadgeY = 2.0;
+export const doorBadgeY = 2.3;
 
 /** True si dist está en reach (incl. el borde). */
 export function doorFocusInReach(dist: number): boolean {
