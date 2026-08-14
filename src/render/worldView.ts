@@ -1856,7 +1856,7 @@ function makeHostileGltfFigure(
 }
 
 interface MarkerSharedResources {
-  /** Aro mute/possessed (THREAT 0.50–0.68). */
+  /** Aro mute/possessed (THREAT 0.50–0.782). */
   ringGeo: THREE.RingGeometry;
   /** Aro loot/door/bed (INTERACT 0.55–0.897). */
   interactRingGeo: THREE.RingGeometry;
