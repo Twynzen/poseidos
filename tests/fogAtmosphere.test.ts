@@ -40,9 +40,10 @@ function daylightAt(phase: number): number {
 }
 
 describe("fogNearFar", () => {
-  test("knobs: noche near 23 / far 59; día 38 / 100", () => {
+  test("knobs: noche far 59 × 1.15; near/día iguales", () => {
+    expect(FOG_FAR_NIGHT).toBe(67.85);
+    expect(FOG_FAR_NIGHT).toBeCloseTo(59 * 1.15, 10);
     expect(FOG_NEAR_NIGHT).toBe(23);
-    expect(FOG_FAR_NIGHT).toBe(59);
     expect(FOG_NEAR_DAY).toBe(38);
     expect(FOG_FAR_DAY).toBe(100);
   });
@@ -57,7 +58,7 @@ describe("fogNearFar", () => {
   });
 
   test("d=0 → night knobs; noon d=1 → day knobs (día sin cambio)", () => {
-    expect(fogNearFar(0)).toEqual({ near: 23, far: 59 });
+    expect(fogNearFar(0)).toEqual({ near: 23, far: 67.85 });
     expect(fogNearFar(1)).toEqual({ near: 38, far: 100 });
   });
 
