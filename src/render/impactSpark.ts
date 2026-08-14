@@ -7,8 +7,10 @@
 
 /** Duración del spark (s). */
 export const IMPACT_SPARK_DURATION = 0.22;
-/** Intensidad pico (u=0). */
+/** Intensidad pico (u=0). Opacity del mesh = intensity (ya 1 al trigger). */
 export const IMPACT_SPARK_PEAK = 1;
+/** Radio de la esfera aditiva (tiles). 0.09 × 1.25 para leer de noche. */
+export const IMPACT_SPARK_RADIUS = 0.1125;
 
 export interface ImpactSparkState {
   /** Segundos transcurridos del spark actual. */
