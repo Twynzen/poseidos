@@ -4,6 +4,7 @@ import {
   AMBIENT_INTENSITY_NIGHT,
   ambientRgb,
   atmosphereFor,
+  DAWN_TINT_R,
   dawnWarmth,
   duskWarmth,
   FOG_FAR_DAY,
@@ -85,6 +86,11 @@ describe("dawn / dusk warmth bands", () => {
 });
 
 describe("skyRgb cinematic", () => {
+  test("knobs: dawn tint r 0.72 × 1.15; g/b/dusk/sky iguales", () => {
+    expect(DAWN_TINT_R).toBe(0.828);
+    expect(DAWN_TINT_R).toBeCloseTo(0.72 * 1.15, 10);
+  });
+
   test("dawn más cálido que noon (r mayor / r>b)", () => {
     const dawnPhase = 0.275;
     const noonPhase = 0.5;
