@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** visor poseído de noche un poco más visible
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After mute/possessed accent emissive, look at mute/possessed body roughness (both 0.7656) — bump MUTE_BODY_ROUGHNESS ×0.87 so the mute body reads a bit less matte at night. Do not change accent roughness, colors, emissive, possessed look, sky/fog/sun/ambient, or controls.
+- **Última rutina:** cuerpo mute un poco menos mate de noche
+- **Siguiente:** leftover visual polish chico — bump `POSSESSED_BODY_ROUGHNESS` (currently 0.7656) ×0.87 so the possessed body reads a bit less matte at night. Do not change accent roughness, colors, emissive, mute look, sky/fog/sun/ambient, or controls. No new widgets.
 - **Qué quedó (esta corrida):**
+  - **MUTE_BODY_ROUGHNESS 0.7656→0.666072; accent/colores/emissive/poseídos/sky/fog/sol/teclas iguales.**
   - **POSSESSED_ACCENT_EMISSIVE_INTENSITY 0.9775→1.124125; body/colores/roughness/mudos/sky/fog/sol/teclas iguales.**
   - **MUTE_ACCENT_EMISSIVE_INTENSITY 0.4025→0.462875; body/colores/roughness/poseídos/sky/fog/sol/teclas iguales.**
   - **POSSESSED_BODY_EMISSIVE_INTENSITY 1→1.15; accent/colores/roughness/mudos/sky/fog/sol/teclas iguales.**
