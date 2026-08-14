@@ -80,7 +80,7 @@ describe("blade transforms + wind", () => {
     expect(WIND_SPEED).toBe(3.174);
     expect(WIND_SPEED).toBeCloseTo(2.76 * 1.15, 10);
     expect(BLADES_PER_TILE).toBe(3);
-    expect(MAX_GRASS_INSTANCES).toBe(320);
+    expect(MAX_GRASS_INSTANCES).toBe(368);
   });
 
   test("base pose dentro del tile; wind oscila", () => {
