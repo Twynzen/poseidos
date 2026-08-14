@@ -9,8 +9,8 @@ export const LOOT_NAMEPLATE_MAX_CHARS = 20;
 /** Distancia a la que el nameplate llega a opacity 0. 5.5 × 1.15 para leer de noche. */
 export const LOOT_NAMEPLATE_FADE_DIST = 6.325;
 
-/** Escala mid-distance en el fade edge (dist ≥ fade). */
-export const LOOT_NAMEPLATE_MID_SCALE = 0.48;
+/** Escala mid-distance en el fade edge (dist ≥ fade). 0.48 × 1.15 para leer de noche. */
+export const LOOT_NAMEPLATE_MID_SCALE = 0.552;
 
 /** Altura local Y del sprite sobre el grupo loot. 2.15 × 1.15 para despejar el mesh de noche. */
 export const LOOT_NAMEPLATE_Y = 2.4725;
