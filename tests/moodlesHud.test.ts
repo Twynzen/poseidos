@@ -87,12 +87,19 @@ describe("createMoodlesHud", () => {
   });
 });
 
+describe("moodle pill CSS", () => {
+  test(".moodle font 11px", () => {
+    const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
+    expect(html).toMatch(/\.moodle\s*\{[^}]*font:\s*11px\/1\.15/s);
+  });
+});
+
 describe("F1 lift CSS", () => {
   test("#hud.hud-help ~ #moodles bottom 340px", () => {
     const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
     expect(html).toMatch(/#hud\.hud-help\s*~\s*#moodles/);
     expect(html).toMatch(/#hud\.hud-help\s*~\s*#moodles\s*\{\s*bottom:\s*340px;/);
-    expect(html).toMatch(/\.moodle-glyph svg\s*\{\s*width:\s*12px;\s*height:\s*12px;/);
+    expect(html).toMatch(/\.moodle-glyph svg\s*\{\s*width:\s*14px;\s*height:\s*14px;/);
   });
 });
 
