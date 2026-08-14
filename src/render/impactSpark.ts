@@ -9,8 +9,8 @@
 export const IMPACT_SPARK_DURATION = 0.253;
 /** Intensidad pico (u=0). Opacity del mesh = intensity (ya 1 al trigger). */
 export const IMPACT_SPARK_PEAK = 1;
-/** Radio de la esfera aditiva (tiles). 0.09 × 1.25 para leer de noche. */
-export const IMPACT_SPARK_RADIUS = 0.1125;
+/** Radio de la esfera aditiva (tiles). 0.1125 × 1.15 para leer de noche. */
+export const IMPACT_SPARK_RADIUS = 0.129375;
 /** Pico de PointLight en worldView. 1.75 × 1.15 para leer de noche. */
 export const IMPACT_SPARK_LIGHT_PEAK = 2.0125;
 

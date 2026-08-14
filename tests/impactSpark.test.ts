@@ -18,9 +18,9 @@ describe("constantes", () => {
     expect(IMPACT_SPARK_PEAK).toBe(1);
   });
 
-  test("radio 0.09 × 1.25; worldView usa el knob (no magic 0.09)", () => {
-    expect(IMPACT_SPARK_RADIUS).toBe(0.1125);
-    expect(IMPACT_SPARK_RADIUS).toBeCloseTo(0.09 * 1.25, 10);
+  test("radio 0.1125 × 1.15; worldView usa el knob (no magic 0.09/0.1125)", () => {
+    expect(IMPACT_SPARK_RADIUS).toBe(0.129375);
+    expect(IMPACT_SPARK_RADIUS).toBeCloseTo(0.1125 * 1.15, 10);
     const viewSrc = readFileSync(
       resolve(process.cwd(), "src/render/worldView.ts"),
       "utf8",
@@ -29,6 +29,7 @@ describe("constantes", () => {
       "new THREE.SphereGeometry(IMPACT_SPARK_RADIUS, 10, 8)",
     );
     expect(viewSrc).not.toMatch(/SphereGeometry\(0\.09\b/);
+    expect(viewSrc).not.toMatch(/SphereGeometry\(0\.1125\b/);
   });
 
   test("luz PointLight 1.75 × 1.15; worldView usa el knob (no magic 1.4/1.75)", () => {
