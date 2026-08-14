@@ -323,7 +323,7 @@ export interface WorldView {
   /**
    * Luz fría de linterna (player). intensity 0 = apagada.
    * SpotLight 0xd8eeff + wedge unlit al facing (`playerGltfYaw`);
-   * PointLight fill ×0.55. Separada de warmLight / muzzle flash.
+   * PointLight fill ×0.6325. Separada de warmLight / muzzle flash.
    */
   syncTorchLight(wx: number, wy: number, intensity: number): void;
   /**

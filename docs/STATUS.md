@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** nameplates a media distancia un poco más quietas.
+- **Última rutina:** fill de linterna un poco más visible de noche.
 - **Siguiente:** leftover visual polish chico — sin gestos nuevos.
 - **Qué quedó (esta corrida):**
+  - **FLASHLIGHT_FILL_INTENSITY_MUL 0.55→0.6325; alcance/L/spot/cuña iguales.** PointLight fill ya existía (no se inventó luz ni mesh). Pico fill `0.55 → 0.6325` (`FLASHLIGHT_FILL_INTENSITY_MUL`, ×1.15). Spot `FLASHLIGHT_SPOT_INTENSITY_MUL` 2.76, `FLASHLIGHT_WEDGE_OPACITY_BASE` 0.55, half-width 0.9, penumbra 0.2, reach 4.2 y tecla L sin cambio. Daño X/Espacio/V iguales. `MUZZLE_LIGHT_PEAK` 2.75 / `IMPACT_SPARK_LIGHT_PEAK` 1.75, radios, tracer, melee, lean, shake, noise rings sin cambio. `GROUND_NIGHT_LIFT` 1.45; sky/fog/luces, anillos, nameplates, albedo noche, lluvia, HUD/inventario, teclas / gestos sin cambio.
   - **LOOT_NAMEPLATE_MID_SCALE 0.55→0.48; fade/Y/iconos/teclas iguales.** `LOOT_NAMEPLATE_MID_SCALE` 0.48 (era 0.55, ~15% más quieto). `lootNameplateScale` lerp 1 → 0.48 de 2 a fade 5.5. Dist ≤ 2 (in-reach 1.6) sigue scale/opacity 1. Fade 5.5, Y 2.15, icon 64 / pad 68, font 34, stroke 4.5, empty-hide iguales. X/Espacio/V/L/Shift, `DEFAULT_MIXER_FADE_SEC` 0.207, `HOSTILE_LOCO_BOB_AMP` 0, anillos, HUD/inventario, teclas / gestos sin cambio.
   - **LOOT_NAMEPLATE_FADE_DIST 6.5→5.5; Y/iconos/teclas iguales.** `LOOT_NAMEPLATE_FADE_DIST` 5.5 (era 6.5). Hide-beyond un poco más cerca; dist ≤ 2 (in-reach 1.6) sigue scale/opacity 1. Mid-scale 0.55, Y 2.15, icon 64 / pad 68, font 34, stroke 4.5, empty-hide iguales. X/Espacio/V/L/Shift, `DEFAULT_MIXER_FADE_SEC` 0.207, `HOSTILE_LOCO_BOB_AMP` 0, anillos, HUD/inventario, teclas / gestos sin cambio.
   - **DEFAULT_MIXER_FADE_SEC 0.18→0.207; clips/teclas iguales.** `DEFAULT_MIXER_FADE_SEC` 0.207 (era 0.18, ×1.15). `bindMixer` ya aplica fadeIn/fadeOut en idle↔walk↔run (`characterAnimator` no tiene fade). Clips Idle/Walk/Run, yaw, walk speed, X/Espacio/V/L/Shift sin cambio. `HOSTILE_LOCO_BOB_AMP` 0, player `IDLE_BOB_AMP` 0.0138 / `WALK_BOB_AMP` 0.06325 / `SPRINT_BOB_AMP` 0.1035 / lean/sway iguales. Emisivos, linterna, lluvia, césped, anillos, nameplates, HUD/inventario, teclas / gestos sin cambio.
