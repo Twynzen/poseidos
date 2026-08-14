@@ -7,8 +7,8 @@
 /** Distancia del chevron al origen del player (tiles). 1.2 × 1.15 para no quedar bajo el Soldier. */
 export const FACING_CHEVRON_DIST = 1.38;
 
-/** Largo del triángulo de suelo (tiles). 0.70 × 1.15 para Soldier 1.5. */
-export const FACING_CHEVRON_LEN = 0.805;
+/** Largo del triángulo de suelo (tiles). 0.805 × 1.15 para leer facing de noche. */
+export const FACING_CHEVRON_LEN = 0.92575;
 
 /** Semi-ancho del triángulo de suelo (tiles). 0.28 × 1.15. */
 export const FACING_CHEVRON_HW = 0.322;
