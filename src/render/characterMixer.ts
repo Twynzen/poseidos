@@ -18,8 +18,8 @@ import {
   type CharacterClipRole,
 } from "./characterManifest";
 
-/** Default crossfade seconds (idle↔walk↔run). */
-export const DEFAULT_MIXER_FADE_SEC = 0.18;
+/** Default crossfade seconds (idle↔walk↔run). 0.18 × 1.15 para leer de noche. */
+export const DEFAULT_MIXER_FADE_SEC = 0.207;
 
 /** One-shot roles that should not loop (LoopOnce + clampWhenFinished). */
 const ONESHOT_ROLES: ReadonlySet<CharacterClipRole> = new Set(
