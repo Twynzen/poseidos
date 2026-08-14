@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** silueta poseída de noche un poco más visible
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After mute/possessed body emissive, look at MUTE_ACCENT_EMISSIVE_INTENSITY (0.4025) and bump ×1.15 so the mute visor reads a bit better at night. Do not change body intensity, colors, roughness, possessed look, sky/fog/sun/ambient, or controls.
+- **Última rutina:** visor mute de noche un poco más visible
+- **Siguiente:** leftover visual polish chico — bump `POSSESSED_ACCENT_EMISSIVE_INTENSITY` (currently 0.9775) ×1.15 so the possessed visor reads a bit better at night. Do not change body intensity, colors, roughness, mute look, sky/fog/sun/ambient, or controls. No new widgets.
 - **Qué quedó (esta corrida):**
+  - **MUTE_ACCENT_EMISSIVE_INTENSITY 0.4025→0.462875; body/colores/roughness/poseídos/sky/fog/sol/teclas iguales.**
   - **POSSESSED_BODY_EMISSIVE_INTENSITY 1→1.15; accent/colores/roughness/mudos/sky/fog/sol/teclas iguales.**
   - **MUTE_BODY_EMISSIVE_INTENSITY 1→1.15; accent/colores/roughness/poseídos/sky/fog/sol/teclas iguales.**
   - **GROUND_NIGHT_LIFT 1.45→1.6675; sky/fog/sol/ambient/teclas iguales.**
