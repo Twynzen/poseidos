@@ -15,8 +15,8 @@ import { Color, MeshStandardMaterial } from "three";
 export const MUTE_BODY_COLOR = 0x647262;
 /** Multiply sobre color existente cuando hay map (mantiene variación). */
 export const MUTE_MAP_TINT = 0xa8b8a4;
-/** Emisión cuerpo muy baja: silueta gris-verde, sin glow ni rojo-violeta. */
-export const MUTE_BODY_EMISSIVE = 0x161c14;
+/** Emisión cuerpo baja: silueta gris-verde de noche, sin glow ni rojo-violeta. */
+export const MUTE_BODY_EMISSIVE = 0x1c2319;
 /** Acento head/visor: gris-verde más claro. */
 export const MUTE_ACCENT = 0x6b7a68;
 /** Alias del acento (mismo valor). */
