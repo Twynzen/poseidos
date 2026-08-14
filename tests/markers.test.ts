@@ -18,7 +18,9 @@ import {
   markerRingRadii,
   markerUsesInteractRing,
   markerVisibleInFov,
+  muteBadgeY,
   paletteFor,
+  possessedBadgeY,
   roleFromHostileKind,
 } from "../src/render/markers";
 
@@ -139,14 +141,17 @@ describe("markers (badges + ground rings)", () => {
     }
   });
 
-  test("door/bed floatBadge Y 2.0; loot 1.12; mute/possessed 1.68", () => {
+  test("door/bed/mute/possessed floatBadge Y 2.0; loot 1.12", () => {
     expect(doorBadgeY).toBe(2.0);
     expect(bedBadgeY).toBe(2.0);
+    expect(muteBadgeY).toBe(2.0);
+    expect(possessedBadgeY).toBe(2.0);
     const src = readFileSync(resolve(process.cwd(), "src/render/worldView.ts"), "utf8");
     expect(src).toContain("badge.position.y = doorBadgeY");
     expect(src).toContain("badge.position.y = bedBadgeY");
+    expect(src).toContain("badge.position.y = muteBadgeY");
+    expect(src).toContain("badge.position.y = possessedBadgeY");
     expect(src).toMatch(/role === "loot"\) badge\.position\.y = 1\.12/);
-    expect(src).toMatch(/badge\.position\.y = 1\.68/);
-    expect(src).not.toMatch(/role === "loot" \|\| role === "door" \? 1\.12/);
+    expect(src).not.toMatch(/badge\.position\.y = 1\.68/);
   });
 });
