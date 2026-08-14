@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** lluvia un poco más gruesa de noche.
+- **Última rutina:** lluvia de noche un poco más larga.
 - **Siguiente:** leftover visual polish chico — sin gestos nuevos.
 - **Qué quedó (esta corrida):**
+  - **RAIN_STREAK_LENGTH_NIGHT 0.72→0.828; width/count/opacity iguales.** `RAIN_STREAK_LENGTH_NIGHT` 0.828 (era 0.72, ×1.15). worldView `syncRain` ya aplica `rainStreakScaleY`. `RAIN_COUNT` 36, `RAIN_STREAK_WIDTH` 0.0375, largo día 0.55, `RAIN_OPACITY_NIGHT_ADD` 0.30, color `0xa8c4e0`, hide ≤ 0.02, active min 6 y night cut 0.22 iguales. Weather sim sin cambio. Cámara / nameplates / anillos / chevron / luces / linterna / HUD / inventario / teclas / gestos sin cambio.
   - **RAIN_STREAK_WIDTH 0.03→0.0375; count/opacity/largo iguales.** `RAIN_STREAK_WIDTH` 0.0375 (era 0.03, ×1.25). worldView `BoxGeometry` ya usa el knob (X/Z). `RAIN_COUNT` 36, largo día 0.55 / noche 0.72, `RAIN_OPACITY_NIGHT_ADD` 0.30, color `0xa8c4e0`, hide ≤ 0.02, active min 6 y night cut 0.22 iguales. Weather sim sin cambio. Cámara / nameplates / anillos / chevron / luces / linterna / HUD / inventario / teclas / gestos sin cambio.
   - **POSSESSED_BODY_EMISSIVE 0x1a1018→0x21141e; looks/teclas iguales.** `applyPossessedLook` ya setea el emisivo de cuerpo (no se inventó material, outline ni rim). Lift ×1.25 en RGB, mismo hue violeta oscuro. `POSSESSED_BODY_COLOR` `0x3a2838` / `POSSESSED_MAP_TINT` `0x8a6a82` / `POSSESSED_ACCENT` `0x8a2a55` / `POSSESSED_ACCENT_EMISSIVE` `0x4a1028` sin cambio. `SURVIVOR_BODY_EMISSIVE` `0x23201b` / `MUTE_BODY_EMISSIVE` `0x1c2319` / linterna 2.76 / fill 0.55 / wedge 0.55 / reach 4.2 / albedo noche 1.45 / anillos / nameplates / HUD / inventario / teclas / gestos sin cambio.
   - **MUTE_BODY_EMISSIVE 0x161c14→0x1c2319; looks/teclas iguales.** `applyMuteLook` ya setea el emisivo de cuerpo (no se inventó material, outline ni rim). Lift ×1.25 en RGB, mismo hue gris-verde enfermo. `MUTE_BODY_COLOR` `0x647262` / `MUTE_MAP_TINT` `0xa8b8a4` / `MUTE_ACCENT` `0x6b7a68` / `MUTE_ACCENT_EMISSIVE` `0x1a2218` sin cambio. `SURVIVOR_BODY_EMISSIVE` `0x23201b` / possessedLook / linterna 2.76 / fill 0.55 / wedge 0.55 / reach 4.2 / albedo noche 1.45 / anillos / nameplates / HUD / inventario / teclas / gestos sin cambio.
