@@ -7,6 +7,7 @@ import {
   BED_FOCUS_SCALE_NEAR,
   bedFocusInReach,
   bedFocusMul,
+  bedBadgeLabel,
   bedFocusPulse,
   bedFocusScale,
   bedRingVisible,
@@ -19,6 +20,10 @@ describe("constantes", () => {
     expect(BED_FOCUS_SCALE_FAR).toBe(1.12);
     expect(BED_FOCUS_PULSE_AMP).toBe(0.05);
     expect(BED_FOCUS_PULSE_SPEED).toBe(6);
+  });
+
+  test("bedBadgeLabel es Z", () => {
+    expect(bedBadgeLabel).toBe("Z");
   });
 });
 

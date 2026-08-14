@@ -18,6 +18,9 @@ export const DOOR_FOCUS_PULSE_AMP = 0.05;
 /** Velocidad angular del pulso (rad/s). */
 export const DOOR_FOCUS_PULSE_SPEED = 6;
 
+/** Letra de tecla en el floatBadge de puerta. */
+export const doorBadgeLabel = "E";
+
 /** True si dist está en reach (incl. el borde). */
 export function doorFocusInReach(dist: number): boolean {
   return Number.isFinite(dist) && dist <= DOOR_FOCUS_REACH;

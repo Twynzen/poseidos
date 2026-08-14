@@ -121,8 +121,18 @@ import {
   lootFloaterOpacity,
   lootFloaterY,
 } from "./lootFloater";
-import { doorFocusMul, doorRingVisible, DOOR_FOCUS_REACH } from "./doorFocus";
-import { bedFocusMul, bedRingVisible, BED_FOCUS_REACH } from "./bedFocus";
+import {
+  doorBadgeLabel,
+  doorFocusMul,
+  doorRingVisible,
+  DOOR_FOCUS_REACH,
+} from "./doorFocus";
+import {
+  bedBadgeLabel,
+  bedFocusMul,
+  bedRingVisible,
+  BED_FOCUS_REACH,
+} from "./bedFocus";
 import type { TileMap } from "../world/tilemap";
 import type { Tile } from "../world/tile";
 import type { Chunk } from "../world/chunk";
@@ -1854,24 +1864,55 @@ interface MarkerSharedResources {
   ringGeo: THREE.RingGeometry;
   badgeGeo: THREE.CircleGeometry;
   iconGeo: THREE.PlaneGeometry;
+  doorLetterMap: THREE.CanvasTexture;
+  bedLetterMap: THREE.CanvasTexture;
   mats: THREE.Material[];
   dispose(): void;
+}
+
+/** Letra blanca + stroke oscuro en el disc del floatBadge (puerta/cama). */
+function makeBadgeLetterTexture(letter: string): THREE.CanvasTexture {
+  const size = 64;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    ctx.clearRect(0, 0, size, size);
+    ctx.font = "700 42px ui-monospace, SF Mono, Menlo, Consolas, monospace";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "rgba(0,0,0,0.75)";
+    ctx.strokeText(letter, size / 2, size / 2);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(letter, size / 2, size / 2);
+  }
+  const map = new THREE.CanvasTexture(canvas);
+  map.needsUpdate = true;
+  return map;
 }
 
 function createMarkerSharedResources(): MarkerSharedResources {
   const ringGeo = new THREE.RingGeometry(0.42, 0.58, 28);
   const badgeGeo = new THREE.CircleGeometry(0.16, 20);
   const iconGeo = new THREE.PlaneGeometry(0.18, 0.18);
+  const doorLetterMap = makeBadgeLetterTexture(doorBadgeLabel);
+  const bedLetterMap = makeBadgeLetterTexture(bedBadgeLabel);
   const mats: THREE.Material[] = [];
   return {
     ringGeo,
     badgeGeo,
     iconGeo,
+    doorLetterMap,
+    bedLetterMap,
     mats,
     dispose() {
       ringGeo.dispose();
       badgeGeo.dispose();
       iconGeo.dispose();
+      doorLetterMap.dispose();
+      bedLetterMap.dispose();
       for (const m of mats) m.dispose();
       mats.length = 0;
     },
@@ -1911,8 +1952,15 @@ function attachRoleMarkers(
     metalness: 0.1,
     side: THREE.DoubleSide,
   });
+  const letterMap =
+    role === "door"
+      ? shared.doorLetterMap
+      : role === "bed"
+        ? shared.bedLetterMap
+        : null;
   const iconMat = new THREE.MeshBasicMaterial({
     color: 0xffffff,
+    ...(letterMap ? { map: letterMap } : {}),
     transparent: true,
     opacity: 0.92,
     side: THREE.DoubleSide,
@@ -1937,7 +1985,8 @@ function attachRoleMarkers(
   // Escala distinta por glifo visual (mute más angular vía scale)
   if (role === "mute") icon.scale.set(0.7, 0.7, 1);
   else if (role === "possessed") icon.scale.set(0.85, 0.85, 1);
-  else if (role === "loot" || role === "door") icon.scale.set(0.8, 0.8, 1);
+  else if (role === "loot") icon.scale.set(0.8, 0.8, 1);
+  else if (role === "door" || role === "bed") icon.scale.set(1.15, 1.15, 1);
   badge.add(disc, icon);
   badge.position.y =
     role === "player" ? 1.72 : role === "loot" || role === "door" ? 1.12 : 1.68;
