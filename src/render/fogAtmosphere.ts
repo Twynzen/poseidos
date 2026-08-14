@@ -176,6 +176,9 @@ export const SUN_NIGHT_B_ADD = 0.138;
 /** Add r cálido dawn/dusk del sol (0.12 × 1.15) para que sunrise/sunset se lean. */
 export const SUN_WARM_R = 0.138;
 
+/** Add g cálido dawn/dusk del sol (0.02 × 1.15) para que sunrise/sunset se lean. */
+export const SUN_WARM_G = 0.023;
+
 /** Color del sol / directional: día cálido suave; noche frío; dawn/dusk ámbar. */
 export function sunRgb(daylight: number, phase: number): Rgb {
   const d = clamp01(daylight);
@@ -191,7 +194,7 @@ export function sunRgb(daylight: number, phase: number): Rgb {
 
   // Dawn/dusk: más ámbar en el sol.
   r += warm * SUN_WARM_R;
-  g += warm * 0.02;
+  g += warm * SUN_WARM_G;
   b -= warm * 0.14;
 
   return clampRgb({ r, g, b });
