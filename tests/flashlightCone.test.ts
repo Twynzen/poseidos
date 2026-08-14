@@ -8,6 +8,7 @@ import {
   FLASHLIGHT_CONE_YAW_OFFSET,
   FLASHLIGHT_FILL_INTENSITY_MUL,
   FLASHLIGHT_SPOT_INTENSITY_MUL,
+  FLASHLIGHT_SPOT_COLOR,
   FLASHLIGHT_SPOT_PENUMBRA,
   FLASHLIGHT_WEDGE_COLOR,
   FLASHLIGHT_WEDGE_OPACITY_BASE,
@@ -33,14 +34,35 @@ describe("constantes", () => {
     expect(FLASHLIGHT_CONE_YAW_OFFSET).toBe(0);
   });
 
-  test("haz: penumbra 0.23, spot ×3.174, fill ×0.727375, cuña 0xd0eaff opacity 0.6325/0.29095", () => {
+  test("color 0xefffff (0xd0eaff × 1.15, g/b clamp); length/half-width/Y/opacities/spot/fill/penumbra sin cambio (no double-apply)", () => {
+    expect(FLASHLIGHT_WEDGE_COLOR).toBe(0xefffff);
+    expect((FLASHLIGHT_WEDGE_COLOR >> 16) & 0xff).toBe(0xef);
+    expect((FLASHLIGHT_WEDGE_COLOR >> 8) & 0xff).toBe(0xff);
+    expect(FLASHLIGHT_WEDGE_COLOR & 0xff).toBe(0xff);
+    expect(FLASHLIGHT_CONE_LENGTH).toBe(5.5545);
+    expect(FLASHLIGHT_CONE_HALF_WIDTH).toBe(1.19025);
+    expect(FLASHLIGHT_CONE_Y).toBe(0.1058);
+    expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.6325);
+    expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.29095);
+    expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(3.174);
+    expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.727375);
+    expect(FLASHLIGHT_SPOT_PENUMBRA).toBe(0.23);
+    expect(FLASHLIGHT_SPOT_COLOR).toBe(0xd8eeff);
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain("color: FLASHLIGHT_WEDGE_COLOR");
+  });
+
+  test("haz: penumbra 0.23, spot ×3.174, fill ×0.727375, cuña 0xefffff opacity 0.6325/0.29095", () => {
     expect(FLASHLIGHT_SPOT_PENUMBRA).toBe(0.23);
     expect(FLASHLIGHT_SPOT_PENUMBRA).toBeCloseTo(0.2 * 1.15, 10);
     expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(3.174);
     expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBeCloseTo(2.76 * 1.15, 10);
     expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.727375);
     expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBeCloseTo(0.6325 * 1.15, 10);
-    expect(FLASHLIGHT_WEDGE_COLOR).toBe(0xd0eaff);
+    expect(FLASHLIGHT_WEDGE_COLOR).toBe(0xefffff);
     expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.6325);
     expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBeCloseTo(0.55 * 1.15, 10);
     expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.29095);
