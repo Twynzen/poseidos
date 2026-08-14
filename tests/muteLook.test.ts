@@ -21,6 +21,7 @@ import {
   MUTE_ACCENT_ROUGHNESS,
   MUTE_BODY_COLOR,
   MUTE_BODY_EMISSIVE,
+  MUTE_BODY_EMISSIVE_INTENSITY,
   MUTE_BODY_ROUGHNESS,
   MUTE_CRUSHED_BODY,
   MUTE_MAP_TINT,
@@ -68,6 +69,8 @@ describe("muteLook constants", () => {
     expect(MUTE_ACCENT_ROUGHNESS).toBe(0.435);
     expect(MUTE_ACCENT_ROUGHNESS).toBeCloseTo(0.5 * 0.87, 10);
     expect(MUTE_ACCENT_ROUGHNESS).toBeLessThan(MUTE_BODY_ROUGHNESS);
+    expect(MUTE_BODY_EMISSIVE_INTENSITY).toBe(1.15);
+    expect(MUTE_BODY_EMISSIVE_INTENSITY).toBeCloseTo(1 * 1.15, 10);
     expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBe(0.4025);
     expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBeCloseTo(0.35 * 1.15, 10);
     expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBeGreaterThan(0.2);
@@ -76,6 +79,20 @@ describe("muteLook constants", () => {
     const crushG = (MUTE_CRUSHED_BODY >> 8) & 0xff;
     const bodyG = (MUTE_BODY_COLOR >> 8) & 0xff;
     expect(bodyG).toBeGreaterThan(crushG);
+  });
+
+  test("body emissive intensity 1 × 1.15; color/looks iguales", () => {
+    expect(MUTE_BODY_EMISSIVE_INTENSITY).toBe(1.15);
+    expect(MUTE_BODY_EMISSIVE_INTENSITY).toBeCloseTo(1 * 1.15, 10);
+    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBe(0.4025);
+    expect(MUTE_ACCENT_EMISSIVE).toBe(0x1a2218);
+    expect(MUTE_BODY_EMISSIVE).toBe(0x1c2319);
+    expect(MUTE_BODY_COLOR).toBe(0x647262);
+    expect(MUTE_MAP_TINT).toBe(0xa8b8a4);
+    expect(MUTE_ACCENT).toBe(0x6b7a68);
+    expect(MUTE_BODY_ROUGHNESS).toBe(0.7656);
+    expect(MUTE_ACCENT_ROUGHNESS).toBe(0.435);
+    expect(MUTE_CRUSHED_BODY).toBe(0x4a5648);
   });
 
   test("accent emissive intensity 0.35 × 1.15; color/looks iguales", () => {
@@ -179,7 +196,7 @@ describe("applyMuteLook", () => {
     expect(tintedBody.color.getHex()).toBe(MUTE_BODY_COLOR);
     expect(tintedBody.color.getHex()).not.toBe(MUTE_CRUSHED_BODY);
     expect(tintedBody.emissive.getHex()).toBe(MUTE_BODY_EMISSIVE);
-    expect(tintedBody.emissiveIntensity).toBeGreaterThan(0);
+    expect(tintedBody.emissiveIntensity).toBe(MUTE_BODY_EMISSIVE_INTENSITY);
     expect(tintedVisor.color.getHex()).toBe(MUTE_ACCENT);
     expect(tintedVisor.emissive.getHex()).toBe(MUTE_ACCENT_EMISSIVE);
     expect(tintedVisor.emissiveIntensity).toBe(MUTE_ACCENT_EMISSIVE_INTENSITY);

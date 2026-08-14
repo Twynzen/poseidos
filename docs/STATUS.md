@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** suelo de noche un poco más brillante
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After GROUND_NIGHT_LIFT, look at loot nameplate night opacity / scale, or mute/possessed look night lift. Do not change sky/fog/sun/ambient, or controls.
+- **Última rutina:** silueta mute de noche un poco más visible
+- **Siguiente:** leftover visual polish chico — extract the historic possessed body emissiveIntensity inline `1` in `tintMaterial` (`src/render/possessedLook.ts`) to `POSSESSED_BODY_EMISSIVE_INTENSITY` and bump ×1.15 so the possessed body silhouette reads a bit better at night. Do not change accent intensity, colors, roughness, mute look, sky/fog/sun/ambient, or controls. No new widgets.
 - **Qué quedó (esta corrida):**
+  - **MUTE_BODY_EMISSIVE_INTENSITY 1→1.15; accent/colores/roughness/poseídos/sky/fog/sol/teclas iguales.**
   - **GROUND_NIGHT_LIFT 1.45→1.6675; sky/fog/sol/ambient/teclas iguales.**
   - **SUN_DAY_B 0.82→0.943; r/g/night-mix/warm/sky/fog/ambient/teclas iguales.**
   - **SUN_DAY_G 0.88→1.012; r/b/night-mix/warm/sky/fog/ambient/teclas iguales.**
