@@ -11,6 +11,8 @@ export const MUZZLE_FLASH_DURATION = 0.12;
 export const MUZZLE_FLASH_PEAK = 1;
 /** Radio de la esfera aditiva (tiles). 0.11 × 1.25 para leer de noche. */
 export const MUZZLE_FLASH_RADIUS = 0.1375;
+/** Pico de PointLight en worldView. 2.2 × 1.25 para leer de noche. */
+export const MUZZLE_LIGHT_PEAK = 2.75;
 
 export interface MuzzleFlashState {
   /** Segundos transcurridos del flash actual. */

@@ -105,11 +105,13 @@ import {
 } from "./cameraShake";
 import {
   MUZZLE_FLASH_RADIUS,
+  MUZZLE_LIGHT_PEAK,
   createMuzzleFlash,
   tickMuzzleFlash,
   triggerMuzzleFlash as startMuzzleFlash,
 } from "./muzzleFlash";
 import {
+  IMPACT_SPARK_LIGHT_PEAK,
   IMPACT_SPARK_RADIUS,
   createImpactSpark,
   tickImpactSpark,
@@ -740,7 +742,6 @@ export function createWorldView(
 
   // Muzzle flash: esfera aditiva (radio MUZZLE_FLASH_RADIUS) + PointLight (reutilizable).
   const MUZZLE_FORWARD = 0.48;
-  const MUZZLE_LIGHT_PEAK = 2.2;
   const MUZZLE_LIGHT_DISTANCE = 2.6;
   const muzzleGeo = new THREE.SphereGeometry(MUZZLE_FLASH_RADIUS, 10, 8);
   const muzzleMat = new THREE.MeshBasicMaterial({
@@ -846,7 +847,6 @@ export function createWorldView(
   }
 
   // Impact spark: esfera aditiva unlit (radio IMPACT_SPARK_RADIUS) + PointLight (reutilizable).
-  const IMPACT_SPARK_LIGHT_PEAK = 1.4;
   const IMPACT_SPARK_LIGHT_DISTANCE = 1.8;
   const impactGeo = new THREE.SphereGeometry(IMPACT_SPARK_RADIUS, 10, 8);
   const impactMat = new THREE.MeshBasicMaterial({
