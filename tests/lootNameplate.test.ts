@@ -19,10 +19,10 @@ import {
 } from "../src/render/lootNameplate";
 
 describe("constantes", () => {
-  test("max 20 chars; fade dist 6.5; y ~1.55; scale 2.6×0.65", () => {
+  test("max 20 chars; fade dist 6.5; y ~1.85; scale 2.6×0.65", () => {
     expect(LOOT_NAMEPLATE_MAX_CHARS).toBe(20);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(6.5);
-    expect(LOOT_NAMEPLATE_Y).toBeCloseTo(1.55);
+    expect(LOOT_NAMEPLATE_Y).toBeCloseTo(1.85);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.6);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.65);
     expect(lootNameplateScale()).toBe(1);

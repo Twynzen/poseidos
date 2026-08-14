@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** chevron un poco más adelante/grande (Soldier 1.5).
+- **Última rutina:** nameplate loot un poco más alta (Soldier 1.5).
 - **Qué quedó (esta corrida):**
+  - **Y 1.55→1.85; fade/iconos/empty-hide igual.** `LOOT_NAMEPLATE_Y` 1.85 (era 1.55). `makeLootNameplateSprite` sigue `sprite.position.set(0, LOOT_NAMEPLATE_Y, 0)`. Fade 6.5, empty-hide, mid-scale 0.55 e iconos sin cambio. Cámara / escala / chevron / luces / lluvia / linterna / teclas / gestos sin cambio.
   - **dist/size nudged; opacity/yaw igual.** `FACING_CHEVRON_DIST` 1.2 (era 1.05). `FACING_CHEVRON_LEN` 0.805 (era 0.70, ×1.15). `FACING_CHEVRON_HW` 0.322 (era 0.28). worldView mesh usa esos knobs (sin magic numbers). `FACING_CHEVRON_OPACITY` 0.55 y `FACING_CHEVRON_YAW_OFFSET` 0 sin cambio; siempre visible. Cámara / escala / luces / lluvia / markers / linterna / teclas / gestos sin cambio.
   - **hostiles 1.25→1.5; looks distintos; frustum 8.** `POSSESSED_SOLDIER_MANIFEST` / `MUTE_SOLDIER_MANIFEST` scale 1.5 (era 1.25). `PLAYER_GLTF_SCALE` sigue 1.5. `possessedLook` / `muteLook` sin cambio (violeta/rojo vs gris-verde). `maybeAttachCharacterGltf` sigue aplicando `manifest.scale`. `ISO_FRUSTUM` 8 sin cambio. Sin teclas, gestos ni features nuevas.
   - **player GLB 1.5; hostiles 1.25; yaw/anim igual; frustum 8.** `PLAYER_GLTF_SCALE` 1.5 (era 1.25, 1.2×). `PLAYER_SOLDIER_MANIFEST` / `PLAYER_SURVIVOR_MANIFEST` usan esa escala. `POSSESSED_SOLDIER_MANIFEST` / `MUTE_SOLDIER_MANIFEST` siguen 1.25. `maybeAttachCharacterGltf` sigue aplicando `manifest.scale`. `PLAYER_GLTF_YAW_OFFSET` / clips / `ISO_FRUSTUM` 8 sin cambio. Sin teclas, gestos ni features nuevas.
