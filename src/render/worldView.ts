@@ -157,6 +157,7 @@ import {
   doorBadgeFontPx,
   doorBadgeLabel,
   doorBadgeLetterScale,
+  doorBadgeY,
   doorFocusMul,
   doorRingVisible,
   DOOR_FOCUS_REACH,
@@ -166,6 +167,7 @@ import {
   bedBadgeFontPx,
   bedBadgeLabel,
   bedBadgeLetterScale,
+  bedBadgeY,
   bedFocusMul,
   bedRingVisible,
   BED_FOCUS_REACH,
@@ -1982,7 +1984,10 @@ function attachRoleMarkers(
     icon.scale.set(bedBadgeLetterScale, bedBadgeLetterScale, 1);
   }
   badge.add(disc, icon);
-  badge.position.y = role === "loot" || role === "door" ? 1.12 : 1.68;
+  if (role === "door") badge.position.y = doorBadgeY;
+  else if (role === "bed") badge.position.y = bedBadgeY;
+  else if (role === "loot") badge.position.y = 1.12;
+  else badge.position.y = 1.68;
   root.add(badge);
 }
 

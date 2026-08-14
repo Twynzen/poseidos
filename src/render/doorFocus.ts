@@ -30,6 +30,9 @@ export const doorBadgeLetterScale = 2.4;
 /** Escala del disc de puerta (×1.5 vs badge compartido). */
 export const doorBadgeDiscScale = 1.5;
 
+/** Altura world del floatBadge E (queda por encima del Soldier 1.5). */
+export const doorBadgeY = 2.0;
+
 /** True si dist está en reach (incl. el borde). */
 export function doorFocusInReach(dist: number): boolean {
   return Number.isFinite(dist) && dist <= DOOR_FOCUS_REACH;
