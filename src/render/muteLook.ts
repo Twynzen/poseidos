@@ -11,8 +11,8 @@
 import type { Material, Mesh, Object3D } from "three";
 import { Color, MeshStandardMaterial } from "three";
 
-/** Cuerpo sin map: gris-verde enfermo levantado (no el fill aplastado de noche). */
-export const MUTE_BODY_COLOR = 0x647262;
+/** Cuerpo sin map: gris-verde enfermo levantado. 0x647262 × 1.15/canal para leer de noche. */
+export const MUTE_BODY_COLOR = 0x738371;
 /** Multiply sobre color existente cuando hay map (mantiene variación). */
 export const MUTE_MAP_TINT = 0xa8b8a4;
 /** Emisión cuerpo baja: silueta gris-verde de noche, sin glow ni rojo-violeta. */
