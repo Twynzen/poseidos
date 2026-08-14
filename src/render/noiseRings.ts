@@ -44,8 +44,8 @@ export function shouldShowNoiseRing(kind: string): boolean {
   return NOISE_RING_VISIBLE_KINDS.has(kind);
 }
 
-/** Mínima edad (s) del último anillo run antes de spawnear otro. */
-export const RUN_NOISE_RING_MIN_AGE = 0.348;
+/** Mínima edad (s) del último anillo run antes de spawnear otro. 0.348 × 0.87 para leer de noche. */
+export const RUN_NOISE_RING_MIN_AGE = 0.30276;
 
 /** true si no hay anillo previo o ya pasó el cooldown de sprint. */
 export function runNoiseRingReady(lastAge: number | null | undefined): boolean {

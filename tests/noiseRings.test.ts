@@ -18,11 +18,11 @@ import {
 } from "../src/render/noiseRings";
 
 describe("constantes", () => {
-  test("vida 0.9775 × 1.15 / run cooldown 0.4 × 0.87", () => {
+  test("vida 0.9775 × 1.15 / run cooldown 0.348 × 0.87", () => {
     expect(DEFAULT_NOISE_RING_LIFE).toBe(1.124125);
     expect(DEFAULT_NOISE_RING_LIFE).toBeCloseTo(0.9775 * 1.15, 10);
-    expect(RUN_NOISE_RING_MIN_AGE).toBe(0.348);
-    expect(RUN_NOISE_RING_MIN_AGE).toBeCloseTo(0.4 * 0.87, 10);
+    expect(RUN_NOISE_RING_MIN_AGE).toBe(0.30276);
+    expect(RUN_NOISE_RING_MIN_AGE).toBeCloseTo(0.348 * 0.87, 10);
   });
 
   test("grosor 0.225 × 1.15; inner 0.775 × 0.87; worldView usa el knob (no magic 0.82)", () => {
@@ -108,12 +108,13 @@ describe("noiseRings (headless)", () => {
     expect(shouldShowNoiseRing("gun")).toBe(true);
   });
 
-  test("runNoiseRingReady: null/undefined o >= 0.348", () => {
-    expect(RUN_NOISE_RING_MIN_AGE).toBe(0.348);
+  test("runNoiseRingReady: null/undefined o >= 0.30276", () => {
+    expect(RUN_NOISE_RING_MIN_AGE).toBe(0.30276);
     expect(runNoiseRingReady(null)).toBe(true);
     expect(runNoiseRingReady(undefined)).toBe(true);
     expect(runNoiseRingReady(0)).toBe(false);
-    expect(runNoiseRingReady(0.347)).toBe(false);
+    expect(runNoiseRingReady(0.30275)).toBe(false);
+    expect(runNoiseRingReady(0.30276)).toBe(true);
     expect(runNoiseRingReady(0.348)).toBe(true);
     expect(runNoiseRingReady(0.4)).toBe(true);
     expect(runNoiseRingReady(1)).toBe(true);
@@ -125,7 +126,8 @@ describe("noiseRings (headless)", () => {
     expect(shouldSpawnNoiseRing("run", undefined)).toBe(true);
     expect(shouldSpawnNoiseRing("run", 0)).toBe(false);
     expect(shouldSpawnNoiseRing("run", 0.2)).toBe(false);
-    expect(shouldSpawnNoiseRing("run", 0.347)).toBe(false);
+    expect(shouldSpawnNoiseRing("run", 0.30275)).toBe(false);
+    expect(shouldSpawnNoiseRing("run", 0.30276)).toBe(true);
     expect(shouldSpawnNoiseRing("run", 0.348)).toBe(true);
     expect(shouldSpawnNoiseRing("run", 0.4)).toBe(true);
     expect(shouldSpawnNoiseRing("run", 0.8)).toBe(true);
