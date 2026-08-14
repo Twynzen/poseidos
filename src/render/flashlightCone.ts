@@ -8,7 +8,7 @@
 export const FLASHLIGHT_CONE_LENGTH = 6.387675;
 
 /** Semi-ancho en el extremo lejano (tiles). Más estrecho = haz, no flood. */
-export const FLASHLIGHT_CONE_HALF_WIDTH = 1.19025;
+export const FLASHLIGHT_CONE_HALF_WIDTH = 1.3687875;
 
 /** Altura Y de la cuña de suelo (tiles). */
 export const FLASHLIGHT_CONE_Y = 0.1058;
