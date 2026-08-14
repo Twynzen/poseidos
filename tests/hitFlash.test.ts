@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   HIT_FLASH_PEAK,
@@ -6,6 +8,13 @@ import {
   triggerHitFlash,
   tickHitFlash,
 } from "../src/ui/hitFlash";
+
+describe("#hit-flash CSS", () => {
+  test("#hit-flash edge stop is 0.62", () => {
+    const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
+    expect(html).toMatch(/#hit-flash\s*\{[^}]*rgba\(120,\s*0,\s*8,\s*0\.62\)/s);
+  });
+});
 
 describe("constantes", () => {
   test("peak y decay fijos", () => {
