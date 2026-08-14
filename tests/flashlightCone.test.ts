@@ -33,11 +33,11 @@ describe("constantes", () => {
     expect(FLASHLIGHT_CONE_YAW_OFFSET).toBe(0);
   });
 
-  test("haz: penumbra 0.23, spot ×2.76, fill ×0.6325, cuña 0xd0eaff opacity 0.6325/0.29095", () => {
+  test("haz: penumbra 0.23, spot ×3.174, fill ×0.6325, cuña 0xd0eaff opacity 0.6325/0.29095", () => {
     expect(FLASHLIGHT_SPOT_PENUMBRA).toBe(0.23);
     expect(FLASHLIGHT_SPOT_PENUMBRA).toBeCloseTo(0.2 * 1.15, 10);
-    expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(2.76);
-    expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBeCloseTo(2.4 * 1.15, 10);
+    expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(3.174);
+    expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBeCloseTo(2.76 * 1.15, 10);
     expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.6325);
     expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBeCloseTo(0.55 * 1.15, 10);
     expect(FLASHLIGHT_WEDGE_COLOR).toBe(0xd0eaff);
@@ -53,7 +53,9 @@ describe("constantes", () => {
     expect(viewSrc).toContain("i * FLASHLIGHT_FILL_INTENSITY_MUL");
     expect(viewSrc).toContain("FLASHLIGHT_SPOT_PENUMBRA");
     expect(viewSrc).not.toMatch(/const FLASHLIGHT_SPOT_INTENSITY_MUL = 2\.4/);
+    expect(viewSrc).not.toMatch(/const FLASHLIGHT_SPOT_INTENSITY_MUL = 2\.76/);
     expect(viewSrc).not.toMatch(/torchSpot\.intensity = .*\b2\.4\b/);
+    expect(viewSrc).not.toMatch(/torchSpot\.intensity = .*\b2\.76\b/);
     expect(viewSrc).not.toMatch(/const FLASHLIGHT_FILL_INTENSITY_MUL = 0\.55/);
     expect(viewSrc).not.toMatch(/torchLight\.intensity = .*\b0\.55\b/);
     expect(viewSrc).not.toMatch(/new THREE\.SpotLight\([^)]*\b0\.2\b/);

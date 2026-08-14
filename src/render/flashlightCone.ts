@@ -17,7 +17,7 @@ export const FLASHLIGHT_CONE_Y = 0.1058;
 export const FLASHLIGHT_SPOT_PENUMBRA = 0.23;
 
 /** Multiplicador de intensidad del SpotLight (sobre torchLightIntensity). */
-export const FLASHLIGHT_SPOT_INTENSITY_MUL = 2.76;
+export const FLASHLIGHT_SPOT_INTENSITY_MUL = 3.174;
 
 /** Multiplicador del PointLight fill (el spot debe leerse por encima). */
 export const FLASHLIGHT_FILL_INTENSITY_MUL = 0.6325;
