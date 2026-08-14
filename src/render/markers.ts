@@ -78,8 +78,8 @@ export const INTERACT_RING_INNER = 0.55;
 /** Radio exterior del aro loot/puerta/cama. 0.78 × 1.15 para leerse de noche. */
 export const INTERACT_RING_OUTER = 0.897;
 
-/** Radio interior del aro mute/possessed (queda fuera del Soldier 1.5). */
-export const THREAT_RING_INNER = 0.50;
+/** Radio interior del aro mute/possessed. 0.50 × 0.87 para leerse de noche. */
+export const THREAT_RING_INNER = 0.435;
 
 /** Radio exterior del aro mute/possessed. 0.68 × 1.15 para leerse de noche. */
 export const THREAT_RING_OUTER = 0.782;
