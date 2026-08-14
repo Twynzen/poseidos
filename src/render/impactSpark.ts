@@ -7,8 +7,8 @@
 
 /** Duración del spark (s). 0.22 × 1.15 para leer de noche. */
 export const IMPACT_SPARK_DURATION = 0.253;
-/** Intensidad pico (u=0). Opacity del mesh = intensity (ya 1 al trigger). */
-export const IMPACT_SPARK_PEAK = 1;
+/** Intensidad pico (u=0). 1 × 1.15 para leer de noche. Opacity del mesh = intensity. */
+export const IMPACT_SPARK_PEAK = 1.15;
 /** Radio de la esfera aditiva (tiles). 0.1125 × 1.15 para leer de noche. */
 export const IMPACT_SPARK_RADIUS = 0.129375;
 /** Pico de PointLight en worldView. 1.75 × 1.15 para leer de noche. */
@@ -26,7 +26,7 @@ export interface ImpactSparkState {
 }
 
 export interface ImpactSparkOutput {
-  /** 0–1. Pico 1 al trigger; ease-out sine hasta 0. */
+  /** Pico IMPACT_SPARK_PEAK al trigger; ease-out sine hasta 0. */
   intensity: number;
   active: boolean;
   x: number;
