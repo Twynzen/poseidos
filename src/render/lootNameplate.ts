@@ -6,8 +6,8 @@
 /** Máximo de caracteres del label. */
 export const LOOT_NAMEPLATE_MAX_CHARS = 20;
 
-/** Distancia a la que el nameplate llega a opacity 0. */
-export const LOOT_NAMEPLATE_FADE_DIST = 5.5;
+/** Distancia a la que el nameplate llega a opacity 0. 5.5 × 1.15 para leer de noche. */
+export const LOOT_NAMEPLATE_FADE_DIST = 6.325;
 
 /** Escala mid-distance en el fade edge (dist ≥ fade). */
 export const LOOT_NAMEPLATE_MID_SCALE = 0.48;
