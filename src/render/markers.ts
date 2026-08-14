@@ -78,11 +78,11 @@ export const INTERACT_RING_INNER = 0.55;
 /** Radio exterior del aro loot/puerta/cama. */
 export const INTERACT_RING_OUTER = 0.78;
 
-/** Radio interior del aro mute/possessed (sin cambio). */
-export const THREAT_RING_INNER = 0.42;
+/** Radio interior del aro mute/possessed (queda fuera del Soldier 1.5). */
+export const THREAT_RING_INNER = 0.50;
 
-/** Radio exterior del aro mute/possessed (sin cambio). */
-export const THREAT_RING_OUTER = 0.58;
+/** Radio exterior del aro mute/possessed (más chico que interact 0.78). */
+export const THREAT_RING_OUTER = 0.68;
 
 export interface MarkerRingRadii {
   inner: number;
