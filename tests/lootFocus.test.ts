@@ -14,15 +14,15 @@ import {
 } from "../src/render/lootFocus";
 
 describe("constantes", () => {
-  test("reach = CONTAINER_REACH 1.6; near 1.5525; far 1.288; pulse 0.0575 / 6", () => {
+  test("reach = CONTAINER_REACH 1.6; near 1.5525; far 1.288; pulse 0.066125 / 6", () => {
     expect(LOOT_FOCUS_REACH).toBe(CONTAINER_REACH);
     expect(LOOT_FOCUS_REACH).toBe(1.6);
     expect(LOOT_FOCUS_SCALE_NEAR).toBe(1.5525);
     expect(LOOT_FOCUS_SCALE_NEAR).toBeCloseTo(1.35 * 1.15, 10);
     expect(LOOT_FOCUS_SCALE_FAR).toBe(1.288);
     expect(LOOT_FOCUS_SCALE_FAR).toBeCloseTo(1.12 * 1.15, 10);
-    expect(LOOT_FOCUS_PULSE_AMP).toBe(0.0575);
-    expect(LOOT_FOCUS_PULSE_AMP).toBeCloseTo(0.05 * 1.15, 10);
+    expect(LOOT_FOCUS_PULSE_AMP).toBe(0.066125);
+    expect(LOOT_FOCUS_PULSE_AMP).toBeCloseTo(0.0575 * 1.15, 10);
     expect(LOOT_FOCUS_PULSE_SPEED).toBe(6);
   });
 });
@@ -50,14 +50,14 @@ describe("lootFocusScale", () => {
 });
 
 describe("lootFocusPulse", () => {
-  test("1 + 0.0575 * sin(elapsed * 6)", () => {
+  test("1 + 0.066125 * sin(elapsed * 6)", () => {
     expect(lootFocusPulse(0)).toBe(1);
-    // sin(π/2) = 1 → 1.0575
-    expect(lootFocusPulse(Math.PI / 12)).toBeCloseTo(1.0575, 10);
+    // sin(π/2) = 1 → 1.066125
+    expect(lootFocusPulse(Math.PI / 12)).toBeCloseTo(1.066125, 10);
     // sin(π) = 0 → 1
     expect(lootFocusPulse(Math.PI / 6)).toBeCloseTo(1, 10);
-    // sin(3π/2) = -1 → 0.9425
-    expect(lootFocusPulse(Math.PI / 4)).toBeCloseTo(0.9425, 10);
+    // sin(3π/2) = -1 → 0.933875
+    expect(lootFocusPulse(Math.PI / 4)).toBeCloseTo(0.933875, 10);
   });
 
   test("NaN elapsed trata como 0", () => {
@@ -67,9 +67,9 @@ describe("lootFocusPulse", () => {
 
 describe("lootFocusMul", () => {
   test("en reach: scale * pulse", () => {
-    const elapsed = Math.PI / 12; // pulse = 1.0575
-    expect(lootFocusMul(0, elapsed)).toBeCloseTo(1.5525 * 1.0575, 10);
-    expect(lootFocusMul(1.6, elapsed)).toBeCloseTo(1.288 * 1.0575, 10);
+    const elapsed = Math.PI / 12; // pulse = 1.066125
+    expect(lootFocusMul(0, elapsed)).toBeCloseTo(1.5525 * 1.066125, 10);
+    expect(lootFocusMul(1.6, elapsed)).toBeCloseTo(1.288 * 1.066125, 10);
     expect(lootFocusMul(0.8, 0)).toBeCloseTo(1.42025, 10);
   });
 
