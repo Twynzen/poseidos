@@ -31,7 +31,8 @@ export const POSSESSED_FALLBACK_EMISSIVE = 0x2a0814;
 export const POSSESSED_CRUSHED_BODY = 0x1c141c;
 /** Roughness alto = look mate / usado. 0.88 × 0.87 para leer el cuerpo de noche. */
 export const POSSESSED_BODY_ROUGHNESS = 0.7656;
-export const POSSESSED_ACCENT_ROUGHNESS = 0.4;
+/** Roughness acento visor. 0.4 × 0.87 para leer el visor de noche. */
+export const POSSESSED_ACCENT_ROUGHNESS = 0.348;
 /** Intensidad del acento. 0.85 × 1.15 para leer el visor de noche. */
 export const POSSESSED_ACCENT_EMISSIVE_INTENSITY = 0.9775;
 
