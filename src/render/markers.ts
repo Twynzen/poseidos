@@ -61,13 +61,13 @@ export function markerVisibleInFov(inFov: boolean): boolean {
   return inFov;
 }
 
-/** Opacidad del anillo de suelo para roles no-player (loot/door/bed/mute/possessed). 0.52 × 1.15 para leerse de noche. */
-export const MARKER_RING_OPACITY = 0.598;
+/** Opacidad del anillo de suelo para roles no-player (loot/door/bed/mute/possessed). 0.598 × 1.15 para leerse de noche. */
+export const MARKER_RING_OPACITY = 0.6877;
 
 /** Opacidad del foot ring del player (0 = oculto; el chevron queda). */
 export const PLAYER_FOOT_RING_OPACITY = 0;
 
-/** Anillo player 0 (oculto); resto 0.598. */
+/** Anillo player 0 (oculto); resto 0.6877. */
 export function markerRingOpacity(role: MarkerRole): number {
   return role === "player" ? PLAYER_FOOT_RING_OPACITY : MARKER_RING_OPACITY;
 }

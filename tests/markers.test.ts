@@ -102,14 +102,14 @@ describe("markers (badges + ground rings)", () => {
     expect(roleFromHostileKind("possessed")).toBe("possessed");
   });
 
-  test("anillo player oculto (0); loot/door/bed/mute/possessed 0.598", () => {
+  test("anillo player oculto (0); loot/door/bed/mute/possessed 0.6877", () => {
     expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
-    expect(MARKER_RING_OPACITY).toBe(0.598);
-    expect(MARKER_RING_OPACITY).toBeCloseTo(0.52 * 1.15, 5);
+    expect(MARKER_RING_OPACITY).toBe(0.6877);
+    expect(MARKER_RING_OPACITY).toBeCloseTo(0.598 * 1.15, 5);
     expect(markerRingOpacity("player")).toBe(0);
     expect(paletteFor("player").ring).toBe(0x3a7fd4);
     for (const role of ["loot", "door", "bed", "mute", "possessed"] as const) {
-      expect(markerRingOpacity(role)).toBeCloseTo(0.598, 5);
+      expect(markerRingOpacity(role)).toBeCloseTo(0.6877, 5);
     }
   });
 
@@ -147,7 +147,7 @@ describe("markers (badges + ground rings)", () => {
     expect(THREAT_RING_PULSE_AMP).toBe(0);
     expect(THREAT_RING_INNER).toBeCloseTo(0.435, 5);
     expect(THREAT_RING_OUTER).toBeCloseTo(0.782, 5);
-    expect(MARKER_RING_OPACITY).toBeCloseTo(0.598, 5);
+    expect(MARKER_RING_OPACITY).toBeCloseTo(0.6877, 5);
     expect(INTERACT_RING_INNER).toBeCloseTo(0.4785, 5);
     expect(INTERACT_RING_OUTER).toBeCloseTo(0.897, 5);
     const src = readFileSync(resolve(process.cwd(), "src/render/worldView.ts"), "utf8");
