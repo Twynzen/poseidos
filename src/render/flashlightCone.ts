@@ -32,7 +32,7 @@ export const FLASHLIGHT_SPOT_COLOR = 0xd8eeff;
 export const FLASHLIGHT_WEDGE_OPACITY_BASE = 0.55;
 
 /** Ganancia de opacidad × intensidad. */
-export const FLASHLIGHT_WEDGE_OPACITY_GAIN = 0.22;
+export const FLASHLIGHT_WEDGE_OPACITY_GAIN = 0.253;
 
 /** Umbral de intensidad para mostrar cono / luces. */
 const FLASHLIGHT_CONE_VISIBLE_EPS = 0.02;

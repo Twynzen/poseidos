@@ -30,7 +30,7 @@ describe("constantes", () => {
     expect(FLASHLIGHT_CONE_YAW_OFFSET).toBe(0);
   });
 
-  test("haz: penumbra 0.2, spot ×2.76, fill ×0.6325, cuña 0xd0eaff opacity 0.55/0.22", () => {
+  test("haz: penumbra 0.2, spot ×2.76, fill ×0.6325, cuña 0xd0eaff opacity 0.55/0.253", () => {
     expect(FLASHLIGHT_SPOT_PENUMBRA).toBe(0.2);
     expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(2.76);
     expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBeCloseTo(2.4 * 1.15, 10);
@@ -38,7 +38,8 @@ describe("constantes", () => {
     expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBeCloseTo(0.55 * 1.15, 10);
     expect(FLASHLIGHT_WEDGE_COLOR).toBe(0xd0eaff);
     expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.55);
-    expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.22);
+    expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.253);
+    expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBeCloseTo(0.22 * 1.15, 10);
     const viewSrc = readFileSync(
       resolve(process.cwd(), "src/render/worldView.ts"),
       "utf8",
