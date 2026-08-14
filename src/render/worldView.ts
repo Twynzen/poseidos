@@ -35,6 +35,7 @@ import {
 import {
   DEFAULT_TRACER_TTL,
   TRACER_HEIGHT,
+  TRACER_WIDTH,
   clampTracerTtl,
   tracerLength,
   tracerMidpoint,
@@ -959,7 +960,7 @@ export function createWorldView(
     mat.opacity = 1;
     const mesh = new THREE.Mesh(tracerGeo, mat);
     mesh.position.set(mid.x, TRACER_HEIGHT, mid.y);
-    mesh.scale.set(0.055, 0.055, len);
+    mesh.scale.set(TRACER_WIDTH, TRACER_WIDTH, len);
     mesh.rotation.y = tracerYaw(from, to);
     scene.add(mesh);
 

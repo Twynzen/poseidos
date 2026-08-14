@@ -1,8 +1,12 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   DEFAULT_TRACER_TTL,
+  TRACER_HEIGHT,
   TRACER_TTL_MAX,
   TRACER_TTL_MIN,
+  TRACER_WIDTH,
   aimAlongFacing,
   clampTracerTtl,
   tracerLength,
@@ -11,6 +15,26 @@ import {
   tracerProgress,
   tracerYaw,
 } from "../src/render/tracers";
+
+describe("constantes", () => {
+  test("TTL 0.22 / altura 1.05 / rango 0.15–0.35", () => {
+    expect(DEFAULT_TRACER_TTL).toBe(0.22);
+    expect(TRACER_HEIGHT).toBe(1.05);
+    expect(TRACER_TTL_MIN).toBe(0.15);
+    expect(TRACER_TTL_MAX).toBe(0.35);
+  });
+
+  test("grosor 0.055 × 1.25; worldView usa el knob (no magic 0.055)", () => {
+    expect(TRACER_WIDTH).toBe(0.06875);
+    expect(TRACER_WIDTH).toBeCloseTo(0.055 * 1.25, 10);
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain("mesh.scale.set(TRACER_WIDTH, TRACER_WIDTH, len)");
+    expect(viewSrc).not.toMatch(/scale\.set\(0\.055\b/);
+  });
+});
 
 describe("tracers (geometría headless)", () => {
   test("aimAlongFacing normaliza facing y aplica range", () => {
