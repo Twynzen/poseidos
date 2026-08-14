@@ -13,6 +13,12 @@ export const FACING_CHEVRON_DIST = 1.05;
  */
 export const FACING_CHEVRON_YAW_OFFSET = 0;
 
+/** Color unlit del triángulo de suelo (cian suave). */
+export const FACING_CHEVRON_COLOR = 0x9ef0ff;
+
+/** Opacidad del chevron (cue, no losa sólida). */
+export const FACING_CHEVRON_OPACITY = 0.55;
+
 export interface FacingChevronOffset {
   x: number;
   z: number;

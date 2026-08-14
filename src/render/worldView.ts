@@ -1,6 +1,10 @@
 import * as THREE from "three";
 import { paletteFor, type MarkerRole } from "./markers";
-import { facingChevronOffset } from "./facingChevron";
+import {
+  FACING_CHEVRON_COLOR,
+  FACING_CHEVRON_OPACITY,
+  facingChevronOffset,
+} from "./facingChevron";
 import {
   FLASHLIGHT_CONE_HALF_WIDTH,
   FLASHLIGHT_CONE_LENGTH,
@@ -712,7 +716,7 @@ export function createWorldView(
   playerMesh.add(muzzleMesh, muzzleLight);
 
   // Chevron de facing: triángulo plano unlit (siempre visible; sin luz extra).
-  // Dist 1.05 (fuera del anillo 0.58); len/hw más grandes; cyan unlit; tilt iso.
+  // Dist 1.05 (fuera del anillo 0.58); len/hw más grandes; cyan semi-transparente; tilt iso.
   const CHEVRON_LEN = 0.70;
   const CHEVRON_HALF_W = 0.28;
   const CHEVRON_Y = 0.12;
@@ -729,7 +733,9 @@ export function createWorldView(
     ),
   );
   const chevronMat = new THREE.MeshBasicMaterial({
-    color: 0x9ef0ff,
+    color: FACING_CHEVRON_COLOR,
+    transparent: true,
+    opacity: FACING_CHEVRON_OPACITY,
     side: THREE.DoubleSide,
     depthWrite: false,
   });
@@ -743,6 +749,7 @@ export function createWorldView(
     chevronMesh.position.set(x, CHEVRON_Y, z);
     chevronMesh.rotation.y = playerGltfYaw;
     chevronMesh.rotation.x = -0.35;
+    chevronMesh.visible = true;
   }
   placeFacingChevron();
 
