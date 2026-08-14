@@ -2,17 +2,20 @@ import { describe, expect, test } from "vitest";
 import {
   MELEE_SWING_ANGLE,
   MELEE_SWING_DURATION,
+  MELEE_SWING_YAW_RATIO,
   createMeleeSwingState,
   tickMeleeSwing,
   triggerMeleeSwing,
 } from "../src/render/meleeSwing";
 
 describe("constantes", () => {
-  test("duración 0.2875 × 1.15 y ángulo 0.4 × 1.15 rad", () => {
+  test("duración 0.2875 × 1.15, ángulo 0.4 × 1.15 rad y yaw 0.5 × 1.15", () => {
     expect(MELEE_SWING_DURATION).toBe(0.330625);
     expect(MELEE_SWING_DURATION).toBeCloseTo(0.2875 * 1.15, 10);
     expect(MELEE_SWING_ANGLE).toBe(0.46);
     expect(MELEE_SWING_ANGLE).toBeCloseTo(0.4 * 1.15, 10);
+    expect(MELEE_SWING_YAW_RATIO).toBe(0.575);
+    expect(MELEE_SWING_YAW_RATIO).toBeCloseTo(0.5 * 1.15, 10);
   });
 });
 
@@ -34,7 +37,7 @@ describe("create / trigger / tick", () => {
     expect(out.active).toBe(true);
     expect(out.pitch).toBeGreaterThan(0);
     expect(out.yawBias).toBeGreaterThan(0);
-    expect(out.yawBias).toBeCloseTo(out.pitch * 0.5, 10);
+    expect(out.yawBias).toBeCloseTo(out.pitch * 0.575, 10);
     expect(out.pitch).toBeLessThanOrEqual(MELEE_SWING_ANGLE + 1e-12);
   });
 
@@ -44,7 +47,7 @@ describe("create / trigger / tick", () => {
     const out = tickMeleeSwing(s, MELEE_SWING_DURATION / 2);
     expect(out.active).toBe(true);
     expect(out.pitch).toBeCloseTo(MELEE_SWING_ANGLE, 10);
-    expect(out.yawBias).toBeCloseTo(MELEE_SWING_ANGLE * 0.5, 10);
+    expect(out.yawBias).toBeCloseTo(MELEE_SWING_ANGLE * 0.575, 10);
   });
 
   test("ease-out sine en t=0.25: sin(π/4) · ANGLE", () => {
@@ -53,7 +56,7 @@ describe("create / trigger / tick", () => {
     const out = tickMeleeSwing(s, MELEE_SWING_DURATION / 4);
     const expected = Math.sin(Math.PI / 4) * MELEE_SWING_ANGLE;
     expect(out.pitch).toBeCloseTo(expected, 10);
-    expect(out.yawBias).toBeCloseTo(expected * 0.5, 10);
+    expect(out.yawBias).toBeCloseTo(expected * 0.575, 10);
   });
 
   test("espejo: t=0.75 igual a t=0.25 (vuelve a reposo)", () => {

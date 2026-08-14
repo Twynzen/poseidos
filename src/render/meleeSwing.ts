@@ -7,11 +7,11 @@
 
 /** Duración del swing (s). 0.2875 × 1.15 para leer de noche. */
 export const MELEE_SWING_DURATION = 0.330625;
-/** Ángulo pico de pitch (rad). yawBias usa la mitad. 0.4 × 1.15 para leer de noche. */
+/** Ángulo pico de pitch (rad). yawBias usa MELEE_SWING_YAW_RATIO. 0.4 × 1.15 para leer de noche. */
 export const MELEE_SWING_ANGLE = 0.46;
 
-/** yawBias = pitch * este ratio (sesgo, no un yaw completo). */
-const MELEE_SWING_YAW_RATIO = 0.5;
+/** yawBias = pitch * este ratio (sesgo, no un yaw completo). 0.5 × 1.15 para leer de noche. */
+export const MELEE_SWING_YAW_RATIO = 0.575;
 
 export interface MeleeSwingState {
   /** Segundos transcurridos del swing actual. */
