@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   DEFAULT_NOISE_RING_LIFE,
+  NOISE_RING_AMBER,
   NOISE_RING_INNER,
   NOISE_RING_WIDTH,
   RUN_NOISE_RING_MIN_AGE,
@@ -38,6 +39,30 @@ describe("constantes", () => {
       "new THREE.RingGeometry(NOISE_RING_INNER, 1, 48)",
     );
     expect(viewSrc).not.toMatch(/RingGeometry\(0\.82\b/);
+  });
+
+  test("ámbar 0xe8b060 × 1.15/canal (r clamp) → 0xffca6e; rojo/blanco/width/life/inner/min-age sin cambio", () => {
+    expect(NOISE_RING_AMBER).toBe(0xffca6e);
+    const r = (NOISE_RING_AMBER >> 16) & 0xff;
+    const g = (NOISE_RING_AMBER >> 8) & 0xff;
+    const b = NOISE_RING_AMBER & 0xff;
+    expect(r).toBe(0xff);
+    expect(g).toBe(0xca);
+    expect(b).toBe(0x6e);
+    expect(Math.min(0xff, Math.round((0xe8 * 115) / 100))).toBe(r);
+    expect(Math.round((0xb0 * 115) / 100)).toBe(g);
+    expect(Math.round((0x60 * 115) / 100)).toBe(b);
+    expect(ringColorHex("door")).toBe(NOISE_RING_AMBER);
+    expect(ringColorHex("loot")).toBe(NOISE_RING_AMBER);
+    expect(ringColorHex("attack")).toBe(0xff6030);
+    expect(ringColorHex("gun")).toBe(0xff6030);
+    expect(ringColorHex("barricade")).toBe(0xff6030);
+    expect(ringColorHex("walk")).toBe(0xe8e8f0);
+    expect(ringColorHex("run")).toBe(0xe8e8f0);
+    expect(DEFAULT_NOISE_RING_LIFE).toBe(1.124125);
+    expect(NOISE_RING_WIDTH).toBe(0.25875);
+    expect(NOISE_RING_INNER).toBe(0.5865975);
+    expect(RUN_NOISE_RING_MIN_AGE).toBe(0.30276);
   });
 });
 
@@ -146,8 +171,8 @@ describe("noiseRings (headless)", () => {
   test("ringColorHex por kind", () => {
     expect(ringColorHex("run")).toBe(0xe8e8f0);
     expect(ringColorHex("walk")).toBe(0xe8e8f0);
-    expect(ringColorHex("door")).toBe(0xe8b060);
-    expect(ringColorHex("loot")).toBe(0xe8b060);
+    expect(ringColorHex("door")).toBe(0xffca6e);
+    expect(ringColorHex("loot")).toBe(0xffca6e);
     expect(ringColorHex("attack")).toBe(0xff6030);
     expect(ringColorHex("gun")).toBe(0xff6030);
     expect(ringColorHex("barricade")).toBe(0xff6030);
