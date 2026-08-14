@@ -14,7 +14,7 @@ describe("ISO_FRUSTUM", () => {
   test("en rango legible 8–12 (zoom vs legacy 16)", () => {
     expect(ISO_FRUSTUM).toBeGreaterThanOrEqual(8);
     expect(ISO_FRUSTUM).toBeLessThanOrEqual(12);
-    expect(ISO_FRUSTUM).toBe(10);
+    expect(ISO_FRUSTUM).toBe(8);
   });
 
   test("min/max/step para zoom runtime", () => {
