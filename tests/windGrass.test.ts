@@ -11,6 +11,7 @@ import {
   MAX_GRASS_INSTANCES,
   tileAcceptsGrass,
   WIND_SPEED,
+  WIND_SPEED_Z_MUL,
   WIND_SWAY,
   WIND_SWAY_Z_MUL,
   WIND_YAW,
@@ -82,6 +83,8 @@ describe("blade transforms + wind", () => {
     expect(WIND_YAW).toBeCloseTo(0.322 * 1.15, 10);
     expect(WIND_SPEED).toBe(3.174);
     expect(WIND_SPEED).toBeCloseTo(2.76 * 1.15, 10);
+    expect(WIND_SPEED_Z_MUL).toBe(1.5755);
+    expect(WIND_SPEED_Z_MUL).toBeCloseTo(1.37 * 1.15, 10);
     expect(BLADES_PER_TILE).toBe(3);
     expect(MAX_GRASS_INSTANCES).toBe(368);
   });
