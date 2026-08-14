@@ -45,7 +45,7 @@ describe("constantes", () => {
     expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.727375);
     expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.3345925);
     expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(3.6501);
-    expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.727375);
+    expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.83648125);
     expect(FLASHLIGHT_SPOT_PENUMBRA).toBe(0.2645);
     expect(FLASHLIGHT_SPOT_COLOR).toBe(0xf8ffff);
     const viewSrc = readFileSync(
@@ -67,7 +67,7 @@ describe("constantes", () => {
     expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.727375);
     expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.3345925);
     expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(3.6501);
-    expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.727375);
+    expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.83648125);
     expect(FLASHLIGHT_SPOT_PENUMBRA).toBe(0.2645);
     const viewSrc = readFileSync(
       resolve(process.cwd(), "src/render/worldView.ts"),
@@ -77,13 +77,13 @@ describe("constantes", () => {
     expect(viewSrc).toContain("torchSpot.color.setHex(FLASHLIGHT_SPOT_COLOR)");
   });
 
-  test("haz: penumbra 0.2645, spot ×3.6501, fill ×0.727375, cuña 0xefffff opacity 0.727375/0.3345925", () => {
+  test("haz: penumbra 0.2645, spot ×3.6501, fill ×0.83648125, cuña 0xefffff opacity 0.727375/0.3345925", () => {
     expect(FLASHLIGHT_SPOT_PENUMBRA).toBe(0.2645);
     expect(FLASHLIGHT_SPOT_PENUMBRA).toBeCloseTo(0.23 * 1.15, 10);
     expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(3.6501);
     expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBeCloseTo(3.174 * 1.15, 10);
-    expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.727375);
-    expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBeCloseTo(0.6325 * 1.15, 10);
+    expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.83648125);
+    expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBeCloseTo(0.727375 * 1.15, 10);
     expect(FLASHLIGHT_WEDGE_COLOR).toBe(0xefffff);
     expect(FLASHLIGHT_SPOT_COLOR).toBe(0xf8ffff);
     expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.727375);
