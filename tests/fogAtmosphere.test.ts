@@ -22,6 +22,7 @@ import {
   SKY_DAY,
   SKY_NIGHT,
   SKY_WARM_MIX,
+  SKY_WARM_NIGHT_ADD,
   skyRgb,
   SUN_INTENSITY_GAIN,
   SUN_INTENSITY_NIGHT,
@@ -92,7 +93,7 @@ describe("dawn / dusk warmth bands", () => {
 });
 
 describe("skyRgb cinematic", () => {
-  test("knobs: dawn tint r 0.72 × 1.15 / g 0.38 × 1.15 / b 0.28 × 1.15; dusk r 0.78 × 1.15 / g 0.32 × 1.15 / b 0.18 × 1.15; warm mix 0.35 × 1.15; sky iguales", () => {
+  test("knobs: dawn tint r 0.72 × 1.15 / g 0.38 × 1.15 / b 0.28 × 1.15; dusk r 0.78 × 1.15 / g 0.32 × 1.15 / b 0.18 × 1.15; warm mix 0.35 × 1.15; night add 0.25 × 1.15; sky iguales", () => {
     expect(DAWN_TINT_R).toBe(0.828);
     expect(DAWN_TINT_R).toBeCloseTo(0.72 * 1.15, 10);
     expect(DAWN_TINT_G).toBe(0.437);
@@ -107,6 +108,8 @@ describe("skyRgb cinematic", () => {
     expect(DUSK_TINT_B).toBeCloseTo(0.18 * 1.15, 10);
     expect(SKY_WARM_MIX).toBe(0.4025);
     expect(SKY_WARM_MIX).toBeCloseTo(0.35 * 1.15, 10);
+    expect(SKY_WARM_NIGHT_ADD).toBe(0.2875);
+    expect(SKY_WARM_NIGHT_ADD).toBeCloseTo(0.25 * 1.15, 10);
   });
 
   test("dawn más cálido que noon (r mayor / r>b)", () => {
