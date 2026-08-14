@@ -21,8 +21,8 @@ import {
 import { GameClock } from "../src/core/clock";
 
 describe("constantes", () => {
-  test("count 36, width 0.0375, largo día 0.55 / noche 0.828, color 0xa8c4e0", () => {
-    expect(RAIN_COUNT).toBe(36);
+  test("count 41, width 0.0375, largo día 0.55 / noche 0.828, color 0xa8c4e0", () => {
+    expect(RAIN_COUNT).toBe(41);
     expect(RAIN_STREAK_WIDTH).toBe(0.0375);
     expect(RAIN_STREAK_LENGTH_DAY).toBe(0.55);
     expect(RAIN_STREAK_LENGTH_NIGHT).toBe(0.828);
@@ -90,14 +90,14 @@ describe("rainStreakOpacity", () => {
 });
 
 describe("rainActiveCount", () => {
-  test("día i=1 → 36; noche d=0 recorta ×0.78", () => {
-    expect(rainActiveCount(1, 1)).toBe(36);
-    expect(rainActiveCount(1, 0)).toBe(Math.floor(36 * 0.78));
+  test("día i=1 → 41; noche d=0 recorta ×0.78", () => {
+    expect(rainActiveCount(1, 1)).toBe(41);
+    expect(rainActiveCount(1, 0)).toBe(Math.floor(41 * 0.78));
   });
 
-  test("día i=0 → floor(36×0.35)=12; noche menos; piso 6", () => {
-    expect(rainActiveCount(0, 1)).toBe(12);
-    expect(rainActiveCount(0, 0)).toBe(Math.floor(36 * 0.35 * 0.78));
+  test("día i=0 → floor(41×0.35)=14; noche menos; piso 6", () => {
+    expect(rainActiveCount(0, 1)).toBe(14);
+    expect(rainActiveCount(0, 0)).toBe(Math.floor(41 * 0.35 * 0.78));
     expect(rainActiveCount(0, 0)).toBeGreaterThanOrEqual(RAIN_ACTIVE_MIN);
     expect(rainActiveCount(1, 0)).toBeLessThan(rainActiveCount(1, 1));
   });
