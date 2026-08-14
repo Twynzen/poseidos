@@ -8,9 +8,9 @@ import {
 } from "../src/render/hitLean";
 
 describe("constantes", () => {
-  test("duración 0.2 × 1.15 y ángulo 0.35 × 1.15 rad", () => {
-    expect(HIT_LEAN_DURATION).toBe(0.23);
-    expect(HIT_LEAN_DURATION).toBeCloseTo(0.2 * 1.15, 10);
+  test("duración 0.23 × 1.15 y ángulo 0.35 × 1.15 rad", () => {
+    expect(HIT_LEAN_DURATION).toBe(0.2645);
+    expect(HIT_LEAN_DURATION).toBeCloseTo(0.23 * 1.15, 10);
     expect(HIT_LEAN_ANGLE).toBe(0.4025);
     expect(HIT_LEAN_ANGLE).toBeCloseTo(0.35 * 1.15, 10);
   });
