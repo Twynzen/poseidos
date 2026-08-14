@@ -17,8 +17,8 @@ export const MUTE_BODY_COLOR = 0x738371;
 export const MUTE_MAP_TINT = 0xc1d4bd;
 /** Emisión cuerpo baja: silueta gris-verde de noche, sin glow ni rojo-violeta. 0x1c2319 × 1.15/canal para leer de noche. */
 export const MUTE_BODY_EMISSIVE = 0x20281d;
-/** Acento head/visor: gris-verde más claro. */
-export const MUTE_ACCENT = 0x6b7a68;
+/** Acento head/visor: gris-verde más claro. 0x6b7a68 × 1.15/canal para leer de noche. */
+export const MUTE_ACCENT = 0x7b8c78;
 /** Alias del acento (mismo valor). */
 export const MUTE_ACCENT_COLOR = MUTE_ACCENT;
 /** Emisión del acento (ojos/visor mute, verde oscuro). */
