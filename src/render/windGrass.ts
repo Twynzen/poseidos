@@ -20,8 +20,8 @@ export const BLADES_PER_TILE = 3;
 /** Amplitud de oscilación horizontal (unidades mundo). 0.05175 × 1.15 para leer de noche. */
 export const WIND_SWAY = 0.0595125;
 
-/** Amplitud de yaw por viento (radianes). 0.28 × 1.15 para leer de noche. */
-export const WIND_YAW = 0.322;
+/** Amplitud de yaw por viento (radianes). 0.322 × 1.15 para leer de noche. */
+export const WIND_YAW = 0.3703;
 
 /** Velocidad del viento (rad/s en el argumento de sin). 2.76 × 1.15 para leer de noche. */
 export const WIND_SPEED = 3.174;
