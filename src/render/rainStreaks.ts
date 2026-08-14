@@ -8,7 +8,7 @@
 export const RAIN_COUNT = 41;
 
 /** Ancho XZ del streak (tiles). */
-export const RAIN_STREAK_WIDTH = 0.0375;
+export const RAIN_STREAK_WIDTH = 0.043125;
 
 /** Largo Y de día (tiles). Geo base. */
 export const RAIN_STREAK_LENGTH_DAY = 0.6325;
