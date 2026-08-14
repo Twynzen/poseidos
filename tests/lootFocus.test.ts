@@ -14,10 +14,11 @@ import {
 } from "../src/render/lootFocus";
 
 describe("constantes", () => {
-  test("reach = CONTAINER_REACH 1.6; near 1.35; far 1.12; pulse 0.05 / 6", () => {
+  test("reach = CONTAINER_REACH 1.6; near 1.5525; far 1.12; pulse 0.05 / 6", () => {
     expect(LOOT_FOCUS_REACH).toBe(CONTAINER_REACH);
     expect(LOOT_FOCUS_REACH).toBe(1.6);
-    expect(LOOT_FOCUS_SCALE_NEAR).toBe(1.35);
+    expect(LOOT_FOCUS_SCALE_NEAR).toBe(1.5525);
+    expect(LOOT_FOCUS_SCALE_NEAR).toBeCloseTo(1.35 * 1.15, 10);
     expect(LOOT_FOCUS_SCALE_FAR).toBe(1.12);
     expect(LOOT_FOCUS_PULSE_AMP).toBe(0.05);
     expect(LOOT_FOCUS_PULSE_SPEED).toBe(6);
@@ -25,18 +26,18 @@ describe("constantes", () => {
 });
 
 describe("lootFocusScale", () => {
-  test("1.35 en dist 0; 1.12 en reach; 1.0 fuera", () => {
-    expect(lootFocusScale(0)).toBe(1.35);
+  test("1.5525 en dist 0; 1.12 en reach; 1.0 fuera", () => {
+    expect(lootFocusScale(0)).toBe(1.5525);
     expect(lootFocusScale(1.6)).toBeCloseTo(1.12, 10);
     expect(lootFocusScale(1.61)).toBe(1);
     expect(lootFocusScale(10)).toBe(1);
   });
 
   test("lerp lineal dentro de reach", () => {
-    // midpoint 0.8: 1.35 + (1.12-1.35)*0.5 = 1.235
-    expect(lootFocusScale(0.8)).toBeCloseTo(1.235, 10);
+    // midpoint 0.8: 1.5525 + (1.12-1.5525)*0.5 = 1.33625
+    expect(lootFocusScale(0.8)).toBeCloseTo(1.33625, 10);
     const t = 0.25;
-    const expected = 1.35 + (1.12 - 1.35) * t;
+    const expected = 1.5525 + (1.12 - 1.5525) * t;
     expect(lootFocusScale(1.6 * t)).toBeCloseTo(expected, 10);
   });
 
@@ -65,9 +66,9 @@ describe("lootFocusPulse", () => {
 describe("lootFocusMul", () => {
   test("en reach: scale * pulse", () => {
     const elapsed = Math.PI / 12; // pulse = 1.05
-    expect(lootFocusMul(0, elapsed)).toBeCloseTo(1.35 * 1.05, 10);
+    expect(lootFocusMul(0, elapsed)).toBeCloseTo(1.5525 * 1.05, 10);
     expect(lootFocusMul(1.6, elapsed)).toBeCloseTo(1.12 * 1.05, 10);
-    expect(lootFocusMul(0.8, 0)).toBeCloseTo(1.235, 10);
+    expect(lootFocusMul(0.8, 0)).toBeCloseTo(1.33625, 10);
   });
 
   test("fuera de reach: 1 (sin pulso)", () => {
