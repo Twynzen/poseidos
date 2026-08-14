@@ -113,28 +113,28 @@ describe("markers (badges + ground rings)", () => {
     }
   });
 
-  test("loot/door/bed usan aro interact 0.416295–0.897; player no", () => {
+  test("loot/door/bed usan aro interact 0.416295–1.03155; player no", () => {
     expect(INTERACT_RING_INNER).toBe(0.416295);
     expect(INTERACT_RING_INNER).toBeCloseTo(0.4785 * 0.87, 5);
-    expect(INTERACT_RING_OUTER).toBe(0.897);
-    expect(INTERACT_RING_OUTER).toBeCloseTo(0.78 * 1.15, 5);
+    expect(INTERACT_RING_OUTER).toBe(1.03155);
+    expect(INTERACT_RING_OUTER).toBeCloseTo(0.897 * 1.15, 5);
     for (const role of ["loot", "door", "bed"] as const) {
       expect(markerUsesInteractRing(role)).toBe(true);
       const r = markerRingRadii(role);
       expect(r.inner).toBeCloseTo(0.416295, 5);
-      expect(r.outer).toBeCloseTo(0.897, 5);
+      expect(r.outer).toBeCloseTo(1.03155, 5);
     }
     expect(markerUsesInteractRing("player")).toBe(false);
     expect(markerRingOpacity("player")).toBe(0);
   });
 
-  test("mute/possessed usan aro threat 0.435–0.782; interact sigue 0.416295–0.897", () => {
+  test("mute/possessed usan aro threat 0.435–0.782; interact sigue 0.416295–1.03155", () => {
     expect(THREAT_RING_INNER).toBe(0.435);
     expect(THREAT_RING_INNER).toBeCloseTo(0.50 * 0.87, 5);
     expect(THREAT_RING_OUTER).toBe(0.782);
     expect(THREAT_RING_OUTER).toBeCloseTo(0.68 * 1.15, 5);
     expect(INTERACT_RING_INNER).toBeCloseTo(0.416295, 5);
-    expect(INTERACT_RING_OUTER).toBeCloseTo(0.897, 5);
+    expect(INTERACT_RING_OUTER).toBeCloseTo(1.03155, 5);
     for (const role of ["mute", "possessed"] as const) {
       expect(markerUsesInteractRing(role)).toBe(false);
       const r = markerRingRadii(role);
@@ -149,7 +149,7 @@ describe("markers (badges + ground rings)", () => {
     expect(THREAT_RING_OUTER).toBeCloseTo(0.782, 5);
     expect(MARKER_RING_OPACITY).toBeCloseTo(0.6877, 5);
     expect(INTERACT_RING_INNER).toBeCloseTo(0.416295, 5);
-    expect(INTERACT_RING_OUTER).toBeCloseTo(0.897, 5);
+    expect(INTERACT_RING_OUTER).toBeCloseTo(1.03155, 5);
     const src = readFileSync(resolve(process.cwd(), "src/render/worldView.ts"), "utf8");
     expect(src).not.toMatch(/threatFocus/i);
     expect(src).not.toMatch(/THREAT_FOCUS_PULSE|THREAT_RING_PULSE/);
