@@ -164,6 +164,9 @@ export function ambientRgb(daylight: number, phase: number): Rgb {
   return clampRgb({ r, g, b });
 }
 
+/** Subtract r del sol de noche (0.15 × 0.87) para que el sol se lea más cálido. */
+export const SUN_NIGHT_R_SUB = 0.1305;
+
 /** Color del sol / directional: día cálido suave; noche frío; dawn/dusk ámbar. */
 export function sunRgb(daylight: number, phase: number): Rgb {
   const d = clamp01(daylight);
@@ -173,7 +176,7 @@ export function sunRgb(daylight: number, phase: number): Rgb {
   const warm = Math.max(dawn, dusk);
   const nightMix = 1 - d;
 
-  let r = 0.91 - nightMix * 0.15;
+  let r = 0.91 - nightMix * SUN_NIGHT_R_SUB;
   let g = 0.88 - nightMix * 0.2;
   let b = 0.82 + nightMix * 0.12;
 
