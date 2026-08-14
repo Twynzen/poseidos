@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** texto del nameplate de loot un poco más grande.
+- **Última rutina:** trazo del nameplate de loot un poco más grueso.
 - **Qué quedó (esta corrida):**
+  - **Nameplate loot stroke 3→4.5; font 34 / Y / fade iguales.** `makeLootNameplateSprite` `ctx.lineWidth` 4.5 (era 3, ~1.5×). `strokeStyle` `rgba(0,0,0,0.7)` y fill `#f0c060` iguales. Font `600 34px`, canvas 384×80, scale 2.6×0.65, Y 2.15, fade 6.5, empty-hide, icon 64 / pad 68 sin cambio. Cámara / anillos / pulso / badges / chevron / luces / lluvia / linterna / HUD / inventario / teclas / gestos sin cambio.
   - **Nameplate loot font 28→34px; Y/fade/iconos iguales.** `makeLootNameplateSprite` `ctx.font` `600 34px` (era 28px). Canvas 384×80 (34px no clippea el pill 48px / atlas 80), scale 2.6×0.65, Y 2.15, fade 6.5, empty-hide, mid-scale 0.55, icon 64 / pad 68 sin cambio. Cámara / anillos / pulso / badges / chevron / luces / lluvia / linterna / HUD / inventario / teclas / gestos sin cambio.
   - **`.inv-badge` borde gold; grilla/gestos iguales.** `border` `rgba(96, 165, 250, 0.35)` → `rgba(232, 196, 106, 0.45)`. Padding, pill, uppercase, font y background iguales. `.inv-head` gold `#e8c36a` igual. Grilla 5-col, slots 52×52, iconos 40px, selected gold y empty dashed iguales. `inventory.ts` gestos/copy sin cambio. Hotbar / toast / HUD / moodle / diálogo / cámara / markers / anillos / pulso / luces / lluvia / linterna / teclas / gestos sin cambio.
   - **loot pulse alineado a door/bed 0.05; radios/opacity iguales.** `LOOT_FOCUS_PULSE_AMP` 0.08→0.05 (mismo `DOOR_FOCUS_PULSE_AMP` / `BED_FOCUS_PULSE_AMP`). Speed 6, scale near/far 1.35/1.12, reach 1.6, hide-fuera-de-alcance y `lootRingVisible` iguales. `MARKER_RING_OPACITY` 0.52; INTERACT 0.55/0.78; THREAT 0.50/0.68; paleta y badges E/Z sin cambio. Cámara / nameplates / chevron / luces / lluvia / linterna / HUD / inventario / diálogo / teclas / gestos sin cambio.

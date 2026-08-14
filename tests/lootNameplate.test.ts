@@ -51,6 +51,17 @@ describe("constantes", () => {
     expect(src).toMatch(/const BASE_W = 384;/);
     expect(src).toMatch(/const H = 80;/);
   });
+
+  test("nameplate text stroke 4.5; fill gold; dark outline", () => {
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toMatch(/ctx\.lineWidth = 4\.5;/);
+    expect(src).not.toMatch(/ctx\.lineWidth = 3;/);
+    expect(src).toMatch(/ctx\.strokeStyle = "rgba\(0,0,0,0\.7\)"/);
+    expect(src).toMatch(/ctx\.fillStyle = "#f0c060"/);
+  });
 });
 
 describe("lootNameplateLabel", () => {
