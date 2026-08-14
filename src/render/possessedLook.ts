@@ -21,7 +21,7 @@ export const POSSESSED_ACCENT = 0x9f3062;
 /** Alias del acento (mismo valor). */
 export const POSSESSED_ACCENT_COLOR = POSSESSED_ACCENT;
 /** Emisión del acento (ojos/visor poseído). */
-export const POSSESSED_ACCENT_EMISSIVE = 0x4a1028;
+export const POSSESSED_ACCENT_EMISSIVE = 0x55122e;
 /** Emisivo de fallback (caja / path sin GLB). Lock de nombre — no es el cuerpo. */
 export const POSSESSED_FALLBACK_EMISSIVE = 0x2a0814;
 /**
