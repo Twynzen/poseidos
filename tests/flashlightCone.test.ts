@@ -2,17 +2,39 @@ import { describe, expect, test } from "vitest";
 import {
   FLASHLIGHT_CONE_HALF_WIDTH,
   FLASHLIGHT_CONE_LENGTH,
+  FLASHLIGHT_CONE_Y,
   FLASHLIGHT_CONE_YAW_OFFSET,
+  FLASHLIGHT_FILL_INTENSITY_MUL,
+  FLASHLIGHT_SPOT_INTENSITY_MUL,
+  FLASHLIGHT_SPOT_PENUMBRA,
+  FLASHLIGHT_WEDGE_COLOR,
+  FLASHLIGHT_WEDGE_OPACITY_BASE,
+  FLASHLIGHT_WEDGE_OPACITY_GAIN,
   flashlightConeAngle,
   flashlightConeTip,
+  flashlightConeVisible,
   flashlightConeWedge,
+  flashlightConeWedgePoints,
+  flashlightSpotAngle,
+  flashlightWedgeOpacity,
+  flashlightWedgeVertexColors,
 } from "../src/render/flashlightCone";
 
 describe("constantes", () => {
-  test("length 4.2, half-width 1.15 y yaw offset 0 (no re-aplica PLAYER_GLTF_YAW_OFFSET)", () => {
+  test("length 4.2, half-width 0.9, Y 0.08 y yaw offset 0 (no re-aplica PLAYER_GLTF_YAW_OFFSET)", () => {
     expect(FLASHLIGHT_CONE_LENGTH).toBe(4.2);
-    expect(FLASHLIGHT_CONE_HALF_WIDTH).toBe(1.15);
+    expect(FLASHLIGHT_CONE_HALF_WIDTH).toBe(0.9);
+    expect(FLASHLIGHT_CONE_Y).toBe(0.08);
     expect(FLASHLIGHT_CONE_YAW_OFFSET).toBe(0);
+  });
+
+  test("haz: penumbra 0.2, spot ×2.4, fill ×0.55, cuña 0xd0eaff opacity 0.4/0.22", () => {
+    expect(FLASHLIGHT_SPOT_PENUMBRA).toBe(0.2);
+    expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(2.4);
+    expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.55);
+    expect(FLASHLIGHT_WEDGE_COLOR).toBe(0xd0eaff);
+    expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.4);
+    expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.22);
   });
 });
 
@@ -107,7 +129,7 @@ describe("flashlightConeWedge", () => {
   });
 });
 
-describe("flashlightConeAngle", () => {
+describe("flashlightConeAngle / flashlightSpotAngle", () => {
   test("atan(half-width / length); no finito / length≤0 → default", () => {
     expect(flashlightConeAngle()).toBeCloseTo(
       Math.atan(FLASHLIGHT_CONE_HALF_WIDTH / FLASHLIGHT_CONE_LENGTH),
@@ -122,5 +144,62 @@ describe("flashlightConeAngle", () => {
       Math.atan(1 / FLASHLIGHT_CONE_LENGTH),
       10,
     );
+  });
+
+  test("flashlightSpotAngle coincide con flashlightConeAngle", () => {
+    expect(flashlightSpotAngle()).toBe(flashlightConeAngle());
+    expect(flashlightSpotAngle(3, 1)).toBe(flashlightConeAngle(3, 1));
+  });
+});
+
+describe("flashlightConeWedgePoints", () => {
+  test("mismos vértices que flashlightConeWedge", () => {
+    const a = flashlightConeWedge(0);
+    const b = flashlightConeWedgePoints(0);
+    expect(b.apex).toEqual(a.apex);
+    expect(b.left).toEqual(a.left);
+    expect(b.right).toEqual(a.right);
+    const c = flashlightConeWedgePoints(Math.PI / 2, 3, 0.5);
+    const d = flashlightConeWedge(Math.PI / 2, 3, 0.5);
+    expect(c).toEqual(d);
+  });
+});
+
+describe("flashlightConeVisible / flashlightWedgeOpacity", () => {
+  test("visible solo si intensity > 0.02", () => {
+    expect(flashlightConeVisible(0)).toBe(false);
+    expect(flashlightConeVisible(0.02)).toBe(false);
+    expect(flashlightConeVisible(0.021)).toBe(true);
+    expect(flashlightConeVisible(1.5)).toBe(true);
+    expect(flashlightConeVisible(Number.NaN)).toBe(false);
+  });
+
+  test("opacity 0 off; on = base + intensity × gain", () => {
+    expect(flashlightWedgeOpacity(0)).toBe(0);
+    expect(flashlightWedgeOpacity(0.02)).toBe(0);
+    expect(flashlightWedgeOpacity(1)).toBeCloseTo(
+      FLASHLIGHT_WEDGE_OPACITY_BASE + FLASHLIGHT_WEDGE_OPACITY_GAIN,
+      10,
+    );
+    expect(flashlightWedgeOpacity(1.5)).toBeCloseTo(
+      FLASHLIGHT_WEDGE_OPACITY_BASE + 1.5 * FLASHLIGHT_WEDGE_OPACITY_GAIN,
+      10,
+    );
+    expect(flashlightWedgeOpacity(10)).toBe(1);
+  });
+});
+
+describe("flashlightWedgeVertexColors", () => {
+  test("ápice más brillante que el extremo lejano (tip → far fade)", () => {
+    const c = flashlightWedgeVertexColors();
+    expect(c.length).toBe(9);
+    const tip = c[0]! + c[1]! + c[2]!;
+    const farR = c[3]! + c[4]! + c[5]!;
+    const farL = c[6]! + c[7]! + c[8]!;
+    expect(tip).toBeGreaterThan(farR);
+    expect(tip).toBeGreaterThan(farL);
+    expect(c[0]).toBe(1);
+    expect(c[1]).toBe(1);
+    expect(c[2]).toBe(1);
   });
 });
