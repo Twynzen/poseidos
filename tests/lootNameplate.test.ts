@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   LOOT_NAMEPLATE_FADE_DIST,
+  LOOT_NAMEPLATE_FONT_PX,
   LOOT_NAMEPLATE_ICON_PAD,
   LOOT_NAMEPLATE_ICON_SIZE,
   LOOT_NAMEPLATE_MAX_CHARS,
@@ -22,6 +23,33 @@ import {
 } from "../src/render/lootNameplate";
 
 describe("constantes", () => {
+  test("font 39.1 (34 × 1.15); fade/mid-scale/iconos/scale/Y/teclas sin cambio", () => {
+    expect(LOOT_NAMEPLATE_FONT_PX).toBe(39.1);
+    expect(LOOT_NAMEPLATE_FONT_PX).toBeCloseTo(34 * 1.15, 5);
+    expect(LOOT_NAMEPLATE_FADE_DIST).toBe(6.325);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
+    expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
+    expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
+    expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.7475);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_PAD).toBe(78.2);
+  });
+
+  test("worldView aplica LOOT_NAMEPLATE_FONT_PX al canvas existente", () => {
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toContain(
+      "ctx.font = `600 ${LOOT_NAMEPLATE_FONT_PX}px ui-monospace, SF Mono, Menlo, Consolas, monospace`",
+    );
+    expect(src).not.toMatch(/ctx\.font = "600 34px/);
+    expect(src).not.toMatch(/ctx\.font = "600 28px/);
+    expect(src).toMatch(/const BASE_W = 384;/);
+    expect(src).toMatch(/const H = 80;/);
+    expect(src).toMatch(/ctx\.lineWidth = 4\.5;/);
+  });
+
   test("mid-scale 0.552 (0.48 × 1.15); fade/Y/iconos/scale/font/teclas sin cambio", () => {
     expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
     expect(LOOT_NAMEPLATE_MID_SCALE).toBeCloseTo(0.48 * 1.15, 5);
@@ -108,14 +136,16 @@ describe("constantes", () => {
     );
   });
 
-  test("nameplate font 34px; canvas 384×80", () => {
+  test("nameplate font 39.1px; canvas 384×80", () => {
+    expect(LOOT_NAMEPLATE_FONT_PX).toBe(39.1);
     const src = readFileSync(
       resolve(process.cwd(), "src/render/worldView.ts"),
       "utf8",
     );
-    expect(src).toMatch(
-      /ctx\.font = "600 34px ui-monospace, SF Mono, Menlo, Consolas, monospace"/,
+    expect(src).toContain(
+      "ctx.font = `600 ${LOOT_NAMEPLATE_FONT_PX}px ui-monospace, SF Mono, Menlo, Consolas, monospace`",
     );
+    expect(src).not.toMatch(/ctx\.font = "600 34px/);
     expect(src).not.toMatch(/ctx\.font = "600 28px/);
     expect(src).toMatch(/const BASE_W = 384;/);
     expect(src).toMatch(/const H = 80;/);

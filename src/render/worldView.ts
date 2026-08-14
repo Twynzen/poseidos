@@ -156,6 +156,7 @@ import {
 } from "./rainStreaks";
 import { lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
 import {
+  LOOT_NAMEPLATE_FONT_PX,
   LOOT_NAMEPLATE_ICON_PAD,
   LOOT_NAMEPLATE_ICON_SIZE,
   LOOT_NAMEPLATE_SCALE_X,
@@ -620,7 +621,7 @@ export function createWorldView(
         const iconX = Math.max(0, (ICON_PAD - iconSize) / 2);
         paintLootNameplateIcon(ctx, itemId, iconX, (H - iconSize) / 2, iconSize);
       }
-      ctx.font = "600 34px ui-monospace, SF Mono, Menlo, Consolas, monospace";
+      ctx.font = `600 ${LOOT_NAMEPLATE_FONT_PX}px ui-monospace, SF Mono, Menlo, Consolas, monospace`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.lineWidth = 4.5;
