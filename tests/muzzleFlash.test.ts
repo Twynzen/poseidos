@@ -18,9 +18,9 @@ describe("constantes", () => {
     expect(MUZZLE_FLASH_PEAK).toBe(1);
   });
 
-  test("radio 0.11 × 1.25; worldView usa el knob (no magic 0.11)", () => {
-    expect(MUZZLE_FLASH_RADIUS).toBe(0.1375);
-    expect(MUZZLE_FLASH_RADIUS).toBeCloseTo(0.11 * 1.25, 10);
+  test("radio 0.1375 × 1.15; worldView usa el knob (no magic 0.11/0.1375)", () => {
+    expect(MUZZLE_FLASH_RADIUS).toBe(0.158125);
+    expect(MUZZLE_FLASH_RADIUS).toBeCloseTo(0.1375 * 1.15, 10);
     const viewSrc = readFileSync(
       resolve(process.cwd(), "src/render/worldView.ts"),
       "utf8",
@@ -29,6 +29,7 @@ describe("constantes", () => {
       "new THREE.SphereGeometry(MUZZLE_FLASH_RADIUS, 10, 8)",
     );
     expect(viewSrc).not.toMatch(/SphereGeometry\(0\.11\b/);
+    expect(viewSrc).not.toMatch(/SphereGeometry\(0\.1375\b/);
   });
 
   test("luz PointLight 2.75 × 1.15; worldView usa el knob (no magic 2.2/2.75)", () => {
