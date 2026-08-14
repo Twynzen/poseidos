@@ -15,7 +15,7 @@ export const POSSESSED_BODY_COLOR = 0x432e40;
 /** Multiply sobre color existente cuando hay map (mantiene variación). */
 export const POSSESSED_MAP_TINT = 0x9f7a96;
 /** Emisión cuerpo baja: silueta violeta-oscura de noche, sin glow. */
-export const POSSESSED_BODY_EMISSIVE = 0x21141e;
+export const POSSESSED_BODY_EMISSIVE = 0x261723;
 /** Acento head/visor: rojo-violeta. */
 export const POSSESSED_ACCENT = 0x8a2a55;
 /** Alias del acento (mismo valor). */
