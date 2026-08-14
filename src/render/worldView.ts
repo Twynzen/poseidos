@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { paletteFor, type MarkerRole } from "./markers";
+import { markerRingOpacity, paletteFor, type MarkerRole } from "./markers";
 import {
   FACING_CHEVRON_COLOR,
   FACING_CHEVRON_OPACITY,
@@ -1868,7 +1868,7 @@ function attachRoleMarkers(
   const ringMat = new THREE.MeshBasicMaterial({
     color: pal.ring,
     transparent: true,
-    opacity: 0.72,
+    opacity: markerRingOpacity(role),
     side: THREE.DoubleSide,
     depthWrite: false,
   });

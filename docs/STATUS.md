@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** chevron de facing más claro (opacidad ~0.55).
+- **Última rutina:** anillo del player más quieto (opacidad 0.42).
 - **Qué quedó (esta corrida):**
+  - **Foot ring player 0.42** mismo radio (RingGeometry 0.42–0.58, y=0.04), siempre visible. Color player `0x3a7fd4` igual. Otros roles (loot/door/bed/mute/possessed) siguen en 0.72. `markerRingOpacity(role)` en `attachRoleMarkers`. Sin teclas, gestos ni features nuevas.
   - **Chevron de facing más claro** triángulo de suelo semi-transparente (`FACING_CHEVRON_COLOR` `0x9ef0ff`, `FACING_CHEVRON_OPACITY` 0.55), siempre visible (también idle). Mismos dist 1.05 y yaw offset 0. Sin teclas, gestos ni features nuevas.
   - **Anillos de ruido al sprint** el run ring ya no spawnea cada frame; cooldown ~0.4s (`RUN_NOISE_RING_MIN_AGE` + `shouldSpawnNoiseRing`). `emitRun` sigue cada frame de sprint (AI noise igual). Mismos kinds (walk hidden; run/door/loot/barricade/attack/gun), mismo expand/fade. Sin teclas, gestos ni features nuevas.
   - **Linterna más clara** cono más estrecho (halfWidth 1.15→0.9), penumbra 0.45→0.2, cuña cian-blanca más opaca + fade tip→far. Spot ×2.4 vs fill ×0.55. Alcance 4.2 y tecla L iguales.
@@ -51,6 +52,6 @@
 - **Controles:** WASD mover · **Shift correr** · **Espacio/V melee** · **X disparar** · E puerta/loot · G loot · **Shift+G stack** · **Q usar slot** (consumible seleccionado / lluvia outdoor) · **U tirar** · **Shift+U stack** · **U inv tirar** · **1-5 hotbar** (selección, highlight azul) · **rueda hotbar** (cicla slot, wrap) · **clic hotbar** · **arrastrar hotbar** · **doble clic usar** · **clic der. info** · **Shift+clic hotbar partir** · **Ctrl+clic hotbar juntar** · **clic inv usar** · **doble clic inv** · **arrastrar inv** · **clic der. inv** · **Shift+clic inv partir** · **Ctrl+clic inv juntar** · **I inventorio (panel; al empezar muestra kit inicial)** · B barricada · **C vendaje** · **H cocinar** · **T diálogo** (calmar / preguntar / amenazar / ofrecer comida / Distraer) · **L linterna** · **M mute ambient** · **+/- zoom** · R descanso/reinicio · **Z dormir** (cama o suelo indoor) · **F1 ayuda** · F5 guardar · F9 cargar · (boot) clic/Espacio saltar loading
 - **Fuera de este slice:** autogenerar modelos en Mesh2Motion (herramienta externa); WebSocket real; lobby UI browser; API LLM real; GTAO; samples de pisadas (sigue beep); samples ambient reales; samples combat reales (sigue beep); samples interact reales (sigue beep); samples speech reales (sigue beep); samples heartbeat reales (sigue beep)
 - **Dirección:** sandbox largo en Three.js (sim primero; render es vista); LLM solo stub/fallback; MP solo stub headless por ahora
-- **Siguiente subtarea concreta:** leftover visual polish chico (player foot ring más quieto) — sin gestos nuevos.
+- **Siguiente subtarea concreta:** leftover visual polish chico (badge player más quieto) — sin gestos nuevos.
 - **Bloqueos:** ninguno
 - **Entorno:** Bun; scripts `dev`, `build`, `test`
