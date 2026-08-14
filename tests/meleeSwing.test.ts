@@ -8,9 +8,10 @@ import {
 } from "../src/render/meleeSwing";
 
 describe("constantes", () => {
-  test("duración 0.25s y ángulo 0.32 rad", () => {
+  test("duración 0.25s y ángulo 0.40 rad", () => {
     expect(MELEE_SWING_DURATION).toBe(0.25);
-    expect(MELEE_SWING_ANGLE).toBe(0.32);
+    expect(MELEE_SWING_ANGLE).toBe(0.4);
+    expect(MELEE_SWING_ANGLE).toBeCloseTo(0.32 * 1.25, 10);
   });
 });
 
