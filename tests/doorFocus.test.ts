@@ -31,7 +31,7 @@ describe("constantes", () => {
     expect(DOOR_FOCUS_PULSE_SPEED).toBe(6);
   });
 
-  test("doorBadgeLabel es E; font 92; letter 2.76; disc 1.725; Y 2.3", () => {
+  test("doorBadgeLabel es E; font 92; letter 2.76; disc 1.725; Y 2.645", () => {
     expect(doorBadgeLabel).toBe("E");
     expect(doorBadgeFontPx).toBe(92);
     expect(doorBadgeFontPx).toBeCloseTo(80 * 1.15, 10);
@@ -39,8 +39,8 @@ describe("constantes", () => {
     expect(doorBadgeLetterScale).toBeCloseTo(2.4 * 1.15, 10);
     expect(doorBadgeDiscScale).toBe(1.725);
     expect(doorBadgeDiscScale).toBeCloseTo(1.5 * 1.15, 10);
-    expect(doorBadgeY).toBe(2.3);
-    expect(doorBadgeY).toBeCloseTo(2.0 * 1.15, 10);
+    expect(doorBadgeY).toBe(2.645);
+    expect(doorBadgeY).toBeCloseTo(2.3 * 1.15, 10);
   });
 
   test("worldView aplica doorBadgeFontPx al canvas de la letra E del floatBadge existente", () => {

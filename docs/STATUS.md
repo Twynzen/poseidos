@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** badge Z de cama un poco más alto
-- **Siguiente:** leftover visual polish chico — bump `doorBadgeY` (currently 2.3) ×1.15 so the E door badge sits a bit higher and reads better at night. Do not change door scales/pulse, bed badge, loot focus, looks, sky/fog/sun/ambient, or controls. No new widgets.
+- **Última rutina:** badge E de puerta un poco más alto
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After doorBadgeY, look at LOOT_FOCUS_PULSE_AMP (0.0575) or HOSTILE_VISUAL_SCALE (1.5). Do not change door/bed scales, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **doorBadgeY 2.3→2.645; reach/scale/pulse/bed/loot/looks/sky/fog/sol/teclas iguales.**
   - **bedBadgeY 2.3→2.645; reach/scale/pulse/door/loot/looks/sky/fog/sol/teclas iguales.**
   - **SURVIVOR_ACCENT_ROUGHNESS 0.3915→0.340605; body/colores/emissive/mudos/poseídos/sky/fog/sol/teclas iguales.**
   - **SURVIVOR_BODY_ROUGHNESS 0.7134→0.620658; accent/colores/emissive/mudos/poseídos/sky/fog/sol/teclas iguales.**
