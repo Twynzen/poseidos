@@ -103,6 +103,13 @@ describe("F1 lift CSS", () => {
   });
 });
 
+describe("#hud CSS", () => {
+  test("#hud font 13px", () => {
+    const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
+    expect(html).toMatch(/#hud\s*\{[^}]*font:\s*13px\/1\.45/s);
+  });
+});
+
 describe("HUD vs hotbar CSS", () => {
   test("#hud / #moodles max-width stay left of centered hotbar", () => {
     const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
