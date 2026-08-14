@@ -34,7 +34,7 @@ describe("constantes", () => {
   test("GOLD_STROKE #ffe07a (#e8c36a ×1.15); icon-stroke/text/plate/gold/fill/stroke/font/fade/mid-scale/icon/pad/scale/Y sin cambio", () => {
     expect(LOOT_NAMEPLATE_GOLD_STROKE).toBe("#ffe07a");
     expect(LOOT_NAMEPLATE_ICON_STROKE).toBe(1.98375);
-    expect(LOOT_NAMEPLATE_TEXT_STROKE).toBe("rgba(0,0,0,0.805)");
+    expect(LOOT_NAMEPLATE_TEXT_STROKE).toBe("rgba(0,0,0,0.92575)");
     expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.9522)");
     expect(LOOT_NAMEPLATE_GOLD_FILL).toBe("rgba(232,195,106,0.4232)");
     expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");
@@ -66,7 +66,7 @@ describe("constantes", () => {
   test("ICON_STROKE 1.98375 (1.725 × 1.15); text/plate/gold/fill/stroke/font/fade/mid-scale/icon/pad/scale/Y sin cambio", () => {
     expect(LOOT_NAMEPLATE_ICON_STROKE).toBe(1.98375);
     expect(LOOT_NAMEPLATE_ICON_STROKE).toBeCloseTo(1.725 * 1.15, 5);
-    expect(LOOT_NAMEPLATE_TEXT_STROKE).toBe("rgba(0,0,0,0.805)");
+    expect(LOOT_NAMEPLATE_TEXT_STROKE).toBe("rgba(0,0,0,0.92575)");
     expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.9522)");
     expect(LOOT_NAMEPLATE_GOLD_FILL).toBe("rgba(232,195,106,0.4232)");
     expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");
@@ -94,12 +94,12 @@ describe("constantes", () => {
     expect(ctx.lineWidth).toBe(1.98375);
   });
 
-  test("TEXT_STROKE opacity 0.805 (0.7 × 1.15); plate/gold/fill/stroke/font/fade/mid-scale/icon/pad/scale/Y sin cambio", () => {
-    expect(LOOT_NAMEPLATE_TEXT_STROKE).toBe("rgba(0,0,0,0.805)");
-    expect(LOOT_NAMEPLATE_TEXT_STROKE).toMatch(/rgba\(0,\s*0,\s*0,\s*0\.805\)/);
+  test("TEXT_STROKE opacity 0.92575 (0.805 × 1.15); plate/gold/fill/stroke/font/fade/mid-scale/icon/pad/scale/Y sin cambio", () => {
+    expect(LOOT_NAMEPLATE_TEXT_STROKE).toBe("rgba(0,0,0,0.92575)");
+    expect(LOOT_NAMEPLATE_TEXT_STROKE).toMatch(/rgba\(0,\s*0,\s*0,\s*0\.92575\)/);
     const opacity = Number(LOOT_NAMEPLATE_TEXT_STROKE.match(/[\d.]+(?=\)$)/)?.[0]);
-    expect(opacity).toBe(0.805);
-    expect(opacity).toBeCloseTo(0.7 * 1.15, 5);
+    expect(opacity).toBe(0.92575);
+    expect(opacity).toBeCloseTo(0.805 * 1.15, 5);
     expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.9522)");
     expect(LOOT_NAMEPLATE_GOLD_FILL).toBe("rgba(232,195,106,0.4232)");
     expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");

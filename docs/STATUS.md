@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** fondo del nameplate un poco más opaco
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After PLATE_FILL, look at LOOT_NAMEPLATE_TEXT_STROKE alpha 0.805 ×1.15 (→0.92575) so the label outline reads a bit more at night. Do not change near/fade/mid/Y/scale/icon/font/stroke, rings, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** outline del texto del nameplate un poco más visible
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After TEXT_STROKE, look outside nameplate — next unused visual knob in flashlight / HUD / interaction badge (not nameplate, rings, looks, sky/fog/sun/ambient, or controls).
 - **Qué quedó (esta corrida):**
+  - **LOOT_NAMEPLATE_TEXT_STROKE 0.805→0.92575; plate/gold/font/stroke/icon/scale/Y/near/fade/mid/focus/looks/sky/fog/sol/teclas iguales.**
   - **LOOT_NAMEPLATE_PLATE_FILL 0.828→0.9522; gold/stroke/font/icon/scale/Y/near/fade/mid/focus/looks/sky/fog/sol/teclas iguales.**
   - **LOOT_NAMEPLATE_GOLD_FILL 0.368→0.4232; stroke/font/icon/scale/Y/near/fade/mid/focus/looks/sky/fog/sol/teclas iguales.**
   - **LOOT_NAMEPLATE_ICON_STROKE 1.725→1.98375; font/stroke/icon-size/scale/Y/near/fade/mid/focus/looks/sky/fog/sol/teclas iguales.**
