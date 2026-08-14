@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   AMBIENT_INTENSITY_GAIN,
   AMBIENT_INTENSITY_NIGHT,
+  AMBIENT_NIGHT_B_ADD,
   AMBIENT_NIGHT_G_SUB,
   AMBIENT_NIGHT_R_SUB,
   ambientRgb,
@@ -191,18 +192,21 @@ describe("night / noon light intensity floors", () => {
 });
 
 describe("ambientRgb night mix", () => {
-  test("knobs: night r subtract 0.18 × 0.87; g subtract 0.06 × 0.87; b igual", () => {
+  test("knobs: night r subtract 0.18 × 0.87; g subtract 0.06 × 0.87; b add 0.14 × 1.15", () => {
     expect(AMBIENT_NIGHT_R_SUB).toBe(0.1566);
     expect(AMBIENT_NIGHT_R_SUB).toBeCloseTo(0.18 * 0.87, 10);
     expect(AMBIENT_NIGHT_G_SUB).toBe(0.0522);
     expect(AMBIENT_NIGHT_G_SUB).toBeCloseTo(0.06 * 0.87, 10);
+    expect(AMBIENT_NIGHT_B_ADD).toBe(0.161);
+    expect(AMBIENT_NIGHT_B_ADD).toBeCloseTo(0.14 * 1.15, 10);
   });
 
-  test("d=0 → night r/g follow knobs; b add 0.14", () => {
+  test("d=0 → night r/g/b follow knobs; b add 0.161", () => {
     const night = ambientRgb(0, 0);
     expect(night.r).toBeCloseTo(0x6a / 255 - AMBIENT_NIGHT_R_SUB, 10);
     expect(night.g).toBeCloseTo(0x6a / 255 - AMBIENT_NIGHT_G_SUB, 10);
-    expect(night.b).toBeCloseTo(0x78 / 255 + 0.14, 10);
+    expect(night.b).toBeCloseTo(0x78 / 255 + AMBIENT_NIGHT_B_ADD, 10);
+    expect(night.b).toBeCloseTo(0x78 / 255 + 0.161, 10);
   });
 });
 
