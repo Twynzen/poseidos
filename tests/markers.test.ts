@@ -107,10 +107,34 @@ describe("markers (badges + ground rings)", () => {
     expect(MARKER_RING_OPACITY).toBe(0.6877);
     expect(MARKER_RING_OPACITY).toBeCloseTo(0.598 * 1.15, 5);
     expect(markerRingOpacity("player")).toBe(0);
-    expect(paletteFor("player").ring).toBe(0x3a7fd4);
+    expect(paletteFor("player").ring).toBe(0x4392f4);
     for (const role of ["loot", "door", "bed", "mute", "possessed"] as const) {
       expect(markerRingOpacity(role)).toBeCloseTo(0.6877, 5);
     }
+  });
+
+  test("player ring 0x3a7fd4 × 1.15/canal → 0x4392f4; badge/emissive/glyph/other-roles/opacities iguales", () => {
+    const player = paletteFor("player");
+    expect(player.ring).toBe(0x4392f4);
+    const r = (player.ring >> 16) & 0xff;
+    const g = (player.ring >> 8) & 0xff;
+    const b = player.ring & 0xff;
+    expect(r).toBe(0x43);
+    expect(g).toBe(0x92);
+    expect(b).toBe(0xf4);
+    expect(Math.round((0x3a * 115) / 100)).toBe(r);
+    expect(Math.round((0x7f * 115) / 100)).toBe(g);
+    expect(Math.round((0xd4 * 115) / 100)).toBe(b);
+    expect(player.badge).toBe(0x7eb6ef);
+    expect(player.emissive).toBe(0x1a4060);
+    expect(player.glyph).toBe("●");
+    expect(MARKER_PALETTE.mute.ring).toBe(0xc43c3c);
+    expect(MARKER_PALETTE.possessed.ring).toBe(0x8b3db8);
+    expect(MARKER_PALETTE.loot.ring).toBe(0xd4a03a);
+    expect(MARKER_PALETTE.door.ring).toBe(0x5c7388);
+    expect(MARKER_PALETTE.bed.ring).toBe(0x7a6490);
+    expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
+    expect(MARKER_RING_OPACITY).toBe(0.6877);
   });
 
   test("loot/door/bed usan aro interact 0.416295–1.03155; player no", () => {

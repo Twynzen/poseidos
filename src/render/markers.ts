@@ -19,7 +19,7 @@ export interface MarkerPalette {
 /** mute=rojo · poseído=púrpura · player=azul · loot=ámbar · door=steel · bed=púrpura sleep */
 export const MARKER_PALETTE: Readonly<Record<MarkerRole, MarkerPalette>> = {
   player: {
-    ring: 0x3a7fd4,
+    ring: 0x4392f4,
     badge: 0x7eb6ef,
     emissive: 0x1a4060,
     glyph: "●",
