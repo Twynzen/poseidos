@@ -9,8 +9,8 @@
 export const MUZZLE_FLASH_DURATION = 0.138;
 /** Intensidad pico (u=0). Opacity del mesh = intensity (ya 1 al trigger). */
 export const MUZZLE_FLASH_PEAK = 1;
-/** Radio de la esfera aditiva (tiles). 0.11 × 1.25 para leer de noche. */
-export const MUZZLE_FLASH_RADIUS = 0.1375;
+/** Radio de la esfera aditiva (tiles). 0.1375 × 1.15 para leer de noche. */
+export const MUZZLE_FLASH_RADIUS = 0.158125;
 /** Pico de PointLight en worldView. 2.75 × 1.15 para leer de noche. */
 export const MUZZLE_LIGHT_PEAK = 3.1625;
 
