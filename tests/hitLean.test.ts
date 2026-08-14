@@ -2,17 +2,20 @@ import { describe, expect, test } from "vitest";
 import {
   HIT_LEAN_ANGLE,
   HIT_LEAN_DURATION,
+  HIT_LEAN_YAW_RATIO,
   createHitLeanState,
   tickHitLean,
   triggerHitLean,
 } from "../src/render/hitLean";
 
 describe("constantes", () => {
-  test("duración 0.23 × 1.15 y ángulo 0.35 × 1.15 rad", () => {
+  test("duración 0.23 × 1.15, ángulo 0.35 × 1.15 rad y yaw 0.5 × 1.15", () => {
     expect(HIT_LEAN_DURATION).toBe(0.2645);
     expect(HIT_LEAN_DURATION).toBeCloseTo(0.23 * 1.15, 10);
     expect(HIT_LEAN_ANGLE).toBe(0.4025);
     expect(HIT_LEAN_ANGLE).toBeCloseTo(0.35 * 1.15, 10);
+    expect(HIT_LEAN_YAW_RATIO).toBe(0.575);
+    expect(HIT_LEAN_YAW_RATIO).toBeCloseTo(0.5 * 1.15, 10);
   });
 });
 
@@ -34,7 +37,7 @@ describe("create / trigger / tick", () => {
     expect(out.active).toBe(true);
     expect(out.pitch).toBeLessThan(0);
     expect(out.yawBias).toBeLessThan(0);
-    expect(out.yawBias).toBeCloseTo(out.pitch * 0.5, 10);
+    expect(out.yawBias).toBeCloseTo(out.pitch * 0.575, 10);
     expect(out.pitch).toBeGreaterThanOrEqual(-HIT_LEAN_ANGLE - 1e-12);
   });
 
@@ -44,7 +47,7 @@ describe("create / trigger / tick", () => {
     const out = tickHitLean(s, HIT_LEAN_DURATION / 2);
     expect(out.active).toBe(true);
     expect(out.pitch).toBeCloseTo(-HIT_LEAN_ANGLE, 10);
-    expect(out.yawBias).toBeCloseTo(-HIT_LEAN_ANGLE * 0.5, 10);
+    expect(out.yawBias).toBeCloseTo(-HIT_LEAN_ANGLE * 0.575, 10);
   });
 
   test("ease-out sine en t=0.25: -sin(π/4) · ANGLE", () => {
@@ -53,7 +56,7 @@ describe("create / trigger / tick", () => {
     const out = tickHitLean(s, HIT_LEAN_DURATION / 4);
     const expected = -Math.sin(Math.PI / 4) * HIT_LEAN_ANGLE;
     expect(out.pitch).toBeCloseTo(expected, 10);
-    expect(out.yawBias).toBeCloseTo(expected * 0.5, 10);
+    expect(out.yawBias).toBeCloseTo(expected * 0.575, 10);
   });
 
   test("espejo: t=0.75 igual a t=0.25 (vuelve a reposo)", () => {
