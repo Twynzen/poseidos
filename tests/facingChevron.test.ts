@@ -10,13 +10,25 @@ import {
 } from "../src/render/facingChevron";
 
 describe("constantes", () => {
+  test("opacity 0.991875 (0.8625 × 1.15); dist/len/hw/color/yaw sin cambio (no double-apply)", () => {
+    expect(FACING_CHEVRON_OPACITY).toBe(0.991875);
+    expect(FACING_CHEVRON_OPACITY).toBeCloseTo(0.8625 * 1.15, 5);
+    expect(FACING_CHEVRON_OPACITY).toBeLessThan(1);
+    expect(FACING_CHEVRON_OPACITY).toBeGreaterThan(0.35);
+    expect(FACING_CHEVRON_DIST).toBe(1.587);
+    expect(FACING_CHEVRON_LEN).toBe(1.0646125);
+    expect(FACING_CHEVRON_HW).toBe(0.425845);
+    expect(FACING_CHEVRON_COLOR).toBe(0xffe07a);
+    expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
+  });
+
   test("hw 0.425845 (0.3703 × 1.15); dist/len/color/opacity/yaw sin cambio (no double-apply)", () => {
     expect(FACING_CHEVRON_HW).toBe(0.425845);
     expect(FACING_CHEVRON_HW).toBeCloseTo(0.3703 * 1.15, 5);
     expect(FACING_CHEVRON_DIST).toBe(1.587);
     expect(FACING_CHEVRON_LEN).toBe(1.0646125);
     expect(FACING_CHEVRON_COLOR).toBe(0xffe07a);
-    expect(FACING_CHEVRON_OPACITY).toBe(0.8625);
+    expect(FACING_CHEVRON_OPACITY).toBe(0.991875);
     expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
   });
 
@@ -26,7 +38,7 @@ describe("constantes", () => {
     expect(FACING_CHEVRON_DIST).toBe(1.587);
     expect(FACING_CHEVRON_HW).toBe(0.425845);
     expect(FACING_CHEVRON_COLOR).toBe(0xffe07a);
-    expect(FACING_CHEVRON_OPACITY).toBe(0.8625);
+    expect(FACING_CHEVRON_OPACITY).toBe(0.991875);
     expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
   });
 
@@ -35,7 +47,7 @@ describe("constantes", () => {
     expect(FACING_CHEVRON_DIST).toBe(1.587);
     expect(FACING_CHEVRON_LEN).toBe(1.0646125);
     expect(FACING_CHEVRON_HW).toBe(0.425845);
-    expect(FACING_CHEVRON_OPACITY).toBe(0.8625);
+    expect(FACING_CHEVRON_OPACITY).toBe(0.991875);
     expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
   });
 
@@ -45,19 +57,7 @@ describe("constantes", () => {
     expect(FACING_CHEVRON_LEN).toBe(1.0646125);
     expect(FACING_CHEVRON_HW).toBe(0.425845);
     expect(FACING_CHEVRON_COLOR).toBe(0xffe07a);
-    expect(FACING_CHEVRON_OPACITY).toBe(0.8625);
-    expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
-  });
-
-  test("opacity 0.8625 (0.75 × 1.15); color/dist/len/hw/yaw sin cambio (no double-apply)", () => {
-    expect(FACING_CHEVRON_COLOR).toBe(0xffe07a);
-    expect(FACING_CHEVRON_OPACITY).toBe(0.8625);
-    expect(FACING_CHEVRON_OPACITY).toBeCloseTo(0.75 * 1.15, 5);
-    expect(FACING_CHEVRON_OPACITY).toBeLessThan(1);
-    expect(FACING_CHEVRON_OPACITY).toBeGreaterThan(0.35);
-    expect(FACING_CHEVRON_DIST).toBe(1.587);
-    expect(FACING_CHEVRON_LEN).toBe(1.0646125);
-    expect(FACING_CHEVRON_HW).toBe(0.425845);
+    expect(FACING_CHEVRON_OPACITY).toBe(0.991875);
     expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
   });
 });
