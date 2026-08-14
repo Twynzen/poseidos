@@ -28,12 +28,12 @@ describe("constantes", () => {
     expect(FLASHLIGHT_CONE_YAW_OFFSET).toBe(0);
   });
 
-  test("haz: penumbra 0.2, spot ×2.4, fill ×0.55, cuña 0xd0eaff opacity 0.4/0.22", () => {
+  test("haz: penumbra 0.2, spot ×2.4, fill ×0.55, cuña 0xd0eaff opacity 0.55/0.22", () => {
     expect(FLASHLIGHT_SPOT_PENUMBRA).toBe(0.2);
     expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(2.4);
     expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.55);
     expect(FLASHLIGHT_WEDGE_COLOR).toBe(0xd0eaff);
-    expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.4);
+    expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.55);
     expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.22);
   });
 });
