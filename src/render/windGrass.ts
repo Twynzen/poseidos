@@ -9,7 +9,7 @@ import { floorIsOutdoor, tileSeed01 } from "./floorStyle";
 import { INDOOR_RADIUS } from "../world/indoor";
 
 /** Radio Chebyshev en tiles alrededor del player. */
-export const GRASS_RADIUS = 7;
+export const GRASS_RADIUS = 8;
 
 /** Cap duro de instancias (GPU barato). */
 export const MAX_GRASS_INSTANCES = 320;
