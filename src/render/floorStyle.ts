@@ -14,7 +14,7 @@ export const INDOOR_FLOOR_COLOR = 0x303540;
 export const OUTDOOR_GRASS_BASE = 0x465b3d;
 
 /** Muro / bloque de edificio (histórico WALL_COLOR en worldView). */
-export const WALL_COLOR = 0x5a5348;
+export const WALL_COLOR = 0x685f53;
 
 /** Base bajo el muro (suelo del tile wall). */
 export const WALL_BASE_COLOR = 0x1a1c22;
