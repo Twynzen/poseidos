@@ -8,6 +8,8 @@ import {
   IDLE_FREQ_HZ,
   WALK_BOB_AMP,
   WALK_FREQ_HZ,
+  WALK_LEAN_AMP,
+  WALK_SWAY_AMP,
   SPRINT_BOB_AMP,
   SPRINT_FREQ_HZ,
 } from "../src/render/locoBob";
@@ -36,6 +38,19 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(WALK_BOB_AMP).toBeCloseTo(0.055 * 1.15, 10);
     expect(SPRINT_BOB_AMP).toBe(0.1035);
     expect(SPRINT_BOB_AMP).toBeCloseTo(0.09 * 1.15, 10);
+    expect(IDLE_FREQ_HZ).toBe(0.35);
+    expect(WALK_FREQ_HZ).toBe(1.55);
+    expect(SPRINT_FREQ_HZ).toBe(2.35);
+  });
+
+  test("walk lean/sway amp bumped; bob Y/freq iguales", () => {
+    expect(WALK_LEAN_AMP).toBe(0.046);
+    expect(WALK_LEAN_AMP).toBeCloseTo(0.04 * 1.15, 10);
+    expect(WALK_SWAY_AMP).toBe(0.04025);
+    expect(WALK_SWAY_AMP).toBeCloseTo(0.035 * 1.15, 10);
+    expect(IDLE_BOB_AMP).toBe(0.0138);
+    expect(WALK_BOB_AMP).toBe(0.06325);
+    expect(SPRINT_BOB_AMP).toBe(0.1035);
     expect(IDLE_FREQ_HZ).toBe(0.35);
     expect(WALK_FREQ_HZ).toBe(1.55);
     expect(SPRINT_FREQ_HZ).toBe(2.35);
@@ -94,8 +109,12 @@ describe("tickLocoBob", () => {
     expect(peakBob).toBeLessThanOrEqual(WALK_BOB_AMP + 1e-9);
     expect(peakLean).toBeGreaterThan(0.02);
     expect(peakLean).toBeLessThanOrEqual(0.05);
+    expect(peakLean).toBeGreaterThan(WALK_LEAN_AMP * 0.85);
+    expect(peakLean).toBeLessThanOrEqual(WALK_LEAN_AMP + 1e-9);
     expect(peakSway).toBeGreaterThan(0.02);
     expect(peakSway).toBeLessThanOrEqual(0.05);
+    expect(peakSway).toBeGreaterThan(WALK_SWAY_AMP * 0.85);
+    expect(peakSway).toBeLessThanOrEqual(WALK_SWAY_AMP + 1e-9);
   });
 
   test("sprint bob peak > walk bob peak", () => {
