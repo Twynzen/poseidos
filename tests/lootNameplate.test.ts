@@ -363,7 +363,7 @@ describe("constantes", () => {
   });
 
   test("scaleY 0.859625 (0.7475 × 1.15); X/fade/mid-scale/font/iconos sin cambio", () => {
-    expect(LOOT_NAMEPLATE_MAX_CHARS).toBe(20);
+    expect(LOOT_NAMEPLATE_MAX_CHARS).toBe(23);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
     expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
     expect(LOOT_NAMEPLATE_Y).toBe(2.843375);
@@ -455,26 +455,26 @@ describe("lootNameplateLabel", () => {
     expect(truncateLootLabel("cocina")).toBe("cocina");
   });
 
-  test("pila de madera ×12 cabe en 20", () => {
+  test("pila de madera ×12 cabe en 23", () => {
     expect(lootNameplateLabel("pila de madera ×12")).toBe("pila de madera ×12");
     expect("pila de madera ×12".length).toBe(18);
   });
 
-  test("exacto 20 sin cambio", () => {
-    const s = "12345678901234567890";
-    expect(s.length).toBe(20);
+  test("exacto 23 sin cambio", () => {
+    const s = "12345678901234567890123";
+    expect(s.length).toBe(23);
     expect(lootNameplateLabel(s)).toBe(s);
     expect(truncateLootLabel(s)).toBe(s);
   });
 
-  test("más de 20 → slice a 20", () => {
-    expect(lootNameplateLabel("123456789012345678901")).toBe(
-      "12345678901234567890",
+  test("más de 23 → slice a 23", () => {
+    expect(lootNameplateLabel("123456789012345678901234")).toBe(
+      "12345678901234567890123",
     );
-    expect(lootNameplateLabel("pila de madera extra!")).toBe(
-      "pila de madera extra",
+    expect(lootNameplateLabel("pila de madera extra extra")).toBe(
+      "pila de madera extra ex",
     );
-    expect(lootNameplateLabel("pila de madera extra!").length).toBe(20);
+    expect(lootNameplateLabel("pila de madera extra extra").length).toBe(23);
   });
 
   test('vacío → ""', () => {
