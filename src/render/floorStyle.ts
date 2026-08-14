@@ -13,6 +13,12 @@ export const INDOOR_FLOOR_COLOR = 0x2a2e38;
 /** Base de pasto outdoor (verde-gris apagado, legible en iso). */
 export const OUTDOOR_GRASS_BASE = 0x3d4f35;
 
+/** Muro / bloque de edificio (histórico WALL_COLOR en worldView). */
+export const WALL_COLOR = 0x5a5348;
+
+/** Base bajo el muro (suelo del tile wall). */
+export const WALL_BASE_COLOR = 0x1a1c22;
+
 /**
  * Multiply de albedo de suelo de noche (día = 1).
  * Paleta day queda igual; de noche el pasto se lee sin irse a negro/gris.
@@ -131,8 +137,8 @@ export function nightGroundLift(daylight: number): number {
 }
 
 /**
- * Aplica el lift de noche a un hex de suelo (tint+AO).
- * Día (d=1) = color intacto; noche aclara y G sigue dominando.
+ * Aplica el lift de noche a un hex (suelo o muro).
+ * Día (d=1) = color intacto; noche aclara el albedo.
  */
 export function applyNightGroundLift(color: number, daylight: number): number {
   const lift = nightGroundLift(daylight);

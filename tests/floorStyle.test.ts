@@ -14,6 +14,8 @@ import {
   OUTDOOR_SOLID_THRESHOLD,
   tileSeed01,
   tintFromTile,
+  WALL_BASE_COLOR,
+  WALL_COLOR,
 } from "../src/render/floorStyle";
 import type { TileKind } from "../src/world/tile";
 
@@ -152,5 +154,31 @@ describe("night ground albedo lift", () => {
   test("floorColorAt día intacto (lift no entra al tint)", () => {
     expect(floorColorAt(4, 4, true, 0, 0)).toBe(tintFromTile(4, 4, true));
     expect(floorColorAt(1, 1, false, 0, 0)).toBe(INDOOR_FLOOR_COLOR);
+  });
+});
+
+describe("night wall albedo lift", () => {
+  test("walls reuse ground lift; day = identity", () => {
+    expect(GROUND_NIGHT_LIFT).toBe(1.45);
+    expect(WALL_COLOR).toBe(0x5a5348);
+    expect(WALL_BASE_COLOR).toBe(0x1a1c22);
+    expect(applyNightGroundLift(WALL_COLOR, 1)).toBe(WALL_COLOR);
+    expect(applyNightGroundLift(WALL_BASE_COLOR, 1)).toBe(WALL_BASE_COLOR);
+  });
+
+  test("noche muro más claro; mismo multiply 1.45", () => {
+    const night = applyNightGroundLift(WALL_COLOR, 0);
+    const baseNight = applyNightGroundLift(WALL_BASE_COLOR, 0);
+    expect(night).toBe(0x837868);
+    expect(baseNight).toBe(0x262931);
+    const nr = (night >> 16) & 0xff;
+    const ng = (night >> 8) & 0xff;
+    const nb = night & 0xff;
+    const dr = (WALL_COLOR >> 16) & 0xff;
+    const dg = (WALL_COLOR >> 8) & 0xff;
+    const db = WALL_COLOR & 0xff;
+    expect(nr).toBeGreaterThan(dr);
+    expect(ng).toBeGreaterThan(dg);
+    expect(nb).toBeGreaterThan(db);
   });
 });

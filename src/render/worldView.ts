@@ -116,6 +116,8 @@ import {
   applyNightGroundLift,
   countAoNeighbors,
   floorColorAt,
+  WALL_BASE_COLOR,
+  WALL_COLOR,
 } from "./floorStyle";
 import {
   atmosphereFor,
@@ -187,7 +189,6 @@ import {
   type ContainerRegistry,
 } from "../items";
 
-const WALL_COLOR = 0x5a5348;
 const DOOR_CLOSED = 0x8b5a2b;
 const DOOR_OPEN = 0xc4a35a;
 const PLAYER_COLOR = 0x4a8fd4;
@@ -469,11 +470,11 @@ export function createWorldView(
     return matForFloorColor(color);
   }
   const wallMat = new THREE.MeshStandardMaterial({
-    color: WALL_COLOR,
+    color: applyNightGroundLift(WALL_COLOR, lastDaylight),
     roughness: 0.85,
   });
   const wallBaseMat = new THREE.MeshStandardMaterial({
-    color: 0x1a1c22,
+    color: applyNightGroundLift(WALL_BASE_COLOR, lastDaylight),
     roughness: 1,
   });
   const barricadeMat = new THREE.MeshStandardMaterial({
@@ -1633,11 +1634,13 @@ export function createWorldView(
         scene.fog.near = atm.near;
         scene.fog.far = atm.far;
       }
-      // Albedo de suelo/pasto: lift de noche; día = paleta intacta.
+      // Albedo de suelo/pasto/muro: lift de noche; día = paleta intacta.
       for (const [key, m] of floorMatByColor) {
         m.color.setHex(applyNightGroundLift(key, d));
       }
       grassMat.color.setHex(applyNightGroundLift(0x4a6a38, d));
+      wallMat.color.setHex(applyNightGroundLift(WALL_COLOR, d));
+      wallBaseMat.color.setHex(applyNightGroundLift(WALL_BASE_COLOR, d));
     },
     syncWarmLight(wx, wy, intensity) {
       const i = Math.max(0, Math.min(1, intensity));
