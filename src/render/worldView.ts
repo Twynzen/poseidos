@@ -111,6 +111,7 @@ import {
   lootNameplateLabel,
   lootNameplateLeadId,
   lootNameplateOpacity,
+  lootNameplateScale,
   lootNameplateVisible,
   paintLootNameplateIcon,
 } from "./lootNameplate";
@@ -164,7 +165,7 @@ export interface WorldView {
   /**
    * Anillo/nameplate ámbar para un contenedor (drop al suelo / refresh qty).
    * Si ya hay marcador con ese id, reemplaza el nameplate. `x`/`y` son tiles.
-   * `plate.visible` según `lootNameplateInvEmpty` + dist 0 (syncLootFocus aplica fade).
+   * `plate.visible` según `lootNameplateInvEmpty` + dist 0 (syncLootFocus aplica fade + scale).
    */
   addLootMarker(
     id: string,
@@ -177,7 +178,7 @@ export interface WorldView {
    * Pulso de escala del loot más cercano en reach (anillo+badge visibles).
    * Fuera de reach: scale 1; anillo/badge ocultos. Nameplate sigue (salvo empty).
    * `emptyIds`: contenedores vacíos — grupo oculto, no reciben foco.
-   * Nameplate canvas: `plate.visible = lootNameplateVisible(empty, dist)`.
+   * Nameplate canvas: `plate.visible` + opacity + `plate.scale` (mul dist).
    */
   syncLootFocus(
     wx: number,
@@ -1424,6 +1425,12 @@ export function createWorldView(
         e.nameplate.visible = lootNameplateVisible(empty, d);
         const plateMat = e.nameplate.material as THREE.SpriteMaterial;
         plateMat.opacity = lootNameplateOpacity(d);
+        const s = lootNameplateScale(d);
+        e.nameplate.scale.set(
+          LOOT_NAMEPLATE_SCALE_X * s,
+          LOOT_NAMEPLATE_SCALE_Y * s,
+          1,
+        );
         if (!vis) continue;
         if (d < bestD) {
           bestD = d;
