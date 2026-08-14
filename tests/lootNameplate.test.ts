@@ -22,15 +22,28 @@ import {
 } from "../src/render/lootNameplate";
 
 describe("constantes", () => {
-  test("y 2.4725 (2.15 × 1.15); fade/mid-scale/font/iconos sin cambio", () => {
+  test("scaleX 2.99 (2.6 × 1.15); Y/fade/mid-scale/font/iconos sin cambio", () => {
     expect(LOOT_NAMEPLATE_MAX_CHARS).toBe(20);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(5.5);
     expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.48);
     expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
     expect(LOOT_NAMEPLATE_Y).toBeCloseTo(2.15 * 1.15, 5);
-    expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.6);
+    expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
+    expect(LOOT_NAMEPLATE_SCALE_X).toBeCloseTo(2.6 * 1.15, 5);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.65);
     expect(lootNameplateScale()).toBe(1);
+  });
+
+  test("worldView aplica LOOT_NAMEPLATE_SCALE_X al sprite existente", () => {
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toContain(
+      "sprite.scale.set(LOOT_NAMEPLATE_SCALE_X, LOOT_NAMEPLATE_SCALE_Y, 1)",
+    );
+    expect(src).toContain("LOOT_NAMEPLATE_SCALE_X * s");
+    expect(src).toContain('sprite.name = "lootNameplate"');
   });
 
   test("icon pad 68; size 64 (legible, no blob)", () => {
