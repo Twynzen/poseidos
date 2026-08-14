@@ -42,8 +42,8 @@ export const LOOT_NAMEPLATE_PLATE_FILL = "rgba(15, 23, 42, 0.828)";
 /** Stroke del label en el canvas. 0.7 × 1.15 para leer de noche. */
 export const LOOT_NAMEPLATE_TEXT_STROKE = "rgba(0,0,0,0.805)";
 
-/** Grosor del stroke del icono gold. 1.5 × 1.15 para leer de noche. */
-export const LOOT_NAMEPLATE_ICON_STROKE = 1.725;
+/** Grosor del stroke del icono gold. 1.725 × 1.15 para leer de noche. */
+export const LOOT_NAMEPLATE_ICON_STROKE = 1.98375;
 
 /**
  * 1 en dist ≤ NEAR · lerp 1 → mid-scale de NEAR a fade · mid-scale más allá.
