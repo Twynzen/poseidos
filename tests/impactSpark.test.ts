@@ -12,10 +12,11 @@ import {
 } from "../src/render/impactSpark";
 
 describe("constantes", () => {
-  test("duración 0.22 × 1.15 y pico 1", () => {
+  test("duración 0.22 × 1.15 y pico 1 × 1.15", () => {
     expect(IMPACT_SPARK_DURATION).toBe(0.253);
     expect(IMPACT_SPARK_DURATION).toBeCloseTo(0.22 * 1.15, 10);
-    expect(IMPACT_SPARK_PEAK).toBe(1);
+    expect(IMPACT_SPARK_PEAK).toBe(1.15);
+    expect(IMPACT_SPARK_PEAK).toBeCloseTo(1 * 1.15, 10);
   });
 
   test("radio 0.1125 × 1.15; worldView usa el knob (no magic 0.09/0.1125)", () => {
@@ -56,7 +57,7 @@ describe("create / trigger / tick", () => {
     expect(out.intensity).toBe(0);
   });
 
-  test("trigger + primer tick: intensity cerca de 1 y guarda x/y", () => {
+  test("trigger + primer tick: intensity cerca de 1.15 (ease-out sine) y guarda x/y", () => {
     const s = createImpactSpark();
     triggerImpactSpark(s, 4.5, -2.25);
     expect(s.active).toBe(true);
