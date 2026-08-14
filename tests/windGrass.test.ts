@@ -65,8 +65,7 @@ describe("collectGrassTiles", () => {
   });
 
   test("radio por defecto acotado", () => {
-    expect(GRASS_RADIUS).toBeGreaterThanOrEqual(6);
-    expect(GRASS_RADIUS).toBeLessThanOrEqual(8);
+    expect(GRASS_RADIUS).toBe(8);
     expect(MAX_GRASS_INSTANCES).toBeLessThanOrEqual(400);
     expect(MAX_GRASS_INSTANCES).toBeGreaterThanOrEqual(200);
   });
