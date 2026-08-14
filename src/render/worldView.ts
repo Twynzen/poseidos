@@ -114,8 +114,12 @@ import {
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 import {
   applyNightGroundLift,
+  BED_COLOR,
   countAoNeighbors,
+  DOOR_CLOSED,
+  DOOR_OPEN,
   floorColorAt,
+  FURNITURE_COLOR,
   WALL_BASE_COLOR,
   WALL_COLOR,
 } from "./floorStyle";
@@ -189,17 +193,12 @@ import {
   type ContainerRegistry,
 } from "../items";
 
-const DOOR_CLOSED = 0x8b5a2b;
-const DOOR_OPEN = 0xc4a35a;
 const PLAYER_COLOR = 0x4a8fd4;
 /** Amenaza muda: rojo oscuro. */
 const HOSTILE_COLOR = 0x6b1a1a;
 /** Poseído: púrpura enfermo. */
 const POSSESSED_COLOR = 0x5a2d6b;
 const POSSESSED_EMISSIVE = 0x1a0820;
-const FURNITURE_COLOR = 0x6b4f2a;
-/** Cama: burdeos / azul oscuro. */
-const BED_COLOR = 0x4a1f3d;
 /** Barricada: madera clara, más baja que muro. */
 const BARRICADE_COLOR = 0xc49a6c;
 const BARRICADE_EDGE = 0x8a6239;
@@ -372,8 +371,6 @@ export interface WorldView {
 interface ChunkMeshes {
   group: THREE.Group;
   doorMeshes: Map<string, THREE.Mesh>;
-  /** Materials propios del chunk (no compartidos) a dispose. */
-  ownedMats: THREE.Material[];
   /** Raíz por tile (content + fog) para FOV. */
   tileRoots: Map<string, THREE.Group>;
 }
@@ -432,20 +429,28 @@ export function createWorldView(
   const furnitureGeo = new THREE.BoxGeometry(0.7, 0.85, 0.7);
   /** Planchas apiladas: más bajas y estrechas que un muro. */
   const barricadeGeo = new THREE.BoxGeometry(0.92, 1.35, 0.55);
+  /** Último daylight visto en syncDayNight; mats nuevos nacen ya lifted. */
+  let lastDaylight = 1;
   const furnitureMat = new THREE.MeshStandardMaterial({
-    color: FURNITURE_COLOR,
+    color: applyNightGroundLift(FURNITURE_COLOR, lastDaylight),
     roughness: 0.8,
   });
   /** Cama: más baja y ancha que furniture genérico (reuse geo/mat). */
   const bedGeo = new THREE.BoxGeometry(1.0, 0.35, 0.7);
   const bedMat = new THREE.MeshStandardMaterial({
-    color: BED_COLOR,
+    color: applyNightGroundLift(BED_COLOR, lastDaylight),
     roughness: 0.85,
+  });
+  const doorClosedMat = new THREE.MeshStandardMaterial({
+    color: applyNightGroundLift(DOOR_CLOSED, lastDaylight),
+    roughness: 0.7,
+  });
+  const doorOpenMat = new THREE.MeshStandardMaterial({
+    color: applyNightGroundLift(DOOR_OPEN, lastDaylight),
+    roughness: 0.7,
   });
   /** Cache de materiales de floor por color final (tint+AO) — barato, sin GTAO. */
   const floorMatByColor = new Map<number, THREE.MeshStandardMaterial>();
-  /** Último daylight visto en syncDayNight; mats nuevos nacen ya lifted. */
-  let lastDaylight = 1;
   function matForFloorColor(color: number): THREE.MeshStandardMaterial {
     const key = color & 0xffffff;
     let m = floorMatByColor.get(key);
@@ -1251,7 +1256,6 @@ export function createWorldView(
     const entry = loaded.get(key);
     if (!entry) return;
     scene.remove(entry.group);
-    for (const mat of entry.ownedMats) mat.dispose();
     for (const dk of entry.doorMeshes.keys()) doorMeshes.delete(dk);
     for (const tk of entry.tileRoots.keys()) tileRoots.delete(tk);
     loaded.delete(key);
@@ -1265,7 +1269,6 @@ export function createWorldView(
     group.name = `chunk_${key}`;
     const localDoors = new Map<string, THREE.Mesh>();
     const localTiles = new Map<string, THREE.Group>();
-    const ownedMats: THREE.Material[] = [];
 
     chunk.forEachTile((x, y, tile) => {
       if (!map.inBounds(x, y)) return;
@@ -1285,11 +1288,12 @@ export function createWorldView(
         wallBaseMat,
         furnitureMat,
         bedMat,
+        doorClosedMat,
+        doorOpenMat,
         barricadeMat,
         barricadeEdgeMat,
         fogMat,
         localDoors,
-        ownedMats,
       );
       const tk = tileKey(x, y);
       localTiles.set(tk, root);
@@ -1301,7 +1305,6 @@ export function createWorldView(
     loaded.set(key, {
       group,
       doorMeshes: localDoors,
-      ownedMats,
       tileRoots: localTiles,
     });
   }
@@ -1335,7 +1338,7 @@ export function createWorldView(
     const tile = map.getTile(tx, ty);
     if (!tile) return;
 
-    // Localizar chunk entry para ownedMats / localDoors
+    // Localizar chunk entry para localDoors
     let entry: ChunkMeshes | undefined;
     for (const e of loaded.values()) {
       if (e.tileRoots.has(tk)) {
@@ -1371,10 +1374,11 @@ export function createWorldView(
       wallBaseMat,
       furnitureMat,
       bedMat,
+      doorClosedMat,
+      doorOpenMat,
       barricadeMat,
       barricadeEdgeMat,
       entry.doorMeshes,
-      entry.ownedMats,
     );
     for (const [k, mesh] of entry.doorMeshes) {
       if (k === dk) doorMeshes.set(k, mesh);
@@ -1602,8 +1606,7 @@ export function createWorldView(
     syncDoor(tx, ty, open) {
       const mesh = doorMeshes.get(doorKey(tx, ty));
       if (!mesh) return;
-      const mat = mesh.material as THREE.MeshStandardMaterial;
-      mat.color.setHex(open ? DOOR_OPEN : DOOR_CLOSED);
+      mesh.material = open ? doorOpenMat : doorClosedMat;
       if (open) {
         mesh.rotation.y = Math.PI / 2;
         mesh.position.set(tx + 0.15, 1.0, ty + 0.5);
@@ -1634,13 +1637,17 @@ export function createWorldView(
         scene.fog.near = atm.near;
         scene.fog.far = atm.far;
       }
-      // Albedo de suelo/pasto/muro: lift de noche; día = paleta intacta.
+      // Albedo de suelo/pasto/muro/props: lift de noche; día = paleta intacta.
       for (const [key, m] of floorMatByColor) {
         m.color.setHex(applyNightGroundLift(key, d));
       }
       grassMat.color.setHex(applyNightGroundLift(0x4a6a38, d));
       wallMat.color.setHex(applyNightGroundLift(WALL_COLOR, d));
       wallBaseMat.color.setHex(applyNightGroundLift(WALL_BASE_COLOR, d));
+      furnitureMat.color.setHex(applyNightGroundLift(FURNITURE_COLOR, d));
+      bedMat.color.setHex(applyNightGroundLift(BED_COLOR, d));
+      doorClosedMat.color.setHex(applyNightGroundLift(DOOR_CLOSED, d));
+      doorOpenMat.color.setHex(applyNightGroundLift(DOOR_OPEN, d));
     },
     syncWarmLight(wx, wy, intensity) {
       const i = Math.max(0, Math.min(1, intensity));
@@ -1721,6 +1728,8 @@ export function createWorldView(
       wallBaseMat.dispose();
       furnitureMat.dispose();
       bedMat.dispose();
+      doorClosedMat.dispose();
+      doorOpenMat.dispose();
       barricadeMat.dispose();
       barricadeEdgeMat.dispose();
       fogMat.dispose();
@@ -2029,10 +2038,11 @@ function fillTileContent(
   wallBaseMat: THREE.MeshStandardMaterial,
   furnitureMat: THREE.MeshStandardMaterial,
   bedMat: THREE.MeshStandardMaterial,
+  doorClosedMat: THREE.MeshStandardMaterial,
+  doorOpenMat: THREE.MeshStandardMaterial,
   barricadeMat: THREE.MeshStandardMaterial,
   barricadeEdgeMat: THREE.MeshStandardMaterial,
   doorMeshes: Map<string, THREE.Mesh>,
-  ownedMats: THREE.Material[],
 ): void {
   if (
     tile.kind === "floor" ||
@@ -2055,12 +2065,10 @@ function fillTileContent(
     content.add(wall);
   }
   if (tile.kind === "door") {
-    const mat = new THREE.MeshStandardMaterial({
-      color: tile.open ? DOOR_OPEN : DOOR_CLOSED,
-      roughness: 0.7,
-    });
-    ownedMats.push(mat);
-    const door = new THREE.Mesh(doorGeo, mat);
+    const door = new THREE.Mesh(
+      doorGeo,
+      tile.open ? doorOpenMat : doorClosedMat,
+    );
     if (tile.open) {
       door.rotation.y = Math.PI / 2;
       door.position.set(x + 0.15, 1.0, y + 0.5);
@@ -2113,11 +2121,12 @@ function addTileMesh(
   wallBaseMat: THREE.MeshStandardMaterial,
   furnitureMat: THREE.MeshStandardMaterial,
   bedMat: THREE.MeshStandardMaterial,
+  doorClosedMat: THREE.MeshStandardMaterial,
+  doorOpenMat: THREE.MeshStandardMaterial,
   barricadeMat: THREE.MeshStandardMaterial,
   barricadeEdgeMat: THREE.MeshStandardMaterial,
   fogMat: THREE.MeshBasicMaterial,
   doorMeshes: Map<string, THREE.Mesh>,
-  ownedMats: THREE.Material[],
 ): THREE.Group {
   const root = new THREE.Group();
   root.name = `tile_${x}_${y}`;
@@ -2141,10 +2150,11 @@ function addTileMesh(
     wallBaseMat,
     furnitureMat,
     bedMat,
+    doorClosedMat,
+    doorOpenMat,
     barricadeMat,
     barricadeEdgeMat,
     doorMeshes,
-    ownedMats,
   );
 
   const fog = new THREE.Mesh(floorGeo, fogMat);

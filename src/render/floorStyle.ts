@@ -19,6 +19,18 @@ export const WALL_COLOR = 0x5a5348;
 /** Base bajo el muro (suelo del tile wall). */
 export const WALL_BASE_COLOR = 0x1a1c22;
 
+/** Puerta cerrada (histórico DOOR_CLOSED en worldView). */
+export const DOOR_CLOSED = 0x8b5a2b;
+
+/** Puerta abierta (histórico DOOR_OPEN en worldView). */
+export const DOOR_OPEN = 0xc4a35a;
+
+/** Mueble / crate genérico (histórico FURNITURE_COLOR en worldView). */
+export const FURNITURE_COLOR = 0x6b4f2a;
+
+/** Cama (histórico BED_COLOR en worldView). */
+export const BED_COLOR = 0x4a1f3d;
+
 /**
  * Multiply de albedo de suelo de noche (día = 1).
  * Paleta day queda igual; de noche el pasto se lee sin irse a negro/gris.
@@ -137,7 +149,7 @@ export function nightGroundLift(daylight: number): number {
 }
 
 /**
- * Aplica el lift de noche a un hex (suelo o muro).
+ * Aplica el lift de noche a un hex (suelo, muro o props).
  * Día (d=1) = color intacto; noche aclara el albedo.
  */
 export function applyNightGroundLift(color: number, daylight: number): number {
