@@ -35,7 +35,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_GOLD_STROKE).toBe("#ffe07a");
     expect(LOOT_NAMEPLATE_ICON_STROKE).toBe(1.98375);
     expect(LOOT_NAMEPLATE_TEXT_STROKE).toBe("rgba(0,0,0,0.805)");
-    expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.828)");
+    expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.9522)");
     expect(LOOT_NAMEPLATE_GOLD_FILL).toBe("rgba(232,195,106,0.4232)");
     expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");
     expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.95125);
@@ -67,7 +67,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_ICON_STROKE).toBe(1.98375);
     expect(LOOT_NAMEPLATE_ICON_STROKE).toBeCloseTo(1.725 * 1.15, 5);
     expect(LOOT_NAMEPLATE_TEXT_STROKE).toBe("rgba(0,0,0,0.805)");
-    expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.828)");
+    expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.9522)");
     expect(LOOT_NAMEPLATE_GOLD_FILL).toBe("rgba(232,195,106,0.4232)");
     expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");
     expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.95125);
@@ -100,7 +100,7 @@ describe("constantes", () => {
     const opacity = Number(LOOT_NAMEPLATE_TEXT_STROKE.match(/[\d.]+(?=\)$)/)?.[0]);
     expect(opacity).toBe(0.805);
     expect(opacity).toBeCloseTo(0.7 * 1.15, 5);
-    expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.828)");
+    expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.9522)");
     expect(LOOT_NAMEPLATE_GOLD_FILL).toBe("rgba(232,195,106,0.4232)");
     expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");
     expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.95125);
@@ -126,14 +126,14 @@ describe("constantes", () => {
     expect(src).toContain("ctx.lineWidth = LOOT_NAMEPLATE_STROKE_PX");
   });
 
-  test("PLATE_FILL opacity 0.828 (0.72 × 1.15); gold/fill/stroke/font/fade/mid-scale/icon/pad/scale/Y sin cambio", () => {
-    expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.828)");
+  test("PLATE_FILL opacity 0.9522 (0.828 × 1.15); gold/fill/stroke/font/fade/mid-scale/icon/pad/scale/Y sin cambio", () => {
+    expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.9522)");
     expect(LOOT_NAMEPLATE_PLATE_FILL).toMatch(
-      /rgba\(15,\s*23,\s*42,\s*0\.828\)/,
+      /rgba\(15,\s*23,\s*42,\s*0\.9522\)/,
     );
     const opacity = Number(LOOT_NAMEPLATE_PLATE_FILL.match(/[\d.]+(?=\)$)/)?.[0]);
-    expect(opacity).toBe(0.828);
-    expect(opacity).toBeCloseTo(0.72 * 1.15, 5);
+    expect(opacity).toBe(0.9522);
+    expect(opacity).toBeCloseTo(0.828 * 1.15, 5);
     expect(LOOT_NAMEPLATE_GOLD_FILL).toBe("rgba(232,195,106,0.4232)");
     expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");
     expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.95125);
