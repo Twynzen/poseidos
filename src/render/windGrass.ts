@@ -44,6 +44,9 @@ export const BLADE_XZ_RANGE = 0.736;
 /** Pad XZ de la hoja dentro del tile. 0.18 × 0.87 para leer de noche. */
 export const BLADE_XZ_PAD = 0.1566;
 
+/** Multiplicador Y de la hoja (offset de altura). 0.18 × 1.15 para leer de noche. */
+export const BLADE_Y_MUL = 0.207;
+
 export interface GrassTile {
   tx: number;
   ty: number;
@@ -132,7 +135,7 @@ export function bladeBasePose(
   const sy = BLADE_SY_BASE + b * BLADE_SY_RANGE;
   return {
     x: tx + ox,
-    y: 0.18 * sy,
+    y: BLADE_Y_MUL * sy,
     z: ty + oz,
     yaw,
     sy,
