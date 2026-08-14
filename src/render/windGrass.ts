@@ -32,6 +32,9 @@ export const WIND_SPEED = 3.174;
 /** Multiplicador Z de la velocidad del viento (relativo a WIND_SPEED). 1.37 × 1.15 para leer de noche. */
 export const WIND_SPEED_Z_MUL = 1.5755;
 
+/** Escala Y base de la hoja. 0.75 × 1.15 para leer de noche. */
+export const BLADE_SY_BASE = 0.8625;
+
 export interface GrassTile {
   tx: number;
   ty: number;
@@ -117,7 +120,7 @@ export function bladeBasePose(
   const ox = 0.18 + a * 0.64;
   const oz = 0.18 + b * 0.64;
   const yaw = (seed + a) * Math.PI * 2;
-  const sy = 0.75 + b * 0.55;
+  const sy = BLADE_SY_BASE + b * 0.55;
   return {
     x: tx + ox,
     y: 0.18 * sy,

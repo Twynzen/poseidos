@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+  BLADE_SY_BASE,
   BLADES_PER_TILE,
   bladeBasePose,
   bladePoseAt,
@@ -85,6 +86,8 @@ describe("blade transforms + wind", () => {
     expect(WIND_SPEED).toBeCloseTo(2.76 * 1.15, 10);
     expect(WIND_SPEED_Z_MUL).toBe(1.5755);
     expect(WIND_SPEED_Z_MUL).toBeCloseTo(1.37 * 1.15, 10);
+    expect(BLADE_SY_BASE).toBe(0.8625);
+    expect(BLADE_SY_BASE).toBeCloseTo(0.75 * 1.15, 10);
     expect(BLADES_PER_TILE).toBe(3);
     expect(MAX_GRASS_INSTANCES).toBe(368);
   });

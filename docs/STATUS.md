@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** wind speed Z un poco más rápido
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After wind speed Z, look at the inline `0.75` blade height base in `bladeBasePose` (`sy = 0.75 + b * 0.55`) in src/render/windGrass.ts — export it as `BLADE_SY_BASE` and bump ×1.15 so blades read a bit taller at night. Do not change grass radius/max/blades/sway/yaw/speed, rain, tracers, impact, muzzle, melee/hit-lean, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** blade height base un poco más alta
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After blade height base, look at the inline `0.55` blade height range in `bladeBasePose` (`sy = BLADE_SY_BASE + b * 0.55`) in src/render/windGrass.ts — export it as `BLADE_SY_RANGE` and bump ×1.15 so height variation reads a bit stronger at night. Do not change grass radius/max/blades/sway/yaw/speed, rain, tracers, impact, muzzle, melee/hit-lean, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **BLADE_SY_BASE 0.75→0.8625; radius/max/blades/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **WIND_SPEED_Z_MUL 1.37→1.5755; radius/max/blades/sway/yaw/speed/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **WIND_SWAY_Z_MUL 0.65→0.7475; radius/max/blades/sway/yaw/speed/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **MAX_GRASS_INSTANCES 320→368; radius/blades/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
