@@ -23,10 +23,10 @@ import {
 import { GameClock } from "../src/core/clock";
 
 describe("constantes", () => {
-  test("count 41, width 0.04959375, largo día 0.6325 / noche 1.09503, color 0xdeffff", () => {
+  test("count 41, width 0.04959375, largo día 0.727375 / noche 1.09503, color 0xdeffff", () => {
     expect(RAIN_COUNT).toBe(41);
     expect(RAIN_STREAK_WIDTH).toBe(0.04959375);
-    expect(RAIN_STREAK_LENGTH_DAY).toBe(0.6325);
+    expect(RAIN_STREAK_LENGTH_DAY).toBe(0.727375);
     expect(RAIN_STREAK_LENGTH_NIGHT).toBe(1.09503);
     expect(RAIN_COLOR).toBe(0xdeffff);
   });
@@ -47,13 +47,13 @@ describe("constantes", () => {
 });
 
 describe("rainNightMix / length / scaleY", () => {
-  test("día d=1 → mix 0, largo 0.6325, scaleY 1", () => {
+  test("día d=1 → mix 0, largo 0.727375, scaleY 1", () => {
     expect(rainNightMix(1)).toBe(0);
     expect(rainStreakLength(1)).toBe(RAIN_STREAK_LENGTH_DAY);
     expect(rainStreakScaleY(1)).toBe(1);
   });
 
-  test("noche d=0 → mix 1, largo 1.09503, scaleY 1.09503/0.6325", () => {
+  test("noche d=0 → mix 1, largo 1.09503, scaleY 1.09503/0.727375", () => {
     expect(rainNightMix(0)).toBe(1);
     expect(rainStreakLength(0)).toBe(RAIN_STREAK_LENGTH_NIGHT);
     expect(rainStreakScaleY(0)).toBeCloseTo(
