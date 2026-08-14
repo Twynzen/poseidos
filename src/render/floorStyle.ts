@@ -20,7 +20,7 @@ export const WALL_COLOR = 0x685f53;
 export const WALL_BASE_COLOR = 0x1e2027;
 
 /** Puerta cerrada (histórico DOOR_CLOSED en worldView). */
-export const DOOR_CLOSED = 0x8b5a2b;
+export const DOOR_CLOSED = 0xa06831;
 
 /** Puerta abierta (histórico DOOR_OPEN en worldView). */
 export const DOOR_OPEN = 0xc4a35a;
