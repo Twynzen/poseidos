@@ -68,7 +68,8 @@ describe("aoFactor + applyAo", () => {
   test("AO_MAX_DARKEN 0.3 × 0.87; lift/paleta iguales", () => {
     expect(AO_MAX_DARKEN).toBe(0.261);
     expect(AO_MAX_DARKEN).toBeCloseTo(0.3 * 0.87, 10);
-    expect(GROUND_NIGHT_LIFT).toBe(1.45);
+    expect(GROUND_NIGHT_LIFT).toBe(1.6675);
+    expect(GROUND_NIGHT_LIFT).toBeCloseTo(1.45 * 1.15, 10);
     expect(INDOOR_FLOOR_COLOR).toBe(0x2a2e38);
     expect(OUTDOOR_GRASS_BASE).toBe(0x3d4f35);
     expect(WALL_COLOR).toBe(0x5a5348);
@@ -142,15 +143,17 @@ describe("floorIsOutdoor + floorColorAt", () => {
 });
 
 describe("night ground albedo lift", () => {
-  test("knobs: night lift 1.45; day = 1", () => {
-    expect(GROUND_NIGHT_LIFT).toBe(1.45);
-    expect(nightGroundLift(0)).toBe(1.45);
+  test("knobs: night lift 1.45 × 1.15; day = 1", () => {
+    expect(GROUND_NIGHT_LIFT).toBe(1.6675);
+    expect(GROUND_NIGHT_LIFT).toBeCloseTo(1.45 * 1.15, 10);
+    expect(AO_MAX_DARKEN).toBe(0.261);
+    expect(nightGroundLift(0)).toBe(1.6675);
     expect(nightGroundLift(1)).toBe(1);
   });
 
-  test("d=0.08 → ~1.414; clamp fuera de [0,1]", () => {
-    expect(nightGroundLift(0.08)).toBeCloseTo(1.414, 5);
-    expect(nightGroundLift(-1)).toBe(1.45);
+  test("d=0.08 → ~1.6141; clamp fuera de [0,1]", () => {
+    expect(nightGroundLift(0.08)).toBeCloseTo(1.6141, 5);
+    expect(nightGroundLift(-1)).toBe(1.6675);
     expect(nightGroundLift(2)).toBe(1);
   });
 
@@ -158,7 +161,7 @@ describe("night ground albedo lift", () => {
     const day = applyNightGroundLift(OUTDOOR_GRASS_BASE, 1);
     const night = applyNightGroundLift(OUTDOOR_GRASS_BASE, 0);
     expect(day).toBe(OUTDOOR_GRASS_BASE);
-    expect(night).toBe(0x58734d);
+    expect(night).toBe(0x668458);
     const nr = (night >> 16) & 0xff;
     const ng = (night >> 8) & 0xff;
     const nb = night & 0xff;
@@ -179,8 +182,8 @@ describe("night ground albedo lift", () => {
 });
 
 describe("night leftover indoor floor albedo lift", () => {
-  test("indoor ya comparte floorMatByColor + lift 1.45; day = identity", () => {
-    expect(GROUND_NIGHT_LIFT).toBe(1.45);
+  test("indoor ya comparte floorMatByColor + lift 1.6675; day = identity", () => {
+    expect(GROUND_NIGHT_LIFT).toBe(1.6675);
     expect(INDOOR_FLOOR_COLOR).toBe(0x2a2e38);
     expect(OUTDOOR_GRASS_BASE).toBe(0x3d4f35);
     expect(tintFromTile(0, 0, false)).toBe(INDOOR_FLOOR_COLOR);
@@ -198,9 +201,9 @@ describe("night leftover indoor floor albedo lift", () => {
     expect(src).not.toMatch(/indoorFloorMat|INDOOR_NIGHT_LIFT/);
   });
 
-  test("noche indoor más claro; mismo multiply 1.45 (sin segundo lift)", () => {
+  test("noche indoor más claro; mismo multiply 1.6675 (sin segundo lift)", () => {
     const night = applyNightGroundLift(INDOOR_FLOOR_COLOR, 0);
-    expect(night).toBe(0x3d4351);
+    expect(night).toBe(0x464d5d);
     const nr = (night >> 16) & 0xff;
     const ng = (night >> 8) & 0xff;
     const nb = night & 0xff;
@@ -215,18 +218,18 @@ describe("night leftover indoor floor albedo lift", () => {
 
 describe("night wall albedo lift", () => {
   test("walls reuse ground lift; day = identity", () => {
-    expect(GROUND_NIGHT_LIFT).toBe(1.45);
+    expect(GROUND_NIGHT_LIFT).toBe(1.6675);
     expect(WALL_COLOR).toBe(0x5a5348);
     expect(WALL_BASE_COLOR).toBe(0x1a1c22);
     expect(applyNightGroundLift(WALL_COLOR, 1)).toBe(WALL_COLOR);
     expect(applyNightGroundLift(WALL_BASE_COLOR, 1)).toBe(WALL_BASE_COLOR);
   });
 
-  test("noche muro más claro; mismo multiply 1.45", () => {
+  test("noche muro más claro; mismo multiply 1.6675", () => {
     const night = applyNightGroundLift(WALL_COLOR, 0);
     const baseNight = applyNightGroundLift(WALL_BASE_COLOR, 0);
-    expect(night).toBe(0x837868);
-    expect(baseNight).toBe(0x262931);
+    expect(night).toBe(0x968a78);
+    expect(baseNight).toBe(0x2b2f39);
     const nr = (night >> 16) & 0xff;
     const ng = (night >> 8) & 0xff;
     const nb = night & 0xff;
@@ -241,7 +244,7 @@ describe("night wall albedo lift", () => {
 
 describe("night leftover prop albedo lift", () => {
   test("doors/beds/furniture reuse ground lift; day = identity", () => {
-    expect(GROUND_NIGHT_LIFT).toBe(1.45);
+    expect(GROUND_NIGHT_LIFT).toBe(1.6675);
     expect(DOOR_CLOSED).toBe(0x8b5a2b);
     expect(DOOR_OPEN).toBe(0xc4a35a);
     expect(FURNITURE_COLOR).toBe(0x6b4f2a);
@@ -252,11 +255,11 @@ describe("night leftover prop albedo lift", () => {
     expect(applyNightGroundLift(BED_COLOR, 1)).toBe(BED_COLOR);
   });
 
-  test("noche props más claros; mismo multiply 1.45", () => {
-    expect(applyNightGroundLift(DOOR_CLOSED, 0)).toBe(0xca833e);
-    expect(applyNightGroundLift(DOOR_OPEN, 0)).toBe(0xffec83);
-    expect(applyNightGroundLift(FURNITURE_COLOR, 0)).toBe(0x9b733d);
-    expect(applyNightGroundLift(BED_COLOR, 0)).toBe(0x6b2d58);
+  test("noche props más claros; mismo multiply 1.6675", () => {
+    expect(applyNightGroundLift(DOOR_CLOSED, 0)).toBe(0xe89648);
+    expect(applyNightGroundLift(DOOR_OPEN, 0)).toBe(0xffff96);
+    expect(applyNightGroundLift(FURNITURE_COLOR, 0)).toBe(0xb28446);
+    expect(applyNightGroundLift(BED_COLOR, 0)).toBe(0x7b3466);
     for (const base of [DOOR_CLOSED, DOOR_OPEN, FURNITURE_COLOR, BED_COLOR]) {
       const night = applyNightGroundLift(base, 0);
       const nr = (night >> 16) & 0xff;
@@ -273,8 +276,8 @@ describe("night leftover prop albedo lift", () => {
 });
 
 describe("night leftover roof/window albedo lift", () => {
-  test("no hay mesh de techo/ventana; walls ya usan el lift 1.45", () => {
-    expect(GROUND_NIGHT_LIFT).toBe(1.45);
+  test("no hay mesh de techo/ventana; walls ya usan el lift 1.6675", () => {
+    expect(GROUND_NIGHT_LIFT).toBe(1.6675);
     expect(WALL_COLOR).toBe(0x5a5348);
     expect(applyNightGroundLift(WALL_COLOR, 1)).toBe(WALL_COLOR);
     const tileSrc = readFileSync(
@@ -311,16 +314,16 @@ describe("night leftover roof/window albedo lift", () => {
 
 describe("night leftover barricade albedo lift", () => {
   test("barricades reuse ground lift; day = identity", () => {
-    expect(GROUND_NIGHT_LIFT).toBe(1.45);
+    expect(GROUND_NIGHT_LIFT).toBe(1.6675);
     expect(BARRICADE_COLOR).toBe(0xc49a6c);
     expect(BARRICADE_EDGE).toBe(0x8a6239);
     expect(applyNightGroundLift(BARRICADE_COLOR, 1)).toBe(BARRICADE_COLOR);
     expect(applyNightGroundLift(BARRICADE_EDGE, 1)).toBe(BARRICADE_EDGE);
   });
 
-  test("noche barricadas más claras; mismo multiply 1.45", () => {
-    expect(applyNightGroundLift(BARRICADE_COLOR, 0)).toBe(0xffdf9d);
-    expect(applyNightGroundLift(BARRICADE_EDGE, 0)).toBe(0xc88e53);
+  test("noche barricadas más claras; mismo multiply 1.6675", () => {
+    expect(applyNightGroundLift(BARRICADE_COLOR, 0)).toBe(0xffffb4);
+    expect(applyNightGroundLift(BARRICADE_EDGE, 0)).toBe(0xe6a35f);
     for (const base of [BARRICADE_COLOR, BARRICADE_EDGE]) {
       const night = applyNightGroundLift(base, 0);
       const nr = (night >> 16) & 0xff;
