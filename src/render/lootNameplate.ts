@@ -27,8 +27,8 @@ export const LOOT_NAMEPLATE_ICON_PAD = 89.93;
 /** Tamaño de la silueta gold en el atlas (px). 73.6 × 1.15 para leer de noche. */
 export const LOOT_NAMEPLATE_ICON_SIZE = 84.64;
 
-/** Tamaño de fuente del label en el canvas. 34 × 1.15 para leer de noche. */
-export const LOOT_NAMEPLATE_FONT_PX = 39.1;
+/** Tamaño de fuente del label en el canvas. 39.1 × 1.15 para leer de noche. */
+export const LOOT_NAMEPLATE_FONT_PX = 44.965;
 
 /** Grosor del stroke del label en el canvas. 4.5 × 1.15 para leer de noche. */
 export const LOOT_NAMEPLATE_STROKE_PX = 5.175;
