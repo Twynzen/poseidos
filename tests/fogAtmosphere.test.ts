@@ -109,16 +109,19 @@ describe("skyRgb cinematic", () => {
     expect(night.r + night.g + night.b).toBeLessThan(0.45);
   });
 
-  test("knobs: noche b 0.161 × 1.15; r/g/día iguales", () => {
+  test("knobs: día r 0.26 × 1.15; g/b/noche iguales", () => {
     expect(SKY_NIGHT).toEqual({ r: 0.092575, g: 0.119025, b: 0.18515 });
     expect(SKY_NIGHT.r).toBe(0.092575);
     expect(SKY_NIGHT.g).toBe(0.119025);
     expect(SKY_NIGHT.b).toBe(0.18515);
-    expect(SKY_NIGHT.b).toBeCloseTo(0.161 * 1.15, 10);
-    expect(SKY_DAY).toEqual({ r: 0.26, g: 0.33, b: 0.47 });
+    expect(SKY_DAY).toEqual({ r: 0.299, g: 0.33, b: 0.47 });
+    expect(SKY_DAY.r).toBe(0.299);
+    expect(SKY_DAY.r).toBeCloseTo(0.26 * 1.15, 10);
+    expect(SKY_DAY.g).toBe(0.33);
+    expect(SKY_DAY.b).toBe(0.47);
   });
 
-  test("d=0 → night sky/fog; noon d=1 → day sky (día sin cambio)", () => {
+  test("d=0 → night sky/fog; noon d=1 → day sky (día r 0.299)", () => {
     expect(skyRgb(0, 0)).toEqual(SKY_NIGHT);
     expect(atmosphereFor(0, 0).sky).toEqual(SKY_NIGHT);
     expect(skyRgb(0.5, 1)).toEqual(SKY_DAY);
