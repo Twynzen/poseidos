@@ -177,9 +177,9 @@ describe("markers (badges + ground rings)", () => {
     }
   });
 
-  test("door/bed floatBadge Y 2.3/2.645; mute/possessed 2.0; loot 1.12", () => {
-    expect(doorBadgeY).toBe(2.3);
-    expect(doorBadgeY).toBeCloseTo(2.0 * 1.15, 10);
+  test("door/bed floatBadge Y 2.645/2.645; mute/possessed 2.0; loot 1.12", () => {
+    expect(doorBadgeY).toBe(2.645);
+    expect(doorBadgeY).toBeCloseTo(2.3 * 1.15, 10);
     expect(bedBadgeY).toBe(2.645);
     expect(bedBadgeY).toBeCloseTo(2.3 * 1.15, 10);
     expect(muteBadgeY).toBe(2.0);
