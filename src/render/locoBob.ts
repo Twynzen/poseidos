@@ -46,7 +46,8 @@ export const WALK_SWAY_AMP = 0.04025;
 export const SPRINT_FREQ_HZ = 2.35;
 /** Bob vertical sprint. 0.09 × 1.15 para leer de noche. */
 export const SPRINT_BOB_AMP = 0.1035;
-export const SPRINT_LEAN_AMP = 0.07;
+/** Lean roll sprint. 0.07 × 1.15 para leer de noche. */
+export const SPRINT_LEAN_AMP = 0.0805;
 export const SPRINT_SWAY_AMP = 0.05;
 
 const TWO_PI = Math.PI * 2;
