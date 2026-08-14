@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** anillo de puerta un poco más grande al borde
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After door scale far, look at lootNameplate near-dist inline `2` in `lootNameplateScale` / `lootNameplateOpacity` — extract `LOOT_NAMEPLATE_NEAR_DIST` and bump ×1.15 so the nameplate stays full opacity a bit farther. Do not change fade dist, scales, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** nameplate de loot opaco un poco más lejos
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After nameplate near-dist, look at NOISE_RING_WIDTH or markers night opacity. Do not change fade dist, scales, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **LOOT_NAMEPLATE_NEAR_DIST 2→2.3; fade/scale/icon/focus/looks/sky/fog/sol/teclas iguales.**
   - **DOOR_FOCUS_SCALE_FAR 1.288→1.4812; near/pulse/reach/loot/bed/looks/sky/fog/sol/teclas iguales.**
   - **DOOR_FOCUS_SCALE_NEAR 1.5525→1.785375; far/pulse/reach/loot/bed/looks/sky/fog/sol/teclas iguales.**
   - **BED_FOCUS_SCALE_FAR 1.288→1.4812; near/pulse/reach/loot/door/looks/sky/fog/sol/teclas iguales.**
