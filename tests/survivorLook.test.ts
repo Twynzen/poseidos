@@ -26,7 +26,7 @@ describe("survivorLook constants", () => {
   test("split knobs: fill claro, map tint, crushed lock, emisivos", () => {
     expect(SURVIVOR_BODY_COLOR).toBe(0x8a8070);
     expect(SURVIVOR_MAP_TINT).toBe(0xc8bca8);
-    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x1c1a16);
+    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x23201b);
     expect(SURVIVOR_ACCENT).toBe(0xa39c8c);
     expect(SURVIVOR_ACCENT_COLOR).toBe(SURVIVOR_ACCENT);
     expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
