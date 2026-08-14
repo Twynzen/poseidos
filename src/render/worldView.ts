@@ -114,6 +114,8 @@ import {
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 import {
   applyNightGroundLift,
+  BARRICADE_COLOR,
+  BARRICADE_EDGE,
   BED_COLOR,
   countAoNeighbors,
   DOOR_CLOSED,
@@ -199,9 +201,6 @@ const HOSTILE_COLOR = 0x6b1a1a;
 /** Poseído: púrpura enfermo. */
 const POSSESSED_COLOR = 0x5a2d6b;
 const POSSESSED_EMISSIVE = 0x1a0820;
-/** Barricada: madera clara, más baja que muro. */
-const BARRICADE_COLOR = 0xc49a6c;
-const BARRICADE_EDGE = 0x8a6239;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -483,11 +482,11 @@ export function createWorldView(
     roughness: 1,
   });
   const barricadeMat = new THREE.MeshStandardMaterial({
-    color: BARRICADE_COLOR,
+    color: applyNightGroundLift(BARRICADE_COLOR, lastDaylight),
     roughness: 0.75,
   });
   const barricadeEdgeMat = new THREE.MeshStandardMaterial({
-    color: BARRICADE_EDGE,
+    color: applyNightGroundLift(BARRICADE_EDGE, lastDaylight),
     roughness: 0.9,
   });
   const fogMat = new THREE.MeshBasicMaterial({
@@ -1648,6 +1647,8 @@ export function createWorldView(
       bedMat.color.setHex(applyNightGroundLift(BED_COLOR, d));
       doorClosedMat.color.setHex(applyNightGroundLift(DOOR_CLOSED, d));
       doorOpenMat.color.setHex(applyNightGroundLift(DOOR_OPEN, d));
+      barricadeMat.color.setHex(applyNightGroundLift(BARRICADE_COLOR, d));
+      barricadeEdgeMat.color.setHex(applyNightGroundLift(BARRICADE_EDGE, d));
     },
     syncWarmLight(wx, wy, intensity) {
       const i = Math.max(0, Math.min(1, intensity));

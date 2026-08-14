@@ -31,6 +31,12 @@ export const FURNITURE_COLOR = 0x6b4f2a;
 /** Cama (histórico BED_COLOR en worldView). */
 export const BED_COLOR = 0x4a1f3d;
 
+/** Barricada: madera clara (histórico BARRICADE_COLOR en worldView). */
+export const BARRICADE_COLOR = 0xc49a6c;
+
+/** Cruz de barricada (histórico BARRICADE_EDGE en worldView). */
+export const BARRICADE_EDGE = 0x8a6239;
+
 /**
  * Multiply de albedo de suelo de noche (día = 1).
  * Paleta day queda igual; de noche el pasto se lee sin irse a negro/gris.
