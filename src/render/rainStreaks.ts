@@ -5,7 +5,7 @@
  */
 
 /** Cap de streaks en el pool (era 36). */
-export const RAIN_COUNT = 41;
+export const RAIN_COUNT = 47;
 
 /** Ancho XZ del streak (tiles). */
 export const RAIN_STREAK_WIDTH = 0.04959375;
