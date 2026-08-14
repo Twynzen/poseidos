@@ -6,6 +6,7 @@ import {
   LOOT_NAMEPLATE_ICON_PAD,
   LOOT_NAMEPLATE_ICON_SIZE,
   LOOT_NAMEPLATE_MAX_CHARS,
+  LOOT_NAMEPLATE_MID_SCALE,
   LOOT_NAMEPLATE_SCALE_X,
   LOOT_NAMEPLATE_SCALE_Y,
   LOOT_NAMEPLATE_Y,
@@ -21,9 +22,10 @@ import {
 } from "../src/render/lootNameplate";
 
 describe("constantes", () => {
-  test("max 20 chars; fade dist 5.5; y ~2.15; scale 2.6×0.65", () => {
+  test("max 20 chars; fade dist 5.5; mid-scale 0.48; y ~2.15; scale 2.6×0.65", () => {
     expect(LOOT_NAMEPLATE_MAX_CHARS).toBe(20);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(5.5);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.48);
     expect(LOOT_NAMEPLATE_Y).toBeCloseTo(2.15);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.6);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.65);
@@ -134,22 +136,23 @@ describe("lootNameplateOpacity", () => {
 });
 
 describe("lootNameplateScale", () => {
-  test("1 en dist ≤ 2 (in-reach 1.6); 0.55 en fade 5.5 y más allá", () => {
+  test("1 en dist ≤ 2 (in-reach 1.6); 0.48 en fade 5.5 y más allá", () => {
     expect(lootNameplateScale(0)).toBe(1);
     expect(lootNameplateScale(1.6)).toBe(1);
     expect(lootNameplateScale(2)).toBe(1);
-    expect(lootNameplateScale(5.5)).toBe(0.55);
-    expect(lootNameplateScale(5.51)).toBe(0.55);
-    expect(lootNameplateScale(6.5)).toBe(0.55);
-    expect(lootNameplateScale(8)).toBe(0.55);
-    expect(lootNameplateScale(80)).toBe(0.55);
+    expect(lootNameplateScale(5.5)).toBe(LOOT_NAMEPLATE_MID_SCALE);
+    expect(lootNameplateScale(5.51)).toBe(LOOT_NAMEPLATE_MID_SCALE);
+    expect(lootNameplateScale(6.5)).toBe(LOOT_NAMEPLATE_MID_SCALE);
+    expect(lootNameplateScale(8)).toBe(LOOT_NAMEPLATE_MID_SCALE);
+    expect(lootNameplateScale(80)).toBe(LOOT_NAMEPLATE_MID_SCALE);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.48);
   });
 
-  test("lerp lineal 1 → 0.55 de 2 a fade 5.5", () => {
-    // midpoint 3.75: 1 + (0.55-1)*0.5 = 0.775
-    expect(lootNameplateScale(3.75)).toBeCloseTo(0.775, 10);
+  test("lerp lineal 1 → 0.48 de 2 a fade 5.5", () => {
+    // midpoint 3.75: 1 + (0.48-1)*0.5 = 0.74
+    expect(lootNameplateScale(3.75)).toBeCloseTo(0.74, 10);
     const t = 0.25;
-    const expected = 1 + (0.55 - 1) * t;
+    const expected = 1 + (LOOT_NAMEPLATE_MID_SCALE - 1) * t;
     const span = LOOT_NAMEPLATE_FADE_DIST - 2;
     expect(lootNameplateScale(2 + span * t)).toBeCloseTo(expected, 10);
   });

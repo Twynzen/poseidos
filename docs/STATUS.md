@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** nameplates lejanas un poco más quietas.
+- **Última rutina:** nameplates a media distancia un poco más quietas.
 - **Siguiente:** leftover visual polish chico — sin gestos nuevos.
 - **Qué quedó (esta corrida):**
+  - **LOOT_NAMEPLATE_MID_SCALE 0.55→0.48; fade/Y/iconos/teclas iguales.** `LOOT_NAMEPLATE_MID_SCALE` 0.48 (era 0.55, ~15% más quieto). `lootNameplateScale` lerp 1 → 0.48 de 2 a fade 5.5. Dist ≤ 2 (in-reach 1.6) sigue scale/opacity 1. Fade 5.5, Y 2.15, icon 64 / pad 68, font 34, stroke 4.5, empty-hide iguales. X/Espacio/V/L/Shift, `DEFAULT_MIXER_FADE_SEC` 0.207, `HOSTILE_LOCO_BOB_AMP` 0, anillos, HUD/inventario, teclas / gestos sin cambio.
   - **LOOT_NAMEPLATE_FADE_DIST 6.5→5.5; Y/iconos/teclas iguales.** `LOOT_NAMEPLATE_FADE_DIST` 5.5 (era 6.5). Hide-beyond un poco más cerca; dist ≤ 2 (in-reach 1.6) sigue scale/opacity 1. Mid-scale 0.55, Y 2.15, icon 64 / pad 68, font 34, stroke 4.5, empty-hide iguales. X/Espacio/V/L/Shift, `DEFAULT_MIXER_FADE_SEC` 0.207, `HOSTILE_LOCO_BOB_AMP` 0, anillos, HUD/inventario, teclas / gestos sin cambio.
   - **DEFAULT_MIXER_FADE_SEC 0.18→0.207; clips/teclas iguales.** `DEFAULT_MIXER_FADE_SEC` 0.207 (era 0.18, ×1.15). `bindMixer` ya aplica fadeIn/fadeOut en idle↔walk↔run (`characterAnimator` no tiene fade). Clips Idle/Walk/Run, yaw, walk speed, X/Espacio/V/L/Shift sin cambio. `HOSTILE_LOCO_BOB_AMP` 0, player `IDLE_BOB_AMP` 0.0138 / `WALK_BOB_AMP` 0.06325 / `SPRINT_BOB_AMP` 0.1035 / lean/sway iguales. Emisivos, linterna, lluvia, césped, anillos, nameplates, HUD/inventario, teclas / gestos sin cambio.
   - **HOSTILE_LOCO_BOB_AMP 0; looks/teclas iguales.** `hostileLoco.ts` no tenía bob/lean/sway (solo clasifica idle/walk/run). Lock `HOSTILE_LOCO_BOB_AMP` 0 — sin inventar bounce. worldView `syncHostiles` aplica `hostileLocoFromDelta` → mixer Idle/Walk/Run; no `tickLocoBob` en hostiles. `HOSTILE_LOCO_IDLE_DIST` 0.02 / `HOSTILE_LOCO_RUN_SPEED` 3.5. Looks/scale 1.5/clips/teclas iguales. Player `IDLE_BOB_AMP` 0.0138 / `WALK_BOB_AMP` 0.06325 / `SPRINT_BOB_AMP` 0.1035 / lean/sway iguales.
