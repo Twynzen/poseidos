@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** tracer TTL max un poco más largo
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After tracer TTL max, look at RAIN_ACTIVE_BASE in src/render/rainStreaks.ts (currently a private `0.35`) — export it and bump ×1.15 so more rain streaks are active at low intensity at night. Do not change tracer min/default/width/height, impact, muzzle, melee/hit-lean, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** rain active base un poco más alta
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After rain active base, look at RAIN_ACTIVE_GAIN in src/render/rainStreaks.ts (currently a private `0.65`) — export it and bump ×1.15 so rain streak count scales a bit more with intensity at night. Do not change rain count/min/cut/width/lengths/opacities/color, tracers, impact, muzzle, melee/hit-lean, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **RAIN_ACTIVE_BASE 0.35→0.4025; gain/count/min/cut/width/lengths/opacities/color/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **TRACER_TTL_MAX 0.35→0.4025; default/min/width/height/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **TRACER_TTL_MIN 0.15→0.1725; default/max/width/height/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **IMPACT_SPARK_PEAK 1→1.15; duration/radius/light/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
