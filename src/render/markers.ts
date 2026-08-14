@@ -84,6 +84,12 @@ export const THREAT_RING_INNER = 0.50;
 /** Radio exterior del aro mute/possessed (más chico que interact 0.78). */
 export const THREAT_RING_OUTER = 0.68;
 
+/**
+ * Aros mute/possessed estáticos: sin pulso (no hay threatFocus).
+ * 0 = lock; no inventar seno. loot/door/bed siguen en 0.05.
+ */
+export const THREAT_RING_PULSE_AMP = 0;
+
 export interface MarkerRingRadii {
   inner: number;
   outer: number;
