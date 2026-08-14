@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** cuerpo mute un poco menos mate de noche
-- **Siguiente:** leftover visual polish chico — bump `POSSESSED_BODY_ROUGHNESS` (currently 0.7656) ×0.87 so the possessed body reads a bit less matte at night. Do not change accent roughness, colors, emissive, mute look, sky/fog/sun/ambient, or controls. No new widgets.
+- **Última rutina:** cuerpo poseído un poco menos mate de noche
+- **Siguiente:** leftover visual polish chico — bump `MUTE_ACCENT_ROUGHNESS` (currently 0.435) ×0.87 so the mute visor reads a bit less matte at night. Do not change body roughness, colors, emissive, possessed look, sky/fog/sun/ambient, or controls. No new widgets.
 - **Qué quedó (esta corrida):**
+  - **POSSESSED_BODY_ROUGHNESS 0.7656→0.666072; accent/colores/emissive/mudos/sky/fog/sol/teclas iguales.**
   - **MUTE_BODY_ROUGHNESS 0.7656→0.666072; accent/colores/emissive/poseídos/sky/fog/sol/teclas iguales.**
   - **POSSESSED_ACCENT_EMISSIVE_INTENSITY 0.9775→1.124125; body/colores/roughness/mudos/sky/fog/sol/teclas iguales.**
   - **MUTE_ACCENT_EMISSIVE_INTENSITY 0.4025→0.462875; body/colores/roughness/poseídos/sky/fog/sol/teclas iguales.**
