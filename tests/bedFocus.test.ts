@@ -20,7 +20,7 @@ import {
 } from "../src/render/bedFocus";
 
 describe("constantes", () => {
-  test("reach 1.5; near 1.5525; far 1.288; pulse 0.066125 / 6", () => {
+  test("reach 1.5; near 1.5525; far 1.288; pulse 0.066125 / 6.9", () => {
     expect(BED_FOCUS_REACH).toBe(1.5);
     expect(BED_FOCUS_SCALE_NEAR).toBe(1.5525);
     expect(BED_FOCUS_SCALE_NEAR).toBeCloseTo(1.35 * 1.15, 10);
@@ -28,7 +28,8 @@ describe("constantes", () => {
     expect(BED_FOCUS_SCALE_FAR).toBeCloseTo(1.12 * 1.15, 10);
     expect(BED_FOCUS_PULSE_AMP).toBe(0.066125);
     expect(BED_FOCUS_PULSE_AMP).toBeCloseTo(0.0575 * 1.15, 10);
-    expect(BED_FOCUS_PULSE_SPEED).toBe(6);
+    expect(BED_FOCUS_PULSE_SPEED).toBe(6.9);
+    expect(BED_FOCUS_PULSE_SPEED).toBeCloseTo(6 * 1.15, 10);
   });
 
   test("bedBadgeLabel es Z; font 92; letter 2.76; disc 1.725; Y 2.645", () => {
@@ -117,14 +118,14 @@ describe("bedFocusScale", () => {
 });
 
 describe("bedFocusPulse", () => {
-  test("1 + 0.066125 * sin(elapsed * 6)", () => {
+  test("1 + 0.066125 * sin(elapsed * 6.9)", () => {
     expect(bedFocusPulse(0)).toBe(1);
     // sin(π/2) = 1 → 1.066125
-    expect(bedFocusPulse(Math.PI / 12)).toBeCloseTo(1.066125, 10);
+    expect(bedFocusPulse(Math.PI / (2 * 6.9))).toBeCloseTo(1.066125, 10);
     // sin(π) = 0 → 1
-    expect(bedFocusPulse(Math.PI / 6)).toBeCloseTo(1, 10);
+    expect(bedFocusPulse(Math.PI / 6.9)).toBeCloseTo(1, 10);
     // sin(3π/2) = -1 → 0.933875
-    expect(bedFocusPulse(Math.PI / 4)).toBeCloseTo(0.933875, 10);
+    expect(bedFocusPulse((3 * Math.PI) / (2 * 6.9))).toBeCloseTo(0.933875, 10);
   });
 
   test("NaN elapsed trata como 0", () => {
@@ -138,14 +139,14 @@ describe("bedFocusPulse", () => {
 
 describe("bedFocusMul", () => {
   test("en reach: scale * pulse", () => {
-    const elapsed = Math.PI / 12; // pulse = 1.066125
+    const elapsed = Math.PI / (2 * 6.9); // pulse = 1.066125
     expect(bedFocusMul(0, elapsed)).toBeCloseTo(1.5525 * 1.066125, 10);
     expect(bedFocusMul(1.5, elapsed)).toBeCloseTo(1.288 * 1.066125, 10);
     expect(bedFocusMul(0.75, 0)).toBeCloseTo(1.42025, 10);
   });
 
   test("fuera de reach: 1 (sin pulso)", () => {
-    const elapsed = Math.PI / 12; // pulse ≠ 1
+    const elapsed = Math.PI / (2 * 6.9); // pulse ≠ 1
     expect(bedFocusMul(1.51, elapsed)).toBe(1);
     expect(bedFocusMul(8, elapsed)).toBe(1);
     expect(bedFocusMul(Number.NaN, elapsed)).toBe(1);
