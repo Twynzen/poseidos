@@ -29,7 +29,7 @@ export const RAIN_OPACITY_NIGHT_ADD = 0.3;
 export const RAIN_ACTIVE_MIN = 7;
 
 /** Recorte de count de noche (1 − cut × nightMix). */
-export const RAIN_NIGHT_COUNT_CUT = 0.22;
+export const RAIN_NIGHT_COUNT_CUT = 0.191;
 
 /** Color unlit (azul-gris). */
 export const RAIN_COLOR = 0xa8c4e0;
