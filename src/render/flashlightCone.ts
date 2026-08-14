@@ -11,7 +11,7 @@ export const FLASHLIGHT_CONE_LENGTH = 6.387675;
 export const FLASHLIGHT_CONE_HALF_WIDTH = 1.3687875;
 
 /** Altura Y de la cuña de suelo (tiles). */
-export const FLASHLIGHT_CONE_Y = 0.1058;
+export const FLASHLIGHT_CONE_Y = 0.12167;
 
 /** Penumbra del SpotLight (0 nítido … 1 suave). 0.23 × 1.15 para leer de noche. */
 export const FLASHLIGHT_SPOT_PENUMBRA = 0.2645;
