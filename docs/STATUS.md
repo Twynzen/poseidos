@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** Soldier un poco más grande (escala 1.25→1.5).
+- **Última rutina:** mudos/poseídos misma escala que el player (1.5).
 - **Qué quedó (esta corrida):**
+  - **hostiles 1.25→1.5; looks distintos; frustum 8.** `POSSESSED_SOLDIER_MANIFEST` / `MUTE_SOLDIER_MANIFEST` scale 1.5 (era 1.25). `PLAYER_GLTF_SCALE` sigue 1.5. `possessedLook` / `muteLook` sin cambio (violeta/rojo vs gris-verde). `maybeAttachCharacterGltf` sigue aplicando `manifest.scale`. `ISO_FRUSTUM` 8 sin cambio. Sin teclas, gestos ni features nuevas.
   - **player GLB 1.5; hostiles 1.25; yaw/anim igual; frustum 8.** `PLAYER_GLTF_SCALE` 1.5 (era 1.25, 1.2×). `PLAYER_SOLDIER_MANIFEST` / `PLAYER_SURVIVOR_MANIFEST` usan esa escala. `POSSESSED_SOLDIER_MANIFEST` / `MUTE_SOLDIER_MANIFEST` siguen 1.25. `maybeAttachCharacterGltf` sigue aplicando `manifest.scale`. `PLAYER_GLTF_YAW_OFFSET` / clips / `ISO_FRUSTUM` 8 sin cambio. Sin teclas, gestos ni features nuevas.
   - **Default más cerca; +/- igual (6–16).** `ISO_FRUSTUM` 8 (era 10; legacy 16). `ISO_FRUSTUM_MIN` 6 / `MAX` 16 / `STEP` 1 sin cambio. `clampIsoFrustum` / `zoomInFrustum` / `zoomOutFrustum` iguales. Sin teclas, gestos ni features nuevas.
   - **candidates Soldier first; gate HTML sigue.** `playerManifestCandidates` es `[PLAYER_SOLDIER_MANIFEST, PLAYER_SURVIVOR_MANIFEST]`. Boot pide `Soldier.glb` (presente). `Survivor.glb` queda de segundo; el gate HTML de #34 (`isUsableGlbResponse` rechaza `text/html` / `text/*`, exige magic `glTF`) sigue como red de seguridad. Hostiles siguen Soldier-only. `BASE_URL` / `resolveAssetUrl` / teclas / luces / gestos / assets sin cambio.

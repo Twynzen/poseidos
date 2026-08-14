@@ -1789,7 +1789,7 @@ function makeHostileFigure(
 
 /**
  * Hostile GLB: clone del template Soldier + tint (mute/poseído) + mixer Idle/Walk/Run.
- * Escala del manifest (hostiles 1.25; player usa PLAYER_GLTF_SCALE).
+ * Escala del manifest (hostiles 1.5, misma que el player).
  * No HOSTILE_VISUAL_SCALE.
  */
 function makeHostileGltfFigure(
