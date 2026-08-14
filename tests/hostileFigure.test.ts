@@ -2,10 +2,9 @@ import { describe, expect, test } from "vitest";
 import { HOSTILE_VISUAL_SCALE, hostileYaw } from "../src/render/hostileFigure";
 
 describe("HOSTILE_VISUAL_SCALE", () => {
-  test("en rango legible vs Soldier (~1.35–1.6)", () => {
-    expect(HOSTILE_VISUAL_SCALE).toBeGreaterThanOrEqual(1.35);
-    expect(HOSTILE_VISUAL_SCALE).toBeLessThanOrEqual(1.6);
-    expect(HOSTILE_VISUAL_SCALE).toBe(1.5);
+  test("1.725 (1.5 × 1.15); yaw/FACE_EPS sin cambio", () => {
+    expect(HOSTILE_VISUAL_SCALE).toBe(1.725);
+    expect(HOSTILE_VISUAL_SCALE).toBeCloseTo(1.5 * 1.15, 5);
   });
 });
 
