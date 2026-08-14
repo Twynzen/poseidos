@@ -25,8 +25,8 @@ export const RAIN_OPACITY_GAIN = 0.5175;
 /** Extra de opacidad de noche × nightMix. */
 export const RAIN_OPACITY_NIGHT_ADD = 0.3;
 
-/** Mínimo de streaks activos si visible (era 8). */
-export const RAIN_ACTIVE_MIN = 6;
+/** Mínimo de streaks activos si visible (era 6). */
+export const RAIN_ACTIVE_MIN = 7;
 
 /** Recorte de count de noche (1 − cut × nightMix). */
 export const RAIN_NIGHT_COUNT_CUT = 0.22;
