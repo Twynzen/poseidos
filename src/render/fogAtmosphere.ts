@@ -57,12 +57,12 @@ export function duskWarmth(phase: number): number {
 /**
  * Near/far del Fog de distancia.
  * Noche: fog más cerca (horizonte corto). Día: abre el horizonte.
- * Noche un poco más fina (near 30.4175 = 26.45 × 1.15 / far 67.85 = 59 × 1.15) para que tiles y personajes se lean;
+ * Noche un poco más fina (near 30.4175 = 26.45 × 1.15 / far 78.0275 = 67.85 × 1.15) para que tiles y personajes se lean;
  * día igual que el histórico retocado (38 / 100).
  */
 export const FOG_NEAR_NIGHT = 30.4175;
 export const FOG_NEAR_DAY = 38;
-export const FOG_FAR_NIGHT = 67.85;
+export const FOG_FAR_NIGHT = 78.0275;
 export const FOG_FAR_DAY = 100;
 
 export function fogNearFar(daylight: number): FogNearFar {
