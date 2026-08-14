@@ -40,8 +40,8 @@ export const WALK_FREQ_HZ = 1.55;
 export const WALK_BOB_AMP = 0.0727375;
 /** Lean roll walk. 0.046 × 1.15 para leer de noche. */
 export const WALK_LEAN_AMP = 0.0529;
-/** Sway lateral walk. 0.035 × 1.15 para leer de noche. */
-export const WALK_SWAY_AMP = 0.04025;
+/** Sway lateral walk. 0.04025 × 1.15 para leer de noche. */
+export const WALK_SWAY_AMP = 0.0462875;
 
 /** Sprint: más rápido y alto. */
 export const SPRINT_FREQ_HZ = 2.35;
