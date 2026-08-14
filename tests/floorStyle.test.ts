@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   aoFactor,
@@ -160,6 +162,41 @@ describe("night ground albedo lift", () => {
   test("floorColorAt día intacto (lift no entra al tint)", () => {
     expect(floorColorAt(4, 4, true, 0, 0)).toBe(tintFromTile(4, 4, true));
     expect(floorColorAt(1, 1, false, 0, 0)).toBe(INDOOR_FLOOR_COLOR);
+  });
+});
+
+describe("night leftover indoor floor albedo lift", () => {
+  test("indoor ya comparte floorMatByColor + lift 1.45; day = identity", () => {
+    expect(GROUND_NIGHT_LIFT).toBe(1.45);
+    expect(INDOOR_FLOOR_COLOR).toBe(0x2a2e38);
+    expect(OUTDOOR_GRASS_BASE).toBe(0x3d4f35);
+    expect(tintFromTile(0, 0, false)).toBe(INDOOR_FLOOR_COLOR);
+    expect(floorColorAt(1, 1, false, 0, 0)).toBe(INDOOR_FLOOR_COLOR);
+    expect(applyNightGroundLift(INDOOR_FLOOR_COLOR, 1)).toBe(INDOOR_FLOOR_COLOR);
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toContain("const color = floorColorAt(x, y, outdoor, ortho, diag)");
+    expect(src).toContain("return matForFloorColor(color)");
+    expect(src).toContain("color: applyNightGroundLift(key, lastDaylight)");
+    expect(src).toMatch(/for \(const \[key, m\] of floorMatByColor\)/);
+    expect(src).toContain("m.color.setHex(applyNightGroundLift(key, d))");
+    expect(src).not.toMatch(/indoorFloorMat|INDOOR_NIGHT_LIFT/);
+  });
+
+  test("noche indoor más claro; mismo multiply 1.45 (sin segundo lift)", () => {
+    const night = applyNightGroundLift(INDOOR_FLOOR_COLOR, 0);
+    expect(night).toBe(0x3d4351);
+    const nr = (night >> 16) & 0xff;
+    const ng = (night >> 8) & 0xff;
+    const nb = night & 0xff;
+    const dr = (INDOOR_FLOOR_COLOR >> 16) & 0xff;
+    const dg = (INDOOR_FLOOR_COLOR >> 8) & 0xff;
+    const db = INDOOR_FLOOR_COLOR & 0xff;
+    expect(nr).toBeGreaterThan(dr);
+    expect(ng).toBeGreaterThan(dg);
+    expect(nb).toBeGreaterThan(db);
   });
 });
 
