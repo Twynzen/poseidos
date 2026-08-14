@@ -27,8 +27,8 @@ export const DEFAULT_NOISE_RING_LIFE = 1.124125;
 
 /** Grosor del aro unitario (outer=1). 0.225 × 1.15 para leer de noche. */
 export const NOISE_RING_WIDTH = 0.25875;
-/** Radio interior del RingGeometry unitario. 0.775 × 0.87 para leerse de noche. */
-export const NOISE_RING_INNER = 0.67425;
+/** Radio interior del RingGeometry unitario. 0.67425 × 0.87 para leerse de noche. */
+export const NOISE_RING_INNER = 0.5865975;
 
 /** Kinds que dibujan anillo (walk spamea — no mostrar). */
 export const NOISE_RING_VISIBLE_KINDS = new Set([

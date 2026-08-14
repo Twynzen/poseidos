@@ -25,11 +25,11 @@ describe("constantes", () => {
     expect(RUN_NOISE_RING_MIN_AGE).toBeCloseTo(0.348 * 0.87, 10);
   });
 
-  test("grosor 0.225 × 1.15; inner 0.775 × 0.87; worldView usa el knob (no magic 0.82)", () => {
+  test("grosor 0.225 × 1.15; inner 0.67425 × 0.87; worldView usa el knob (no magic 0.82)", () => {
     expect(NOISE_RING_WIDTH).toBe(0.25875);
     expect(NOISE_RING_WIDTH).toBeCloseTo(0.225 * 1.15, 10);
-    expect(NOISE_RING_INNER).toBe(0.67425);
-    expect(NOISE_RING_INNER).toBeCloseTo(0.775 * 0.87, 10);
+    expect(NOISE_RING_INNER).toBe(0.5865975);
+    expect(NOISE_RING_INNER).toBeCloseTo(0.67425 * 0.87, 10);
     const viewSrc = readFileSync(
       resolve(process.cwd(), "src/render/worldView.ts"),
       "utf8",
