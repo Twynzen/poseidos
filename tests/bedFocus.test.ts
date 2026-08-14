@@ -28,15 +28,28 @@ describe("constantes", () => {
     expect(BED_FOCUS_PULSE_SPEED).toBe(6);
   });
 
-  test("bedBadgeLabel es Z; font 80; letter 2.76; disc 1.725; Y 2.3", () => {
+  test("bedBadgeLabel es Z; font 92; letter 2.76; disc 1.725; Y 2.3", () => {
     expect(bedBadgeLabel).toBe("Z");
-    expect(bedBadgeFontPx).toBe(80);
+    expect(bedBadgeFontPx).toBe(92);
+    expect(bedBadgeFontPx).toBeCloseTo(80 * 1.15, 10);
     expect(bedBadgeLetterScale).toBe(2.76);
     expect(bedBadgeLetterScale).toBeCloseTo(2.4 * 1.15, 10);
     expect(bedBadgeDiscScale).toBe(1.725);
     expect(bedBadgeDiscScale).toBeCloseTo(1.5 * 1.15, 10);
     expect(bedBadgeY).toBe(2.3);
     expect(bedBadgeY).toBeCloseTo(2.0 * 1.15, 10);
+  });
+
+  test("worldView aplica bedBadgeFontPx al canvas de la letra Z del floatBadge existente", () => {
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toContain(
+      "makeBadgeLetterTexture(bedBadgeLabel, bedBadgeFontPx)",
+    );
+    expect(src).toContain('badge.name = "floatBadge"');
+    expect(src).toContain("badge.position.y = bedBadgeY");
   });
 
   test("worldView aplica bedBadgeLetterScale a la letra Z del floatBadge existente", () => {

@@ -21,8 +21,8 @@ export const BED_FOCUS_PULSE_SPEED = 6;
 /** Letra de tecla en el floatBadge de cama. */
 export const bedBadgeLabel = "Z";
 
-/** Font px del canvas de la letra Z (~1.8× vs 44). */
-export const bedBadgeFontPx = 80;
+/** Font px del canvas de la letra Z (80 × 1.15, para leerse de noche). */
+export const bedBadgeFontPx = 92;
 
 /** Escala world de la letra Z (2.4 × 1.15, para leerse de noche). */
 export const bedBadgeLetterScale = 2.76;
