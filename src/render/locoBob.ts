@@ -49,8 +49,8 @@ export const SPRINT_FREQ_HZ = 2.35;
 export const SPRINT_BOB_AMP = 0.119025;
 /** Lean roll sprint. 0.0805 × 1.15 para leer de noche. */
 export const SPRINT_LEAN_AMP = 0.092575;
-/** Sway lateral sprint. 0.05 × 1.15 para leer de noche. */
-export const SPRINT_SWAY_AMP = 0.0575;
+/** Sway lateral sprint. 0.0575 × 1.15 para leer de noche. */
+export const SPRINT_SWAY_AMP = 0.066125;
 
 const TWO_PI = Math.PI * 2;
 
