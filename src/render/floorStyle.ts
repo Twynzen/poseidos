@@ -8,7 +8,7 @@ import type { TileKind } from "../world/tile";
 import { INDOOR_SOLID_THRESHOLD } from "../world/indoor";
 
 /** Piso indoor / base gris frío (histórico FLOOR_COLOR). */
-export const INDOOR_FLOOR_COLOR = 0x2a2e38;
+export const INDOOR_FLOOR_COLOR = 0x303540;
 
 /** Base de pasto outdoor (verde-gris apagado, legible en iso). */
 export const OUTDOOR_GRASS_BASE = 0x465b3d;
