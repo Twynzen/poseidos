@@ -12,8 +12,9 @@ import {
 } from "../src/render/muzzleFlash";
 
 describe("constantes", () => {
-  test("duración 0.12s y pico 1", () => {
-    expect(MUZZLE_FLASH_DURATION).toBe(0.12);
+  test("duración 0.12 × 1.15 y pico 1", () => {
+    expect(MUZZLE_FLASH_DURATION).toBe(0.138);
+    expect(MUZZLE_FLASH_DURATION).toBeCloseTo(0.12 * 1.15, 10);
     expect(MUZZLE_FLASH_PEAK).toBe(1);
   });
 
