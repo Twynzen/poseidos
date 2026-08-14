@@ -75,10 +75,10 @@ export function markerRingOpacity(role: MarkerRole): number {
 /** Opacidad del badge flotante para roles no-player (loot/door/bed/mute/possessed). */
 export const MARKER_BADGE_OPACITY = 1;
 
-/** Opacidad del badge del player (más quieto; siempre visible). */
-export const PLAYER_BADGE_OPACITY = 0.45;
+/** Opacidad del badge del player (0 = oculto; el chevron queda). */
+export const PLAYER_BADGE_OPACITY = 0;
 
-/** Badge player 0.45; resto 1. */
+/** Badge player 0 (oculto); resto 1. */
 export function markerBadgeOpacity(role: MarkerRole): number {
   return role === "player" ? PLAYER_BADGE_OPACITY : MARKER_BADGE_OPACITY;
 }

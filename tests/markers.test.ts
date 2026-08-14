@@ -96,10 +96,10 @@ describe("markers (badges + ground rings)", () => {
     }
   });
 
-  test("badge player más quieto (0.45); mute/possessed/loot/door/bed 1", () => {
-    expect(PLAYER_BADGE_OPACITY).toBeCloseTo(0.45, 5);
+  test("badge player oculto (0); mute/possessed/loot/door/bed 1", () => {
+    expect(PLAYER_BADGE_OPACITY).toBe(0);
     expect(MARKER_BADGE_OPACITY).toBeCloseTo(1, 5);
-    expect(markerBadgeOpacity("player")).toBeCloseTo(0.45, 5);
+    expect(markerBadgeOpacity("player")).toBe(0);
     for (const role of ["mute", "possessed", "loot", "door", "bed"] as const) {
       expect(markerBadgeOpacity(role)).toBeCloseTo(1, 5);
     }

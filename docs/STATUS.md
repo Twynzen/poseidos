@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** sin aro azul bajo el player (queda el chevron).
+- **Última rutina:** sin badge flotante sobre el player.
 - **Qué quedó (esta corrida):**
+  - **Badge player oculto; loot/puerta/cama/amenaza iguales; chevron igual.** `PLAYER_BADGE_OPACITY` 0; `markerBadgeOpacity("player")` 0. `attachRoleMarkers` no crea/añade `floatBadge` si `role==="player"` (mismo skip que el foot ring). Mute/possessed/loot/door/bed siguen `MARKER_BADGE_OPACITY` 1. `PLAYER_FOOT_RING_OPACITY` sigue 0. Chevron sin cambio. Sin teclas, gestos, luces ni features nuevas.
   - **Foot ring player oculto; chevron + aros loot/puerta/cama/amenaza iguales.** `PLAYER_FOOT_RING_OPACITY` 0; `markerRingOpacity("player")` 0. `attachRoleMarkers` no crea/añade `groundRing` si `role==="player"`. Badge de cabeza player sigue 0.45. Loot/door/bed/mute/possessed siguen `MARKER_RING_OPACITY` 0.72. Chevron sin cambio. Sin teclas, gestos, luces ni features nuevas.
   - **Si Survivor no es glb, se salta a Soldier. Sin gestos nuevos.** `loadCharacterGltf` hace fetch y `isUsableGlbResponse` antes de `GLTFLoader.parseAsync`. Rechaza `text/html` y cualquier `text/*`. Acepta solo si los primeros 4 bytes son magic `glTF` (`0x67 0x6c 0x54 0x46`). `model/gltf-binary` / `application/octet-stream` esperados; nunca pisan magic ausente. Vite/Pages SPA (`index.html` 200) → null → `playerManifestCandidates` carga `Soldier.glb`. `BASE_URL` / `resolveAssetUrl` / teclas / luces / gestos / assets sin cambio.
   - **Floor noche ambient 0.18→0.24, sol 0.12→0.16; noon igual; linterna igual.** `AMBIENT_INTENSITY_NIGHT` 0.24 + gain 0.46; `SUN_INTENSITY_NIGHT` 0.16 + gain 1.04. Helpers `nightAmbientIntensity` / `nightSunIntensity` (noche d=0.08 → ~0.277 / ~0.243; noon d=1 → 0.70 / 1.20). `syncDayNight` usa esos helpers. Sky / fog / `FLASHLIGHT_FILL_INTENSITY_MUL` 0.55 / spot 2.4 / teclas / gestos sin cambio. Sin HemisphereLight.
