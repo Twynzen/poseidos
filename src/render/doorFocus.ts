@@ -21,8 +21,8 @@ export const DOOR_FOCUS_PULSE_SPEED = 6;
 /** Letra de tecla en el floatBadge de puerta. */
 export const doorBadgeLabel = "E";
 
-/** Font px del canvas de la letra E (~1.8× vs 44). */
-export const doorBadgeFontPx = 80;
+/** Font px del canvas de la letra E (80 × 1.15, para leerse de noche). */
+export const doorBadgeFontPx = 92;
 
 /** Escala world de la letra E (2.4 × 1.15, para leerse de noche). */
 export const doorBadgeLetterScale = 2.76;
