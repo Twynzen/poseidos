@@ -750,7 +750,7 @@ export function createWorldView(
   playerMesh.add(muzzleMesh, muzzleLight);
 
   // Chevron de facing: triángulo plano unlit (siempre visible; sin luz extra).
-  // Dist/len/hw desde facingChevron knobs; cyan semi-transparente; tilt iso.
+  // Dist/len/hw/color/opacity desde facingChevron knobs; oro HUD; tilt iso.
   const CHEVRON_Y = 0.12;
   const chevronGeo = new THREE.BufferGeometry();
   chevronGeo.setAttribute(
