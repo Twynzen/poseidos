@@ -14,7 +14,7 @@ El player intenta **Survivor** primero y cae a Soldier si el archivo no existe o
 | Campo | Valor |
 | --- | --- |
 | Archivo | `public/models/Survivor.glb` (nombre exacto, S mayúscula) |
-| Manifest | `PLAYER_SURVIVOR_MANIFEST` — id `survivor`, scale `1.25`, yOffset `0` |
+| Manifest | `PLAYER_SURVIVOR_MANIFEST` — id `survivor`, scale `PLAYER_GLTF_SCALE` (1.5), yOffset `0` |
 | Clips | `Idle`, `Walk`, `Run`, `Attack`, `Hit`, `Death` |
 | Tint | **No** aplicar `applySurvivorLook` si este GLB carga |
 
@@ -35,6 +35,6 @@ El player intenta **Survivor** primero y cae a Soldier si el archivo no existe o
 | Uso | Fallback del player + poseídos + mutes — **no** look final survival (placeholder militar) |
 | Clips | `Idle`, `Walk`, `Run` (+ `TPose` no mapeado) |
 | Manifest | `PLAYER_SOLDIER_MANIFEST` → `/models/Soldier.glb` |
-| Calibracion iso | `scale: 1.25`, `yOffset: 0` (pies en y≈0) |
+| Calibracion iso | player `PLAYER_GLTF_SCALE` 1.5; hostiles 1.25; `yOffset: 0` (pies en y≈0) |
 
 Siguiente: hit flash / attack clip en vista + export Mesh2Motion real en este path.

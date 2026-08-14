@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** cámara iso un poco más cerca (frustum 10→8).
+- **Última rutina:** Soldier un poco más grande (escala 1.25→1.5).
 - **Qué quedó (esta corrida):**
+  - **player GLB 1.5; hostiles 1.25; yaw/anim igual; frustum 8.** `PLAYER_GLTF_SCALE` 1.5 (era 1.25, 1.2×). `PLAYER_SOLDIER_MANIFEST` / `PLAYER_SURVIVOR_MANIFEST` usan esa escala. `POSSESSED_SOLDIER_MANIFEST` / `MUTE_SOLDIER_MANIFEST` siguen 1.25. `maybeAttachCharacterGltf` sigue aplicando `manifest.scale`. `PLAYER_GLTF_YAW_OFFSET` / clips / `ISO_FRUSTUM` 8 sin cambio. Sin teclas, gestos ni features nuevas.
   - **Default más cerca; +/- igual (6–16).** `ISO_FRUSTUM` 8 (era 10; legacy 16). `ISO_FRUSTUM_MIN` 6 / `MAX` 16 / `STEP` 1 sin cambio. `clampIsoFrustum` / `zoomInFrustum` / `zoomOutFrustum` iguales. Sin teclas, gestos ni features nuevas.
   - **candidates Soldier first; gate HTML sigue.** `playerManifestCandidates` es `[PLAYER_SOLDIER_MANIFEST, PLAYER_SURVIVOR_MANIFEST]`. Boot pide `Soldier.glb` (presente). `Survivor.glb` queda de segundo; el gate HTML de #34 (`isUsableGlbResponse` rechaza `text/html` / `text/*`, exige magic `glTF`) sigue como red de seguridad. Hostiles siguen Soldier-only. `BASE_URL` / `resolveAssetUrl` / teclas / luces / gestos / assets sin cambio.
   - **Menos streaks, un poco más visibles de noche.** `RAIN_COUNT` 36 (era 48); active min 6 (era 8); night count cut 0.22. Largo día 0.55 / noche 0.72 vía `scaleY`. Opacity día `0.22 + i×0.45`; noche `+0.20 × nightMix`. Width 0.03, color `0xa8c4e0`, hide ≤ 0.02 iguales. `game.ts` pasa `clock.daylight` a `syncRain`. Weather sim sin cambio. Sin teclas, gestos, luces ni features nuevas.

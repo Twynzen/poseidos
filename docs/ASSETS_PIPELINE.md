@@ -59,7 +59,7 @@ import { PLAYER_SURVIVOR_MANIFEST } from "../src/render/characterManifest";
 PLAYER_SURVIVOR_MANIFEST.id; // "survivor"
 PLAYER_SURVIVOR_MANIFEST.url; // resolveAssetUrl("models/Survivor.glb")
 PLAYER_SURVIVOR_MANIFEST.roles; // Idle / Walk / Run / Attack / Hit / Death
-PLAYER_SURVIVOR_MANIFEST.scale; // 1.25
+PLAYER_SURVIVOR_MANIFEST.scale; // PLAYER_GLTF_SCALE (1.5)
 PLAYER_SURVIVOR_MANIFEST.yOffset; // 0
 ```
 
@@ -94,7 +94,7 @@ Siguiente: export Mesh2Motion real a `public/models/Survivor.glb`.
 | Campo | Valor |
 | --- | --- |
 | Archivo | `public/models/Survivor.glb` (opcional hasta el export) |
-| Manifest | `PLAYER_SURVIVOR_MANIFEST` — id `survivor`, scale `1.25`, yOffset `0` |
+| Manifest | `PLAYER_SURVIVOR_MANIFEST` — id `survivor`, scale `PLAYER_GLTF_SCALE` (1.5), yOffset `0` |
 | Clips | `Idle`, `Walk`, `Run`, `Attack`, `Hit`, `Death` |
 | Orden | `playerManifestCandidates()` → Survivor, luego Soldier |
 | Tint | Skip `applySurvivorLook` si este candidate gana |
@@ -106,7 +106,7 @@ Siguiente: export Mesh2Motion real a `public/models/Survivor.glb`.
 | Archivo | `public/models/Soldier.glb` |
 | Origen | https://threejs.org/examples/models/gltf/Soldier.glb (MIT) |
 | Clips | `Idle`, `Walk`, `Run` (+ `TPose` no mapeado) |
-| Manifest player | `PLAYER_SOLDIER_MANIFEST` — scale `1.25`, yOffset `0` |
+| Manifest player | `PLAYER_SOLDIER_MANIFEST` — scale `PLAYER_GLTF_SCALE` (1.5), yOffset `0` |
 | Manifest poseído | `POSSESSED_SOLDIER_MANIFEST` — mismo url, id `possessed-soldier`, scale `1.25` |
 | Manifest mute | `MUTE_SOLDIER_MANIFEST` — mismo url, id `mute-soldier`, scale `1.25` |
 | Facing | Soldier walk −Z local; yaw = atan2 + PLAYER_GLTF_YAW_OFFSET (π). S/+Z → π, no moonwalk. Visual usa ejes vivos, no snap cardinal. |
