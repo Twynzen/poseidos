@@ -23,7 +23,7 @@ export const FACING_CHEVRON_YAW_OFFSET = 0;
 export const FACING_CHEVRON_COLOR = 0xe8c36a;
 
 /** Opacidad del chevron (cue, no losa sólida). */
-export const FACING_CHEVRON_OPACITY = 0.55;
+export const FACING_CHEVRON_OPACITY = 0.75;
 
 export interface FacingChevronOffset {
   x: number;

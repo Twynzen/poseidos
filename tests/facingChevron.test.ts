@@ -21,7 +21,7 @@ describe("constantes", () => {
 
   test("color oro HUD + opacidad cue (no losa sólida)", () => {
     expect(FACING_CHEVRON_COLOR).toBe(0xe8c36a);
-    expect(FACING_CHEVRON_OPACITY).toBeCloseTo(0.55, 5);
+    expect(FACING_CHEVRON_OPACITY).toBe(0.75);
     expect(FACING_CHEVRON_OPACITY).toBeLessThan(1);
     expect(FACING_CHEVRON_OPACITY).toBeGreaterThan(0.35);
   });
