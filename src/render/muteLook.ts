@@ -13,8 +13,8 @@ import { Color, MeshStandardMaterial } from "three";
 
 /** Cuerpo sin map: gris-verde enfermo levantado. 0x647262 × 1.15/canal para leer de noche. */
 export const MUTE_BODY_COLOR = 0x738371;
-/** Multiply sobre color existente cuando hay map (mantiene variación). */
-export const MUTE_MAP_TINT = 0xa8b8a4;
+/** Multiply sobre color existente cuando hay map (mantiene variación). 0xa8b8a4 × 1.15/canal para leer de noche. */
+export const MUTE_MAP_TINT = 0xc1d4bd;
 /** Emisión cuerpo baja: silueta gris-verde de noche, sin glow ni rojo-violeta. */
 export const MUTE_BODY_EMISSIVE = 0x1c2319;
 /** Acento head/visor: gris-verde más claro. */
