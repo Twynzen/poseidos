@@ -119,20 +119,21 @@ describe("skyRgb cinematic", () => {
 });
 
 describe("night / noon light intensity floors", () => {
-  test("knobs: night floors 0.276 / 0.184; gains 0.46 / 1.04", () => {
+  test("knobs: night floors 0.276 / 0.184; gains 0.46 × 1.15 / 1.04", () => {
     expect(AMBIENT_INTENSITY_NIGHT).toBe(0.276);
-    expect(AMBIENT_INTENSITY_GAIN).toBe(0.46);
+    expect(AMBIENT_INTENSITY_GAIN).toBe(0.529);
+    expect(AMBIENT_INTENSITY_GAIN).toBeCloseTo(0.46 * 1.15, 10);
     expect(SUN_INTENSITY_NIGHT).toBe(0.184);
     expect(SUN_INTENSITY_GAIN).toBe(1.04);
   });
 
-  test("noche d=0.08 → ambient ~0.313, sun ~0.267", () => {
-    expect(nightAmbientIntensity(0.08)).toBeCloseTo(0.3128, 5);
+  test("noche d=0.08 → ambient ~0.318, sun ~0.267", () => {
+    expect(nightAmbientIntensity(0.08)).toBeCloseTo(0.31832, 5);
     expect(nightSunIntensity(0.08)).toBeCloseTo(0.2672, 5);
   });
 
-  test("noon d=1 → ambient 0.736, sun 1.224 (gain/ambient sin cambio)", () => {
-    expect(nightAmbientIntensity(1)).toBeCloseTo(0.736, 10);
+  test("noon d=1 → ambient 0.805, sun 1.224 (floor/sol sin cambio)", () => {
+    expect(nightAmbientIntensity(1)).toBeCloseTo(0.805, 10);
     expect(nightSunIntensity(1)).toBeCloseTo(1.224, 10);
   });
 
