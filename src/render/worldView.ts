@@ -2,6 +2,8 @@ import * as THREE from "three";
 import {
   markerBadgeOpacity,
   markerRingOpacity,
+  markerRingRadii,
+  markerUsesInteractRing,
   paletteFor,
   type MarkerRole,
 } from "./markers";
@@ -1824,7 +1826,10 @@ function makeHostileGltfFigure(
 }
 
 interface MarkerSharedResources {
+  /** Aro mute/possessed (THREAT 0.42–0.58). */
   ringGeo: THREE.RingGeometry;
+  /** Aro loot/door/bed (INTERACT 0.55–0.78). */
+  interactRingGeo: THREE.RingGeometry;
   badgeGeo: THREE.CircleGeometry;
   iconGeo: THREE.PlaneGeometry;
   doorLetterMap: THREE.CanvasTexture;
@@ -1860,7 +1865,14 @@ function makeBadgeLetterTexture(
 }
 
 function createMarkerSharedResources(): MarkerSharedResources {
-  const ringGeo = new THREE.RingGeometry(0.42, 0.58, 28);
+  const threat = markerRingRadii("mute");
+  const interact = markerRingRadii("loot");
+  const ringGeo = new THREE.RingGeometry(threat.inner, threat.outer, 28);
+  const interactRingGeo = new THREE.RingGeometry(
+    interact.inner,
+    interact.outer,
+    28,
+  );
   const badgeGeo = new THREE.CircleGeometry(0.16, 20);
   const iconGeo = new THREE.PlaneGeometry(0.18, 0.18);
   const doorLetterMap = makeBadgeLetterTexture(doorBadgeLabel, doorBadgeFontPx);
@@ -1868,6 +1880,7 @@ function createMarkerSharedResources(): MarkerSharedResources {
   const mats: THREE.Material[] = [];
   return {
     ringGeo,
+    interactRingGeo,
     badgeGeo,
     iconGeo,
     doorLetterMap,
@@ -1875,6 +1888,7 @@ function createMarkerSharedResources(): MarkerSharedResources {
     mats,
     dispose() {
       ringGeo.dispose();
+      interactRingGeo.dispose();
       badgeGeo.dispose();
       iconGeo.dispose();
       doorLetterMap.dispose();
@@ -1939,7 +1953,10 @@ function attachRoleMarkers(
     depthWrite: false,
   });
   shared.mats.push(ringMat);
-  const ring = new THREE.Mesh(shared.ringGeo, ringMat);
+  const ringGeo = markerUsesInteractRing(role)
+    ? shared.interactRingGeo
+    : shared.ringGeo;
+  const ring = new THREE.Mesh(ringGeo, ringMat);
   ring.name = "groundRing";
   ring.rotation.x = -Math.PI / 2;
   ring.position.y = 0.04;
