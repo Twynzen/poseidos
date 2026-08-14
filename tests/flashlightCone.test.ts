@@ -23,13 +23,13 @@ import {
 } from "../src/render/flashlightCone";
 
 describe("constantes", () => {
-  test("length 5.5545, half-width 1.19025, Y 0.092 y yaw offset 0 (no re-aplica PLAYER_GLTF_YAW_OFFSET)", () => {
+  test("length 5.5545, half-width 1.19025, Y 0.1058 y yaw offset 0 (no re-aplica PLAYER_GLTF_YAW_OFFSET)", () => {
     expect(FLASHLIGHT_CONE_LENGTH).toBe(5.5545);
     expect(FLASHLIGHT_CONE_LENGTH).toBeCloseTo(4.83 * 1.15, 10);
     expect(FLASHLIGHT_CONE_HALF_WIDTH).toBe(1.19025);
     expect(FLASHLIGHT_CONE_HALF_WIDTH).toBeCloseTo(1.035 * 1.15, 10);
-    expect(FLASHLIGHT_CONE_Y).toBe(0.092);
-    expect(FLASHLIGHT_CONE_Y).toBeCloseTo(0.08 * 1.15, 10);
+    expect(FLASHLIGHT_CONE_Y).toBe(0.1058);
+    expect(FLASHLIGHT_CONE_Y).toBeCloseTo(0.092 * 1.15, 10);
     expect(FLASHLIGHT_CONE_YAW_OFFSET).toBe(0);
   });
 
