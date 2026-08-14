@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** sin badge flotante sobre el player.
+- **Última rutina:** lluvia de noche más legible.
 - **Qué quedó (esta corrida):**
+  - **Menos streaks, un poco más visibles de noche.** `RAIN_COUNT` 36 (era 48); active min 6 (era 8); night count cut 0.22. Largo día 0.55 / noche 0.72 vía `scaleY`. Opacity día `0.22 + i×0.45`; noche `+0.20 × nightMix`. Width 0.03, color `0xa8c4e0`, hide ≤ 0.02 iguales. `game.ts` pasa `clock.daylight` a `syncRain`. Weather sim sin cambio. Sin teclas, gestos, luces ni features nuevas.
   - **Badge player oculto; loot/puerta/cama/amenaza iguales; chevron igual.** `PLAYER_BADGE_OPACITY` 0; `markerBadgeOpacity("player")` 0. `attachRoleMarkers` no crea/añade `floatBadge` si `role==="player"` (mismo skip que el foot ring). Mute/possessed/loot/door/bed siguen `MARKER_BADGE_OPACITY` 1. `PLAYER_FOOT_RING_OPACITY` sigue 0. Chevron sin cambio. Sin teclas, gestos, luces ni features nuevas.
   - **Foot ring player oculto; chevron + aros loot/puerta/cama/amenaza iguales.** `PLAYER_FOOT_RING_OPACITY` 0; `markerRingOpacity("player")` 0. `attachRoleMarkers` no crea/añade `groundRing` si `role==="player"`. Badge de cabeza player sigue 0.45. Loot/door/bed/mute/possessed siguen `MARKER_RING_OPACITY` 0.72. Chevron sin cambio. Sin teclas, gestos, luces ni features nuevas.
   - **Si Survivor no es glb, se salta a Soldier. Sin gestos nuevos.** `loadCharacterGltf` hace fetch y `isUsableGlbResponse` antes de `GLTFLoader.parseAsync`. Rechaza `text/html` y cualquier `text/*`. Acepta solo si los primeros 4 bytes son magic `glTF` (`0x67 0x6c 0x54 0x46`). `model/gltf-binary` / `application/octet-stream` esperados; nunca pisan magic ausente. Vite/Pages SPA (`index.html` 200) → null → `playerManifestCandidates` carga `Soldier.glb`. `BASE_URL` / `resolveAssetUrl` / teclas / luces / gestos / assets sin cambio.

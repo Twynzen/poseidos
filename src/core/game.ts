@@ -464,7 +464,13 @@ export class Game {
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
     const inten =
       indoor || !this.weather.isRaining ? 0 : this.weather.intensity;
-    this.view.syncRain(this.player.x, this.player.y, inten, dt);
+    this.view.syncRain(
+      this.player.x,
+      this.player.y,
+      inten,
+      dt,
+      this.clock.daylight,
+    );
   }
 
   /** Césped wind outdoor cerca del player (rebuild por tile). */

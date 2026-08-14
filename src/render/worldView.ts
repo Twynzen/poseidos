@@ -123,6 +123,16 @@ import {
   BLADES_PER_TILE,
   type GrassTile,
 } from "./windGrass";
+import {
+  RAIN_COLOR,
+  RAIN_COUNT,
+  RAIN_STREAK_LENGTH_DAY,
+  RAIN_STREAK_WIDTH,
+  rainActiveCount,
+  rainStreakOpacity,
+  rainStreakScaleY,
+  rainStreaksHidden,
+} from "./rainStreaks";
 import { lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
 import {
   LOOT_NAMEPLATE_ICON_PAD,
@@ -332,8 +342,15 @@ export interface WorldView {
   /**
    * Lluvia barata: partículas/líneas alrededor de (wx,wy).
    * intensity 0 = oculto; >0 sync + anima caída.
+   * `daylight` (GameClock) alarga / aclara streaks de noche.
    */
-  syncRain(wx: number, wy: number, intensity: number, dt?: number): void;
+  syncRain(
+    wx: number,
+    wy: number,
+    intensity: number,
+    dt?: number,
+    daylight?: number,
+  ): void;
   /**
    * Césped instanced outdoor cerca del player.
    * Rebuild al cambiar de tile; viento en cada tick.
@@ -1040,11 +1057,14 @@ export function createWorldView(
     }
   }
 
-  // Lluvia: pocas líneas verticales cayendo (barato).
-  const RAIN_COUNT = 48;
-  const rainGeo = new THREE.BoxGeometry(0.03, 0.55, 0.03);
+  // Lluvia: pocas líneas verticales cayendo (barato). Knobs en rainStreaks.
+  const rainGeo = new THREE.BoxGeometry(
+    RAIN_STREAK_WIDTH,
+    RAIN_STREAK_LENGTH_DAY,
+    RAIN_STREAK_WIDTH,
+  );
   const rainMat = new THREE.MeshBasicMaterial({
-    color: 0xa8c4e0,
+    color: RAIN_COLOR,
     transparent: true,
     opacity: 0.45,
     depthWrite: false,
@@ -1079,18 +1099,25 @@ export function createWorldView(
   let rainAnchorX = 0;
   let rainAnchorZ = 0;
 
-  function syncRain(wx: number, wy: number, intensity: number, dt = 0.016): void {
+  function syncRain(
+    wx: number,
+    wy: number,
+    intensity: number,
+    dt = 0.016,
+    daylight = 1,
+  ): void {
     const i = Math.max(0, Math.min(1, intensity));
     rainAnchorX = wx;
     rainAnchorZ = wy;
     rainGroup.position.set(wx, 0, wy);
-    if (i <= 0.02) {
+    if (rainStreaksHidden(i)) {
       rainGroup.visible = false;
       return;
     }
     rainGroup.visible = true;
-    const op = 0.22 + i * 0.45;
-    const active = Math.max(8, Math.floor(RAIN_COUNT * (0.35 + i * 0.65)));
+    const op = rainStreakOpacity(i, daylight);
+    const active = rainActiveCount(i, daylight);
+    const sy = rainStreakScaleY(daylight);
     for (let n = 0; n < rainDrops.length; n++) {
       const d = rainDrops[n]!;
       const mat = d.mesh.material as THREE.MeshBasicMaterial;
@@ -1100,6 +1127,7 @@ export function createWorldView(
       }
       d.mesh.visible = true;
       mat.opacity = op;
+      d.mesh.scale.set(1, sy, 1);
       if (dt > 0) {
         d.y -= d.vy * dt * (0.7 + i * 0.5);
         if (d.y < 0.15) {
