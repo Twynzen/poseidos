@@ -102,7 +102,9 @@ describe("bindMixer", () => {
     survivor.dispose();
   });
 
-  test("fade default positivo; sync idle→walk→run cambia clip", () => {
+  test("fade default 0.207; sync idle→walk→run cambia clip", () => {
+    expect(DEFAULT_MIXER_FADE_SEC).toBe(0.207);
+    expect(DEFAULT_MIXER_FADE_SEC).toBeCloseTo(0.18 * 1.15, 10);
     expect(DEFAULT_MIXER_FADE_SEC).toBeGreaterThan(0);
     const handle = bindMixer(
       fakeLoaded(["Idle", "Walk", "Run", "TPose"]),
