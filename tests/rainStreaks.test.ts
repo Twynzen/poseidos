@@ -23,9 +23,9 @@ import {
 import { GameClock } from "../src/core/clock";
 
 describe("constantes", () => {
-  test("count 41, width 0.043125, largo día 0.6325 / noche 1.09503, color 0xdeffff", () => {
+  test("count 41, width 0.04959375, largo día 0.6325 / noche 1.09503, color 0xdeffff", () => {
     expect(RAIN_COUNT).toBe(41);
-    expect(RAIN_STREAK_WIDTH).toBe(0.043125);
+    expect(RAIN_STREAK_WIDTH).toBe(0.04959375);
     expect(RAIN_STREAK_LENGTH_DAY).toBe(0.6325);
     expect(RAIN_STREAK_LENGTH_NIGHT).toBe(1.09503);
     expect(RAIN_COLOR).toBe(0xdeffff);
