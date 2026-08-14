@@ -61,7 +61,7 @@ describe("tintFromTile", () => {
     expect(floorColorAt(1, 1, false, 0, 0)).toBe(INDOOR_FLOOR_COLOR);
     expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
     expect(WALL_COLOR).toBe(0x685f53);
-    expect(WALL_BASE_COLOR).toBe(0x1a1c22);
+    expect(WALL_BASE_COLOR).toBe(0x1e2027);
     expect(GROUND_NIGHT_LIFT).toBe(1.6675);
     expect(AO_MAX_DARKEN).toBe(0.261);
   });
@@ -131,7 +131,7 @@ describe("tintFromTile", () => {
     expect(src).not.toContain("[0x3a, 0x4e, 0x32]");
     expect(INDOOR_FLOOR_COLOR).toBe(0x303540);
     expect(WALL_COLOR).toBe(0x685f53);
-    expect(WALL_BASE_COLOR).toBe(0x1a1c22);
+    expect(WALL_BASE_COLOR).toBe(0x1e2027);
     expect(GROUND_NIGHT_LIFT).toBe(1.6675);
     expect(AO_MAX_DARKEN).toBe(0.261);
   });
@@ -146,7 +146,7 @@ describe("aoFactor + applyAo", () => {
     expect(INDOOR_FLOOR_COLOR).toBe(0x303540);
     expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
     expect(WALL_COLOR).toBe(0x685f53);
-    expect(WALL_BASE_COLOR).toBe(0x1a1c22);
+    expect(WALL_BASE_COLOR).toBe(0x1e2027);
     expect(applyAo(0xffffff, 0)).toBe(0xffffff);
     expect(applyAo(0xffffff, 1)).toBe(0xbcbcbc);
   });
@@ -303,7 +303,7 @@ describe("night wall albedo lift", () => {
     expect(Math.round((0x48 * 115) / 100)).toBe(b);
     expect(INDOOR_FLOOR_COLOR).toBe(0x303540);
     expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
-    expect(WALL_BASE_COLOR).toBe(0x1a1c22);
+    expect(WALL_BASE_COLOR).toBe(0x1e2027);
     expect(GROUND_NIGHT_LIFT).toBe(1.6675);
     expect(AO_MAX_DARKEN).toBe(0.261);
     const viewSrc = readFileSync(
@@ -318,10 +318,44 @@ describe("night wall albedo lift", () => {
     );
   });
 
+  test("WALL_BASE_COLOR 0x1a1c22 × 1.15; worldView still uses it", () => {
+    expect(WALL_BASE_COLOR).toBe(0x1e2027);
+    const r = (WALL_BASE_COLOR >> 16) & 0xff;
+    const g = (WALL_BASE_COLOR >> 8) & 0xff;
+    const b = WALL_BASE_COLOR & 0xff;
+    expect(r).toBe(0x1e);
+    expect(g).toBe(0x20);
+    expect(b).toBe(0x27);
+    expect(Math.round((0x1a * 115) / 100)).toBe(r);
+    expect(Math.round((0x1c * 115) / 100)).toBe(g);
+    expect(Math.round((0x22 * 115) / 100)).toBe(b);
+    expect(INDOOR_FLOOR_COLOR).toBe(0x303540);
+    expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
+    expect(WALL_COLOR).toBe(0x685f53);
+    expect(DOOR_CLOSED).toBe(0x8b5a2b);
+    expect(DOOR_OPEN).toBe(0xc4a35a);
+    expect(FURNITURE_COLOR).toBe(0x6b4f2a);
+    expect(BED_COLOR).toBe(0x4a1f3d);
+    expect(BARRICADE_COLOR).toBe(0xc49a6c);
+    expect(BARRICADE_EDGE).toBe(0x8a6239);
+    expect(GROUND_NIGHT_LIFT).toBe(1.6675);
+    expect(AO_MAX_DARKEN).toBe(0.261);
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain(
+      "wallBaseMat.color.setHex(applyNightGroundLift(WALL_BASE_COLOR, d))",
+    );
+    expect(viewSrc).toContain(
+      "color: applyNightGroundLift(WALL_BASE_COLOR, lastDaylight)",
+    );
+  });
+
   test("walls reuse ground lift; day = identity", () => {
     expect(GROUND_NIGHT_LIFT).toBe(1.6675);
     expect(WALL_COLOR).toBe(0x685f53);
-    expect(WALL_BASE_COLOR).toBe(0x1a1c22);
+    expect(WALL_BASE_COLOR).toBe(0x1e2027);
     expect(applyNightGroundLift(WALL_COLOR, 1)).toBe(WALL_COLOR);
     expect(applyNightGroundLift(WALL_BASE_COLOR, 1)).toBe(WALL_BASE_COLOR);
   });
@@ -330,7 +364,7 @@ describe("night wall albedo lift", () => {
     const night = applyNightGroundLift(WALL_COLOR, 0);
     const baseNight = applyNightGroundLift(WALL_BASE_COLOR, 0);
     expect(night).toBe(0xad9e8a);
-    expect(baseNight).toBe(0x2b2f39);
+    expect(baseNight).toBe(0x323541);
     const nr = (night >> 16) & 0xff;
     const ng = (night >> 8) & 0xff;
     const nb = night & 0xff;

@@ -17,7 +17,7 @@ export const OUTDOOR_GRASS_BASE = 0x465b3d;
 export const WALL_COLOR = 0x685f53;
 
 /** Base bajo el muro (suelo del tile wall). */
-export const WALL_BASE_COLOR = 0x1a1c22;
+export const WALL_BASE_COLOR = 0x1e2027;
 
 /** Puerta cerrada (histórico DOOR_CLOSED en worldView). */
 export const DOOR_CLOSED = 0x8b5a2b;
