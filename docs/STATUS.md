@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** delete dead 3D floater.
+- **Última rutina:** E/Z más grandes.
 - **Qué quedó (esta corrida):**
+  - **E/Z más grandes** floatBadge de puerta/cama se lee en cámara de gameplay: font 44→80px, canvas 64²→128², letra world 1.3→2.4, disc puerta/cama ×1.5. Labels **E** / **Z** y hues (puerta `0x5c7388`, cama `0x7a6490`) iguales. Constantes `doorBadgeFontPx` / `doorBadgeLetterScale` / `doorBadgeDiscScale` y equivalentes bed. Sin nameplates ni widgets.
   - **Dead 3D floater** se borra `WorldView.spawnLootFloater` / `tickLootFloaters` / Plane canvas 256×64. Chip DOM `#loot-floater` (`lootToast.show` + `lootFloaterLabel`) se queda. `lootFloater.ts` solo exporta el label (max 16 + `×qty`). Sin widgets nuevos.
   - **Badges E/Z** floatBadge de puerta/cama pinta la tecla en el disc existente: puerta **E** (anillo slate `0x5c7388`), cama **Z** (anillo púrpura `0x7a6490`). Canvas blanco monospace + stroke oscuro (`doorBadgeLabel` / `bedBadgeLabel`). Loot badge igual. Hide-when-out-of-reach igual. Sin nameplates ni widgets.
   - **Door/bed hue split** anillos de suelo se leen aparte del loot gold `0xd4a03a`: puerta steel blue-grey `0x5c7388` (era teal `0x2ec8b4`); cama púrpura sleep `0x7a6490` (era rosa `0xe07090`). Pulso door/bed `0.08` → `0.05` (más calmo que loot). Hide-when-out-of-reach igual. Sin nameplates ni widgets.
@@ -47,6 +48,6 @@
 - **Controles:** WASD mover · **Shift correr** · **Espacio/V melee** · **X disparar** · E puerta/loot · G loot · **Shift+G stack** · **Q usar slot** (consumible seleccionado / lluvia outdoor) · **U tirar** · **Shift+U stack** · **U inv tirar** · **1-5 hotbar** (selección, highlight azul) · **rueda hotbar** (cicla slot, wrap) · **clic hotbar** · **arrastrar hotbar** · **doble clic usar** · **clic der. info** · **Shift+clic hotbar partir** · **Ctrl+clic hotbar juntar** · **clic inv usar** · **doble clic inv** · **arrastrar inv** · **clic der. inv** · **Shift+clic inv partir** · **Ctrl+clic inv juntar** · **I inventorio (panel; al empezar muestra kit inicial)** · B barricada · **C vendaje** · **H cocinar** · **T diálogo** (calmar / preguntar / amenazar / ofrecer comida / Distraer) · **L linterna** · **M mute ambient** · **+/- zoom** · R descanso/reinicio · **Z dormir** (cama o suelo indoor) · **F1 ayuda** · F5 guardar · F9 cargar · (boot) clic/Espacio saltar loading
 - **Fuera de este slice:** autogenerar modelos en Mesh2Motion (herramienta externa); WebSocket real; lobby UI browser; API LLM real; GTAO; samples de pisadas (sigue beep); samples ambient reales; samples combat reales (sigue beep); samples interact reales (sigue beep); samples speech reales (sigue beep); samples heartbeat reales (sigue beep)
 - **Dirección:** sandbox largo en Three.js (sim primero; render es vista); LLM solo stub/fallback; MP solo stub headless por ahora
-- **Siguiente subtarea concreta:** enlarge door E / bed Z letters if tiny, or flashlight cone.
+- **Siguiente subtarea concreta:** flashlight cone leftover.
 - **Bloqueos:** ninguno
 - **Entorno:** Bun; scripts `dev`, `build`, `test`

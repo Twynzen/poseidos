@@ -21,6 +21,15 @@ export const DOOR_FOCUS_PULSE_SPEED = 6;
 /** Letra de tecla en el floatBadge de puerta. */
 export const doorBadgeLabel = "E";
 
+/** Font px del canvas de la letra E (~1.8× vs 44). */
+export const doorBadgeFontPx = 80;
+
+/** Escala world de la letra E. */
+export const doorBadgeLetterScale = 2.4;
+
+/** Escala del disc de puerta (×1.5 vs badge compartido). */
+export const doorBadgeDiscScale = 1.5;
+
 /** True si dist está en reach (incl. el borde). */
 export function doorFocusInReach(dist: number): boolean {
   return Number.isFinite(dist) && dist <= DOOR_FOCUS_REACH;

@@ -7,7 +7,10 @@ import {
   BED_FOCUS_SCALE_NEAR,
   bedFocusInReach,
   bedFocusMul,
+  bedBadgeDiscScale,
+  bedBadgeFontPx,
   bedBadgeLabel,
+  bedBadgeLetterScale,
   bedFocusPulse,
   bedFocusScale,
   bedRingVisible,
@@ -22,8 +25,11 @@ describe("constantes", () => {
     expect(BED_FOCUS_PULSE_SPEED).toBe(6);
   });
 
-  test("bedBadgeLabel es Z", () => {
+  test("bedBadgeLabel es Z; font 80; letter 2.4; disc 1.5", () => {
     expect(bedBadgeLabel).toBe("Z");
+    expect(bedBadgeFontPx).toBe(80);
+    expect(bedBadgeLetterScale).toBe(2.4);
+    expect(bedBadgeDiscScale).toBe(1.5);
   });
 });
 

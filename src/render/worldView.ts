@@ -116,13 +116,19 @@ import {
   paintLootNameplateIcon,
 } from "./lootNameplate";
 import {
+  doorBadgeDiscScale,
+  doorBadgeFontPx,
   doorBadgeLabel,
+  doorBadgeLetterScale,
   doorFocusMul,
   doorRingVisible,
   DOOR_FOCUS_REACH,
 } from "./doorFocus";
 import {
+  bedBadgeDiscScale,
+  bedBadgeFontPx,
   bedBadgeLabel,
+  bedBadgeLetterScale,
   bedFocusMul,
   bedRingVisible,
   BED_FOCUS_REACH,
@@ -1768,18 +1774,21 @@ interface MarkerSharedResources {
 }
 
 /** Letra blanca + stroke oscuro en el disc del floatBadge (puerta/cama). */
-function makeBadgeLetterTexture(letter: string): THREE.CanvasTexture {
-  const size = 64;
+function makeBadgeLetterTexture(
+  letter: string,
+  fontPx: number,
+): THREE.CanvasTexture {
+  const size = 128;
   const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
   const ctx = canvas.getContext("2d");
   if (ctx) {
     ctx.clearRect(0, 0, size, size);
-    ctx.font = "700 42px ui-monospace, SF Mono, Menlo, Consolas, monospace";
+    ctx.font = `700 ${fontPx}px ui-monospace, SF Mono, Menlo, Consolas, monospace`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 9;
     ctx.strokeStyle = "rgba(0,0,0,0.75)";
     ctx.strokeText(letter, size / 2, size / 2);
     ctx.fillStyle = "#ffffff";
@@ -1794,8 +1803,8 @@ function createMarkerSharedResources(): MarkerSharedResources {
   const ringGeo = new THREE.RingGeometry(0.42, 0.58, 28);
   const badgeGeo = new THREE.CircleGeometry(0.16, 20);
   const iconGeo = new THREE.PlaneGeometry(0.18, 0.18);
-  const doorLetterMap = makeBadgeLetterTexture(doorBadgeLabel);
-  const bedLetterMap = makeBadgeLetterTexture(bedBadgeLabel);
+  const doorLetterMap = makeBadgeLetterTexture(doorBadgeLabel, doorBadgeFontPx);
+  const bedLetterMap = makeBadgeLetterTexture(bedBadgeLabel, bedBadgeFontPx);
   const mats: THREE.Material[] = [];
   return {
     ringGeo,
@@ -1883,7 +1892,13 @@ function attachRoleMarkers(
   if (role === "mute") icon.scale.set(0.7, 0.7, 1);
   else if (role === "possessed") icon.scale.set(0.85, 0.85, 1);
   else if (role === "loot") icon.scale.set(0.8, 0.8, 1);
-  else if (role === "door" || role === "bed") icon.scale.set(1.15, 1.15, 1);
+  else if (role === "door") {
+    disc.scale.set(doorBadgeDiscScale, doorBadgeDiscScale, 1);
+    icon.scale.set(doorBadgeLetterScale, doorBadgeLetterScale, 1);
+  } else if (role === "bed") {
+    disc.scale.set(bedBadgeDiscScale, bedBadgeDiscScale, 1);
+    icon.scale.set(bedBadgeLetterScale, bedBadgeLetterScale, 1);
+  }
   badge.add(disc, icon);
   badge.position.y =
     role === "player" ? 1.72 : role === "loot" || role === "door" ? 1.12 : 1.68;

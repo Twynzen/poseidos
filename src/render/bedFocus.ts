@@ -21,6 +21,15 @@ export const BED_FOCUS_PULSE_SPEED = 6;
 /** Letra de tecla en el floatBadge de cama. */
 export const bedBadgeLabel = "Z";
 
+/** Font px del canvas de la letra Z (~1.8× vs 44). */
+export const bedBadgeFontPx = 80;
+
+/** Escala world de la letra Z. */
+export const bedBadgeLetterScale = 2.4;
+
+/** Escala del disc de cama (×1.5 vs badge compartido). */
+export const bedBadgeDiscScale = 1.5;
+
 /** True si dist está en reach (incl. el borde). */
 export function bedFocusInReach(dist: number): boolean {
   return Number.isFinite(dist) && dist <= BED_FOCUS_REACH;
