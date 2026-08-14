@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** iconos de hotbar e inventario un poco más grandes.
+- **Última rutina:** icono del toast de loot un poco más grande.
 - **Qué quedó (esta corrida):**
+  - **loot-floater-icon 30→36px; 2s / copy / gestos iguales.** `#loot-floater .loot-floater-icon` (y su `svg`) 36px; flex `0 0 36px`. Font 20px, animación 2s, gold/error, glass chip y qty badge iguales. `lootFloaterHud.ts` no hardcodea el tamaño. `itemIcons.ts` paths / viewBox sin cambio. Hotbar/inv 40px, cámara / markers / anillos / nameplates / chevron / luces / lluvia / linterna / teclas / gestos sin cambio.
   - **slot icons 32→40px; celdas 52×52 y gestos iguales.** `.hotbar-slot-icon` y `.inv-slot-icon` (y sus `svg`) 40px. Slots 52×52, qty badges, empty dashed, selected gold y teclas 1–5 iguales. `itemIcons.ts` paths / viewBox sin cambio. Cámara / markers / anillos / nameplates / chevron / luces / lluvia / linterna / HUD / loading / diálogo / globos / teclas / gestos sin cambio.
   - **FACING_CHEVRON_OPACITY 0.55→0.75; color/tamaño/yaw iguales.** worldView mesh sigue el knob (`opacity: FACING_CHEVRON_OPACITY`). `FACING_CHEVRON_COLOR` `0xe8c36a`, DIST 1.2, LEN 0.805, HW 0.322, YAW_OFFSET 0 sin cambio. Cámara / escala / anillos / nameplates / badges / luces / lluvia / linterna / HUD / loading / diálogo / globos / inventario / hotbar / teclas / gestos sin cambio.
   - **loading title 22px / line 14px / hint 12px; skip click/Espacio igual.** `.loading-title` 22px (era 18px). `.loading-line` 14px (era 12.5px). `.loading-hint` 12px (era 10.5px). Card width, bar, colors, overlay `#loading-overlay` / `loading-dismissed` y skip clic/Espacio iguales. TS boot/progress / HUD / moodle / diálogo / globos / nameplate / cámara / markers / anillos / luces / lluvia / linterna / teclas / gestos sin cambio.
