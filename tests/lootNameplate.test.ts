@@ -45,7 +45,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_Y).toBe(2.843375);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(3.4385);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.859625);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(84.64);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBe(89.93);
   });
 
@@ -77,7 +77,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_Y).toBe(2.843375);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(3.4385);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.859625);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(84.64);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBe(89.93);
   });
 
@@ -110,7 +110,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_Y).toBe(2.843375);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(3.4385);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.859625);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(84.64);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBe(89.93);
   });
 
@@ -143,7 +143,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_Y).toBe(2.843375);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(3.4385);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.859625);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(84.64);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBe(89.93);
   });
 
@@ -173,7 +173,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_Y).toBe(2.843375);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(3.4385);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.859625);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(84.64);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBe(89.93);
   });
 
@@ -200,7 +200,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_Y).toBe(2.843375);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(3.4385);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.859625);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(84.64);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBe(89.93);
   });
 
@@ -224,7 +224,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_Y).toBe(2.843375);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(3.4385);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.859625);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(84.64);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBe(89.93);
   });
 
@@ -248,7 +248,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_Y).toBe(2.843375);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(3.4385);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.859625);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(84.64);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBe(89.93);
   });
 
@@ -275,7 +275,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_Y).toBe(2.843375);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(3.4385);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.859625);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(84.64);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBe(89.93);
     expect(lootNameplateOpacity(LOOT_NAMEPLATE_NEAR_DIST)).toBe(1);
     expect(lootNameplateScale(LOOT_NAMEPLATE_NEAR_DIST)).toBe(1);
@@ -305,7 +305,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_Y).toBe(2.843375);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(3.4385);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.859625);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(84.64);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBe(89.93);
     expect(lootNameplateScale(LOOT_NAMEPLATE_FADE_DIST)).toBe(
       LOOT_NAMEPLATE_MID_SCALE,
@@ -320,7 +320,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_Y).toBe(2.843375);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(3.4385);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.859625);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(84.64);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBe(89.93);
     expect(lootNameplateOpacity(LOOT_NAMEPLATE_FADE_DIST)).toBe(0);
     expect(lootNameplateScale(LOOT_NAMEPLATE_FADE_DIST)).toBe(
@@ -336,7 +336,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(3.4385);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.859625);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(84.64);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBe(89.93);
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(39.1);
   });
@@ -349,7 +349,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
     expect(LOOT_NAMEPLATE_Y).toBe(2.843375);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.859625);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(84.64);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBe(89.93);
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(39.1);
   });
@@ -388,12 +388,12 @@ describe("constantes", () => {
     expect(src).toContain('sprite.name = "lootNameplate"');
   });
 
-  test("icon pad 89.93 (78.2 × 1.15); size 73.6 / scale / Y / fade / mid-scale sin cambio", () => {
+  test("icon size 84.64 (73.6 × 1.15); pad 89.93 / scale / Y / fade / mid-scale sin cambio", () => {
     expect(LOOT_NAMEPLATE_ICON_PAD).toBe(89.93);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBeCloseTo(78.2 * 1.15, 5);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBeGreaterThanOrEqual(48);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBeCloseTo(64 * 1.15, 5);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(84.64);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBeCloseTo(73.6 * 1.15, 5);
     expect(LOOT_NAMEPLATE_ICON_SIZE).toBeGreaterThanOrEqual(48);
   });
 
