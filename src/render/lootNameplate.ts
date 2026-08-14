@@ -123,7 +123,8 @@ export type LootNameplateIconKind =
   | "diamond";
 
 const GOLD_STROKE = "#e8c36a";
-const GOLD_FILL = "rgba(232,195,106,0.32)";
+/** Fill gold de la silueta del icono. 0.32 × 1.15 para leer de noche. */
+export const LOOT_NAMEPLATE_GOLD_FILL = "rgba(232,195,106,0.368)";
 
 /** Silueta gold del stack: botella / lata / madera / munición / pistola / linterna; resto diamante. */
 export function lootNameplateIconKind(id: string): LootNameplateIconKind {
@@ -164,7 +165,7 @@ export function paintLootNameplateIcon(
     ctx.translate(x, y);
     ctx.scale(s / 32, s / 32);
     ctx.strokeStyle = GOLD_STROKE;
-    ctx.fillStyle = GOLD_FILL;
+    ctx.fillStyle = LOOT_NAMEPLATE_GOLD_FILL;
     ctx.lineWidth = 1.5;
     ctx.lineJoin = "round";
     ctx.lineCap = "round";

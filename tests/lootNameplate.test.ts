@@ -4,6 +4,7 @@ import { describe, expect, test } from "vitest";
 import {
   LOOT_NAMEPLATE_FADE_DIST,
   LOOT_NAMEPLATE_FILL,
+  LOOT_NAMEPLATE_GOLD_FILL,
   LOOT_NAMEPLATE_FONT_PX,
   LOOT_NAMEPLATE_ICON_PAD,
   LOOT_NAMEPLATE_ICON_SIZE,
@@ -25,6 +26,38 @@ import {
 } from "../src/render/lootNameplate";
 
 describe("constantes", () => {
+  test("GOLD_FILL opacity 0.368 (0.32 × 1.15); fill/stroke/font/fade/mid-scale/icon/pad/scale/Y sin cambio", () => {
+    expect(LOOT_NAMEPLATE_GOLD_FILL).toBe("rgba(232,195,106,0.368)");
+    expect(LOOT_NAMEPLATE_GOLD_FILL).toMatch(/rgba\(232,\s*195,\s*106,\s*0\.368\)/);
+    const opacity = Number(LOOT_NAMEPLATE_GOLD_FILL.match(/[\d.]+(?=\)$)/)?.[0]);
+    expect(opacity).toBe(0.368);
+    expect(opacity).toBeCloseTo(0.32 * 1.15, 5);
+    expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");
+    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
+    expect(LOOT_NAMEPLATE_FONT_PX).toBe(39.1);
+    expect(LOOT_NAMEPLATE_FADE_DIST).toBe(6.325);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
+    expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
+    expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
+    expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.7475);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_PAD).toBe(78.2);
+  });
+
+  test("paintLootNameplateIcon usa LOOT_NAMEPLATE_GOLD_FILL", () => {
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/lootNameplate.ts"),
+      "utf8",
+    );
+    expect(src).toContain("ctx.fillStyle = LOOT_NAMEPLATE_GOLD_FILL");
+    expect(src).not.toMatch(/const GOLD_FILL = /);
+    expect(src).not.toMatch(/rgba\(232,195,106,0\.32\)/);
+    const ctx = mockNameplateCtx();
+    paintLootNameplateIcon(ctx, "wood", 0, 0, 32);
+    expect(ctx.fillStyle).toBe(LOOT_NAMEPLATE_GOLD_FILL);
+    expect(ctx.fillStyle).toBe("rgba(232,195,106,0.368)");
+  });
+
   test("fill #ffdd6e (#f0c060 ×1.15); stroke/font/fade/mid-scale/iconos/scale/Y/teclas sin cambio", () => {
     expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");
     expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
