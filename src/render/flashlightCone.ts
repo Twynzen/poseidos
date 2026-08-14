@@ -28,8 +28,8 @@ export const FLASHLIGHT_WEDGE_COLOR = 0xd0eaff;
 /** Color del SpotLight (cian-blanco un poco más frío). */
 export const FLASHLIGHT_SPOT_COLOR = 0xd8eeff;
 
-/** Opacidad base de la cuña (on). */
-export const FLASHLIGHT_WEDGE_OPACITY_BASE = 0.55;
+/** Opacidad base de la cuña (on). 0.55 × 1.15 para leer de noche. */
+export const FLASHLIGHT_WEDGE_OPACITY_BASE = 0.6325;
 
 /** Ganancia de opacidad × intensidad. */
 export const FLASHLIGHT_WEDGE_OPACITY_GAIN = 0.253;
