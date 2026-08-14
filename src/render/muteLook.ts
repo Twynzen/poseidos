@@ -2,44 +2,70 @@
  * Tint mute (cuerpo gris-verde enfermo) sobre Soldier.glb.
  * Clona materiales para no mutar el cache del GLTFLoader / template compartido.
  * Acento en partes cuyo nombre sugiere head/visor/helmet.
- * Paleta sin rojo/violeta (distinto de poseídos).
+ * Paleta sin rojo/violeta (distinto de poseídos y de survivor tierra).
+ *
+ * Albedo: si hay map, multiply del tint (conserva variación de valor).
+ * Sin map: fill gris-verde levantado. Nunca aplastar a MUTE_CRUSHED_BODY.
  */
 
 import type { Material, Mesh, Object3D } from "three";
 import { Color, MeshStandardMaterial } from "three";
 
-/** Cuerpo: gris-verde enfermo. */
-export const MUTE_BODY_COLOR = 0x4a5648;
+/** Cuerpo sin map: gris-verde enfermo levantado (no el fill aplastado de noche). */
+export const MUTE_BODY_COLOR = 0x647262;
+/** Multiply sobre color existente cuando hay map (mantiene variación). */
+export const MUTE_MAP_TINT = 0xa8b8a4;
+/** Emisión cuerpo muy baja: silueta gris-verde, sin glow ni rojo-violeta. */
+export const MUTE_BODY_EMISSIVE = 0x161c14;
 /** Acento head/visor: gris-verde más claro. */
-export const MUTE_ACCENT_COLOR = 0x6b7a68;
+export const MUTE_ACCENT = 0x6b7a68;
+/** Alias del acento (mismo valor). */
+export const MUTE_ACCENT_COLOR = MUTE_ACCENT;
 /** Emisión del acento (ojos/visor mute, verde oscuro). */
 export const MUTE_ACCENT_EMISSIVE = 0x1a2218;
+/**
+ * Fill plano que aplastaba el mesh de noche.
+ * Lock de nombre únicamente — no aplicar como color de cuerpo.
+ */
+export const MUTE_CRUSHED_BODY = 0x4a5648;
 export const MUTE_BODY_ROUGHNESS = 0.88;
 export const MUTE_ACCENT_ROUGHNESS = 0.5;
 export const MUTE_ACCENT_EMISSIVE_INTENSITY = 0.35;
 
 const ACCENT_NAME_RE = /visor|helmet|helm|head/i;
+const MAP_TINT = new Color(MUTE_MAP_TINT);
 
 /** True si el nombre de mesh o material sugiere head/visor/casco. */
 export function isMuteAccentName(name: string): boolean {
   return typeof name === "string" && ACCENT_NAME_RE.test(name);
 }
 
+function materialHasMap(mat: Material): boolean {
+  return "map" in mat && (mat as { map?: unknown }).map != null;
+}
+
 function tintMaterial(mat: Material, accent: boolean): Material {
   const cloned = mat.clone();
-  const hex = accent ? MUTE_ACCENT_COLOR : MUTE_BODY_COLOR;
   const rough = accent ? MUTE_ACCENT_ROUGHNESS : MUTE_BODY_ROUGHNESS;
   if ("color" in cloned && cloned.color instanceof Color) {
-    cloned.color.setHex(hex);
+    if (accent) {
+      cloned.color.setHex(MUTE_ACCENT);
+    } else if (materialHasMap(cloned)) {
+      cloned.color.multiply(MAP_TINT);
+    } else {
+      cloned.color.setHex(MUTE_BODY_COLOR);
+    }
   }
   if (cloned instanceof MeshStandardMaterial) {
     cloned.roughness = rough;
     cloned.metalness = accent ? 0.22 : 0.06;
     if (cloned.emissive) {
-      cloned.emissive.setHex(accent ? MUTE_ACCENT_EMISSIVE : 0x000000);
+      cloned.emissive.setHex(
+        accent ? MUTE_ACCENT_EMISSIVE : MUTE_BODY_EMISSIVE,
+      );
       cloned.emissiveIntensity = accent
         ? MUTE_ACCENT_EMISSIVE_INTENSITY
-        : 0;
+        : 1;
     }
   }
   return cloned;
