@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** anillos de ruido un poco más largos
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After ring life, look at RUN_NOISE_RING_MIN_AGE (0.348) ×0.87 so sprint rings spawn a bit more often, or markers night opacity. Do not change width/inner, kinds, colors, nameplate, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** anillos de sprint un poco más frecuentes
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After run min-age, look at markers.ts night opacity or NOISE_RING_INNER (0.67425) ×0.87 so the ring reads a bit thicker. Do not change width/life, kinds, colors, nameplate, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **RUN_NOISE_RING_MIN_AGE 0.348→0.30276; width/life/inner/kinds/nameplate/looks/sky/fog/sol/teclas iguales.**
   - **DEFAULT_NOISE_RING_LIFE 0.9775→1.124125; width/inner/kinds/nameplate/looks/sky/fog/sol/teclas iguales.**
   - **NOISE_RING_WIDTH 0.225→0.25875; inner/life/kinds/nameplate/looks/sky/fog/sol/teclas iguales.**
   - **LOOT_NAMEPLATE_NEAR_DIST 2→2.3; fade/scale/icon/focus/looks/sky/fog/sol/teclas iguales.**
