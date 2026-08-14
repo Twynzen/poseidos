@@ -5,7 +5,7 @@
  */
 
 /** Alcance del cono (tiles). */
-export const FLASHLIGHT_CONE_LENGTH = 5.5545;
+export const FLASHLIGHT_CONE_LENGTH = 6.387675;
 
 /** Semi-ancho en el extremo lejano (tiles). Más estrecho = haz, no flood. */
 export const FLASHLIGHT_CONE_HALF_WIDTH = 1.19025;

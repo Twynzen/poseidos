@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** outline del texto del nameplate un poco más visible
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After TEXT_STROKE, look outside nameplate — next unused visual knob in flashlight / HUD / interaction badge (not nameplate, rings, looks, sky/fog/sun/ambient, or controls).
+- **Última rutina:** cono de linterna un poco más largo
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After cone length, look at FLASHLIGHT_CONE_HALF_WIDTH (1.19025) ×1.15 so the beam is a bit wider at night. Do not change length/Y/penumbra/opacity, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **FLASHLIGHT_CONE_LENGTH 5.5545→6.387675; half-width/Y/penumbra/opacity/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **LOOT_NAMEPLATE_TEXT_STROKE 0.805→0.92575; plate/gold/font/stroke/icon/scale/Y/near/fade/mid/focus/looks/sky/fog/sol/teclas iguales.**
   - **LOOT_NAMEPLATE_PLATE_FILL 0.828→0.9522; gold/stroke/font/icon/scale/Y/near/fade/mid/focus/looks/sky/fog/sol/teclas iguales.**
   - **LOOT_NAMEPLATE_GOLD_FILL 0.368→0.4232; stroke/font/icon/scale/Y/near/fade/mid/focus/looks/sky/fog/sol/teclas iguales.**
