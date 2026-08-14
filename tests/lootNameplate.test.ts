@@ -33,7 +33,7 @@ import {
 describe("constantes", () => {
   test("GOLD_STROKE #ffe07a (#e8c36a ×1.15); icon-stroke/text/plate/gold/fill/stroke/font/fade/mid-scale/icon/pad/scale/Y sin cambio", () => {
     expect(LOOT_NAMEPLATE_GOLD_STROKE).toBe("#ffe07a");
-    expect(LOOT_NAMEPLATE_ICON_STROKE).toBe(1.725);
+    expect(LOOT_NAMEPLATE_ICON_STROKE).toBe(1.98375);
     expect(LOOT_NAMEPLATE_TEXT_STROKE).toBe("rgba(0,0,0,0.805)");
     expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.828)");
     expect(LOOT_NAMEPLATE_GOLD_FILL).toBe("rgba(232,195,106,0.368)");
@@ -63,9 +63,9 @@ describe("constantes", () => {
     expect(ctx.strokeStyle).toBe("#ffe07a");
   });
 
-  test("ICON_STROKE 1.725 (1.5 × 1.15); text/plate/gold/fill/stroke/font/fade/mid-scale/icon/pad/scale/Y sin cambio", () => {
-    expect(LOOT_NAMEPLATE_ICON_STROKE).toBe(1.725);
-    expect(LOOT_NAMEPLATE_ICON_STROKE).toBeCloseTo(1.5 * 1.15, 5);
+  test("ICON_STROKE 1.98375 (1.725 × 1.15); text/plate/gold/fill/stroke/font/fade/mid-scale/icon/pad/scale/Y sin cambio", () => {
+    expect(LOOT_NAMEPLATE_ICON_STROKE).toBe(1.98375);
+    expect(LOOT_NAMEPLATE_ICON_STROKE).toBeCloseTo(1.725 * 1.15, 5);
     expect(LOOT_NAMEPLATE_TEXT_STROKE).toBe("rgba(0,0,0,0.805)");
     expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.828)");
     expect(LOOT_NAMEPLATE_GOLD_FILL).toBe("rgba(232,195,106,0.368)");
@@ -91,7 +91,7 @@ describe("constantes", () => {
     const ctx = mockNameplateCtx();
     paintLootNameplateIcon(ctx, "wood", 0, 0, 32);
     expect(ctx.lineWidth).toBe(LOOT_NAMEPLATE_ICON_STROKE);
-    expect(ctx.lineWidth).toBe(1.725);
+    expect(ctx.lineWidth).toBe(1.98375);
   });
 
   test("TEXT_STROKE opacity 0.805 (0.7 × 1.15); plate/gold/fill/stroke/font/fade/mid-scale/icon/pad/scale/Y sin cambio", () => {
