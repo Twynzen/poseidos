@@ -20,10 +20,10 @@ import {
 } from "../src/render/doorFocus";
 
 describe("constantes", () => {
-  test("reach 1.6; near 1.5525; far 1.288; pulse 0.066125 / 6.9", () => {
+  test("reach 1.6; near 1.785375; far 1.288; pulse 0.066125 / 6.9", () => {
     expect(DOOR_FOCUS_REACH).toBe(1.6);
-    expect(DOOR_FOCUS_SCALE_NEAR).toBe(1.5525);
-    expect(DOOR_FOCUS_SCALE_NEAR).toBeCloseTo(1.35 * 1.15, 10);
+    expect(DOOR_FOCUS_SCALE_NEAR).toBe(1.785375);
+    expect(DOOR_FOCUS_SCALE_NEAR).toBeCloseTo(1.5525 * 1.15, 10);
     expect(DOOR_FOCUS_SCALE_FAR).toBe(1.288);
     expect(DOOR_FOCUS_SCALE_FAR).toBeCloseTo(1.12 * 1.15, 10);
     expect(DOOR_FOCUS_PULSE_AMP).toBe(0.066125);
@@ -91,18 +91,18 @@ describe("constantes", () => {
 });
 
 describe("doorFocusScale", () => {
-  test("1.5525 en dist 0; 1.288 en reach; 1.0 fuera", () => {
-    expect(doorFocusScale(0)).toBe(1.5525);
+  test("1.785375 en dist 0; 1.288 en reach; 1.0 fuera", () => {
+    expect(doorFocusScale(0)).toBe(1.785375);
     expect(doorFocusScale(1.6)).toBeCloseTo(1.288, 10);
     expect(doorFocusScale(1.61)).toBe(1);
     expect(doorFocusScale(10)).toBe(1);
   });
 
   test("lerp lineal dentro de reach", () => {
-    // midpoint 0.8: 1.5525 + (1.288-1.5525)*0.5 = 1.42025
-    expect(doorFocusScale(0.8)).toBeCloseTo(1.42025, 10);
+    // midpoint 0.8: 1.785375 + (1.288-1.785375)*0.5 = 1.5366875
+    expect(doorFocusScale(0.8)).toBeCloseTo(1.5366875, 10);
     const t = 0.25;
-    const expected = 1.5525 + (1.288 - 1.5525) * t;
+    const expected = 1.785375 + (1.288 - 1.785375) * t;
     expect(doorFocusScale(1.6 * t)).toBeCloseTo(expected, 10);
   });
 
@@ -111,8 +111,8 @@ describe("doorFocusScale", () => {
     expect(doorFocusScale(Number.POSITIVE_INFINITY)).toBe(1);
   });
 
-  test("dist negativa se clampa a 0 → 1.5525", () => {
-    expect(doorFocusScale(-0.4)).toBe(1.5525);
+  test("dist negativa se clampa a 0 → 1.785375", () => {
+    expect(doorFocusScale(-0.4)).toBe(1.785375);
     expect(doorFocusInReach(-0.4)).toBe(true);
   });
 });
@@ -140,9 +140,9 @@ describe("doorFocusPulse", () => {
 describe("doorFocusMul", () => {
   test("en reach: scale * pulse", () => {
     const elapsed = Math.PI / (2 * 6.9); // pulse = 1.066125
-    expect(doorFocusMul(0, elapsed)).toBeCloseTo(1.5525 * 1.066125, 10);
+    expect(doorFocusMul(0, elapsed)).toBeCloseTo(1.785375 * 1.066125, 10);
     expect(doorFocusMul(1.6, elapsed)).toBeCloseTo(1.288 * 1.066125, 10);
-    expect(doorFocusMul(0.8, 0)).toBeCloseTo(1.42025, 10);
+    expect(doorFocusMul(0.8, 0)).toBeCloseTo(1.5366875, 10);
   });
 
   test("fuera de reach: 1 (sin pulso)", () => {
