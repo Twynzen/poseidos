@@ -9,8 +9,8 @@ export const BED_FOCUS_REACH = 1.5;
 /** Escala encima de la cama (dist 0; 1.5525 × 1.15, para leerse de noche). */
 export const BED_FOCUS_SCALE_NEAR = 1.785375;
 
-/** Escala en el borde de reach (1.12 × 1.15, para leerse de noche). */
-export const BED_FOCUS_SCALE_FAR = 1.288;
+/** Escala en el borde de reach (1.288 × 1.15, para leerse de noche). */
+export const BED_FOCUS_SCALE_FAR = 1.4812;
 
 /** Amplitud del seno (0.0575 × 1.15, para leerse de noche). */
 export const BED_FOCUS_PULSE_AMP = 0.066125;
@@ -39,7 +39,7 @@ export function bedFocusInReach(dist: number): boolean {
 }
 
 /**
- * 1.785375 en dist 0 · 1.288 en reach 1.5 · 1.0 fuera.
+ * 1.785375 en dist 0 · 1.4812 en reach 1.5 · 1.0 fuera.
  * Lerp lineal entre near y far dentro de reach.
  */
 export function bedFocusScale(dist: number): number {

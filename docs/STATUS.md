@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** anillo de cama un poco más grande de cerca
-- **Siguiente:** leftover visual polish chico — bump `BED_FOCUS_SCALE_FAR` (currently 1.288) ×1.15 so the bed ring still reads at the edge of reach. Do not change near scale, pulse, loot/door, looks, sky/fog/sun/ambient, or controls. No new widgets.
+- **Última rutina:** anillo de cama un poco más grande al borde
+- **Siguiente:** leftover visual polish chico — bump `DOOR_FOCUS_SCALE_NEAR` (currently 1.5525) ×1.15 so the door ring reads a bit larger at night when standing at the door. Do not change far scale, pulse, loot/bed, looks, sky/fog/sun/ambient, or controls. No new widgets.
 - **Qué quedó (esta corrida):**
+  - **BED_FOCUS_SCALE_FAR 1.288→1.4812; near/pulse/reach/loot/door/looks/sky/fog/sol/teclas iguales.**
   - **BED_FOCUS_SCALE_NEAR 1.5525→1.785375; far/pulse/reach/loot/door/looks/sky/fog/sol/teclas iguales.**
   - **LOOT_FOCUS_SCALE_FAR 1.288→1.4812; near/pulse/reach/bed/door/looks/sky/fog/sol/teclas iguales.**
   - **LOOT_FOCUS_SCALE_NEAR 1.5525→1.785375; far/pulse/reach/bed/door/looks/sky/fog/sol/teclas iguales.**
