@@ -259,6 +259,43 @@ describe("night leftover prop albedo lift", () => {
   });
 });
 
+describe("night leftover roof/window albedo lift", () => {
+  test("no hay mesh de techo/ventana; walls ya usan el lift 1.45", () => {
+    expect(GROUND_NIGHT_LIFT).toBe(1.45);
+    expect(WALL_COLOR).toBe(0x5a5348);
+    expect(applyNightGroundLift(WALL_COLOR, 1)).toBe(WALL_COLOR);
+    const tileSrc = readFileSync(
+      resolve(process.cwd(), "src/world/tile.ts"),
+      "utf8",
+    );
+    expect(tileSrc).toContain(
+      'export type TileKind = "floor" | "wall" | "door" | "furniture" | "barricade"',
+    );
+    expect(tileSrc).not.toMatch(/"roof"|"ceiling"|"window"/);
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).not.toMatch(
+      /roofMat|ceilingMat|windowMat|windowPaneMat|roofGeo|ceilingGeo|windowGeo/,
+    );
+    expect(viewSrc).not.toMatch(
+      /ROOF_NIGHT_LIFT|WINDOW_NIGHT_LIFT|CEILING_NIGHT_LIFT/,
+    );
+    expect(viewSrc).toContain(
+      "wallMat.color.setHex(applyNightGroundLift(WALL_COLOR, d))",
+    );
+    expect(viewSrc).not.toMatch(/tile\.kind === "(roof|ceiling|window)"/);
+    const styleSrc = readFileSync(
+      resolve(process.cwd(), "src/render/floorStyle.ts"),
+      "utf8",
+    );
+    expect(styleSrc).not.toMatch(
+      /ROOF_COLOR|WINDOW_COLOR|CEILING_COLOR|ROOF_NIGHT_LIFT|WINDOW_NIGHT_LIFT/,
+    );
+  });
+});
+
 describe("night leftover barricade albedo lift", () => {
   test("barricades reuse ground lift; day = identity", () => {
     expect(GROUND_NIGHT_LIFT).toBe(1.45);
