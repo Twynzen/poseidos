@@ -29,8 +29,8 @@ export const SURVIVOR_ACCENT_EMISSIVE_INTENSITY = 0.1725;
  * Lock de nombre únicamente — no aplicar como color de cuerpo.
  */
 export const SURVIVOR_CRUSHED_EARTH = 0x5c5346;
-/** Roughness alto = look mate / usado. */
-export const SURVIVOR_BODY_ROUGHNESS = 0.82;
+/** Roughness alto = look mate / usado. 0.82 × 0.87 para leer el cuerpo de noche. */
+export const SURVIVOR_BODY_ROUGHNESS = 0.7134;
 export const SURVIVOR_ACCENT_ROUGHNESS = 0.45;
 
 const ACCENT_NAME_RE = /visor|helmet|helm/i;

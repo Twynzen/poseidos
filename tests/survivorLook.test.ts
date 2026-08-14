@@ -41,6 +41,8 @@ describe("survivorLook constants", () => {
     // Tierra: canales cercanos, sin verde militar dominante
     expect(Math.abs(bodyR - bodyG)).toBeLessThan(24);
     expect(bodyG).toBeGreaterThan(bodyB - 8);
+    expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.7134);
+    expect(SURVIVOR_BODY_ROUGHNESS).toBeCloseTo(0.82 * 0.87, 10);
     expect(SURVIVOR_BODY_ROUGHNESS).toBeGreaterThan(0.6);
 
     const crushR = (SURVIVOR_CRUSHED_EARTH >> 16) & 0xff;
@@ -60,6 +62,20 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_BODY_COLOR).toBe(0x8a8070);
     expect(SURVIVOR_MAP_TINT).toBe(0xc8bca8);
     expect(SURVIVOR_ACCENT).toBe(0xa39c8c);
+    expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
+  });
+
+  test("body roughness 0.82 × 0.87; color/looks/teclas iguales", () => {
+    expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.7134);
+    expect(SURVIVOR_BODY_ROUGHNESS).toBeCloseTo(0.82 * 0.87, 10);
+    expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.45);
+    expect(SURVIVOR_ACCENT_ROUGHNESS).toBeLessThan(SURVIVOR_BODY_ROUGHNESS);
+    expect(SURVIVOR_BODY_COLOR).toBe(0x8a8070);
+    expect(SURVIVOR_MAP_TINT).toBe(0xc8bca8);
+    expect(SURVIVOR_ACCENT).toBe(0xa39c8c);
+    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
+    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x23201b);
+    expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBe(0.1725);
     expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
   });
 });
