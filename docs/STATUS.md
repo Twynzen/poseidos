@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** visor survivor de noche un poco más visible
-- **Siguiente:** leftover visual polish chico — bump `SURVIVOR_BODY_ROUGHNESS` (currently 0.7134) ×0.87 so the survivor body reads a bit less matte at night. Do not change accent roughness, colors, emissive, mute/possessed look, sky/fog/sun/ambient, or controls. No new widgets.
+- **Última rutina:** cuerpo survivor un poco menos mate de noche
+- **Siguiente:** leftover visual polish chico — bump `SURVIVOR_ACCENT_ROUGHNESS` (currently 0.3915) ×0.87 so the survivor visor reads a bit less matte at night. Do not change body roughness, colors, emissive, mute/possessed look, sky/fog/sun/ambient, or controls. No new widgets.
 - **Qué quedó (esta corrida):**
+  - **SURVIVOR_BODY_ROUGHNESS 0.7134→0.620658; accent/colores/emissive/mudos/poseídos/sky/fog/sol/teclas iguales.**
   - **SURVIVOR_ACCENT_EMISSIVE_INTENSITY 0.1725→0.198375; body/colores/roughness/mudos/poseídos/sky/fog/sol/teclas iguales.**
   - **SURVIVOR_BODY_EMISSIVE_INTENSITY 1→1.15; accent/colores/roughness/mudos/poseídos/sky/fog/sol/teclas iguales.**
   - **POSSESSED_ACCENT_ROUGHNESS 0.348→0.30276; body/colores/emissive/mudos/sky/fog/sol/teclas iguales.**
