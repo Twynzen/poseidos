@@ -37,7 +37,7 @@ describe("possessedLook constants", () => {
   test("split knobs: fill levantado, map tint, crushed lock, emisivos", () => {
     expect(POSSESSED_BODY_COLOR).toBe(0x432e40);
     expect(POSSESSED_MAP_TINT).toBe(0x9f7a96);
-    expect(POSSESSED_BODY_EMISSIVE).toBe(0x21141e);
+    expect(POSSESSED_BODY_EMISSIVE).toBe(0x261723);
     expect(POSSESSED_ACCENT).toBe(0x8a2a55);
     expect(POSSESSED_ACCENT_COLOR).toBe(POSSESSED_ACCENT);
     expect(POSSESSED_ACCENT_EMISSIVE).toBe(0x4a1028);
@@ -76,6 +76,30 @@ describe("possessedLook constants", () => {
     expect(bodyR).toBeGreaterThan(crushR);
   });
 
+  test("body emissive 0x21141e × 1.15/canal → 0x261723; body/map-tint/accent/roughness/intensity/crushed iguales", () => {
+    expect(POSSESSED_BODY_EMISSIVE).toBe(0x261723);
+    const r = (POSSESSED_BODY_EMISSIVE >> 16) & 0xff;
+    const g = (POSSESSED_BODY_EMISSIVE >> 8) & 0xff;
+    const b = POSSESSED_BODY_EMISSIVE & 0xff;
+    expect(r).toBe(0x26);
+    expect(g).toBe(0x17);
+    expect(b).toBe(0x23);
+    expect(Math.round((0x21 * 115) / 100)).toBe(r);
+    expect(Math.round((0x14 * 115) / 100)).toBe(g);
+    expect(Math.round((0x1e * 115) / 100)).toBe(b);
+    expect(POSSESSED_BODY_COLOR).toBe(0x432e40);
+    expect(POSSESSED_MAP_TINT).toBe(0x9f7a96);
+    expect(POSSESSED_ACCENT).toBe(0x8a2a55);
+    expect(POSSESSED_ACCENT_COLOR).toBe(POSSESSED_ACCENT);
+    expect(POSSESSED_ACCENT_EMISSIVE).toBe(0x4a1028);
+    expect(POSSESSED_FALLBACK_EMISSIVE).toBe(0x2a0814);
+    expect(POSSESSED_CRUSHED_BODY).toBe(0x1c141c);
+    expect(POSSESSED_BODY_ROUGHNESS).toBe(0.666072);
+    expect(POSSESSED_ACCENT_ROUGHNESS).toBe(0.30276);
+    expect(POSSESSED_BODY_EMISSIVE_INTENSITY).toBe(1.15);
+    expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(1.124125);
+  });
+
   test("map tint 0x8a6a82 × 1.15/canal → 0x9f7a96; body/emissive/accent/roughness/intensity/crushed iguales", () => {
     expect(POSSESSED_MAP_TINT).toBe(0x9f7a96);
     const r = (POSSESSED_MAP_TINT >> 16) & 0xff;
@@ -88,7 +112,7 @@ describe("possessedLook constants", () => {
     expect(Math.round((0x6a * 115) / 100)).toBe(g);
     expect(Math.round((0x82 * 115) / 100)).toBe(b);
     expect(POSSESSED_BODY_COLOR).toBe(0x432e40);
-    expect(POSSESSED_BODY_EMISSIVE).toBe(0x21141e);
+    expect(POSSESSED_BODY_EMISSIVE).toBe(0x261723);
     expect(POSSESSED_ACCENT).toBe(0x8a2a55);
     expect(POSSESSED_ACCENT_COLOR).toBe(POSSESSED_ACCENT);
     expect(POSSESSED_ACCENT_EMISSIVE).toBe(0x4a1028);
@@ -112,7 +136,7 @@ describe("possessedLook constants", () => {
     expect(Math.round((0x28 * 115) / 100)).toBe(g);
     expect(Math.round((0x38 * 115) / 100)).toBe(b);
     expect(POSSESSED_MAP_TINT).toBe(0x9f7a96);
-    expect(POSSESSED_BODY_EMISSIVE).toBe(0x21141e);
+    expect(POSSESSED_BODY_EMISSIVE).toBe(0x261723);
     expect(POSSESSED_ACCENT).toBe(0x8a2a55);
     expect(POSSESSED_ACCENT_COLOR).toBe(POSSESSED_ACCENT);
     expect(POSSESSED_ACCENT_EMISSIVE).toBe(0x4a1028);
@@ -129,7 +153,7 @@ describe("possessedLook constants", () => {
     expect(POSSESSED_BODY_EMISSIVE_INTENSITY).toBeCloseTo(1 * 1.15, 10);
     expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(1.124125);
     expect(POSSESSED_ACCENT_EMISSIVE).toBe(0x4a1028);
-    expect(POSSESSED_BODY_EMISSIVE).toBe(0x21141e);
+    expect(POSSESSED_BODY_EMISSIVE).toBe(0x261723);
     expect(POSSESSED_BODY_COLOR).toBe(0x432e40);
     expect(POSSESSED_MAP_TINT).toBe(0x9f7a96);
     expect(POSSESSED_ACCENT).toBe(0x8a2a55);
@@ -142,7 +166,7 @@ describe("possessedLook constants", () => {
     expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(1.124125);
     expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBeCloseTo(0.9775 * 1.15, 10);
     expect(POSSESSED_ACCENT_EMISSIVE).toBe(0x4a1028);
-    expect(POSSESSED_BODY_EMISSIVE).toBe(0x21141e);
+    expect(POSSESSED_BODY_EMISSIVE).toBe(0x261723);
     expect(POSSESSED_BODY_COLOR).toBe(0x432e40);
     expect(POSSESSED_MAP_TINT).toBe(0x9f7a96);
     expect(POSSESSED_ACCENT).toBe(0x8a2a55);
@@ -158,7 +182,7 @@ describe("possessedLook constants", () => {
     expect(POSSESSED_MAP_TINT).toBe(0x9f7a96);
     expect(POSSESSED_ACCENT).toBe(0x8a2a55);
     expect(POSSESSED_ACCENT_EMISSIVE).toBe(0x4a1028);
-    expect(POSSESSED_BODY_EMISSIVE).toBe(0x21141e);
+    expect(POSSESSED_BODY_EMISSIVE).toBe(0x261723);
     expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(1.124125);
     expect(POSSESSED_CRUSHED_BODY).toBe(0x1c141c);
   });
@@ -172,7 +196,7 @@ describe("possessedLook constants", () => {
     expect(POSSESSED_MAP_TINT).toBe(0x9f7a96);
     expect(POSSESSED_ACCENT).toBe(0x8a2a55);
     expect(POSSESSED_ACCENT_EMISSIVE).toBe(0x4a1028);
-    expect(POSSESSED_BODY_EMISSIVE).toBe(0x21141e);
+    expect(POSSESSED_BODY_EMISSIVE).toBe(0x261723);
     expect(POSSESSED_ACCENT_EMISSIVE_INTENSITY).toBe(1.124125);
     expect(POSSESSED_CRUSHED_BODY).toBe(0x1c141c);
   });
