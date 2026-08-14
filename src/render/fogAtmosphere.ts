@@ -77,6 +77,7 @@ export function fogNearFar(daylight: number): FogNearFar {
  * Noche azul-gris un poco más clara (r 0.092575 = 0.0805 × 1.15; g 0.119025 = 0.1035 × 1.15; b 0.18515 = 0.161 × 1.15)
  * para que el horizonte se lea; día r un poco más claro (r 0.299 = 0.26 × 1.15), g un poco más brillante (g 0.3795 = 0.33 × 1.15) y b un poco más brillante (b 0.5405 = 0.47 × 1.15).
  * Dawn naranja/rosa un poco más cálido (r 0.828 = 0.72 × 1.15; g 0.437 = 0.38 × 1.15; b 0.322 = 0.28 × 1.15); dusk ámbar/rojo un poco más cálido (r 0.897 = 0.78 × 1.15; g 0.368 = 0.32 × 1.15; b 0.207 = 0.18 × 1.15).
+ * Mezcla cálida un poco más fuerte (SKY_WARM_MIX 0.4025 = 0.35 × 1.15) para que sunrise/sunset se lean.
  */
 export const SKY_NIGHT: Rgb = { r: 0.092575, g: 0.119025, b: 0.18515 };
 export const SKY_DAY: Rgb = { r: 0.299, g: 0.3795, b: 0.5405 };
@@ -92,6 +93,8 @@ export const DUSK_TINT_R = 0.897;
 export const DUSK_TINT_G = 0.368;
 /** Canal b del tinte atardecer (0.18 × 1.15) para que el sunset se lea. */
 export const DUSK_TINT_B = 0.207;
+/** Mezcla cálida base del cielo (0.35 × 1.15) para que sunrise/sunset se lean. */
+export const SKY_WARM_MIX = 0.4025;
 
 export function skyRgb(phase: number, daylight: number): Rgb {
   const d = clamp01(daylight);
@@ -114,7 +117,7 @@ export function skyRgb(phase: number, daylight: number): Rgb {
   const warm = Math.max(dawn, dusk);
   const tint = dawn >= dusk ? dawnTint : duskTint;
   // Mezcla acotada para no lavar el cielo.
-  const w = warm * (0.35 + (1 - d) * 0.25);
+  const w = warm * (SKY_WARM_MIX + (1 - d) * 0.25);
 
   return clampRgb({
     r: base.r * (1 - w) + tint.r * w,
