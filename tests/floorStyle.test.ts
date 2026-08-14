@@ -5,6 +5,7 @@ import {
   aoFactor,
   applyAo,
   applyNightGroundLift,
+  AO_MAX_DARKEN,
   BARRICADE_COLOR,
   BARRICADE_EDGE,
   BED_COLOR,
@@ -64,6 +65,18 @@ describe("tintFromTile", () => {
 });
 
 describe("aoFactor + applyAo", () => {
+  test("AO_MAX_DARKEN 0.3 × 0.87; lift/paleta iguales", () => {
+    expect(AO_MAX_DARKEN).toBe(0.261);
+    expect(AO_MAX_DARKEN).toBeCloseTo(0.3 * 0.87, 10);
+    expect(GROUND_NIGHT_LIFT).toBe(1.45);
+    expect(INDOOR_FLOOR_COLOR).toBe(0x2a2e38);
+    expect(OUTDOOR_GRASS_BASE).toBe(0x3d4f35);
+    expect(WALL_COLOR).toBe(0x5a5348);
+    expect(WALL_BASE_COLOR).toBe(0x1a1c22);
+    expect(applyAo(0xffffff, 0)).toBe(0xffffff);
+    expect(applyAo(0xffffff, 1)).toBe(0xbcbcbc);
+  });
+
   test("0 vecinos = sin AO", () => {
     expect(aoFactor(0, 0)).toBe(0);
     expect(applyAo(0xffffff, 0)).toBe(0xffffff);
