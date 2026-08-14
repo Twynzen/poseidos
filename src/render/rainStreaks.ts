@@ -4,8 +4,8 @@
  * WeatherSystem no cambia: intensity / isRaining siguen siendo la sim.
  */
 
-/** Cap de streaks en el pool (era 48). */
-export const RAIN_COUNT = 36;
+/** Cap de streaks en el pool (era 36). */
+export const RAIN_COUNT = 41;
 
 /** Ancho XZ del streak (tiles). */
 export const RAIN_STREAK_WIDTH = 0.0375;
