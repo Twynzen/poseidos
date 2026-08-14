@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   AMBIENT_DAY_B,
   AMBIENT_DAY_G,
+  AMBIENT_DAY_R,
   AMBIENT_INTENSITY_GAIN,
   AMBIENT_INTENSITY_NIGHT,
   AMBIENT_NIGHT_B_ADD,
@@ -204,7 +205,7 @@ describe("night / noon light intensity floors", () => {
 });
 
 describe("ambientRgb night mix", () => {
-  test("knobs: night r subtract 0.18 × 0.87; g subtract 0.06 × 0.87; b add 0.14 × 1.15; warm push 0.12 × 1.15; warm r 0.2 × 1.15; warm g 0.05 × 1.15; warm b 0.08 × 1.15; day g 0x6a/255 × 1.15; day b 0x78/255 × 1.15", () => {
+  test("knobs: night r subtract 0.18 × 0.87; g subtract 0.06 × 0.87; b add 0.14 × 1.15; warm push 0.12 × 1.15; warm r 0.2 × 1.15; warm g 0.05 × 1.15; warm b 0.08 × 1.15; day r 0x6a/255 × 1.15; day g 0x6a/255 × 1.15; day b 0x78/255 × 1.15", () => {
     expect(AMBIENT_NIGHT_R_SUB).toBe(0.1566);
     expect(AMBIENT_NIGHT_R_SUB).toBeCloseTo(0.18 * 0.87, 10);
     expect(AMBIENT_NIGHT_G_SUB).toBe(0.0522);
@@ -219,6 +220,9 @@ describe("ambientRgb night mix", () => {
     expect(AMBIENT_WARM_G).toBeCloseTo(0.05 * 1.15, 10);
     expect(AMBIENT_WARM_B).toBe(0.092);
     expect(AMBIENT_WARM_B).toBeCloseTo(0.08 * 1.15, 10);
+    expect(AMBIENT_DAY_R).toBe((0x6a / 255) * 1.15);
+    expect(AMBIENT_DAY_R).toBeCloseTo((0x6a / 255) * 1.15, 10);
+    expect(AMBIENT_DAY_R).toBeCloseTo(0.4780392156862745, 10);
     expect(AMBIENT_DAY_G).toBe((0x6a / 255) * 1.15);
     expect(AMBIENT_DAY_G).toBeCloseTo((0x6a / 255) * 1.15, 10);
     expect(AMBIENT_DAY_G).toBeCloseTo(0.4780392156862745, 10);
@@ -229,7 +233,7 @@ describe("ambientRgb night mix", () => {
 
   test("d=0 → night r/g/b follow knobs; b add 0.161", () => {
     const night = ambientRgb(0, 0);
-    expect(night.r).toBeCloseTo(0x6a / 255 - AMBIENT_NIGHT_R_SUB, 10);
+    expect(night.r).toBeCloseTo(AMBIENT_DAY_R - AMBIENT_NIGHT_R_SUB, 10);
     expect(night.g).toBeCloseTo(AMBIENT_DAY_G - AMBIENT_NIGHT_G_SUB, 10);
     expect(night.b).toBeCloseTo(AMBIENT_DAY_B + AMBIENT_NIGHT_B_ADD, 10);
     expect(night.b).toBeCloseTo(AMBIENT_DAY_B + 0.161, 10);
@@ -242,10 +246,10 @@ describe("ambientRgb night mix", () => {
     const duskPush = duskWarmth(duskPhase) * AMBIENT_WARM_PUSH;
     const dawn = ambientRgb(1, dawnPhase);
     const dusk = ambientRgb(1, duskPhase);
-    expect(dawn.r).toBeCloseTo(0x6a / 255 + dawnPush * AMBIENT_WARM_R, 10);
+    expect(dawn.r).toBeCloseTo(AMBIENT_DAY_R + dawnPush * AMBIENT_WARM_R, 10);
     expect(dawn.g).toBeCloseTo(AMBIENT_DAY_G + dawnPush * AMBIENT_WARM_G, 10);
     expect(dawn.b).toBeCloseTo(AMBIENT_DAY_B - dawnPush * AMBIENT_WARM_B, 10);
-    expect(dusk.r).toBeCloseTo(0x6a / 255 + duskPush * AMBIENT_WARM_R, 10);
+    expect(dusk.r).toBeCloseTo(AMBIENT_DAY_R + duskPush * AMBIENT_WARM_R, 10);
     expect(dusk.g).toBeCloseTo(AMBIENT_DAY_G + duskPush * AMBIENT_WARM_G, 10);
     expect(dusk.b).toBeCloseTo(AMBIENT_DAY_B - duskPush * AMBIENT_WARM_B, 10);
   });
