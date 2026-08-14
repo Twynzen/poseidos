@@ -3,6 +3,8 @@ import {
   aoFactor,
   applyAo,
   applyNightGroundLift,
+  BARRICADE_COLOR,
+  BARRICADE_EDGE,
   BED_COLOR,
   countAoNeighbors,
   DOOR_CLOSED,
@@ -206,6 +208,33 @@ describe("night leftover prop albedo lift", () => {
     expect(applyNightGroundLift(FURNITURE_COLOR, 0)).toBe(0x9b733d);
     expect(applyNightGroundLift(BED_COLOR, 0)).toBe(0x6b2d58);
     for (const base of [DOOR_CLOSED, DOOR_OPEN, FURNITURE_COLOR, BED_COLOR]) {
+      const night = applyNightGroundLift(base, 0);
+      const nr = (night >> 16) & 0xff;
+      const ng = (night >> 8) & 0xff;
+      const nb = night & 0xff;
+      const dr = (base >> 16) & 0xff;
+      const dg = (base >> 8) & 0xff;
+      const db = base & 0xff;
+      expect(nr).toBeGreaterThan(dr);
+      expect(ng).toBeGreaterThan(dg);
+      expect(nb).toBeGreaterThan(db);
+    }
+  });
+});
+
+describe("night leftover barricade albedo lift", () => {
+  test("barricades reuse ground lift; day = identity", () => {
+    expect(GROUND_NIGHT_LIFT).toBe(1.45);
+    expect(BARRICADE_COLOR).toBe(0xc49a6c);
+    expect(BARRICADE_EDGE).toBe(0x8a6239);
+    expect(applyNightGroundLift(BARRICADE_COLOR, 1)).toBe(BARRICADE_COLOR);
+    expect(applyNightGroundLift(BARRICADE_EDGE, 1)).toBe(BARRICADE_EDGE);
+  });
+
+  test("noche barricadas más claras; mismo multiply 1.45", () => {
+    expect(applyNightGroundLift(BARRICADE_COLOR, 0)).toBe(0xffdf9d);
+    expect(applyNightGroundLift(BARRICADE_EDGE, 0)).toBe(0xc88e53);
+    for (const base of [BARRICADE_COLOR, BARRICADE_EDGE]) {
       const night = applyNightGroundLift(base, 0);
       const nr = (night >> 16) & 0xff;
       const ng = (night >> 8) & 0xff;
