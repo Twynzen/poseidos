@@ -160,6 +160,7 @@ import {
   LOOT_NAMEPLATE_FONT_PX,
   LOOT_NAMEPLATE_ICON_PAD,
   LOOT_NAMEPLATE_ICON_SIZE,
+  LOOT_NAMEPLATE_PLATE_FILL,
   LOOT_NAMEPLATE_SCALE_X,
   LOOT_NAMEPLATE_SCALE_Y,
   LOOT_NAMEPLATE_STROKE_PX,
@@ -615,7 +616,7 @@ export function createWorldView(
     const ctx = canvas.getContext("2d");
     if (ctx) {
       ctx.clearRect(0, 0, W, H);
-      ctx.fillStyle = "rgba(15, 23, 42, 0.72)";
+      ctx.fillStyle = LOOT_NAMEPLATE_PLATE_FILL;
       ctx.beginPath();
       ctx.roundRect(12, 16, W - 24, 48, 10);
       ctx.fill();

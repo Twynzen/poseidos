@@ -33,6 +33,9 @@ export const LOOT_NAMEPLATE_STROKE_PX = 5.175;
 /** Color del fill del label en el canvas. #f0c060 ×1.15 por canal (r clamp) para leer de noche. */
 export const LOOT_NAMEPLATE_FILL = "#ffdd6e";
 
+/** Fill del plate backdrop del nameplate. 0.72 × 1.15 para leer de noche. */
+export const LOOT_NAMEPLATE_PLATE_FILL = "rgba(15, 23, 42, 0.828)";
+
 /**
  * 1 en dist ≤ 2 · lerp 1 → mid-scale de 2 a fade 5.5 · mid-scale más allá.
  * Omitido / no finito → 1.
