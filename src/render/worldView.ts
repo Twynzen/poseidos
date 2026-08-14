@@ -4,8 +4,18 @@ import { facingChevronOffset } from "./facingChevron";
 import {
   FLASHLIGHT_CONE_HALF_WIDTH,
   FLASHLIGHT_CONE_LENGTH,
-  flashlightConeAngle,
+  FLASHLIGHT_CONE_Y,
+  FLASHLIGHT_FILL_INTENSITY_MUL,
+  FLASHLIGHT_SPOT_COLOR,
+  FLASHLIGHT_SPOT_INTENSITY_MUL,
+  FLASHLIGHT_SPOT_PENUMBRA,
+  FLASHLIGHT_WEDGE_COLOR,
+  FLASHLIGHT_WEDGE_OPACITY_BASE,
   flashlightConeTip,
+  flashlightConeVisible,
+  flashlightSpotAngle,
+  flashlightWedgeOpacity,
+  flashlightWedgeVertexColors,
 } from "./flashlightCone";
 import {
   DEFAULT_TRACER_TTL,
@@ -275,8 +285,8 @@ export interface WorldView {
   syncWarmLight(wx: number, wy: number, intensity: number): void;
   /**
    * Luz fría de linterna (player). intensity 0 = apagada.
-   * SpotLight 0xb0d0ff + wedge unlit al facing (`playerGltfYaw`);
-   * PointLight fill se mantiene. Separada de warmLight / muzzle flash.
+   * SpotLight 0xd8eeff + wedge unlit al facing (`playerGltfYaw`);
+   * PointLight fill ×0.55. Separada de warmLight / muzzle flash.
    */
   syncTorchLight(wx: number, wy: number, intensity: number): void;
   /**
@@ -359,11 +369,11 @@ export function createWorldView(
   torchLight.visible = false;
   scene.add(torchLight);
   const torchSpot = new THREE.SpotLight(
-    0xb0d0ff,
+    FLASHLIGHT_SPOT_COLOR,
     0,
     FLASHLIGHT_CONE_LENGTH + 2.4,
-    flashlightConeAngle(),
-    0.42,
+    flashlightSpotAngle(),
+    FLASHLIGHT_SPOT_PENUMBRA,
     2,
   );
   torchSpot.position.set(0, 1.55, 0);
@@ -737,7 +747,7 @@ export function createWorldView(
   placeFacingChevron();
 
   // Wedge unlit del cono de linterna (suelo; visible solo con torch on).
-  const CONE_Y = 0.05;
+  // Tip brillante → far fade (vertex colors) para que lea como haz, no charco.
   const coneGeo = new THREE.BufferGeometry();
   coneGeo.setAttribute(
     "position",
@@ -750,10 +760,15 @@ export function createWorldView(
       3,
     ),
   );
+  coneGeo.setAttribute(
+    "color",
+    new THREE.BufferAttribute(flashlightWedgeVertexColors(), 3),
+  );
   const coneMat = new THREE.MeshBasicMaterial({
-    color: 0xb0d0ff,
+    color: FLASHLIGHT_WEDGE_COLOR,
+    vertexColors: true,
     transparent: true,
-    opacity: 0.28,
+    opacity: FLASHLIGHT_WEDGE_OPACITY_BASE,
     side: THREE.DoubleSide,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
@@ -762,7 +777,7 @@ export function createWorldView(
   flashlightConeWedge.name = "flashlightConeWedge";
   flashlightConeWedge.renderOrder = 7;
   flashlightConeWedge.visible = false;
-  flashlightConeWedge.position.set(0, CONE_Y, 0);
+  flashlightConeWedge.position.set(0, FLASHLIGHT_CONE_Y, 0);
   playerMesh.add(flashlightConeWedge);
 
   function applyMuzzleFlashVisual(out: {
@@ -1576,25 +1591,25 @@ export function createWorldView(
     },
     syncTorchLight(wx, wy, intensity) {
       const i = Math.max(0, intensity);
-      const on = i > 0.02;
-      torchLight.intensity = i;
+      const on = flashlightConeVisible(i);
+      torchLight.intensity = i * FLASHLIGHT_FILL_INTENSITY_MUL;
       torchLight.distance = 7 + i * 3.5;
       torchLight.position.set(wx, 1.35, wy);
       torchLight.visible = on;
       torchLight.color.setHex(0xb0d0ff);
 
       const tip = flashlightConeTip(playerGltfYaw);
-      torchSpot.intensity = i * 2.6;
+      torchSpot.intensity = i * FLASHLIGHT_SPOT_INTENSITY_MUL;
       torchSpot.distance = FLASHLIGHT_CONE_LENGTH + 1.6 + i * 2;
       torchSpot.position.set(wx, 1.55, wy);
       torchSpot.target.position.set(wx + tip.x, 0.12, wy + tip.z);
       torchSpot.target.updateMatrixWorld();
       torchSpot.visible = on;
-      torchSpot.color.setHex(0xb0d0ff);
+      torchSpot.color.setHex(FLASHLIGHT_SPOT_COLOR);
 
       flashlightConeWedge.rotation.y = playerGltfYaw;
       flashlightConeWedge.visible = on;
-      coneMat.opacity = on ? Math.min(0.4, 0.14 + i * 0.16) : 0;
+      coneMat.opacity = flashlightWedgeOpacity(i);
     },
     followCamera(x, y) {
       camera.position.set(
