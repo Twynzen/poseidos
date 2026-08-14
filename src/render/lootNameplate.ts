@@ -39,6 +39,9 @@ export const LOOT_NAMEPLATE_PLATE_FILL = "rgba(15, 23, 42, 0.828)";
 /** Stroke del label en el canvas. 0.7 × 1.15 para leer de noche. */
 export const LOOT_NAMEPLATE_TEXT_STROKE = "rgba(0,0,0,0.805)";
 
+/** Grosor del stroke del icono gold. 1.5 × 1.15 para leer de noche. */
+export const LOOT_NAMEPLATE_ICON_STROKE = 1.725;
+
 /**
  * 1 en dist ≤ 2 · lerp 1 → mid-scale de 2 a fade 5.5 · mid-scale más allá.
  * Omitido / no finito → 1.
@@ -172,7 +175,7 @@ export function paintLootNameplateIcon(
     ctx.scale(s / 32, s / 32);
     ctx.strokeStyle = GOLD_STROKE;
     ctx.fillStyle = LOOT_NAMEPLATE_GOLD_FILL;
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = LOOT_NAMEPLATE_ICON_STROKE;
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
     paintIconKind(ctx, kind);
