@@ -1,8 +1,11 @@
 import { describe, expect, test } from "vitest";
 import {
+  MARKER_BADGE_OPACITY,
   MARKER_PALETTE,
   MARKER_RING_OPACITY,
+  PLAYER_BADGE_OPACITY,
   PLAYER_FOOT_RING_OPACITY,
+  markerBadgeOpacity,
   markerRingOpacity,
   markerVisibleInFov,
   paletteFor,
@@ -90,6 +93,15 @@ describe("markers (badges + ground rings)", () => {
     expect(paletteFor("player").ring).toBe(0x3a7fd4);
     for (const role of ["mute", "possessed", "loot", "door", "bed"] as const) {
       expect(markerRingOpacity(role)).toBeCloseTo(0.72, 5);
+    }
+  });
+
+  test("badge player más quieto (0.45); mute/possessed/loot/door/bed 1", () => {
+    expect(PLAYER_BADGE_OPACITY).toBeCloseTo(0.45, 5);
+    expect(MARKER_BADGE_OPACITY).toBeCloseTo(1, 5);
+    expect(markerBadgeOpacity("player")).toBeCloseTo(0.45, 5);
+    for (const role of ["mute", "possessed", "loot", "door", "bed"] as const) {
+      expect(markerBadgeOpacity(role)).toBeCloseTo(1, 5);
     }
   });
 });
