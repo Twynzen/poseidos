@@ -1,12 +1,15 @@
 import { describe, expect, test } from "vitest";
 import {
   DEFAULT_NOISE_RING_LIFE,
+  RUN_NOISE_RING_MIN_AGE,
   createNoiseRing,
   ringColorHex,
   ringOpacity,
   ringProgress,
   ringScale,
+  runNoiseRingReady,
   shouldShowNoiseRing,
+  shouldSpawnNoiseRing,
   tickNoiseRing,
 } from "../src/render/noiseRings";
 
@@ -75,6 +78,37 @@ describe("noiseRings (headless)", () => {
     expect(shouldShowNoiseRing("barricade")).toBe(true);
     expect(shouldShowNoiseRing("attack")).toBe(true);
     expect(shouldShowNoiseRing("gun")).toBe(true);
+  });
+
+  test("runNoiseRingReady: null/undefined o >= 0.4", () => {
+    expect(RUN_NOISE_RING_MIN_AGE).toBe(0.4);
+    expect(runNoiseRingReady(null)).toBe(true);
+    expect(runNoiseRingReady(undefined)).toBe(true);
+    expect(runNoiseRingReady(0)).toBe(false);
+    expect(runNoiseRingReady(0.39)).toBe(false);
+    expect(runNoiseRingReady(0.4)).toBe(true);
+    expect(runNoiseRingReady(1)).toBe(true);
+  });
+
+  test("shouldSpawnNoiseRing: run throttled; walk hidden; others shown", () => {
+    expect(shouldSpawnNoiseRing("run")).toBe(true);
+    expect(shouldSpawnNoiseRing("run", null)).toBe(true);
+    expect(shouldSpawnNoiseRing("run", undefined)).toBe(true);
+    expect(shouldSpawnNoiseRing("run", 0)).toBe(false);
+    expect(shouldSpawnNoiseRing("run", 0.2)).toBe(false);
+    expect(shouldSpawnNoiseRing("run", 0.39)).toBe(false);
+    expect(shouldSpawnNoiseRing("run", 0.4)).toBe(true);
+    expect(shouldSpawnNoiseRing("run", 0.8)).toBe(true);
+
+    expect(shouldSpawnNoiseRing("walk")).toBe(false);
+    expect(shouldSpawnNoiseRing("walk", 0)).toBe(false);
+    expect(shouldSpawnNoiseRing("walk", 1)).toBe(false);
+
+    expect(shouldSpawnNoiseRing("door", 0)).toBe(true);
+    expect(shouldSpawnNoiseRing("loot", 0)).toBe(true);
+    expect(shouldSpawnNoiseRing("barricade", 0)).toBe(true);
+    expect(shouldSpawnNoiseRing("attack", 0)).toBe(true);
+    expect(shouldSpawnNoiseRing("gun", 0)).toBe(true);
   });
 
   test("ringColorHex por kind", () => {
