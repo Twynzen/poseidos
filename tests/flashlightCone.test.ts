@@ -30,11 +30,12 @@ describe("constantes", () => {
     expect(FLASHLIGHT_CONE_YAW_OFFSET).toBe(0);
   });
 
-  test("haz: penumbra 0.2, spot ×2.76, fill ×0.55, cuña 0xd0eaff opacity 0.55/0.22", () => {
+  test("haz: penumbra 0.2, spot ×2.76, fill ×0.6325, cuña 0xd0eaff opacity 0.55/0.22", () => {
     expect(FLASHLIGHT_SPOT_PENUMBRA).toBe(0.2);
     expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(2.76);
     expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBeCloseTo(2.4 * 1.15, 10);
-    expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.55);
+    expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.6325);
+    expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBeCloseTo(0.55 * 1.15, 10);
     expect(FLASHLIGHT_WEDGE_COLOR).toBe(0xd0eaff);
     expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.55);
     expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.22);
@@ -46,6 +47,8 @@ describe("constantes", () => {
     expect(viewSrc).toContain("i * FLASHLIGHT_FILL_INTENSITY_MUL");
     expect(viewSrc).not.toMatch(/const FLASHLIGHT_SPOT_INTENSITY_MUL = 2\.4/);
     expect(viewSrc).not.toMatch(/torchSpot\.intensity = .*\b2\.4\b/);
+    expect(viewSrc).not.toMatch(/const FLASHLIGHT_FILL_INTENSITY_MUL = 0\.55/);
+    expect(viewSrc).not.toMatch(/torchLight\.intensity = .*\b0\.55\b/);
   });
 });
 
