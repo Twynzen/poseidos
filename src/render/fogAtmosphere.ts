@@ -132,6 +132,9 @@ export function skyRgb(phase: number, daylight: number): Rgb {
 /** Subtract r del ambient de noche (0.18 × 0.87) para que el ambient se lea más cálido. */
 export const AMBIENT_NIGHT_R_SUB = 0.1566;
 
+/** Subtract g del ambient de noche (0.06 × 0.87) para que el ambient se lea. */
+export const AMBIENT_NIGHT_G_SUB = 0.0522;
+
 /** Ambient coherente con cielo (más suave, menos saturado). */
 export function ambientRgb(daylight: number, phase: number): Rgb {
   const d = clamp01(daylight);
@@ -143,7 +146,7 @@ export function ambientRgb(daylight: number, phase: number): Rgb {
   // Histórico: noche más azul; día gris-lila.
   const nightMix = 1 - d;
   let r = 0x6a / 255 - nightMix * AMBIENT_NIGHT_R_SUB;
-  let g = 0x6a / 255 - nightMix * 0.06;
+  let g = 0x6a / 255 - nightMix * AMBIENT_NIGHT_G_SUB;
   let b = 0x78 / 255 + nightMix * 0.14;
 
   // Toque cálido en dawn/dusk (sin tocar warm indoor).
