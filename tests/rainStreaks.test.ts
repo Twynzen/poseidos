@@ -21,12 +21,12 @@ import {
 import { GameClock } from "../src/core/clock";
 
 describe("constantes", () => {
-  test("count 41, width 0.043125, largo día 0.6325 / noche 0.9522, color 0xa8c4e0", () => {
+  test("count 41, width 0.043125, largo día 0.6325 / noche 0.9522, color 0xc1e1ff", () => {
     expect(RAIN_COUNT).toBe(41);
     expect(RAIN_STREAK_WIDTH).toBe(0.043125);
     expect(RAIN_STREAK_LENGTH_DAY).toBe(0.6325);
     expect(RAIN_STREAK_LENGTH_NIGHT).toBe(0.9522);
-    expect(RAIN_COLOR).toBe(0xa8c4e0);
+    expect(RAIN_COLOR).toBe(0xc1e1ff);
   });
 
   test("opacity 0.29095 + i×0.595125; noche +0.345; active min 7; night cut 0.191; hide 0.02", () => {
