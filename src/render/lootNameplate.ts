@@ -24,8 +24,8 @@ export const LOOT_NAMEPLATE_SCALE_Y = 0.859625;
 
 /** Padding izquierdo del canvas para la silueta gold. 78.2 × 1.15 para leer de noche. */
 export const LOOT_NAMEPLATE_ICON_PAD = 89.93;
-/** Tamaño de la silueta gold en el atlas (px). 64 × 1.15 para leer de noche. */
-export const LOOT_NAMEPLATE_ICON_SIZE = 73.6;
+/** Tamaño de la silueta gold en el atlas (px). 73.6 × 1.15 para leer de noche. */
+export const LOOT_NAMEPLATE_ICON_SIZE = 84.64;
 
 /** Tamaño de fuente del label en el canvas. 34 × 1.15 para leer de noche. */
 export const LOOT_NAMEPLATE_FONT_PX = 39.1;
