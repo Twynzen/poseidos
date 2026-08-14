@@ -6,6 +6,10 @@ import {
   atmosphereFor,
   dawnWarmth,
   duskWarmth,
+  FOG_FAR_DAY,
+  FOG_FAR_NIGHT,
+  FOG_NEAR_DAY,
+  FOG_NEAR_NIGHT,
   fogNearFar,
   nightAmbientIntensity,
   nightSunIntensity,
@@ -34,6 +38,13 @@ function daylightAt(phase: number): number {
 }
 
 describe("fogNearFar", () => {
+  test("knobs: noche near 23 / far 59; día 38 / 100", () => {
+    expect(FOG_NEAR_NIGHT).toBe(23);
+    expect(FOG_FAR_NIGHT).toBe(59);
+    expect(FOG_NEAR_DAY).toBe(38);
+    expect(FOG_FAR_DAY).toBe(100);
+  });
+
   test("noche: far menor y near más tight que de día", () => {
     const night = fogNearFar(0.08);
     const day = fogNearFar(1);
@@ -41,6 +52,11 @@ describe("fogNearFar", () => {
     expect(night.near).toBeLessThan(day.near);
     expect(night.near).toBeLessThan(night.far);
     expect(day.near).toBeLessThan(day.far);
+  });
+
+  test("d=0 → night knobs; noon d=1 → day knobs (día sin cambio)", () => {
+    expect(fogNearFar(0)).toEqual({ near: 23, far: 59 });
+    expect(fogNearFar(1)).toEqual({ near: 38, far: 100 });
   });
 
   test("near < far siempre en [0,1]", () => {
