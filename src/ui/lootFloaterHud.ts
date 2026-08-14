@@ -125,7 +125,7 @@ function applyTone(el: HTMLElement, err: boolean): void {
     el.classList.remove(LOOT_FLOATER_HUD_ERR_CLASS);
     el.style.color = "#ffe080";
     el.style.textShadow = "0 1px 8px #000, 0 0 12px rgba(255,224,128,.4)";
-    el.style.borderColor = "";
+    el.style.borderColor = "rgba(226,232,240,0.42)";
   }
 }
 
@@ -148,10 +148,10 @@ function applyLiveStyles(el: HTMLElement): void {
   el.style.color = "#ffe080";
   el.style.textShadow = "0 1px 8px #000, 0 0 12px rgba(255,224,128,.4)";
   el.style.background =
-    "linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.02)), var(--hud-bg)";
-  el.style.border = "1px solid var(--hud-border)";
+    "linear-gradient(180deg, rgba(255,255,255,0.05), rgba(15,23,42,0.38)), rgba(15,23,42,0.88), var(--hud-bg)";
+  el.style.border = "1px solid rgba(226,232,240,0.42)";
   el.style.boxShadow =
-    "0 8px 18px rgba(2, 6, 23, 0.35), inset 0 1px 0 rgba(255,255,255,0.1)";
+    "0 8px 18px rgba(2, 6, 23, 0.58), inset 0 1px 0 rgba(255,255,255,0.1)";
   el.style.backdropFilter = "blur(10px) saturate(140%)";
 }
 
