@@ -30,6 +30,7 @@ import {
   skyRgb,
   SUN_INTENSITY_GAIN,
   SUN_INTENSITY_NIGHT,
+  SUN_NIGHT_R_SUB,
   sunRgb,
   type Rgb,
 } from "../src/render/fogAtmosphere";
@@ -225,6 +226,20 @@ describe("ambientRgb night mix", () => {
     expect(dusk.r).toBeCloseTo(0x6a / 255 + duskPush * 0.2, 10);
     expect(dusk.g).toBeCloseTo(0x6a / 255 + duskPush * 0.05, 10);
     expect(dusk.b).toBeCloseTo(0x78 / 255 - duskPush * 0.08, 10);
+  });
+});
+
+describe("sunRgb night mix", () => {
+  test("knobs: night r subtract 0.15 × 0.87; g/b iguales", () => {
+    expect(SUN_NIGHT_R_SUB).toBe(0.1305);
+    expect(SUN_NIGHT_R_SUB).toBeCloseTo(0.15 * 0.87, 10);
+  });
+
+  test("d=0 → night r follows SUN_NIGHT_R_SUB; g subtract 0.2 / b add 0.12", () => {
+    const night = sunRgb(0, 0);
+    expect(night.r).toBeCloseTo(0.91 - SUN_NIGHT_R_SUB, 10);
+    expect(night.g).toBeCloseTo(0.88 - 0.2, 10);
+    expect(night.b).toBeCloseTo(0.82 + 0.12, 10);
   });
 });
 
