@@ -35,8 +35,8 @@ export const POSSESSED_BODY_ROUGHNESS = 0.7656;
 export const POSSESSED_ACCENT_ROUGHNESS = 0.348;
 /** Intensidad del cuerpo. 1 × 1.15 para leer la silueta de noche. */
 export const POSSESSED_BODY_EMISSIVE_INTENSITY = 1.15;
-/** Intensidad del acento. 0.85 × 1.15 para leer el visor de noche. */
-export const POSSESSED_ACCENT_EMISSIVE_INTENSITY = 0.9775;
+/** Intensidad del acento. 0.9775 × 1.15 para leer el visor de noche. */
+export const POSSESSED_ACCENT_EMISSIVE_INTENSITY = 1.124125;
 
 const ACCENT_NAME_RE = /visor|helmet|helm|head/i;
 const MAP_TINT = new Color(POSSESSED_MAP_TINT);
