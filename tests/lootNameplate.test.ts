@@ -28,9 +28,10 @@ describe("constantes", () => {
     expect(lootNameplateScale()).toBe(1);
   });
 
-  test("icon pad 56; size 52 (legible, no blob)", () => {
-    expect(LOOT_NAMEPLATE_ICON_PAD).toBe(56);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(52);
+  test("icon pad 68; size 64 (legible, no blob)", () => {
+    expect(LOOT_NAMEPLATE_ICON_PAD).toBe(68);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(64);
+    expect(LOOT_NAMEPLATE_ICON_PAD).toBeGreaterThan(LOOT_NAMEPLATE_ICON_SIZE);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBeGreaterThanOrEqual(48);
     expect(LOOT_NAMEPLATE_ICON_SIZE).toBeGreaterThanOrEqual(48);
     expect(LOOT_NAMEPLATE_ICON_SIZE).toBeLessThanOrEqual(72);
