@@ -66,8 +66,8 @@ describe("muteLook constants", () => {
     expect(MUTE_BODY_ROUGHNESS).toBe(0.666072);
     expect(MUTE_BODY_ROUGHNESS).toBeCloseTo(0.7656 * 0.87, 10);
     expect(MUTE_BODY_ROUGHNESS).toBeGreaterThan(0.6);
-    expect(MUTE_ACCENT_ROUGHNESS).toBe(0.435);
-    expect(MUTE_ACCENT_ROUGHNESS).toBeCloseTo(0.5 * 0.87, 10);
+    expect(MUTE_ACCENT_ROUGHNESS).toBe(0.37845);
+    expect(MUTE_ACCENT_ROUGHNESS).toBeCloseTo(0.435 * 0.87, 10);
     expect(MUTE_ACCENT_ROUGHNESS).toBeLessThan(MUTE_BODY_ROUGHNESS);
     expect(MUTE_BODY_EMISSIVE_INTENSITY).toBe(1.15);
     expect(MUTE_BODY_EMISSIVE_INTENSITY).toBeCloseTo(1 * 1.15, 10);
@@ -91,7 +91,7 @@ describe("muteLook constants", () => {
     expect(MUTE_MAP_TINT).toBe(0xa8b8a4);
     expect(MUTE_ACCENT).toBe(0x6b7a68);
     expect(MUTE_BODY_ROUGHNESS).toBe(0.666072);
-    expect(MUTE_ACCENT_ROUGHNESS).toBe(0.435);
+    expect(MUTE_ACCENT_ROUGHNESS).toBe(0.37845);
     expect(MUTE_CRUSHED_BODY).toBe(0x4a5648);
   });
 
@@ -109,7 +109,7 @@ describe("muteLook constants", () => {
   test("body roughness 0.7656 × 0.87; color/looks/teclas iguales", () => {
     expect(MUTE_BODY_ROUGHNESS).toBe(0.666072);
     expect(MUTE_BODY_ROUGHNESS).toBeCloseTo(0.7656 * 0.87, 10);
-    expect(MUTE_ACCENT_ROUGHNESS).toBe(0.435);
+    expect(MUTE_ACCENT_ROUGHNESS).toBe(0.37845);
     expect(MUTE_ACCENT_ROUGHNESS).toBeLessThan(MUTE_BODY_ROUGHNESS);
     expect(MUTE_BODY_COLOR).toBe(0x647262);
     expect(MUTE_MAP_TINT).toBe(0xa8b8a4);
@@ -120,9 +120,9 @@ describe("muteLook constants", () => {
     expect(MUTE_CRUSHED_BODY).toBe(0x4a5648);
   });
 
-  test("accent roughness 0.5 × 0.87; color/looks/teclas iguales", () => {
-    expect(MUTE_ACCENT_ROUGHNESS).toBe(0.435);
-    expect(MUTE_ACCENT_ROUGHNESS).toBeCloseTo(0.5 * 0.87, 10);
+  test("accent roughness 0.435 × 0.87; color/looks/teclas iguales", () => {
+    expect(MUTE_ACCENT_ROUGHNESS).toBe(0.37845);
+    expect(MUTE_ACCENT_ROUGHNESS).toBeCloseTo(0.435 * 0.87, 10);
     expect(MUTE_ACCENT_ROUGHNESS).toBeLessThan(MUTE_BODY_ROUGHNESS);
     expect(MUTE_BODY_ROUGHNESS).toBe(0.666072);
     expect(MUTE_BODY_COLOR).toBe(0x647262);
