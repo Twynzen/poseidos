@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   DOOR_FOCUS_PULSE_AMP,
@@ -26,13 +28,26 @@ describe("constantes", () => {
     expect(DOOR_FOCUS_PULSE_SPEED).toBe(6);
   });
 
-  test("doorBadgeLabel es E; font 80; letter 2.4; disc 1.5; Y 2.3", () => {
+  test("doorBadgeLabel es E; font 80; letter 2.4; disc 1.725; Y 2.3", () => {
     expect(doorBadgeLabel).toBe("E");
     expect(doorBadgeFontPx).toBe(80);
     expect(doorBadgeLetterScale).toBe(2.4);
-    expect(doorBadgeDiscScale).toBe(1.5);
+    expect(doorBadgeDiscScale).toBe(1.725);
+    expect(doorBadgeDiscScale).toBeCloseTo(1.5 * 1.15, 10);
     expect(doorBadgeY).toBe(2.3);
     expect(doorBadgeY).toBeCloseTo(2.0 * 1.15, 10);
+  });
+
+  test("worldView aplica doorBadgeDiscScale al disc del floatBadge E existente", () => {
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toContain(
+      "disc.scale.set(doorBadgeDiscScale, doorBadgeDiscScale, 1)",
+    );
+    expect(src).toContain('badge.name = "floatBadge"');
+    expect(src).toContain("badge.position.y = doorBadgeY");
   });
 });
 
