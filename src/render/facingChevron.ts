@@ -7,8 +7,8 @@
 /** Distancia del chevron al origen del player (tiles). 1.38 × 1.15 para leer facing de noche. */
 export const FACING_CHEVRON_DIST = 1.587;
 
-/** Largo del triángulo de suelo (tiles). 0.805 × 1.15 para leer facing de noche. */
-export const FACING_CHEVRON_LEN = 0.92575;
+/** Largo del triángulo de suelo (tiles). 0.92575 × 1.15 para leer facing de noche. */
+export const FACING_CHEVRON_LEN = 1.0646125;
 
 /** Semi-ancho del triángulo de suelo (tiles). 0.322 × 1.15 para leer facing de noche. */
 export const FACING_CHEVRON_HW = 0.3703;
