@@ -20,7 +20,7 @@ export const FLASHLIGHT_SPOT_PENUMBRA = 0.2645;
 export const FLASHLIGHT_SPOT_INTENSITY_MUL = 3.6501;
 
 /** Multiplicador del PointLight fill (el spot debe leerse por encima). */
-export const FLASHLIGHT_FILL_INTENSITY_MUL = 0.727375;
+export const FLASHLIGHT_FILL_INTENSITY_MUL = 0.83648125;
 
 /** Color de la cuña unlit (cian-blanco). */
 export const FLASHLIGHT_WEDGE_COLOR = 0xefffff;
