@@ -11,7 +11,7 @@ import { INDOOR_SOLID_THRESHOLD } from "../world/indoor";
 export const INDOOR_FLOOR_COLOR = 0x2a2e38;
 
 /** Base de pasto outdoor (verde-gris apagado, legible en iso). */
-export const OUTDOOR_GRASS_BASE = 0x3d4f35;
+export const OUTDOOR_GRASS_BASE = 0x465b3d;
 
 /** Muro / bloque de edificio (histórico WALL_COLOR en worldView). */
 export const WALL_COLOR = 0x5a5348;
@@ -82,7 +82,11 @@ export function tintFromTile(x: number, y: number, outdoor: boolean): number {
   const t = tileSeed01(x, y);
   // Paleta corta de pasto estilizado (R,G,B 0..255)
   const palettes: ReadonlyArray<readonly [number, number, number]> = [
-    [0x3a, 0x4e, 0x32], // verde musgo
+    [
+      (OUTDOOR_GRASS_BASE >> 16) & 0xff,
+      (OUTDOOR_GRASS_BASE >> 8) & 0xff,
+      OUTDOOR_GRASS_BASE & 0xff,
+    ], // verde musgo
     [0x45, 0x58, 0x38], // verde medio
     [0x34, 0x42, 0x2e], // verde oscuro
     [0x4a, 0x52, 0x3a], // verde-gris
