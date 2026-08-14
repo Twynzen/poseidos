@@ -81,8 +81,8 @@ export const INTERACT_RING_OUTER = 0.897;
 /** Radio interior del aro mute/possessed (queda fuera del Soldier 1.5). */
 export const THREAT_RING_INNER = 0.50;
 
-/** Radio exterior del aro mute/possessed (más chico que interact 0.897). */
-export const THREAT_RING_OUTER = 0.68;
+/** Radio exterior del aro mute/possessed. 0.68 × 1.15 para leerse de noche. */
+export const THREAT_RING_OUTER = 0.782;
 
 /**
  * Aros mute/possessed estáticos: sin pulso (no hay threatFocus).
