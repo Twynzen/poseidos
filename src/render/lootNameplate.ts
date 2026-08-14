@@ -21,8 +21,16 @@ export const LOOT_NAMEPLATE_ICON_PAD = 56;
 /** Tamaño de la silueta gold en el atlas (px). */
 export const LOOT_NAMEPLATE_ICON_SIZE = 52;
 
-export function lootNameplateScale(): { x: number; y: number } {
-  return { x: LOOT_NAMEPLATE_SCALE_X, y: LOOT_NAMEPLATE_SCALE_Y };
+/**
+ * 1 en dist ≤ 2 · lerp 1 → 0.75 de 2 a fade 10 · 0.75 más allá.
+ * Omitido / no finito → 1.
+ */
+export function lootNameplateScale(dist?: number): number {
+  if (dist === undefined || !Number.isFinite(dist)) return 1;
+  if (dist <= 2) return 1;
+  if (dist >= LOOT_NAMEPLATE_FADE_DIST) return 0.75;
+  const t = (dist - 2) / (LOOT_NAMEPLATE_FADE_DIST - 2);
+  return 1 + (0.75 - 1) * t;
 }
 
 /** Corta el nombre a 20 chars (sin ellipsis). */

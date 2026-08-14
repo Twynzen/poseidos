@@ -25,7 +25,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_Y).toBeCloseTo(1.55);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.6);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.65);
-    expect(lootNameplateScale()).toEqual({ x: 2.6, y: 0.65 });
+    expect(lootNameplateScale()).toBe(1);
   });
 
   test("icon pad 56; size 52 (legible, no blob)", () => {
@@ -98,6 +98,35 @@ describe("lootNameplateOpacity", () => {
 
   test("dist negativa se clampa a 0 → 1", () => {
     expect(lootNameplateOpacity(-0.4)).toBe(1);
+  });
+});
+
+describe("lootNameplateScale", () => {
+  test("1 en dist ≤ 2; 0.75 en fade 10 y más allá", () => {
+    expect(lootNameplateScale(0)).toBe(1);
+    expect(lootNameplateScale(2)).toBe(1);
+    expect(lootNameplateScale(10)).toBe(0.75);
+    expect(lootNameplateScale(10.01)).toBe(0.75);
+    expect(lootNameplateScale(80)).toBe(0.75);
+  });
+
+  test("lerp lineal 1 → 0.75 de 2 a fade 10", () => {
+    // midpoint 6: 1 + (0.75-1)*0.5 = 0.875
+    expect(lootNameplateScale(6)).toBeCloseTo(0.875, 10);
+    const t = 0.25;
+    const expected = 1 + (0.75 - 1) * t;
+    expect(lootNameplateScale(2 + 8 * t)).toBeCloseTo(expected, 10);
+  });
+
+  test("omitido / NaN / no finito → 1", () => {
+    expect(lootNameplateScale()).toBe(1);
+    expect(lootNameplateScale(Number.NaN)).toBe(1);
+    expect(lootNameplateScale(Number.POSITIVE_INFINITY)).toBe(1);
+    expect(lootNameplateScale(Number.NEGATIVE_INFINITY)).toBe(1);
+  });
+
+  test("dist negativa se clampa a full size → 1", () => {
+    expect(lootNameplateScale(-0.4)).toBe(1);
   });
 });
 
