@@ -39,6 +39,27 @@ export function shouldShowNoiseRing(kind: string): boolean {
   return NOISE_RING_VISIBLE_KINDS.has(kind);
 }
 
+/** Mínima edad (s) del último anillo run antes de spawnear otro. */
+export const RUN_NOISE_RING_MIN_AGE = 0.4;
+
+/** true si no hay anillo previo o ya pasó el cooldown de sprint. */
+export function runNoiseRingReady(lastAge: number | null | undefined): boolean {
+  return lastAge == null || lastAge >= RUN_NOISE_RING_MIN_AGE;
+}
+
+/**
+ * ¿Spawnear anillo visual? Walk (y kinds no visibles) no.
+ * Run además exige cooldown; door/loot/barricade/attack/gun no se throttlean.
+ */
+export function shouldSpawnNoiseRing(
+  kind: string,
+  lastSpawnAgeSec?: number | null,
+): boolean {
+  if (!shouldShowNoiseRing(kind)) return false;
+  if (kind === "run") return runNoiseRingReady(lastSpawnAgeSec);
+  return true;
+}
+
 export function createNoiseRing(spawn: NoiseRingSpawn): NoiseRingState {
   const life =
     spawn.life != null && Number.isFinite(spawn.life) && spawn.life > 0

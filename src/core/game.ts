@@ -59,7 +59,7 @@ import {
 import { tryApplyTouchKnockback } from "../combat";
 import { tileKey } from "../world/los";
 import { NoiseBus, type NoiseEvent } from "../world/noise";
-import { shouldShowNoiseRing } from "../render/noiseRings";
+import { shouldShowNoiseRing, shouldSpawnNoiseRing } from "../render/noiseRings";
 import { lootFloaterLabel } from "../render/lootFloater";
 import {
   SpeechDirector,
@@ -222,6 +222,8 @@ export class Game {
   private lastInvUseAt = Number.NEGATIVE_INFINITY;
   /** Última fila I clicada; U tira de aquí si el panel está abierto y ocupada. */
   private lastInvIndex: number | null = null;
+  /** Edad (s) del último anillo visual de sprint; null = nunca. */
+  private lastRunRingAgeSec: number | null = null;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -979,9 +981,15 @@ export class Game {
     const sprint = this.input.sprinting;
     const moved = this.player.move(dt, this.input.axes, this.map, sprint);
     if (moved > 0.001) {
-      if (sprint) this.showNoiseRing(this.noise.emitRun(this.player.x, this.player.y));
-      else this.noise.emitWalk(this.player.x, this.player.y);
+      if (sprint) {
+        const ev = this.noise.emitRun(this.player.x, this.player.y);
+        if (shouldSpawnNoiseRing("run", this.lastRunRingAgeSec)) {
+          this.showNoiseRing(ev);
+          this.lastRunRingAgeSec = 0;
+        }
+      } else this.noise.emitWalk(this.player.x, this.player.y);
     }
+    if (this.lastRunRingAgeSec != null) this.lastRunRingAgeSec += dt;
 
     this.noise.tick(dt);
     this.gates.tick(dt);
