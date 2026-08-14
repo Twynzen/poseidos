@@ -116,12 +116,6 @@ import {
   paintLootNameplateIcon,
 } from "./lootNameplate";
 import {
-  lootFloaterAlive,
-  lootFloaterLabel,
-  lootFloaterOpacity,
-  lootFloaterY,
-} from "./lootFloater";
-import {
   doorBadgeLabel,
   doorFocusMul,
   doorRingVisible,
@@ -299,14 +293,6 @@ export interface WorldView {
   spawnTracer(from: TracerPoint, to: TracerPoint, ttl?: number): void;
   /** Avanza TTL / opacidad de tracers activos; limpia expirados. */
   tickTracers(dt: number): void;
-  /**
-   * Texto ámbar de pickup (Plane 2.4×0.72, canvas 256×64) que sube y se desvanece.
-   * Hijo de playerMesh. TTL 1.8s, rise 1.0 desde Y0 2.05.
-   * frustumCulled off, renderOrder 20.
-   */
-  spawnLootFloater(label: string, x: number, y: number): void;
-  /** Avanza age / Y / opacity de floaters; limpia expirados. */
-  tickLootFloaters(dt: number): void;
   /**
    * Anillo de ruido en el suelo: se expande hasta `radius` (tiles) y se desvanece.
    * `kind` colorea (run blanco, door/loot ámbar, attack/gun/barricade rojo).
@@ -937,91 +923,6 @@ export function createWorldView(
       t.mat.dispose();
     }
     liveTracers.length = 0;
-  }
-
-  // Loot pickup floaters: Plane 2.4×0.72 canvas 256×64, hijo de playerMesh.
-  interface LiveLootFloater {
-    mesh: THREE.Mesh;
-    mat: THREE.MeshBasicMaterial;
-    age: number;
-  }
-  const liveLootFloaters: LiveLootFloater[] = [];
-  const floaterGeo = new THREE.PlaneGeometry(2.4, 0.72);
-  // Frente a cámara iso (offset 12,14,12).
-  const FLOATER_YAW = Math.PI / 4;
-  const FLOATER_PITCH = -Math.atan2(14, Math.hypot(12, 12));
-
-  function makeFloaterMesh(label: string): THREE.Mesh {
-    const text = lootFloaterLabel(label);
-    const canvas = document.createElement("canvas");
-    canvas.width = 256;
-    canvas.height = 64;
-    const ctx = canvas.getContext("2d");
-    if (ctx) {
-      ctx.clearRect(0, 0, 256, 64);
-      ctx.font = "600 26px ui-monospace, SF Mono, Menlo, Consolas, monospace";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = "rgba(10, 10, 12, 0.85)";
-      ctx.strokeText(text, 128, 32);
-      ctx.fillStyle = "#f0c060";
-      ctx.fillText(text, 128, 32);
-    }
-    const map = new THREE.CanvasTexture(canvas);
-    map.needsUpdate = true;
-    const mat = new THREE.MeshBasicMaterial({
-      map,
-      transparent: true,
-      depthTest: false,
-      depthWrite: false,
-      side: THREE.DoubleSide,
-    });
-    const mesh = new THREE.Mesh(floaterGeo, mat);
-    mesh.name = "lootFloater";
-    mesh.frustumCulled = false;
-    mesh.renderOrder = 20;
-    mesh.rotation.order = "YXZ";
-    mesh.rotation.y = FLOATER_YAW;
-    mesh.rotation.x = FLOATER_PITCH;
-    return mesh;
-  }
-
-  function spawnLootFloater(label: string, x: number, y: number): void {
-    const mesh = makeFloaterMesh(label);
-    const mat = mesh.material as THREE.MeshBasicMaterial;
-    mesh.position.set(
-      x - playerMesh.position.x,
-      lootFloaterY(0),
-      y - playerMesh.position.z,
-    );
-    mat.opacity = lootFloaterOpacity(0);
-    playerMesh.add(mesh);
-    liveLootFloaters.push({ mesh, mat, age: 0 });
-  }
-
-  function tickLootFloaters(dt: number): void {
-    for (let i = liveLootFloaters.length - 1; i >= 0; i--) {
-      const f = liveLootFloaters[i]!;
-      f.age += dt;
-      f.mesh.position.y = lootFloaterY(f.age);
-      f.mat.opacity = lootFloaterOpacity(f.age);
-      if (!lootFloaterAlive(f.age)) {
-        playerMesh.remove(f.mesh);
-        f.mat.map?.dispose();
-        f.mat.dispose();
-        liveLootFloaters.splice(i, 1);
-      }
-    }
-  }
-
-  function clearLootFloaters(): void {
-    for (const f of liveLootFloaters) {
-      playerMesh.remove(f.mesh);
-      f.mat.map?.dispose();
-      f.mat.dispose();
-    }
-    liveLootFloaters.length = 0;
   }
 
   // Noise rings: pool pequeño de anillos en el suelo (feedback de ruido).
@@ -1704,8 +1605,6 @@ export function createWorldView(
     },
     spawnTracer,
     tickTracers,
-    spawnLootFloater,
-    tickLootFloaters,
     spawnNoiseRing,
     tickNoiseRings,
     syncRain,
@@ -1716,8 +1615,6 @@ export function createWorldView(
       scene.remove(torchSpot.target);
       scene.remove(warmLight);
       clearTracers();
-      clearLootFloaters();
-      floaterGeo.dispose();
       clearNoiseRings();
       clearRain();
       clearGrass();

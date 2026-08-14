@@ -926,8 +926,7 @@ export class Game {
       this.syncRainVisual(dt);
     this.syncGrassVisual(dt);
       this.view.tickTracers(dt);
-      this.view.tickLootFloaters(dt);
-    this.view.tickNoiseRings(dt);
+      this.view.tickNoiseRings(dt);
       this.tickHitFlashOverlay(dt);
       this.view.syncPlayer(this.player.x, this.player.y);
       this.view.syncLootFocus(
@@ -1378,8 +1377,7 @@ export class Game {
     this.syncRainVisual(dt);
     this.syncGrassVisual(dt);
     this.view.tickTracers(dt);
-    this.view.tickLootFloaters(dt);
-      this.view.tickNoiseRings(dt);
+    this.view.tickNoiseRings(dt);
     this.view.followCamera(this.player.x, this.player.y);
     this.tickHitFlashOverlay(dt);
     this.renderer.render(this.view.scene, this.view.camera);
