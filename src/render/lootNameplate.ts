@@ -10,7 +10,7 @@ export const LOOT_NAMEPLATE_MAX_CHARS = 20;
 export const LOOT_NAMEPLATE_FADE_DIST = 6.5;
 
 /** Altura local Y del sprite sobre el grupo loot. */
-export const LOOT_NAMEPLATE_Y = 1.55;
+export const LOOT_NAMEPLATE_Y = 1.85;
 
 /** Escala world del sprite (canvas 384×80). */
 export const LOOT_NAMEPLATE_SCALE_X = 2.6;
