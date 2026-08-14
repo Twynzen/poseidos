@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** sun day-base b un poco más brillante
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After sun day r/g/b, look at `GROUND_NIGHT_LIFT` in floor/worldView (currently 1.45) and bump ×1.15 so night ground reads a bit brighter. Do not change sky/fog/sun/ambient, or controls.
+- **Última rutina:** suelo de noche un poco más brillante
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After GROUND_NIGHT_LIFT, look at loot nameplate night opacity / scale, or mute/possessed look night lift. Do not change sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **GROUND_NIGHT_LIFT 1.45→1.6675; sky/fog/sol/ambient/teclas iguales.**
   - **SUN_DAY_B 0.82→0.943; r/g/night-mix/warm/sky/fog/ambient/teclas iguales.**
   - **SUN_DAY_G 0.88→1.012; r/b/night-mix/warm/sky/fog/ambient/teclas iguales.**
   - **SUN_DAY_R 0.91→1.0465; g/b/night-mix/warm/sky/fog/ambient/teclas iguales.**
