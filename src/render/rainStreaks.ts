@@ -35,7 +35,7 @@ export const RAIN_NIGHT_COUNT_CUT = 0.191;
 export const RAIN_COLOR = 0xc1e1ff;
 
 /** Hide si intensity ≤ este umbral. */
-export const RAIN_HIDE_BELOW = 0.02;
+export const RAIN_HIDE_BELOW = 0.0174;
 
 /** Fracción de count por intensity (histórico). */
 export const RAIN_ACTIVE_BASE = 0.4025;
@@ -67,7 +67,7 @@ export function rainStreakScaleY(daylight: number): number {
   return rainStreakLength(daylight) / RAIN_STREAK_LENGTH_DAY;
 }
 
-/** ¿Grupo oculto? Mismo umbral que syncRain (intensity ≤ 0.02). */
+/** ¿Grupo oculto? Mismo umbral que syncRain (intensity ≤ RAIN_HIDE_BELOW). */
 export function rainStreaksHidden(intensity: number): boolean {
   return !Number.isFinite(intensity) || intensity <= RAIN_HIDE_BELOW;
 }
