@@ -81,8 +81,8 @@ export const INTERACT_RING_OUTER = 1.03155;
 /** Radio interior del aro mute/possessed. 0.435 × 0.87 para leerse de noche. */
 export const THREAT_RING_INNER = 0.37845;
 
-/** Radio exterior del aro mute/possessed. 0.68 × 1.15 para leerse de noche. */
-export const THREAT_RING_OUTER = 0.782;
+/** Radio exterior del aro mute/possessed. 0.782 × 1.15 para leerse de noche. */
+export const THREAT_RING_OUTER = 0.8993;
 
 /**
  * Aros mute/possessed estáticos: sin pulso (no hay threatFocus).

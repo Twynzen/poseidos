@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** anillos de amenaza un poco más gruesos (inner)
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After threat ring inner, look at THREAT_RING_OUTER (0.782) ×1.15 so mute/possessed rings read a bit larger. Do not change interact/opacity/width/life/kinds, colors, nameplate, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** anillos de amenaza un poco más grandes (outer)
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After threat ring outer, look at lootNameplate far-fade / LOOT_NAMEPLATE far dist (not NEAR_DIST) so the plate stays readable a bit farther at night. Do not change near-dist/focus/rings/opacity/kinds, colors, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **THREAT_RING_OUTER 0.782→0.8993; inner/interact/opacity/nameplate/looks/sky/fog/sol/teclas iguales.**
   - **THREAT_RING_INNER 0.435→0.37845; outer/interact/opacity/nameplate/looks/sky/fog/sol/teclas iguales.**
   - **INTERACT_RING_OUTER 0.897→1.03155; inner/threat/opacity/nameplate/looks/sky/fog/sol/teclas iguales.**
   - **INTERACT_RING_INNER 0.4785→0.416295; outer/threat/opacity/nameplate/looks/sky/fog/sol/teclas iguales.**
