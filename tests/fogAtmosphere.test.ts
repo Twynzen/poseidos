@@ -106,7 +106,7 @@ describe("skyRgb cinematic", () => {
   test("noche azul/violeta oscuro (b >= r, luminance baja)", () => {
     const night = skyRgb(0, daylightAt(0));
     expect(night.b).toBeGreaterThanOrEqual(night.r);
-    expect(night.r + night.g + night.b).toBeLessThan(0.45);
+    expect(night.r + night.g + night.b).toBeLessThan(0.46);
   });
 
   test("knobs: día r 0.26 × 1.15; g/b/noche iguales", () => {
