@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** blade height range un poco más fuerte
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After blade height range, look at the inline `0.64` XZ spread in `bladeBasePose` (`ox = 0.18 + a * 0.64`) in src/render/windGrass.ts — export it as `BLADE_XZ_RANGE` and bump ×1.15 so blades spread a bit farther across the tile at night. Do not change grass radius/max/blades/sy-base/wind, rain, tracers, impact, muzzle, melee/hit-lean, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** blade XZ spread un poco más lejos
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After blade XZ range, look at the inline `0.18` pad in `bladeBasePose` (`ox = 0.18 + a * BLADE_XZ_RANGE`) in src/render/windGrass.ts — export it as `BLADE_XZ_PAD` and bump ×0.87 so blades sit a bit closer to tile edges at night. Do not change grass radius/max/blades/sy/xz-range/wind, rain, tracers, impact, muzzle, melee/hit-lean, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **BLADE_XZ_RANGE 0.64→0.736; sy/radius/max/blades/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **BLADE_SY_RANGE 0.55→0.6325; sy-base/radius/max/blades/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **BLADE_SY_BASE 0.75→0.8625; radius/max/blades/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **WIND_SPEED_Z_MUL 1.37→1.5755; radius/max/blades/sway/yaw/speed/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**

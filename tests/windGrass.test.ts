@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   BLADE_SY_BASE,
   BLADE_SY_RANGE,
+  BLADE_XZ_RANGE,
   BLADES_PER_TILE,
   bladeBasePose,
   bladePoseAt,
@@ -76,7 +77,7 @@ describe("collectGrassTiles", () => {
 });
 
 describe("blade transforms + wind", () => {
-  test("blade height range 0.55 × 1.15; sy-base/wind/count iguales", () => {
+  test("blade XZ range 0.64 × 1.15; sy/wind/count iguales", () => {
     expect(WIND_SWAY).toBe(0.0595125);
     expect(WIND_SWAY).toBeCloseTo(0.05175 * 1.15, 10);
     expect(WIND_SWAY_Z_MUL).toBe(0.7475);
@@ -91,6 +92,8 @@ describe("blade transforms + wind", () => {
     expect(BLADE_SY_BASE).toBeCloseTo(0.75 * 1.15, 10);
     expect(BLADE_SY_RANGE).toBe(0.6325);
     expect(BLADE_SY_RANGE).toBeCloseTo(0.55 * 1.15, 10);
+    expect(BLADE_XZ_RANGE).toBe(0.736);
+    expect(BLADE_XZ_RANGE).toBeCloseTo(0.64 * 1.15, 10);
     expect(BLADES_PER_TILE).toBe(3);
     expect(MAX_GRASS_INSTANCES).toBe(368);
   });
