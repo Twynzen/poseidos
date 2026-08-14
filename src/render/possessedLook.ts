@@ -23,7 +23,7 @@ export const POSSESSED_ACCENT_COLOR = POSSESSED_ACCENT;
 /** Emisión del acento (ojos/visor poseído). */
 export const POSSESSED_ACCENT_EMISSIVE = 0x55122e;
 /** Emisivo de fallback (caja / path sin GLB). Lock de nombre — no es el cuerpo. */
-export const POSSESSED_FALLBACK_EMISSIVE = 0x2a0814;
+export const POSSESSED_FALLBACK_EMISSIVE = 0x300917;
 /**
  * Fill plano que aplastaba el mesh de noche.
  * Lock de nombre únicamente — no aplicar como color de cuerpo.
