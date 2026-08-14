@@ -9,6 +9,9 @@ export const LOOT_NAMEPLATE_MAX_CHARS = 20;
 /** Distancia a la que el nameplate llega a opacity 0. */
 export const LOOT_NAMEPLATE_FADE_DIST = 5.5;
 
+/** Escala mid-distance en el fade edge (dist ≥ fade). */
+export const LOOT_NAMEPLATE_MID_SCALE = 0.48;
+
 /** Altura local Y del sprite sobre el grupo loot. */
 export const LOOT_NAMEPLATE_Y = 2.15;
 
@@ -22,15 +25,15 @@ export const LOOT_NAMEPLATE_ICON_PAD = 68;
 export const LOOT_NAMEPLATE_ICON_SIZE = 64;
 
 /**
- * 1 en dist ≤ 2 · lerp 1 → 0.55 de 2 a fade 5.5 · 0.55 más allá.
+ * 1 en dist ≤ 2 · lerp 1 → mid-scale de 2 a fade 5.5 · mid-scale más allá.
  * Omitido / no finito → 1.
  */
 export function lootNameplateScale(dist?: number): number {
   if (dist === undefined || !Number.isFinite(dist)) return 1;
   if (dist <= 2) return 1;
-  if (dist >= LOOT_NAMEPLATE_FADE_DIST) return 0.55;
+  if (dist >= LOOT_NAMEPLATE_FADE_DIST) return LOOT_NAMEPLATE_MID_SCALE;
   const t = (dist - 2) / (LOOT_NAMEPLATE_FADE_DIST - 2);
-  return 1 + (0.55 - 1) * t;
+  return 1 + (LOOT_NAMEPLATE_MID_SCALE - 1) * t;
 }
 
 /** Corta el nombre a 20 chars (sin ellipsis). */
