@@ -60,8 +60,8 @@ describe("possessedLook constants", () => {
     expect(POSSESSED_BODY_ROUGHNESS).toBe(0.666072);
     expect(POSSESSED_BODY_ROUGHNESS).toBeCloseTo(0.7656 * 0.87, 10);
     expect(POSSESSED_BODY_ROUGHNESS).toBeGreaterThan(0.6);
-    expect(POSSESSED_ACCENT_ROUGHNESS).toBe(0.348);
-    expect(POSSESSED_ACCENT_ROUGHNESS).toBeCloseTo(0.4 * 0.87, 10);
+    expect(POSSESSED_ACCENT_ROUGHNESS).toBe(0.30276);
+    expect(POSSESSED_ACCENT_ROUGHNESS).toBeCloseTo(0.348 * 0.87, 10);
     expect(POSSESSED_ACCENT_ROUGHNESS).toBeLessThan(POSSESSED_BODY_ROUGHNESS);
     expect(POSSESSED_BODY_EMISSIVE_INTENSITY).toBe(1.15);
     expect(POSSESSED_BODY_EMISSIVE_INTENSITY).toBeCloseTo(1 * 1.15, 10);
@@ -86,7 +86,7 @@ describe("possessedLook constants", () => {
     expect(POSSESSED_MAP_TINT).toBe(0x8a6a82);
     expect(POSSESSED_ACCENT).toBe(0x8a2a55);
     expect(POSSESSED_BODY_ROUGHNESS).toBe(0.666072);
-    expect(POSSESSED_ACCENT_ROUGHNESS).toBe(0.348);
+    expect(POSSESSED_ACCENT_ROUGHNESS).toBe(0.30276);
     expect(POSSESSED_CRUSHED_BODY).toBe(0x1c141c);
   });
 
@@ -104,7 +104,7 @@ describe("possessedLook constants", () => {
   test("body roughness 0.7656 × 0.87; color/looks/teclas iguales", () => {
     expect(POSSESSED_BODY_ROUGHNESS).toBe(0.666072);
     expect(POSSESSED_BODY_ROUGHNESS).toBeCloseTo(0.7656 * 0.87, 10);
-    expect(POSSESSED_ACCENT_ROUGHNESS).toBe(0.348);
+    expect(POSSESSED_ACCENT_ROUGHNESS).toBe(0.30276);
     expect(POSSESSED_ACCENT_ROUGHNESS).toBeLessThan(POSSESSED_BODY_ROUGHNESS);
     expect(POSSESSED_BODY_COLOR).toBe(0x3a2838);
     expect(POSSESSED_MAP_TINT).toBe(0x8a6a82);
@@ -115,9 +115,9 @@ describe("possessedLook constants", () => {
     expect(POSSESSED_CRUSHED_BODY).toBe(0x1c141c);
   });
 
-  test("accent roughness 0.4 × 0.87; color/looks/teclas iguales", () => {
-    expect(POSSESSED_ACCENT_ROUGHNESS).toBe(0.348);
-    expect(POSSESSED_ACCENT_ROUGHNESS).toBeCloseTo(0.4 * 0.87, 10);
+  test("accent roughness 0.348 × 0.87; color/looks/teclas iguales", () => {
+    expect(POSSESSED_ACCENT_ROUGHNESS).toBe(0.30276);
+    expect(POSSESSED_ACCENT_ROUGHNESS).toBeCloseTo(0.348 * 0.87, 10);
     expect(POSSESSED_ACCENT_ROUGHNESS).toBeLessThan(POSSESSED_BODY_ROUGHNESS);
     expect(POSSESSED_BODY_ROUGHNESS).toBe(0.666072);
     expect(POSSESSED_BODY_COLOR).toBe(0x3a2838);
