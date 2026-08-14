@@ -16,6 +16,7 @@ import {
   SURVIVOR_ACCENT_ROUGHNESS,
   SURVIVOR_BODY_COLOR,
   SURVIVOR_BODY_EMISSIVE,
+  SURVIVOR_BODY_EMISSIVE_INTENSITY,
   SURVIVOR_BODY_ROUGHNESS,
   SURVIVOR_CRUSHED_EARTH,
   SURVIVOR_MAP_TINT,
@@ -50,10 +51,26 @@ describe("survivorLook constants", () => {
     const crushR = (SURVIVOR_CRUSHED_EARTH >> 16) & 0xff;
     expect(bodyR).toBeGreaterThan(crushR);
     expect(SURVIVOR_ACCENT_ROUGHNESS).toBeLessThan(SURVIVOR_BODY_ROUGHNESS);
+    expect(SURVIVOR_BODY_EMISSIVE_INTENSITY).toBe(1.15);
+    expect(SURVIVOR_BODY_EMISSIVE_INTENSITY).toBeCloseTo(1 * 1.15, 10);
     expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBe(0.1725);
     expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBeCloseTo(0.15 * 1.15, 10);
     expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBeGreaterThan(0.1);
     expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBeLessThan(0.3);
+  });
+
+  test("body emissive intensity 1 × 1.15; color/looks iguales", () => {
+    expect(SURVIVOR_BODY_EMISSIVE_INTENSITY).toBe(1.15);
+    expect(SURVIVOR_BODY_EMISSIVE_INTENSITY).toBeCloseTo(1 * 1.15, 10);
+    expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBe(0.1725);
+    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
+    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x23201b);
+    expect(SURVIVOR_BODY_COLOR).toBe(0x8a8070);
+    expect(SURVIVOR_MAP_TINT).toBe(0xc8bca8);
+    expect(SURVIVOR_ACCENT).toBe(0xa39c8c);
+    expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.7134);
+    expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.3915);
+    expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
   });
 
   test("accent emissive intensity 0.15 × 1.15; color/looks iguales", () => {
@@ -130,7 +147,7 @@ describe("applySurvivorLook", () => {
     expect(tintedBody.color.getHex()).toBe(SURVIVOR_BODY_COLOR);
     expect(tintedBody.color.getHex()).not.toBe(SURVIVOR_CRUSHED_EARTH);
     expect(tintedBody.emissive.getHex()).toBe(SURVIVOR_BODY_EMISSIVE);
-    expect(tintedBody.emissiveIntensity).toBeGreaterThan(0);
+    expect(tintedBody.emissiveIntensity).toBe(SURVIVOR_BODY_EMISSIVE_INTENSITY);
     expect(tintedVisor.color.getHex()).toBe(SURVIVOR_ACCENT);
     expect(tintedVisor.emissive.getHex()).toBe(SURVIVOR_ACCENT_EMISSIVE);
     expect(tintedVisor.emissiveIntensity).toBe(SURVIVOR_ACCENT_EMISSIVE_INTENSITY);
