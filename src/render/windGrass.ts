@@ -12,7 +12,7 @@ import { INDOOR_RADIUS } from "../world/indoor";
 export const GRASS_RADIUS = 8;
 
 /** Cap duro de instancias (GPU barato). */
-export const MAX_GRASS_INSTANCES = 320;
+export const MAX_GRASS_INSTANCES = 368;
 
 /** Hojas por tile outdoor (antes del cap). */
 export const BLADES_PER_TILE = 3;
