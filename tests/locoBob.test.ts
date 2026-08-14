@@ -14,6 +14,8 @@ import {
   SPRINT_FREQ_HZ,
   SPRINT_LEAN_AMP,
   SPRINT_SWAY_AMP,
+  IDLE_LEAN_AMP,
+  IDLE_SWAY_AMP,
 } from "../src/render/locoBob";
 
 describe("locoFreqHz / maxBobAmp", () => {
@@ -85,21 +87,44 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(WALK_FREQ_HZ).toBe(1.55);
     expect(SPRINT_FREQ_HZ).toBe(2.35);
   });
+
+  test("idle sway amp 0.008 × 1.15; lean/bob/walk/sprint/freq iguales", () => {
+    expect(IDLE_SWAY_AMP).toBe(0.0092);
+    expect(IDLE_SWAY_AMP).toBeCloseTo(0.008 * 1.15, 10);
+    expect(IDLE_LEAN_AMP).toBe(0);
+    expect(IDLE_BOB_AMP).toBe(0.0138);
+    expect(WALK_BOB_AMP).toBe(0.06325);
+    expect(SPRINT_BOB_AMP).toBe(0.1035);
+    expect(WALK_LEAN_AMP).toBe(0.046);
+    expect(WALK_SWAY_AMP).toBe(0.04025);
+    expect(SPRINT_LEAN_AMP).toBe(0.0805);
+    expect(SPRINT_SWAY_AMP).toBe(0.0575);
+    expect(IDLE_FREQ_HZ).toBe(0.35);
+    expect(WALK_FREQ_HZ).toBe(1.55);
+    expect(SPRINT_FREQ_HZ).toBe(2.35);
+  });
 });
 
 describe("tickLocoBob", () => {
-  test("idle: phase avanza lento; |bobY| acotado a idle amp", () => {
+  test("idle: phase avanza lento; |bobY|/|swayX| acotados a idle amp", () => {
     const s = createLocoBobState(0);
     let peak = 0;
+    let peakSway = 0;
+    let peakLean = 0;
     for (let i = 0; i < 120; i++) {
       const out = tickLocoBob(s, { moving: false, sprinting: false }, 1 / 60);
       peak = Math.max(peak, Math.abs(out.bobY));
+      peakSway = Math.max(peakSway, Math.abs(out.swayX));
+      peakLean = Math.max(peakLean, Math.abs(out.leanZ));
     }
     expect(s.phase).toBeGreaterThan(0);
     // ~2s * IDLE_FREQ * 2π ≈ 4.4 rad
     expect(s.phase).toBeLessThan(WALK_FREQ_HZ * Math.PI * 2 * 2);
     expect(peak).toBeLessThanOrEqual(IDLE_BOB_AMP + 1e-9);
     expect(peak).toBeGreaterThan(IDLE_BOB_AMP * 0.5);
+    expect(peakSway).toBeLessThanOrEqual(IDLE_SWAY_AMP + 1e-9);
+    expect(peakSway).toBeGreaterThan(IDLE_SWAY_AMP * 0.5);
+    expect(peakLean).toBe(0);
   });
 
   test("moving aumenta phase más rápido que idle", () => {
