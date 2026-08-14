@@ -15,8 +15,8 @@ export const DOOR_FOCUS_SCALE_FAR = 1.288;
 /** Amplitud del seno (0.0575 × 1.15, para leerse de noche). */
 export const DOOR_FOCUS_PULSE_AMP = 0.066125;
 
-/** Velocidad angular del pulso (rad/s). */
-export const DOOR_FOCUS_PULSE_SPEED = 6;
+/** Velocidad angular del pulso (rad/s; 6 × 1.15, para leerse de noche). */
+export const DOOR_FOCUS_PULSE_SPEED = 6.9;
 
 /** Letra de tecla en el floatBadge de puerta. */
 export const doorBadgeLabel = "E";
@@ -52,7 +52,7 @@ export function doorFocusScale(dist: number): number {
   );
 }
 
-/** 1 + 0.066125 * sin(elapsed * 6). */
+/** 1 + 0.066125 * sin(elapsed * 6.9). */
 export function doorFocusPulse(elapsed: number): number {
   const t = Number.isFinite(elapsed) ? elapsed : 0;
   return 1 + DOOR_FOCUS_PULSE_AMP * Math.sin(t * DOOR_FOCUS_PULSE_SPEED);
