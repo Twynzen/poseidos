@@ -45,7 +45,7 @@ export function shouldShowNoiseRing(kind: string): boolean {
 }
 
 /** Mínima edad (s) del último anillo run antes de spawnear otro. */
-export const RUN_NOISE_RING_MIN_AGE = 0.4;
+export const RUN_NOISE_RING_MIN_AGE = 0.348;
 
 /** true si no hay anillo previo o ya pasó el cooldown de sprint. */
 export function runNoiseRingReady(lastAge: number | null | undefined): boolean {
