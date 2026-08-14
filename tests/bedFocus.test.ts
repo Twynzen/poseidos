@@ -20,9 +20,10 @@ import {
 } from "../src/render/bedFocus";
 
 describe("constantes", () => {
-  test("reach 1.5; near 1.35; far 1.12; pulse 0.05 / 6", () => {
+  test("reach 1.5; near 1.5525; far 1.12; pulse 0.05 / 6", () => {
     expect(BED_FOCUS_REACH).toBe(1.5);
-    expect(BED_FOCUS_SCALE_NEAR).toBe(1.35);
+    expect(BED_FOCUS_SCALE_NEAR).toBe(1.5525);
+    expect(BED_FOCUS_SCALE_NEAR).toBeCloseTo(1.35 * 1.15, 10);
     expect(BED_FOCUS_SCALE_FAR).toBe(1.12);
     expect(BED_FOCUS_PULSE_AMP).toBe(0.05);
     expect(BED_FOCUS_PULSE_SPEED).toBe(6);
@@ -75,21 +76,30 @@ describe("constantes", () => {
     expect(src).toContain('badge.name = "floatBadge"');
     expect(src).toContain("badge.position.y = bedBadgeY");
   });
+
+  test("worldView aplica bedFocusMul al grupo de cama existente", () => {
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toContain("bedFocusMul(bestD, bedFocusElapsed)");
+    expect(src).toContain("e.group.scale.setScalar(mul)");
+  });
 });
 
 describe("bedFocusScale", () => {
-  test("1.35 en dist 0; 1.12 en reach; 1.0 fuera", () => {
-    expect(bedFocusScale(0)).toBe(1.35);
+  test("1.5525 en dist 0; 1.12 en reach; 1.0 fuera", () => {
+    expect(bedFocusScale(0)).toBe(1.5525);
     expect(bedFocusScale(1.5)).toBeCloseTo(1.12, 10);
     expect(bedFocusScale(1.51)).toBe(1);
     expect(bedFocusScale(10)).toBe(1);
   });
 
   test("lerp lineal dentro de reach", () => {
-    // midpoint 0.75: 1.35 + (1.12-1.35)*0.5 = 1.235
-    expect(bedFocusScale(0.75)).toBeCloseTo(1.235, 10);
+    // midpoint 0.75: 1.5525 + (1.12-1.5525)*0.5 = 1.33625
+    expect(bedFocusScale(0.75)).toBeCloseTo(1.33625, 10);
     const t = 0.25;
-    const expected = 1.35 + (1.12 - 1.35) * t;
+    const expected = 1.5525 + (1.12 - 1.5525) * t;
     expect(bedFocusScale(1.5 * t)).toBeCloseTo(expected, 10);
   });
 
@@ -98,8 +108,8 @@ describe("bedFocusScale", () => {
     expect(bedFocusScale(Number.POSITIVE_INFINITY)).toBe(1);
   });
 
-  test("dist negativa se clampa a 0 → 1.35", () => {
-    expect(bedFocusScale(-0.4)).toBe(1.35);
+  test("dist negativa se clampa a 0 → 1.5525", () => {
+    expect(bedFocusScale(-0.4)).toBe(1.5525);
     expect(bedFocusInReach(-0.4)).toBe(true);
   });
 });
@@ -127,9 +137,9 @@ describe("bedFocusPulse", () => {
 describe("bedFocusMul", () => {
   test("en reach: scale * pulse", () => {
     const elapsed = Math.PI / 12; // pulse = 1.05
-    expect(bedFocusMul(0, elapsed)).toBeCloseTo(1.35 * 1.05, 10);
+    expect(bedFocusMul(0, elapsed)).toBeCloseTo(1.5525 * 1.05, 10);
     expect(bedFocusMul(1.5, elapsed)).toBeCloseTo(1.12 * 1.05, 10);
-    expect(bedFocusMul(0.75, 0)).toBeCloseTo(1.235, 10);
+    expect(bedFocusMul(0.75, 0)).toBeCloseTo(1.33625, 10);
   });
 
   test("fuera de reach: 1 (sin pulso)", () => {
