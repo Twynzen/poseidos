@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   FLASHLIGHT_CONE_HALF_WIDTH,
@@ -28,13 +30,22 @@ describe("constantes", () => {
     expect(FLASHLIGHT_CONE_YAW_OFFSET).toBe(0);
   });
 
-  test("haz: penumbra 0.2, spot ×2.4, fill ×0.55, cuña 0xd0eaff opacity 0.55/0.22", () => {
+  test("haz: penumbra 0.2, spot ×2.76, fill ×0.55, cuña 0xd0eaff opacity 0.55/0.22", () => {
     expect(FLASHLIGHT_SPOT_PENUMBRA).toBe(0.2);
-    expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(2.4);
+    expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBe(2.76);
+    expect(FLASHLIGHT_SPOT_INTENSITY_MUL).toBeCloseTo(2.4 * 1.15, 10);
     expect(FLASHLIGHT_FILL_INTENSITY_MUL).toBe(0.55);
     expect(FLASHLIGHT_WEDGE_COLOR).toBe(0xd0eaff);
     expect(FLASHLIGHT_WEDGE_OPACITY_BASE).toBe(0.55);
     expect(FLASHLIGHT_WEDGE_OPACITY_GAIN).toBe(0.22);
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain("i * FLASHLIGHT_SPOT_INTENSITY_MUL");
+    expect(viewSrc).toContain("i * FLASHLIGHT_FILL_INTENSITY_MUL");
+    expect(viewSrc).not.toMatch(/const FLASHLIGHT_SPOT_INTENSITY_MUL = 2\.4/);
+    expect(viewSrc).not.toMatch(/torchSpot\.intensity = .*\b2\.4\b/);
   });
 });
 
