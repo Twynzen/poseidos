@@ -17,7 +17,7 @@ export const POSSESSED_MAP_TINT = 0x9f7a96;
 /** Emisión cuerpo baja: silueta violeta-oscura de noche, sin glow. */
 export const POSSESSED_BODY_EMISSIVE = 0x261723;
 /** Acento head/visor: rojo-violeta. */
-export const POSSESSED_ACCENT = 0x8a2a55;
+export const POSSESSED_ACCENT = 0x9f3062;
 /** Alias del acento (mismo valor). */
 export const POSSESSED_ACCENT_COLOR = POSSESSED_ACCENT;
 /** Emisión del acento (ojos/visor poseído). */
