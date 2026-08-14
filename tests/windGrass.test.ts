@@ -10,7 +10,9 @@ import {
   GRASS_RADIUS,
   MAX_GRASS_INSTANCES,
   tileAcceptsGrass,
+  WIND_SPEED,
   WIND_SWAY,
+  WIND_YAW,
 } from "../src/render/windGrass";
 import type { TileKind } from "../src/world/tile";
 
@@ -71,6 +73,15 @@ describe("collectGrassTiles", () => {
 });
 
 describe("blade transforms + wind", () => {
+  test("wind sway amp 0.05175; yaw/speed/count iguales", () => {
+    expect(WIND_SWAY).toBe(0.05175);
+    expect(WIND_SWAY).toBeCloseTo(0.045 * 1.15, 10);
+    expect(WIND_YAW).toBe(0.28);
+    expect(WIND_SPEED).toBe(2.4);
+    expect(BLADES_PER_TILE).toBe(3);
+    expect(MAX_GRASS_INSTANCES).toBe(320);
+  });
+
   test("base pose dentro del tile; wind oscila", () => {
     const base = bladeBasePose(5, 2, 0, 0.3);
     expect(base.x).toBeGreaterThanOrEqual(5);
