@@ -28,7 +28,8 @@ export const MUTE_ACCENT_EMISSIVE = 0x1a2218;
  * Lock de nombre únicamente — no aplicar como color de cuerpo.
  */
 export const MUTE_CRUSHED_BODY = 0x4a5648;
-export const MUTE_BODY_ROUGHNESS = 0.88;
+/** Roughness alto = look mate / usado. 0.88 × 0.87 para leer el cuerpo de noche. */
+export const MUTE_BODY_ROUGHNESS = 0.7656;
 export const MUTE_ACCENT_ROUGHNESS = 0.5;
 /** Intensidad del acento. 0.35 × 1.15 para leer el visor de noche. */
 export const MUTE_ACCENT_EMISSIVE_INTENSITY = 0.4025;
