@@ -5,8 +5,8 @@
  * Dirección XZ unitaria vía RNG inyectable en trigger (tests deterministas).
  */
 
-/** Duración del shake (s). */
-export const CAMERA_SHAKE_DURATION = 0.2;
+/** Duración del shake (s). 0.2 × 1.15 para leer de noche. */
+export const CAMERA_SHAKE_DURATION = 0.23;
 /** Amplitud pico (unidades mundo, ejes XZ). 0.1 × 1.25 para leer de noche. */
 export const CAMERA_SHAKE_AMP = 0.125;
 
