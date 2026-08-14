@@ -23,7 +23,7 @@ export const RAIN_OPACITY_BASE = 0.22;
 export const RAIN_OPACITY_GAIN = 0.45;
 
 /** Extra de opacidad de noche × nightMix. */
-export const RAIN_OPACITY_NIGHT_ADD = 0.2;
+export const RAIN_OPACITY_NIGHT_ADD = 0.3;
 
 /** Mínimo de streaks activos si visible (era 8). */
 export const RAIN_ACTIVE_MIN = 6;
@@ -70,7 +70,7 @@ export function rainStreaksHidden(intensity: number): boolean {
   return !Number.isFinite(intensity) || intensity <= RAIN_HIDE_BELOW;
 }
 
-/** Opacidad: 0.22 + i×0.45; noche suma +0.20 × nightMix. */
+/** Opacidad: 0.22 + i×0.45; noche suma +0.30 × nightMix. */
 export function rainStreakOpacity(intensity: number, daylight: number): number {
   const i = clamp01(intensity);
   return (

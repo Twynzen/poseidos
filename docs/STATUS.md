@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** trazo del nameplate de loot un poco más grueso.
+- **Última rutina:** lluvia un poco más visible de noche.
 - **Qué quedó (esta corrida):**
+  - **Night opacity add 0.20→0.30; count/largo iguales.** `RAIN_OPACITY_NIGHT_ADD` 0.3 (era 0.2). Opacity día `0.22 + i×0.45` igual; noche `+0.30 × nightMix`. `RAIN_COUNT` 36, largo día 0.55 / noche 0.72, width 0.03, color `0xa8c4e0`, hide ≤ 0.02, active min 6 y night cut 0.22 iguales. `game.ts` sigue pasando `clock.daylight` a `syncRain`. Weather sim sin cambio. Cámara / nameplates / anillos / chevron / luces / linterna / HUD / inventario / teclas / gestos sin cambio.
   - **Nameplate loot stroke 3→4.5; font 34 / Y / fade iguales.** `makeLootNameplateSprite` `ctx.lineWidth` 4.5 (era 3, ~1.5×). `strokeStyle` `rgba(0,0,0,0.7)` y fill `#f0c060` iguales. Font `600 34px`, canvas 384×80, scale 2.6×0.65, Y 2.15, fade 6.5, empty-hide, icon 64 / pad 68 sin cambio. Cámara / anillos / pulso / badges / chevron / luces / lluvia / linterna / HUD / inventario / teclas / gestos sin cambio.
   - **Nameplate loot font 28→34px; Y/fade/iconos iguales.** `makeLootNameplateSprite` `ctx.font` `600 34px` (era 28px). Canvas 384×80 (34px no clippea el pill 48px / atlas 80), scale 2.6×0.65, Y 2.15, fade 6.5, empty-hide, mid-scale 0.55, icon 64 / pad 68 sin cambio. Cámara / anillos / pulso / badges / chevron / luces / lluvia / linterna / HUD / inventario / teclas / gestos sin cambio.
   - **`.inv-badge` borde gold; grilla/gestos iguales.** `border` `rgba(96, 165, 250, 0.35)` → `rgba(232, 196, 106, 0.45)`. Padding, pill, uppercase, font y background iguales. `.inv-head` gold `#e8c36a` igual. Grilla 5-col, slots 52×52, iconos 40px, selected gold y empty dashed iguales. `inventory.ts` gestos/copy sin cambio. Hotbar / toast / HUD / moodle / diálogo / cámara / markers / anillos / pulso / luces / lluvia / linterna / teclas / gestos sin cambio.
