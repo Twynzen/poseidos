@@ -1,8 +1,17 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   LOADING_LINES,
   createLoadingProgress,
 } from "../src/ui/loadingScreen";
+
+describe("loading overlay CSS", () => {
+  test(".loading-title font-size 22px", () => {
+    const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
+    expect(html).toMatch(/\.loading-title\s*\{[^}]*font-size:\s*22px/s);
+  });
+});
 
 describe("LOADING_LINES", () => {
   test("banco no vacío, strings no vacíos (6–8+)", () => {
