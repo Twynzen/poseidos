@@ -22,8 +22,8 @@ export const FACING_CHEVRON_YAW_OFFSET = 0;
 /** Color unlit del triángulo de suelo (oro HUD `#e8c36a`). */
 export const FACING_CHEVRON_COLOR = 0xe8c36a;
 
-/** Opacidad del chevron (cue, no losa sólida). */
-export const FACING_CHEVRON_OPACITY = 0.75;
+/** Opacidad del chevron (cue, no losa sólida). 0.75 × 1.15 para leer facing de noche. */
+export const FACING_CHEVRON_OPACITY = 0.8625;
 
 export interface FacingChevronOffset {
   x: number;

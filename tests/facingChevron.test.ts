@@ -20,11 +20,16 @@ describe("constantes", () => {
     expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
   });
 
-  test("color oro HUD + opacidad cue (no losa sólida)", () => {
+  test("opacity 0.8625 (0.75 × 1.15); color/dist/len/hw/yaw sin cambio (no double-apply)", () => {
     expect(FACING_CHEVRON_COLOR).toBe(0xe8c36a);
-    expect(FACING_CHEVRON_OPACITY).toBe(0.75);
+    expect(FACING_CHEVRON_OPACITY).toBe(0.8625);
+    expect(FACING_CHEVRON_OPACITY).toBeCloseTo(0.75 * 1.15, 5);
     expect(FACING_CHEVRON_OPACITY).toBeLessThan(1);
     expect(FACING_CHEVRON_OPACITY).toBeGreaterThan(0.35);
+    expect(FACING_CHEVRON_DIST).toBe(1.38);
+    expect(FACING_CHEVRON_LEN).toBe(0.92575);
+    expect(FACING_CHEVRON_HW).toBe(0.3703);
+    expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
   });
 });
 
