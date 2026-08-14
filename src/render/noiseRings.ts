@@ -25,6 +25,11 @@ export interface NoiseRingState {
 /** Vida visual por defecto (expansión + fade). */
 export const DEFAULT_NOISE_RING_LIFE = 0.85;
 
+/** Grosor del aro unitario (outer=1). 0.18 × 1.25 para leer de noche. */
+export const NOISE_RING_WIDTH = 0.225;
+/** Radio interior del RingGeometry unitario. */
+export const NOISE_RING_INNER = 1 - NOISE_RING_WIDTH;
+
 /** Kinds que dibujan anillo (walk spamea — no mostrar). */
 export const NOISE_RING_VISIBLE_KINDS = new Set([
   "run",
