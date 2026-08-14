@@ -142,8 +142,8 @@ export type LootNameplateIconKind =
 
 /** Stroke gold de la silueta del icono. #e8c36a ×1.15 por canal (r clamp) para leer de noche. */
 export const LOOT_NAMEPLATE_GOLD_STROKE = "#ffe07a";
-/** Fill gold de la silueta del icono. 0.32 × 1.15 para leer de noche. */
-export const LOOT_NAMEPLATE_GOLD_FILL = "rgba(232,195,106,0.368)";
+/** Fill gold de la silueta del icono. 0.368 × 1.15 para leer de noche. */
+export const LOOT_NAMEPLATE_GOLD_FILL = "rgba(232,195,106,0.4232)";
 
 /** Silueta gold del stack: botella / lata / madera / munición / pistola / linterna; resto diamante. */
 export function lootNameplateIconKind(id: string): LootNameplateIconKind {
