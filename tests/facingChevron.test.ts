@@ -10,11 +10,21 @@ import {
 } from "../src/render/facingChevron";
 
 describe("constantes", () => {
+  test("hw 0.425845 (0.3703 × 1.15); dist/len/color/opacity/yaw sin cambio (no double-apply)", () => {
+    expect(FACING_CHEVRON_HW).toBe(0.425845);
+    expect(FACING_CHEVRON_HW).toBeCloseTo(0.3703 * 1.15, 5);
+    expect(FACING_CHEVRON_DIST).toBe(1.587);
+    expect(FACING_CHEVRON_LEN).toBe(1.0646125);
+    expect(FACING_CHEVRON_COLOR).toBe(0xffe07a);
+    expect(FACING_CHEVRON_OPACITY).toBe(0.8625);
+    expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
+  });
+
   test("len 1.0646125 (0.92575 × 1.15); dist/hw/color/opacity/yaw sin cambio (no double-apply)", () => {
     expect(FACING_CHEVRON_LEN).toBe(1.0646125);
     expect(FACING_CHEVRON_LEN).toBeCloseTo(0.92575 * 1.15, 5);
     expect(FACING_CHEVRON_DIST).toBe(1.587);
-    expect(FACING_CHEVRON_HW).toBe(0.3703);
+    expect(FACING_CHEVRON_HW).toBe(0.425845);
     expect(FACING_CHEVRON_COLOR).toBe(0xffe07a);
     expect(FACING_CHEVRON_OPACITY).toBe(0.8625);
     expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
@@ -24,7 +34,7 @@ describe("constantes", () => {
     expect(FACING_CHEVRON_COLOR).toBe(0xffe07a);
     expect(FACING_CHEVRON_DIST).toBe(1.587);
     expect(FACING_CHEVRON_LEN).toBe(1.0646125);
-    expect(FACING_CHEVRON_HW).toBe(0.3703);
+    expect(FACING_CHEVRON_HW).toBe(0.425845);
     expect(FACING_CHEVRON_OPACITY).toBe(0.8625);
     expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
   });
@@ -33,19 +43,9 @@ describe("constantes", () => {
     expect(FACING_CHEVRON_DIST).toBe(1.587);
     expect(FACING_CHEVRON_DIST).toBeCloseTo(1.38 * 1.15, 5);
     expect(FACING_CHEVRON_LEN).toBe(1.0646125);
-    expect(FACING_CHEVRON_HW).toBe(0.3703);
+    expect(FACING_CHEVRON_HW).toBe(0.425845);
     expect(FACING_CHEVRON_COLOR).toBe(0xffe07a);
     expect(FACING_CHEVRON_OPACITY).toBe(0.8625);
-    expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
-  });
-
-  test("hw 0.3703 (0.322 × 1.15); dist/len/yaw sin cambio (no double-apply)", () => {
-    expect(FACING_CHEVRON_DIST).toBe(1.587);
-    expect(FACING_CHEVRON_DIST).toBeCloseTo(1.38 * 1.15, 5);
-    expect(FACING_CHEVRON_LEN).toBe(1.0646125);
-    expect(FACING_CHEVRON_LEN).toBeCloseTo(0.92575 * 1.15, 5);
-    expect(FACING_CHEVRON_HW).toBe(0.3703);
-    expect(FACING_CHEVRON_HW).toBeCloseTo(0.322 * 1.15, 5);
     expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
   });
 
@@ -57,7 +57,7 @@ describe("constantes", () => {
     expect(FACING_CHEVRON_OPACITY).toBeGreaterThan(0.35);
     expect(FACING_CHEVRON_DIST).toBe(1.587);
     expect(FACING_CHEVRON_LEN).toBe(1.0646125);
-    expect(FACING_CHEVRON_HW).toBe(0.3703);
+    expect(FACING_CHEVRON_HW).toBe(0.425845);
     expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
   });
 });
