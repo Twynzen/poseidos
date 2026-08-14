@@ -29,11 +29,12 @@ describe("locoFreqHz / maxBobAmp", () => {
     expect(WALK_BOB_AMP).toBeLessThan(SPRINT_BOB_AMP);
   });
 
-  test("walk bob amp 0.06325; idle/sprint/freq iguales", () => {
+  test("sprint bob amp 0.1035; walk/idle/freq iguales", () => {
+    expect(SPRINT_BOB_AMP).toBe(0.1035);
+    expect(SPRINT_BOB_AMP).toBeCloseTo(0.09 * 1.15, 10);
     expect(WALK_BOB_AMP).toBe(0.06325);
     expect(WALK_BOB_AMP).toBeCloseTo(0.055 * 1.15, 10);
     expect(IDLE_BOB_AMP).toBe(0.012);
-    expect(SPRINT_BOB_AMP).toBe(0.09);
     expect(IDLE_FREQ_HZ).toBe(0.35);
     expect(WALK_FREQ_HZ).toBe(1.55);
     expect(SPRINT_FREQ_HZ).toBe(2.35);
