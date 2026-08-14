@@ -6,6 +6,7 @@ import { bedBadgeY } from "../src/render/bedFocus";
 import {
   INTERACT_RING_INNER,
   INTERACT_RING_OUTER,
+  LOOT_BADGE_OPACITY,
   MARKER_BADGE_OPACITY,
   MARKER_PALETTE,
   MARKER_RING_OPACITY,
@@ -132,11 +133,13 @@ describe("markers (badges + ground rings)", () => {
     }
   });
 
-  test("badge player oculto (0); mute/possessed/loot/door/bed 1", () => {
+  test("badge player/loot oculto (0); door/bed/mute/possessed 1", () => {
     expect(PLAYER_BADGE_OPACITY).toBe(0);
+    expect(LOOT_BADGE_OPACITY).toBe(0);
     expect(MARKER_BADGE_OPACITY).toBeCloseTo(1, 5);
     expect(markerBadgeOpacity("player")).toBe(0);
-    for (const role of ["mute", "possessed", "loot", "door", "bed"] as const) {
+    expect(markerBadgeOpacity("loot")).toBe(0);
+    for (const role of ["door", "bed", "mute", "possessed"] as const) {
       expect(markerBadgeOpacity(role)).toBeCloseTo(1, 5);
     }
   });

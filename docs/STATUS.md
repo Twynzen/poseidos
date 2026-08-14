@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** badges mute/poseído un poco más altos.
+- **Última rutina:** badge de loot oculto (queda el nameplate).
 - **Qué quedó (esta corrida):**
+  - **LOOT_BADGE_OPACITY 0; anillo y nameplate iguales; player badge sigue oculto.** `markerBadgeOpacity("loot")` 0; player sigue 0. Door/bed/mute/possessed siguen 1 (Y 2.0). `attachRoleMarkers` no crea `floatBadge` si opacity ≤ 0 (el aro loot sí). Nameplate Y 1.85. Letter/disc size, cámara, escala, aros, luces, lluvia, linterna, teclas y gestos sin cambio.
   - **mute/possessed badge Y 1.68→2.0; door/bed igual 2.0; loot badge 1.12; player hidden.** `muteBadgeY` / `possessedBadgeY` 2.0. `attachRoleMarkers` usa esos knobs solo para mute/possessed. Badge letter/disc size sin cambio. Cámara / escala / aros / luces / lluvia / linterna / teclas / gestos sin cambio.
   - **door/bed badge Y 1.12→2.0; letras igual; loot nameplate igual.** `doorBadgeY` / `bedBadgeY` 2.0. `attachRoleMarkers` usa esos knobs solo para puerta/cama. E/Z font 80 / scale 2.4 / disc 1.5 sin cambio. Loot nameplate Y 1.85; loot badge Y 1.12; mute/possessed 1.68. Player badge sigue oculto. Cámara / escala / aros / luces / lluvia / linterna / teclas / gestos sin cambio.
   - **interact 0.55–0.78; player hidden; chevron igual.** `INTERACT_RING_INNER/OUTER` 0.55 / 0.78 (loot/door/bed). `THREAT_RING_INNER/OUTER` 0.42 / 0.58 (mute/possessed, sin cambio). `markerUsesInteractRing` / `markerRingRadii`. worldView `interactRingGeo` vs `ringGeo`. Player sin mesh de aro (`PLAYER_FOOT_RING_OPACITY` 0). Chevron / cámara / escala / nameplate Y / luces / lluvia / linterna / teclas / gestos sin cambio.

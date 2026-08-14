@@ -1924,6 +1924,26 @@ function attachRoleMarkers(
   // Player: sin aro de suelo ni badge flotante (queda el chevron).
   if (role === "player") return;
 
+  const ringMat = new THREE.MeshBasicMaterial({
+    color: pal.ring,
+    transparent: true,
+    opacity: markerRingOpacity(role),
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  });
+  shared.mats.push(ringMat);
+  const ringGeo = markerUsesInteractRing(role)
+    ? shared.interactRingGeo
+    : shared.ringGeo;
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.name = "groundRing";
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.y = 0.04;
+  root.add(ring);
+
+  // Loot: sin disc/glyph (queda el nameplate). Player ya return arriba.
+  if (markerBadgeOpacity(role) <= 0) return;
+
   const badgeMat = new THREE.MeshStandardMaterial({
     color: pal.badge,
     emissive: pal.emissive,
@@ -1948,23 +1968,6 @@ function attachRoleMarkers(
     depthWrite: false,
   });
   shared.mats.push(badgeMat, iconMat);
-
-  const ringMat = new THREE.MeshBasicMaterial({
-    color: pal.ring,
-    transparent: true,
-    opacity: markerRingOpacity(role),
-    side: THREE.DoubleSide,
-    depthWrite: false,
-  });
-  shared.mats.push(ringMat);
-  const ringGeo = markerUsesInteractRing(role)
-    ? shared.interactRingGeo
-    : shared.ringGeo;
-  const ring = new THREE.Mesh(ringGeo, ringMat);
-  ring.name = "groundRing";
-  ring.rotation.x = -Math.PI / 2;
-  ring.position.y = 0.04;
-  root.add(ring);
 
   const badge = new THREE.Group();
   badge.name = "floatBadge";
