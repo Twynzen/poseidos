@@ -1,7 +1,7 @@
 /**
  * Camera shake al toque hostil — headless.
  * worldView aplica offsetX/offsetZ a camera.position; lookAt queda en el player.
- * Envelope: sine decay (1−t)·sin(2π t) en CAMERA_SHAKE_DURATION, amp 0.125.
+ * Envelope: sine decay (1−t)·sin(2π t · FREQ/42) en CAMERA_SHAKE_DURATION, amp 0.125.
  * Dirección XZ unitaria vía RNG inyectable en trigger (tests deterministas).
  */
 
@@ -9,6 +9,8 @@
 export const CAMERA_SHAKE_DURATION = 0.23;
 /** Amplitud pico (unidades mundo, ejes XZ). 0.1 × 1.25 para leer de noche. */
 export const CAMERA_SHAKE_AMP = 0.125;
+/** Frecuencia del sine (base 42 = 1 ciclo). 42 × 1.15 para leer de noche. */
+export const CAMERA_SHAKE_FREQ = 48.3;
 
 export interface CameraShakeState {
   /** Segundos transcurridos del shake actual. */
@@ -55,7 +57,7 @@ export function triggerCameraShake(
 /**
  * Avanza el shake y devuelve offsets puros (deterministas dado dir + age).
  * Mutates `state`. dt≤0 no avanza age.
- * mag = AMP · (1−t) · sin(2π t) a lo largo de (dirX, dirZ).
+ * mag = AMP · (1−t) · sin(2π t · FREQ/42) a lo largo de (dirX, dirZ).
  */
 export function tickCameraShake(
   state: CameraShakeState,
@@ -76,7 +78,7 @@ export function tickCameraShake(
 
   const t = state.age / CAMERA_SHAKE_DURATION;
   const decay = 1 - t;
-  const wave = Math.sin(t * Math.PI * 2);
+  const wave = Math.sin(t * Math.PI * 2 * (CAMERA_SHAKE_FREQ / 42));
   const mag = CAMERA_SHAKE_AMP * decay * wave;
   return {
     offsetX: mag * state.dirX,

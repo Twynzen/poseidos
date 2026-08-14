@@ -2,18 +2,25 @@ import { describe, expect, test } from "vitest";
 import {
   CAMERA_SHAKE_AMP,
   CAMERA_SHAKE_DURATION,
+  CAMERA_SHAKE_FREQ,
   createCameraShakeState,
   tickCameraShake,
   triggerCameraShake,
 } from "../src/render/cameraShake";
 
-/** mag = AMP · (1−t) · sin(2π t) */
+/** mag = AMP · (1−t) · sin(2π t · FREQ/42) */
 function expectedMag(t: number): number {
-  return CAMERA_SHAKE_AMP * (1 - t) * Math.sin(t * Math.PI * 2);
+  return (
+    CAMERA_SHAKE_AMP *
+    (1 - t) *
+    Math.sin(t * Math.PI * 2 * (CAMERA_SHAKE_FREQ / 42))
+  );
 }
 
 describe("constantes", () => {
-  test("duración 0.2 × 1.15 y amplitud 0.1 × 1.25", () => {
+  test("freq 42 × 1.15; duración 0.2 × 1.15 y amplitud 0.1 × 1.25", () => {
+    expect(CAMERA_SHAKE_FREQ).toBe(48.3);
+    expect(CAMERA_SHAKE_FREQ).toBeCloseTo(42 * 1.15, 10);
     expect(CAMERA_SHAKE_DURATION).toBe(0.23);
     expect(CAMERA_SHAKE_DURATION).toBeCloseTo(0.2 * 1.15, 10);
     expect(CAMERA_SHAKE_AMP).toBe(0.125);
@@ -42,7 +49,7 @@ describe("create / trigger / tick", () => {
     expect(out.active).toBe(true);
     expect(out.offsetX).toBeCloseTo(mag, 10);
     expect(out.offsetZ).toBeCloseTo(0, 10);
-    expect(mag).toBeCloseTo(CAMERA_SHAKE_AMP * 0.75, 10);
+    expect(Math.abs(mag)).toBeGreaterThan(CAMERA_SHAKE_AMP * 0.5);
   });
 
   test("rng=0.25: dir +Z, mismo mag en offsetZ", () => {
@@ -56,22 +63,33 @@ describe("create / trigger / tick", () => {
     expect(out.offsetZ).toBeCloseTo(mag, 10);
   });
 
-  test("t=0.5: sin(π)=0, offsets en cero a mitad (decay 0.5)", () => {
+  test("t=0.5: sine-decay con FREQ 48.3 (primer cruce ya pasó)", () => {
     const s = createCameraShakeState();
     triggerCameraShake(s, () => 0);
     const out = tickCameraShake(s, CAMERA_SHAKE_DURATION / 2);
+    const mag = expectedMag(0.5);
     expect(out.active).toBe(true);
-    expect(out.offsetX).toBeCloseTo(0, 10);
+    expect(out.offsetX).toBeCloseTo(mag, 10);
     expect(out.offsetZ).toBeCloseTo(0, 10);
   });
 
-  test("t=0.75: mag negativo (segunda mitad del sine)", () => {
+  test("primer cruce por cero antes de t=0.5 (más rápido que 1 ciclo)", () => {
+    const s = createCameraShakeState();
+    triggerCameraShake(s, () => 0);
+    const halfCycle = CAMERA_SHAKE_DURATION * (0.5 * 42 / CAMERA_SHAKE_FREQ);
+    const out = tickCameraShake(s, halfCycle);
+    expect(out.active).toBe(true);
+    expect(out.offsetX).toBeCloseTo(0, 10);
+    expect(halfCycle).toBeLessThan(CAMERA_SHAKE_DURATION / 2);
+  });
+
+  test("t=0.75: mag sigue el sine-decay a FREQ 48.3", () => {
     const s = createCameraShakeState();
     triggerCameraShake(s, () => 0);
     const out = tickCameraShake(s, CAMERA_SHAKE_DURATION * 0.75);
     const mag = expectedMag(0.75);
     expect(out.offsetX).toBeCloseTo(mag, 10);
-    expect(mag).toBeCloseTo(-CAMERA_SHAKE_AMP * 0.25, 10);
+    expect(mag).toBeLessThan(0);
   });
 
   test("|offset| acotado a AMP", () => {
