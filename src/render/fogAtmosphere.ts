@@ -138,6 +138,9 @@ export const AMBIENT_NIGHT_G_SUB = 0.0522;
 /** Add b del ambient de noche (0.14 × 1.15) para que el ambient se lea más azul. */
 export const AMBIENT_NIGHT_B_ADD = 0.161;
 
+/** Toque cálido dawn/dusk del ambient (0.12 × 1.15) para que sunrise/sunset se lean. */
+export const AMBIENT_WARM_PUSH = 0.138;
+
 /** Ambient coherente con cielo (más suave, menos saturado). */
 export function ambientRgb(daylight: number, phase: number): Rgb {
   const d = clamp01(daylight);
@@ -153,7 +156,7 @@ export function ambientRgb(daylight: number, phase: number): Rgb {
   let b = 0x78 / 255 + nightMix * AMBIENT_NIGHT_B_ADD;
 
   // Toque cálido en dawn/dusk (sin tocar warm indoor).
-  const warmPush = warm * 0.12;
+  const warmPush = warm * AMBIENT_WARM_PUSH;
   r += warmPush * 0.2;
   g += warmPush * 0.05;
   b -= warmPush * 0.08;
