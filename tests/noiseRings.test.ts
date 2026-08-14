@@ -6,6 +6,7 @@ import {
   NOISE_RING_AMBER,
   NOISE_RING_COMBAT,
   NOISE_RING_INNER,
+  NOISE_RING_RUN,
   NOISE_RING_WIDTH,
   RUN_NOISE_RING_MIN_AGE,
   createNoiseRing,
@@ -42,7 +43,7 @@ describe("constantes", () => {
     expect(viewSrc).not.toMatch(/RingGeometry\(0\.82\b/);
   });
 
-  test("ámbar 0xe8b060 × 1.15/canal (r clamp) → 0xffca6e; blanco/width/life/inner/min-age sin cambio", () => {
+  test("ámbar 0xe8b060 × 1.15/canal (r clamp) → 0xffca6e; width/life/inner/min-age sin cambio", () => {
     expect(NOISE_RING_AMBER).toBe(0xffca6e);
     const r = (NOISE_RING_AMBER >> 16) & 0xff;
     const g = (NOISE_RING_AMBER >> 8) & 0xff;
@@ -58,15 +59,15 @@ describe("constantes", () => {
     expect(ringColorHex("attack")).toBe(NOISE_RING_COMBAT);
     expect(ringColorHex("gun")).toBe(NOISE_RING_COMBAT);
     expect(ringColorHex("barricade")).toBe(NOISE_RING_COMBAT);
-    expect(ringColorHex("walk")).toBe(0xe8e8f0);
-    expect(ringColorHex("run")).toBe(0xe8e8f0);
+    expect(ringColorHex("walk")).toBe(NOISE_RING_RUN);
+    expect(ringColorHex("run")).toBe(NOISE_RING_RUN);
     expect(DEFAULT_NOISE_RING_LIFE).toBe(1.124125);
     expect(NOISE_RING_WIDTH).toBe(0.25875);
     expect(NOISE_RING_INNER).toBe(0.5865975);
     expect(RUN_NOISE_RING_MIN_AGE).toBe(0.30276);
   });
 
-  test("rojo/naranja 0xff6030 × 1.15/canal (r clamp) → 0xff6e37; ámbar/blanco/width/life/inner/min-age sin cambio", () => {
+  test("rojo/naranja 0xff6030 × 1.15/canal (r clamp) → 0xff6e37; ámbar/width/life/inner/min-age sin cambio", () => {
     expect(NOISE_RING_COMBAT).toBe(0xff6e37);
     const r = (NOISE_RING_COMBAT >> 16) & 0xff;
     const g = (NOISE_RING_COMBAT >> 8) & 0xff;
@@ -82,8 +83,33 @@ describe("constantes", () => {
     expect(ringColorHex("barricade")).toBe(NOISE_RING_COMBAT);
     expect(ringColorHex("door")).toBe(NOISE_RING_AMBER);
     expect(ringColorHex("loot")).toBe(NOISE_RING_AMBER);
-    expect(ringColorHex("walk")).toBe(0xe8e8f0);
-    expect(ringColorHex("run")).toBe(0xe8e8f0);
+    expect(ringColorHex("walk")).toBe(NOISE_RING_RUN);
+    expect(ringColorHex("run")).toBe(NOISE_RING_RUN);
+    expect(DEFAULT_NOISE_RING_LIFE).toBe(1.124125);
+    expect(NOISE_RING_WIDTH).toBe(0.25875);
+    expect(NOISE_RING_INNER).toBe(0.5865975);
+    expect(RUN_NOISE_RING_MIN_AGE).toBe(0.30276);
+  });
+
+  test("blanco 0xe8e8f0 × 1.15/canal (all clamp) → 0xffffff; ámbar/rojo/width/life/inner/min-age sin cambio", () => {
+    expect(NOISE_RING_RUN).toBe(0xffffff);
+    const r = (NOISE_RING_RUN >> 16) & 0xff;
+    const g = (NOISE_RING_RUN >> 8) & 0xff;
+    const b = NOISE_RING_RUN & 0xff;
+    expect(r).toBe(0xff);
+    expect(g).toBe(0xff);
+    expect(b).toBe(0xff);
+    expect(Math.min(0xff, Math.round((0xe8 * 115) / 100))).toBe(r);
+    expect(Math.min(0xff, Math.round((0xe8 * 115) / 100))).toBe(g);
+    expect(Math.min(0xff, Math.round((0xf0 * 115) / 100))).toBe(b);
+    expect(ringColorHex("walk")).toBe(NOISE_RING_RUN);
+    expect(ringColorHex("run")).toBe(NOISE_RING_RUN);
+    expect(ringColorHex("idle")).toBe(NOISE_RING_RUN);
+    expect(ringColorHex("door")).toBe(NOISE_RING_AMBER);
+    expect(ringColorHex("loot")).toBe(NOISE_RING_AMBER);
+    expect(ringColorHex("attack")).toBe(NOISE_RING_COMBAT);
+    expect(ringColorHex("gun")).toBe(NOISE_RING_COMBAT);
+    expect(ringColorHex("barricade")).toBe(NOISE_RING_COMBAT);
     expect(DEFAULT_NOISE_RING_LIFE).toBe(1.124125);
     expect(NOISE_RING_WIDTH).toBe(0.25875);
     expect(NOISE_RING_INNER).toBe(0.5865975);
@@ -194,8 +220,8 @@ describe("noiseRings (headless)", () => {
   });
 
   test("ringColorHex por kind", () => {
-    expect(ringColorHex("run")).toBe(0xe8e8f0);
-    expect(ringColorHex("walk")).toBe(0xe8e8f0);
+    expect(ringColorHex("run")).toBe(0xffffff);
+    expect(ringColorHex("walk")).toBe(0xffffff);
     expect(ringColorHex("door")).toBe(0xffca6e);
     expect(ringColorHex("loot")).toBe(0xffca6e);
     expect(ringColorHex("attack")).toBe(0xff6e37);

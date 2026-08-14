@@ -117,6 +117,9 @@ export const NOISE_RING_AMBER = 0xffca6e;
 /** Rojo/naranja attack/gun/barricade. 0xff6030 × 1.15/canal (r clamp) para leer de noche. */
 export const NOISE_RING_COMBAT = 0xff6e37;
 
+/** Blanco walk/run/default. 0xe8e8f0 × 1.15/canal (all clamp) para leer de noche. */
+export const NOISE_RING_RUN = 0xffffff;
+
 /** Color hex por kind (feedback jugable). */
 export function ringColorHex(kind: string): number {
   switch (kind) {
@@ -130,6 +133,6 @@ export function ringColorHex(kind: string): number {
     case "walk":
     case "run":
     default:
-      return 0xe8e8f0; // blanco suave
+      return NOISE_RING_RUN;
   }
 }
