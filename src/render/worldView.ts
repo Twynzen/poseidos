@@ -541,7 +541,7 @@ export function createWorldView(
   scene.add(playerMesh);
 
   // Loot: anillo/badge ámbar por contenedor. Anillo solo en reach (no FOV);
-  // syncLootFocus oculta ids vacíos. Nameplate canvas hijo (fade dist 10).
+  // syncLootFocus oculta ids vacíos. Nameplate canvas hijo (fade dist 6.5).
   interface LootMarkerEntry {
     group: THREE.Group;
     nameplate: THREE.Sprite;
