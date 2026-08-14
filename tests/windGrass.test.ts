@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import {
   BLADE_SY_BASE,
   BLADE_SY_RANGE,
+  BLADE_WIND_SEED_STEP,
   BLADE_XZ_PAD,
   BLADE_XZ_RANGE,
   BLADE_Y_MUL,
@@ -80,7 +81,7 @@ describe("collectGrassTiles", () => {
 });
 
 describe("blade transforms + wind", () => {
-  test("wind phase Z mul 1.7 × 1.15; y/xz/sy/wind/count iguales", () => {
+  test("blade wind seed step 0.17 × 1.15; phase/y/xz/sy/wind/count iguales", () => {
     expect(WIND_SWAY).toBe(0.0595125);
     expect(WIND_SWAY).toBeCloseTo(0.05175 * 1.15, 10);
     expect(WIND_SWAY_Z_MUL).toBe(0.7475);
@@ -93,6 +94,8 @@ describe("blade transforms + wind", () => {
     expect(WIND_SPEED_Z_MUL).toBeCloseTo(1.37 * 1.15, 10);
     expect(WIND_PHASE_Z_MUL).toBe(1.955);
     expect(WIND_PHASE_Z_MUL).toBeCloseTo(1.7 * 1.15, 10);
+    expect(BLADE_WIND_SEED_STEP).toBe(0.1955);
+    expect(BLADE_WIND_SEED_STEP).toBeCloseTo(0.17 * 1.15, 10);
     expect(BLADE_SY_BASE).toBe(0.8625);
     expect(BLADE_SY_BASE).toBeCloseTo(0.75 * 1.15, 10);
     expect(BLADE_SY_RANGE).toBe(0.6325);
