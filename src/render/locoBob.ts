@@ -38,8 +38,8 @@ export const IDLE_SWAY_AMP = 0.01058;
 export const WALK_FREQ_HZ = 1.55;
 /** Bob vertical walk. 0.06325 × 1.15 para leer de noche. */
 export const WALK_BOB_AMP = 0.0727375;
-/** Lean roll walk. 0.04 × 1.15 para leer de noche. */
-export const WALK_LEAN_AMP = 0.046;
+/** Lean roll walk. 0.046 × 1.15 para leer de noche. */
+export const WALK_LEAN_AMP = 0.0529;
 /** Sway lateral walk. 0.035 × 1.15 para leer de noche. */
 export const WALK_SWAY_AMP = 0.04025;
 
