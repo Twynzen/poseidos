@@ -41,7 +41,8 @@ export const WALK_SWAY_AMP = 0.035;
 
 /** Sprint: más rápido y alto. */
 export const SPRINT_FREQ_HZ = 2.35;
-export const SPRINT_BOB_AMP = 0.09;
+/** Bob vertical sprint. 0.09 × 1.15 para leer de noche. */
+export const SPRINT_BOB_AMP = 0.1035;
 export const SPRINT_LEAN_AMP = 0.07;
 export const SPRINT_SWAY_AMP = 0.05;
 
