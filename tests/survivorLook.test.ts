@@ -42,8 +42,8 @@ describe("survivorLook constants", () => {
     // Tierra: canales cercanos, sin verde militar dominante
     expect(Math.abs(bodyR - bodyG)).toBeLessThan(24);
     expect(bodyG).toBeGreaterThan(bodyB - 8);
-    expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.7134);
-    expect(SURVIVOR_BODY_ROUGHNESS).toBeCloseTo(0.82 * 0.87, 10);
+    expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.620658);
+    expect(SURVIVOR_BODY_ROUGHNESS).toBeCloseTo(0.7134 * 0.87, 10);
     expect(SURVIVOR_BODY_ROUGHNESS).toBeGreaterThan(0.6);
     expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.3915);
     expect(SURVIVOR_ACCENT_ROUGHNESS).toBeCloseTo(0.45 * 0.87, 10);
@@ -68,7 +68,7 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_BODY_COLOR).toBe(0x8a8070);
     expect(SURVIVOR_MAP_TINT).toBe(0xc8bca8);
     expect(SURVIVOR_ACCENT).toBe(0xa39c8c);
-    expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.7134);
+    expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.620658);
     expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.3915);
     expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
   });
@@ -84,9 +84,9 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
   });
 
-  test("body roughness 0.82 × 0.87; color/looks/teclas iguales", () => {
-    expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.7134);
-    expect(SURVIVOR_BODY_ROUGHNESS).toBeCloseTo(0.82 * 0.87, 10);
+  test("body roughness 0.7134 × 0.87; color/looks/teclas iguales", () => {
+    expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.620658);
+    expect(SURVIVOR_BODY_ROUGHNESS).toBeCloseTo(0.7134 * 0.87, 10);
     expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.3915);
     expect(SURVIVOR_ACCENT_ROUGHNESS).toBeLessThan(SURVIVOR_BODY_ROUGHNESS);
     expect(SURVIVOR_BODY_COLOR).toBe(0x8a8070);
@@ -102,7 +102,7 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.3915);
     expect(SURVIVOR_ACCENT_ROUGHNESS).toBeCloseTo(0.45 * 0.87, 10);
     expect(SURVIVOR_ACCENT_ROUGHNESS).toBeLessThan(SURVIVOR_BODY_ROUGHNESS);
-    expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.7134);
+    expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.620658);
     expect(SURVIVOR_BODY_COLOR).toBe(0x8a8070);
     expect(SURVIVOR_MAP_TINT).toBe(0xc8bca8);
     expect(SURVIVOR_ACCENT).toBe(0xa39c8c);

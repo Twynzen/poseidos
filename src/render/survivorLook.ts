@@ -31,8 +31,8 @@ export const SURVIVOR_BODY_EMISSIVE_INTENSITY = 1.15;
  * Lock de nombre únicamente — no aplicar como color de cuerpo.
  */
 export const SURVIVOR_CRUSHED_EARTH = 0x5c5346;
-/** Roughness alto = look mate / usado. 0.82 × 0.87 para leer el cuerpo de noche. */
-export const SURVIVOR_BODY_ROUGHNESS = 0.7134;
+/** Roughness alto = look mate / usado. 0.7134 × 0.87 para leer el cuerpo de noche. */
+export const SURVIVOR_BODY_ROUGHNESS = 0.620658;
 /** Roughness acento visor. 0.45 × 0.87 para leer el visor de noche. */
 export const SURVIVOR_ACCENT_ROUGHNESS = 0.3915;
 
