@@ -64,12 +64,25 @@ describe("muteLook constants", () => {
 
     expect(MUTE_BODY_ROUGHNESS).toBeGreaterThan(0.7);
     expect(MUTE_ACCENT_ROUGHNESS).toBeLessThan(MUTE_BODY_ROUGHNESS);
+    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBe(0.4025);
+    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBeCloseTo(0.35 * 1.15, 10);
     expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBeGreaterThan(0.2);
     expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBeLessThan(0.6);
 
     const crushG = (MUTE_CRUSHED_BODY >> 8) & 0xff;
     const bodyG = (MUTE_BODY_COLOR >> 8) & 0xff;
     expect(bodyG).toBeGreaterThan(crushG);
+  });
+
+  test("accent emissive intensity 0.35 × 1.15; color/looks iguales", () => {
+    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBe(0.4025);
+    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBeCloseTo(0.35 * 1.15, 10);
+    expect(MUTE_ACCENT_EMISSIVE).toBe(0x1a2218);
+    expect(MUTE_BODY_EMISSIVE).toBe(0x1c2319);
+    expect(MUTE_BODY_COLOR).toBe(0x647262);
+    expect(MUTE_MAP_TINT).toBe(0xa8b8a4);
+    expect(MUTE_ACCENT).toBe(0x6b7a68);
+    expect(MUTE_CRUSHED_BODY).toBe(0x4a5648);
   });
 
   test("distinto de survivor tierra y possessed violeta; sin rojo-violeta", () => {
