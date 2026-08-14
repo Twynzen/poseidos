@@ -249,7 +249,10 @@ describe("flashlightConeVisible / flashlightWedgeOpacity", () => {
     expect(flashlightWedgeOpacity(0)).toBe(0);
     expect(flashlightWedgeOpacity(0.02)).toBe(0);
     expect(flashlightWedgeOpacity(1)).toBeCloseTo(
-      FLASHLIGHT_WEDGE_OPACITY_BASE + FLASHLIGHT_WEDGE_OPACITY_GAIN,
+      Math.min(
+        1,
+        FLASHLIGHT_WEDGE_OPACITY_BASE + FLASHLIGHT_WEDGE_OPACITY_GAIN,
+      ),
       10,
     );
     expect(flashlightWedgeOpacity(1.5)).toBeCloseTo(
