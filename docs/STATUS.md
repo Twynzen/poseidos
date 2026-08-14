@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** anillos de amenaza un poco más grandes (outer)
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After threat ring outer, look at lootNameplate far-fade / LOOT_NAMEPLATE far dist (not NEAR_DIST) so the plate stays readable a bit farther at night. Do not change near-dist/focus/rings/opacity/kinds, colors, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** nameplate de loot visible un poco más lejos (fade)
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After fade dist, look at LOOT_NAMEPLATE_MID_SCALE (0.552) ×1.15 so the plate stays a bit larger at the fade edge. Do not change near-dist/Y/icon/font, rings, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **LOOT_NAMEPLATE_FADE_DIST 6.325→7.27375; near/mid-scale/Y/icon/focus/looks/sky/fog/sol/teclas iguales.**
   - **THREAT_RING_OUTER 0.782→0.8993; inner/interact/opacity/nameplate/looks/sky/fog/sol/teclas iguales.**
   - **THREAT_RING_INNER 0.435→0.37845; outer/interact/opacity/nameplate/looks/sky/fog/sol/teclas iguales.**
   - **INTERACT_RING_OUTER 0.897→1.03155; inner/threat/opacity/nameplate/looks/sky/fog/sol/teclas iguales.**
