@@ -609,7 +609,7 @@ export function createWorldView(
       ctx.font = "600 34px ui-monospace, SF Mono, Menlo, Consolas, monospace";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 4.5;
       ctx.strokeStyle = "rgba(0,0,0,0.7)";
       const textX = hasIcon ? ICON_PAD + BASE_W / 2 : W / 2;
       ctx.strokeText(text, textX, H / 2);
