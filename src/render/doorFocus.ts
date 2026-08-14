@@ -24,8 +24,8 @@ export const doorBadgeLabel = "E";
 /** Font px del canvas de la letra E (~1.8× vs 44). */
 export const doorBadgeFontPx = 80;
 
-/** Escala world de la letra E. */
-export const doorBadgeLetterScale = 2.4;
+/** Escala world de la letra E (2.4 × 1.15, para leerse de noche). */
+export const doorBadgeLetterScale = 2.76;
 
 /** Escala del disc de puerta (1.5 × 1.15 vs badge compartido, para leerse de noche). */
 export const doorBadgeDiscScale = 1.725;
