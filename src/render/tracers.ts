@@ -14,7 +14,7 @@ export const DEFAULT_TRACER_TTL = 0.253;
 export const TRACER_TTL_MIN = 0.15;
 export const TRACER_TTL_MAX = 0.35;
 /** Altura de la línea en mundo (chest). */
-export const TRACER_HEIGHT = 1.2075;
+export const TRACER_HEIGHT = 1.388625;
 /** Grosor XY de la caja-línea (tiles). 0.06875 × 1.15 para leer de noche. */
 export const TRACER_WIDTH = 0.0790625;
 
