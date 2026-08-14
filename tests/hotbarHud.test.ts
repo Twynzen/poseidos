@@ -2,6 +2,8 @@
  * @vitest-environment happy-dom
  */
 
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
 import { createInventory, createStarterInventory } from "../src/items";
 import { hotbarSlots } from "../src/ui/hotbar";
@@ -64,6 +66,7 @@ describe("hotbarHud consumeClick", () => {
     hud.dispose();
   });
 
+  // CSS lock: `.hotbar-selected` gold matches `.inv-slot-selected` (see "selected CSS" below).
   test("consume 3 luego sync(..., 3) → solo ese slot hotbar-selected", () => {
     root = document.createElement("div");
     document.body.appendChild(root);
@@ -499,5 +502,26 @@ describe("createHotbarHud icons", () => {
     );
     expect(hud.consumeClick()).toBe(1);
     hud.dispose();
+  });
+});
+
+describe("hotbar selected CSS", () => {
+  test(".hotbar-selected gold matches .inv-slot-selected; key #e8c36a", () => {
+    const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
+    expect(html).toMatch(
+      /\.hotbar-slot\.hotbar-selected\s*\{[^}]*border-color:\s*rgba\(232,\s*196,\s*106,\s*0\.95\)/s,
+    );
+    expect(html).toMatch(
+      /\.hotbar-slot\.hotbar-selected\s*\{[^}]*0 0 0 1px rgba\(232,\s*196,\s*106,\s*0\.55\)/s,
+    );
+    expect(html).toMatch(
+      /\.hotbar-slot\.hotbar-selected\s*\{[^}]*0 0 14px rgba\(212,\s*168,\s*75,\s*0\.28\)/s,
+    );
+    expect(html).toMatch(
+      /\.hotbar-slot\.hotbar-selected\s+\.hotbar-key\s*\{\s*color:\s*#e8c36a;/,
+    );
+    expect(html).not.toMatch(
+      /\.hotbar-slot\.hotbar-selected\s*\{[^}]*rgba\(96,\s*165,\s*250/s,
+    );
   });
 });
