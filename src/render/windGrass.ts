@@ -20,11 +20,11 @@ export const BLADES_PER_TILE = 3;
 /** Amplitud de oscilación horizontal (unidades mundo). 0.045 × 1.15 para leer de noche. */
 export const WIND_SWAY = 0.05175;
 
-/** Amplitud de yaw por viento (radianes). */
-export const WIND_YAW = 0.28;
+/** Amplitud de yaw por viento (radianes). 0.28 × 1.15 para leer de noche. */
+export const WIND_YAW = 0.322;
 
-/** Velocidad del viento (rad/s en el argumento de sin). */
-export const WIND_SPEED = 2.4;
+/** Velocidad del viento (rad/s en el argumento de sin). 2.4 × 1.15 para leer de noche. */
+export const WIND_SPEED = 2.76;
 
 export interface GrassTile {
   tx: number;
