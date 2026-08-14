@@ -2,6 +2,8 @@
  * @vitest-environment happy-dom
  */
 
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
 import {
   buildInventoryPanelData,
@@ -668,5 +670,13 @@ describe("inventoryInspectLabel", () => {
     expect(inventoryInspectLabel(inv, 0)).toContain("comer");
     expect(inventoryInspectLabel(inv, 1)).toContain("linterna");
     expect(inventoryInspectLabel(inv, 1)).toBe("linterna · linterna");
+  });
+});
+
+describe("inventory panel CSS", () => {
+  test(".inv-head uses Diablo gold #e8c36a", () => {
+    const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
+    expect(html).toMatch(/\.inv-head\s*\{[^}]*color:\s*#e8c36a;/s);
+    expect(html).not.toMatch(/\.inv-head\s*\{[^}]*color:\s*var\(--hud-accent\)/s);
   });
 });
