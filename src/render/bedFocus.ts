@@ -24,8 +24,8 @@ export const bedBadgeLabel = "Z";
 /** Font px del canvas de la letra Z (~1.8× vs 44). */
 export const bedBadgeFontPx = 80;
 
-/** Escala world de la letra Z. */
-export const bedBadgeLetterScale = 2.4;
+/** Escala world de la letra Z (2.4 × 1.15, para leerse de noche). */
+export const bedBadgeLetterScale = 2.76;
 
 /** Escala del disc de cama (1.5 × 1.15 vs badge compartido, para leerse de noche). */
 export const bedBadgeDiscScale = 1.725;
