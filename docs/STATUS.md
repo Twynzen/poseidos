@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** cuña de linterna un poco más opaca (gain)
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After wedge opacity gain, look at FLASHLIGHT_SPOT_INTENSITY_MUL (3.174) ×1.15 so the spot reads a bit stronger at night. Do not change length/half-width/Y/penumbra/wedge-base, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** spot de linterna un poco más fuerte
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After spot intensity mul, look at FLASHLIGHT_FILL_INTENSITY_MUL (0.727375) ×1.15 so the fill light reads a bit more at night. Do not change length/half-width/Y/penumbra/wedge, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **FLASHLIGHT_SPOT_INTENSITY_MUL 3.174→3.6501; fill/length/Y/half-width/penumbra/wedge/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **FLASHLIGHT_WEDGE_OPACITY_GAIN 0.29095→0.3345925; base/length/Y/half-width/penumbra/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **FLASHLIGHT_CONE_Y 0.1058→0.12167; length/half-width/penumbra/opacity/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **FLASHLIGHT_CONE_HALF_WIDTH 1.19025→1.3687875; length/Y/penumbra/opacity/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
