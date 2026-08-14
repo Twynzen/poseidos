@@ -29,7 +29,7 @@ export const DOOR_OPEN = 0xe1bb68;
 export const FURNITURE_COLOR = 0x7b5b30;
 
 /** Cama (histórico BED_COLOR en worldView). */
-export const BED_COLOR = 0x4a1f3d;
+export const BED_COLOR = 0x552446;
 
 /** Barricada: madera clara (histórico BARRICADE_COLOR en worldView). */
 export const BARRICADE_COLOR = 0xc49a6c;

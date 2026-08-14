@@ -335,7 +335,7 @@ describe("night wall albedo lift", () => {
     expect(DOOR_CLOSED).toBe(0xa06831);
     expect(DOOR_OPEN).toBe(0xe1bb68);
     expect(FURNITURE_COLOR).toBe(0x7b5b30);
-    expect(BED_COLOR).toBe(0x4a1f3d);
+    expect(BED_COLOR).toBe(0x552446);
     expect(BARRICADE_COLOR).toBe(0xc49a6c);
     expect(BARRICADE_EDGE).toBe(0x8a6239);
     expect(GROUND_NIGHT_LIFT).toBe(1.6675);
@@ -395,7 +395,7 @@ describe("night leftover prop albedo lift", () => {
     expect(WALL_BASE_COLOR).toBe(0x1e2027);
     expect(DOOR_OPEN).toBe(0xe1bb68);
     expect(FURNITURE_COLOR).toBe(0x7b5b30);
-    expect(BED_COLOR).toBe(0x4a1f3d);
+    expect(BED_COLOR).toBe(0x552446);
     expect(BARRICADE_COLOR).toBe(0xc49a6c);
     expect(BARRICADE_EDGE).toBe(0x8a6239);
     expect(GROUND_NIGHT_LIFT).toBe(1.6675);
@@ -429,7 +429,7 @@ describe("night leftover prop albedo lift", () => {
     expect(WALL_BASE_COLOR).toBe(0x1e2027);
     expect(DOOR_CLOSED).toBe(0xa06831);
     expect(FURNITURE_COLOR).toBe(0x7b5b30);
-    expect(BED_COLOR).toBe(0x4a1f3d);
+    expect(BED_COLOR).toBe(0x552446);
     expect(BARRICADE_COLOR).toBe(0xc49a6c);
     expect(BARRICADE_EDGE).toBe(0x8a6239);
     expect(GROUND_NIGHT_LIFT).toBe(1.6675);
@@ -463,7 +463,7 @@ describe("night leftover prop albedo lift", () => {
     expect(WALL_BASE_COLOR).toBe(0x1e2027);
     expect(DOOR_CLOSED).toBe(0xa06831);
     expect(DOOR_OPEN).toBe(0xe1bb68);
-    expect(BED_COLOR).toBe(0x4a1f3d);
+    expect(BED_COLOR).toBe(0x552446);
     expect(BARRICADE_COLOR).toBe(0xc49a6c);
     expect(BARRICADE_EDGE).toBe(0x8a6239);
     expect(GROUND_NIGHT_LIFT).toBe(1.6675);
@@ -480,12 +480,46 @@ describe("night leftover prop albedo lift", () => {
     );
   });
 
+  test("BED_COLOR 0x4a1f3d × 1.15; worldView still uses it", () => {
+    expect(BED_COLOR).toBe(0x552446);
+    const r = (BED_COLOR >> 16) & 0xff;
+    const g = (BED_COLOR >> 8) & 0xff;
+    const b = BED_COLOR & 0xff;
+    expect(r).toBe(0x55);
+    expect(g).toBe(0x24);
+    expect(b).toBe(0x46);
+    expect(Math.round((0x4a * 115) / 100)).toBe(r);
+    expect(Math.round((0x1f * 115) / 100)).toBe(g);
+    expect(Math.round((0x3d * 115) / 100)).toBe(b);
+    expect(INDOOR_FLOOR_COLOR).toBe(0x303540);
+    expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
+    expect(WALL_COLOR).toBe(0x685f53);
+    expect(WALL_BASE_COLOR).toBe(0x1e2027);
+    expect(DOOR_CLOSED).toBe(0xa06831);
+    expect(DOOR_OPEN).toBe(0xe1bb68);
+    expect(FURNITURE_COLOR).toBe(0x7b5b30);
+    expect(BARRICADE_COLOR).toBe(0xc49a6c);
+    expect(BARRICADE_EDGE).toBe(0x8a6239);
+    expect(GROUND_NIGHT_LIFT).toBe(1.6675);
+    expect(AO_MAX_DARKEN).toBe(0.261);
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain(
+      "bedMat.color.setHex(applyNightGroundLift(BED_COLOR, d))",
+    );
+    expect(viewSrc).toContain(
+      "color: applyNightGroundLift(BED_COLOR, lastDaylight)",
+    );
+  });
+
   test("doors/beds/furniture reuse ground lift; day = identity", () => {
     expect(GROUND_NIGHT_LIFT).toBe(1.6675);
     expect(DOOR_CLOSED).toBe(0xa06831);
     expect(DOOR_OPEN).toBe(0xe1bb68);
     expect(FURNITURE_COLOR).toBe(0x7b5b30);
-    expect(BED_COLOR).toBe(0x4a1f3d);
+    expect(BED_COLOR).toBe(0x552446);
     expect(applyNightGroundLift(DOOR_CLOSED, 1)).toBe(DOOR_CLOSED);
     expect(applyNightGroundLift(DOOR_OPEN, 1)).toBe(DOOR_OPEN);
     expect(applyNightGroundLift(FURNITURE_COLOR, 1)).toBe(FURNITURE_COLOR);
@@ -496,7 +530,7 @@ describe("night leftover prop albedo lift", () => {
     expect(applyNightGroundLift(DOOR_CLOSED, 0)).toBe(0xffad52);
     expect(applyNightGroundLift(DOOR_OPEN, 0)).toBe(0xffffad);
     expect(applyNightGroundLift(FURNITURE_COLOR, 0)).toBe(0xcd9850);
-    expect(applyNightGroundLift(BED_COLOR, 0)).toBe(0x7b3466);
+    expect(applyNightGroundLift(BED_COLOR, 0)).toBe(0x8e3c75);
     for (const base of [DOOR_CLOSED, DOOR_OPEN, FURNITURE_COLOR, BED_COLOR]) {
       const night = applyNightGroundLift(base, 0);
       const nr = (night >> 16) & 0xff;
