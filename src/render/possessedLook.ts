@@ -29,8 +29,8 @@ export const POSSESSED_FALLBACK_EMISSIVE = 0x2a0814;
  * Lock de nombre únicamente — no aplicar como color de cuerpo.
  */
 export const POSSESSED_CRUSHED_BODY = 0x1c141c;
-/** Roughness alto = look mate / usado. 0.88 × 0.87 para leer el cuerpo de noche. */
-export const POSSESSED_BODY_ROUGHNESS = 0.7656;
+/** Roughness alto = look mate / usado. 0.7656 × 0.87 para leer el cuerpo de noche. */
+export const POSSESSED_BODY_ROUGHNESS = 0.666072;
 /** Roughness acento visor. 0.4 × 0.87 para leer el visor de noche. */
 export const POSSESSED_ACCENT_ROUGHNESS = 0.348;
 /** Intensidad del cuerpo. 1 × 1.15 para leer la silueta de noche. */
