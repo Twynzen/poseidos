@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** visor mute un poco menos mate de noche
-- **Siguiente:** leftover visual polish chico — bump `POSSESSED_ACCENT_ROUGHNESS` (currently 0.348) ×0.87 so the possessed visor reads a bit less matte at night. Do not change body roughness, colors, emissive, mute look, sky/fog/sun/ambient, or controls. No new widgets.
+- **Última rutina:** visor poseído un poco menos mate de noche
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After mute/possessed accent roughness, look at survivorLook.ts for a night-readability knob (roughness or emissive intensity). Do not change mute/possessed look, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **POSSESSED_ACCENT_ROUGHNESS 0.348→0.30276; body/colores/emissive/mudos/sky/fog/sol/teclas iguales.**
   - **MUTE_ACCENT_ROUGHNESS 0.435→0.37845; body/colores/emissive/poseídos/sky/fog/sol/teclas iguales.**
   - **POSSESSED_BODY_ROUGHNESS 0.7656→0.666072; accent/colores/emissive/mudos/sky/fog/sol/teclas iguales.**
   - **MUTE_BODY_ROUGHNESS 0.7656→0.666072; accent/colores/emissive/poseídos/sky/fog/sol/teclas iguales.**
