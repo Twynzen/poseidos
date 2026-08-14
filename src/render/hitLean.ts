@@ -6,7 +6,7 @@
  */
 
 /** Duración del lean (s). */
-export const HIT_LEAN_DURATION = 0.2;
+export const HIT_LEAN_DURATION = 0.23;
 /** Ángulo pico de pitch (rad). yawBias usa la mitad. Pitch de salida es negativo. */
 export const HIT_LEAN_ANGLE = 0.35;
 
