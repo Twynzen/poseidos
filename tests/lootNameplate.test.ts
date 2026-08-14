@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   LOOT_NAMEPLATE_FADE_DIST,
@@ -35,6 +37,19 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_ICON_PAD).toBeGreaterThanOrEqual(48);
     expect(LOOT_NAMEPLATE_ICON_SIZE).toBeGreaterThanOrEqual(48);
     expect(LOOT_NAMEPLATE_ICON_SIZE).toBeLessThanOrEqual(72);
+  });
+
+  test("nameplate font 34px; canvas 384×80", () => {
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toMatch(
+      /ctx\.font = "600 34px ui-monospace, SF Mono, Menlo, Consolas, monospace"/,
+    );
+    expect(src).not.toMatch(/ctx\.font = "600 28px/);
+    expect(src).toMatch(/const BASE_W = 384;/);
+    expect(src).toMatch(/const H = 80;/);
   });
 });
 
