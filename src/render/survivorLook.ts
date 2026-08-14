@@ -16,8 +16,8 @@ export const SURVIVOR_BODY_COLOR = 0x9f9381;
 export const SURVIVOR_MAP_TINT = 0xe6d8c1;
 /** Emisión cuerpo muy baja: silueta legible de noche, sin glow. 0x23201b × 1.15/canal para leer de noche. */
 export const SURVIVOR_BODY_EMISSIVE = 0x28251f;
-/** Acento visor/casco: tierra cálida (no gris frío). */
-export const SURVIVOR_ACCENT = 0xa39c8c;
+/** Acento visor/casco: tierra cálida (no gris frío). 0xa39c8c × 1.15/canal para leer de noche. */
+export const SURVIVOR_ACCENT = 0xbbb3a1;
 /** Alias del acento (mismo valor). */
 export const SURVIVOR_ACCENT_COLOR = SURVIVOR_ACCENT;
 /** Emisión acento (path de visor). */
