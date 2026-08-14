@@ -8,10 +8,12 @@ import {
   INTERACT_RING_OUTER,
   LOOT_BADGE_OPACITY,
   MARKER_BADGE_OPACITY,
+  MUTE_BADGE_OPACITY,
   MARKER_PALETTE,
   MARKER_RING_OPACITY,
   PLAYER_BADGE_OPACITY,
   PLAYER_FOOT_RING_OPACITY,
+  POSSESSED_BADGE_OPACITY,
   THREAT_RING_INNER,
   THREAT_RING_OUTER,
   markerBadgeOpacity,
@@ -135,13 +137,17 @@ describe("markers (badges + ground rings)", () => {
     }
   });
 
-  test("badge player/loot oculto (0); door/bed/mute/possessed 1", () => {
+  test("badge player/loot/mute/possessed oculto (0); door/bed 1", () => {
     expect(PLAYER_BADGE_OPACITY).toBe(0);
     expect(LOOT_BADGE_OPACITY).toBe(0);
+    expect(MUTE_BADGE_OPACITY).toBe(0);
+    expect(POSSESSED_BADGE_OPACITY).toBe(0);
     expect(MARKER_BADGE_OPACITY).toBeCloseTo(1, 5);
     expect(markerBadgeOpacity("player")).toBe(0);
     expect(markerBadgeOpacity("loot")).toBe(0);
-    for (const role of ["door", "bed", "mute", "possessed"] as const) {
+    expect(markerBadgeOpacity("mute")).toBe(0);
+    expect(markerBadgeOpacity("possessed")).toBe(0);
+    for (const role of ["door", "bed"] as const) {
       expect(markerBadgeOpacity(role)).toBeCloseTo(1, 5);
     }
   });

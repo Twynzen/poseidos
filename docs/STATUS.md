@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** chevron de facing en oro, como el HUD.
+- **Última rutina:** badges flotantes de mute/poseído ocultos (quedan aros + look).
 - **Qué quedó (esta corrida):**
+  - **mute/possessed badge opacity 0; aros 0.50/0.68; E/Z puerta/cama siguen.** `MUTE_BADGE_OPACITY` / `POSSESSED_BADGE_OPACITY` 0. `markerBadgeOpacity("mute"|"possessed"|"loot"|"player")` 0; door/bed siguen 1. `attachRoleMarkers` no crea `floatBadge` si opacity ≤ 0 (el aro threat sí). Badge Y knobs 2.0 sin uso. Cámara / escala / luces / lluvia / linterna / inventario / hotbar / teclas / gestos sin cambio.
   - **FACING_CHEVRON_COLOR 0x9ef0ff→0xe8c36a; tamaño/opacity/yaw iguales.** worldView mesh sigue el knob (`color: FACING_CHEVRON_COLOR`). `FACING_CHEVRON_OPACITY` 0.55, DIST 1.2, LEN 0.805, HW 0.322, YAW_OFFSET 0 sin cambio. Cámara / escala / anillos / nameplates / badges / luces / lluvia / linterna / inventario / hotbar / teclas / gestos sin cambio.
   - **`.inv-head` `#e8c36a`; badges/gestos/hotbar iguales.** Título del panel I en oro Diablo (antes `--hud-accent` `#60a5fa`). Font-size / letter-spacing / uppercase / margin iguales. `.inv-badge` borde azul de equipo sin cambio. Hotbar selected gold, slot sizes, empty dashed, qty, iconos y gestos sin cambio. Cámara / markers / anillos / nameplates / luces / lluvia / linterna sin cambio.
   - **`.hotbar-selected` gold como `.inv-slot-selected`; tecla del slot activo `#e8c36a`.** Gestos iguales. `hotbarHud` solo togglea la clase; CSS en `index.html`. Slot 52×52, empty dashed, qty, iconos y gestos sin cambio. Inventario / cámara / markers / anillos / nameplates / luces / lluvia / linterna sin cambio.

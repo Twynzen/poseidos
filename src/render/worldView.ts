@@ -1941,7 +1941,7 @@ function attachRoleMarkers(
   ring.position.y = 0.04;
   root.add(ring);
 
-  // Loot: sin disc/glyph (queda el nameplate). Player ya return arriba.
+  // Loot/mute/possessed: sin disc/glyph (queda nameplate o look+aro). Player ya return arriba.
   if (markerBadgeOpacity(role) <= 0) return;
 
   const badgeMat = new THREE.MeshStandardMaterial({
