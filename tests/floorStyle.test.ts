@@ -2,11 +2,14 @@ import { describe, expect, test } from "vitest";
 import {
   aoFactor,
   applyAo,
+  applyNightGroundLift,
   countAoNeighbors,
   floorColorAt,
   floorIsOutdoor,
+  GROUND_NIGHT_LIFT,
   INDOOR_FLOOR_COLOR,
   isAoOccluder,
+  nightGroundLift,
   OUTDOOR_GRASS_BASE,
   OUTDOOR_SOLID_THRESHOLD,
   tileSeed01,
@@ -111,6 +114,43 @@ describe("floorIsOutdoor + floorColorAt", () => {
     expect(open).toBe(tintFromTile(4, 4, true));
     expect(edged).not.toBe(open);
     expect(edged).toBe(applyAo(open, aoFactor(2, 0)));
+    expect(floorColorAt(1, 1, false, 0, 0)).toBe(INDOOR_FLOOR_COLOR);
+  });
+});
+
+describe("night ground albedo lift", () => {
+  test("knobs: night lift 1.45; day = 1", () => {
+    expect(GROUND_NIGHT_LIFT).toBe(1.45);
+    expect(nightGroundLift(0)).toBe(1.45);
+    expect(nightGroundLift(1)).toBe(1);
+  });
+
+  test("d=0.08 → ~1.414; clamp fuera de [0,1]", () => {
+    expect(nightGroundLift(0.08)).toBeCloseTo(1.414, 5);
+    expect(nightGroundLift(-1)).toBe(1.45);
+    expect(nightGroundLift(2)).toBe(1);
+  });
+
+  test("applyNightGroundLift: noche más claro y verde; día igual", () => {
+    const day = applyNightGroundLift(OUTDOOR_GRASS_BASE, 1);
+    const night = applyNightGroundLift(OUTDOOR_GRASS_BASE, 0);
+    expect(day).toBe(OUTDOOR_GRASS_BASE);
+    expect(night).toBe(0x58734d);
+    const nr = (night >> 16) & 0xff;
+    const ng = (night >> 8) & 0xff;
+    const nb = night & 0xff;
+    const dr = (day >> 16) & 0xff;
+    const dg = (day >> 8) & 0xff;
+    const db = day & 0xff;
+    expect(nr).toBeGreaterThan(dr);
+    expect(ng).toBeGreaterThan(dg);
+    expect(nb).toBeGreaterThan(db);
+    expect(ng).toBeGreaterThan(nr);
+    expect(ng).toBeGreaterThan(nb);
+  });
+
+  test("floorColorAt día intacto (lift no entra al tint)", () => {
+    expect(floorColorAt(4, 4, true, 0, 0)).toBe(tintFromTile(4, 4, true));
     expect(floorColorAt(1, 1, false, 0, 0)).toBe(INDOOR_FLOOR_COLOR);
   });
 });
