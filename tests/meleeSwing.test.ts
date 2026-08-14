@@ -8,9 +8,9 @@ import {
 } from "../src/render/meleeSwing";
 
 describe("constantes", () => {
-  test("duración 0.25 × 1.15 y ángulo 0.4 × 1.15 rad", () => {
-    expect(MELEE_SWING_DURATION).toBe(0.2875);
-    expect(MELEE_SWING_DURATION).toBeCloseTo(0.25 * 1.15, 10);
+  test("duración 0.2875 × 1.15 y ángulo 0.4 × 1.15 rad", () => {
+    expect(MELEE_SWING_DURATION).toBe(0.330625);
+    expect(MELEE_SWING_DURATION).toBeCloseTo(0.2875 * 1.15, 10);
     expect(MELEE_SWING_ANGLE).toBe(0.46);
     expect(MELEE_SWING_ANGLE).toBeCloseTo(0.4 * 1.15, 10);
   });
