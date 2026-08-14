@@ -30,6 +30,7 @@ import {
   skyRgb,
   SUN_INTENSITY_GAIN,
   SUN_INTENSITY_NIGHT,
+  SUN_NIGHT_B_ADD,
   SUN_NIGHT_G_SUB,
   SUN_NIGHT_R_SUB,
   sunRgb,
@@ -231,19 +232,22 @@ describe("ambientRgb night mix", () => {
 });
 
 describe("sunRgb night mix", () => {
-  test("knobs: night r subtract 0.15 × 0.87; g subtract 0.2 × 0.87; b igual", () => {
+  test("knobs: night r subtract 0.15 × 0.87; g subtract 0.2 × 0.87; b add 0.12 × 1.15", () => {
     expect(SUN_NIGHT_R_SUB).toBe(0.1305);
     expect(SUN_NIGHT_R_SUB).toBeCloseTo(0.15 * 0.87, 10);
     expect(SUN_NIGHT_G_SUB).toBe(0.174);
     expect(SUN_NIGHT_G_SUB).toBeCloseTo(0.2 * 0.87, 10);
+    expect(SUN_NIGHT_B_ADD).toBe(0.138);
+    expect(SUN_NIGHT_B_ADD).toBeCloseTo(0.12 * 1.15, 10);
   });
 
-  test("d=0 → night r/g follow knobs; b add 0.12", () => {
+  test("d=0 → night r/g/b follow knobs; b add 0.138", () => {
     const night = sunRgb(0, 0);
     expect(night.r).toBeCloseTo(0.91 - SUN_NIGHT_R_SUB, 10);
     expect(night.g).toBeCloseTo(0.88 - SUN_NIGHT_G_SUB, 10);
     expect(night.g).toBeCloseTo(0.88 - 0.174, 10);
-    expect(night.b).toBeCloseTo(0.82 + 0.12, 10);
+    expect(night.b).toBeCloseTo(0.82 + SUN_NIGHT_B_ADD, 10);
+    expect(night.b).toBeCloseTo(0.82 + 0.138, 10);
   });
 });
 
