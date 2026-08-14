@@ -6,8 +6,8 @@
 /** Radio de foco (= reach de puerta). */
 export const DOOR_FOCUS_REACH = 1.6;
 
-/** Escala encima de la puerta (dist 0). */
-export const DOOR_FOCUS_SCALE_NEAR = 1.35;
+/** Escala encima de la puerta (dist 0; 1.35 × 1.15, para leerse de noche). */
+export const DOOR_FOCUS_SCALE_NEAR = 1.5525;
 
 /** Escala en el borde de reach. */
 export const DOOR_FOCUS_SCALE_FAR = 1.12;
@@ -39,7 +39,7 @@ export function doorFocusInReach(dist: number): boolean {
 }
 
 /**
- * 1.35 en dist 0 · 1.12 en reach 1.6 · 1.0 fuera.
+ * 1.5525 en dist 0 · 1.12 en reach 1.6 · 1.0 fuera.
  * Lerp lineal entre near y far dentro de reach.
  */
 export function doorFocusScale(dist: number): number {
