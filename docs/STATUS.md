@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** aros de suelo un poco más quietos.
+- **Última rutina:** flash de golpe un poco menos tapón.
 - **Qué quedó (esta corrida):**
+  - **hit-flash edge 0.95→0.62; timing/combate iguales.** Mid stop `rgba(160, 10, 16, 0.45)`→`0.32`; edge `rgba(120, 0, 8, 0.95)`→`0.62`. Ellipse, center transparent 32%, z-index 8, pointer-events none iguales. `game.ts` opacity = intensity × `HIT_FLASH_PEAK` 0.65 / decay 2.5 sin cambio. Cámara / markers / anillos / nameplates / chevron / luces / lluvia / linterna / HUD / inventario / diálogo / teclas / gestos sin cambio.
   - **MARKER_RING_OPACITY 0.72→0.52; radios/colores/E-Z iguales.** `markerRingOpacity("player")` sigue 0 (`PLAYER_FOOT_RING_OPACITY` 0). loot/door/bed/mute/possessed 0.52. INTERACT 0.55/0.78, THREAT 0.50/0.68, paleta, pulso y hide-fuera-de-alcance iguales. Badges loot/player/mute/possessed 0; door/bed E/Z 1. worldView `attachRoleMarkers` sigue `opacity: markerRingOpacity(role)`. Cámara / escala / nameplates / chevron / luces / lluvia / linterna / HUD / inventario / diálogo / teclas / gestos sin cambio.
   - **inventory-panel 13px; grilla/gestos/iconos 40px iguales.** `#inventory-panel` font 13px/1.5 (era 11.5px/1.45). `.inv-head` 14px (era 12px), gold `#e8c36a` igual. `.inv-weight` / `.inv-hint` 12px (era 10.5px). Width min(360px, …), grilla 5-col, slots 52×52, iconos 40px, selected gold y empty dashed iguales. `inventory.ts` gestos/copy sin cambio. Hotbar / toast / HUD / moodle / diálogo / cámara / markers / anillos / luces / lluvia / linterna / teclas / gestos sin cambio.
   - **loot-floater-icon 30→36px; 2s / copy / gestos iguales.** `#loot-floater .loot-floater-icon` (y su `svg`) 36px; flex `0 0 36px`. Font 20px, animación 2s, gold/error, glass chip y qty badge iguales. `lootFloaterHud.ts` no hardcodea el tamaño. `itemIcons.ts` paths / viewBox sin cambio. Hotbar/inv 40px, cámara / markers / anillos / nameplates / chevron / luces / lluvia / linterna / teclas / gestos sin cambio.
