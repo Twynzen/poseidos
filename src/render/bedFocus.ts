@@ -27,8 +27,8 @@ export const bedBadgeFontPx = 80;
 /** Escala world de la letra Z. */
 export const bedBadgeLetterScale = 2.4;
 
-/** Escala del disc de cama (×1.5 vs badge compartido). */
-export const bedBadgeDiscScale = 1.5;
+/** Escala del disc de cama (1.5 × 1.15 vs badge compartido, para leerse de noche). */
+export const bedBadgeDiscScale = 1.725;
 
 /** Altura world del floatBadge Z (queda por encima del Soldier 1.5). */
 export const bedBadgeY = 2.3;
