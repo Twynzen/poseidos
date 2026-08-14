@@ -26,7 +26,7 @@ export const DOOR_CLOSED = 0xa06831;
 export const DOOR_OPEN = 0xe1bb68;
 
 /** Mueble / crate genérico (histórico FURNITURE_COLOR en worldView). */
-export const FURNITURE_COLOR = 0x6b4f2a;
+export const FURNITURE_COLOR = 0x7b5b30;
 
 /** Cama (histórico BED_COLOR en worldView). */
 export const BED_COLOR = 0x4a1f3d;
