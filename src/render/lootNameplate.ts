@@ -6,6 +6,9 @@
 /** Máximo de caracteres del label. */
 export const LOOT_NAMEPLATE_MAX_CHARS = 20;
 
+/** Distancia a la que el nameplate sigue opaco / escala 1. 2 × 1.15 para leer de noche. */
+export const LOOT_NAMEPLATE_NEAR_DIST = 2.3;
+
 /** Distancia a la que el nameplate llega a opacity 0. 5.5 × 1.15 para leer de noche. */
 export const LOOT_NAMEPLATE_FADE_DIST = 6.325;
 
@@ -43,14 +46,16 @@ export const LOOT_NAMEPLATE_TEXT_STROKE = "rgba(0,0,0,0.805)";
 export const LOOT_NAMEPLATE_ICON_STROKE = 1.725;
 
 /**
- * 1 en dist ≤ 2 · lerp 1 → mid-scale de 2 a fade 5.5 · mid-scale más allá.
+ * 1 en dist ≤ NEAR · lerp 1 → mid-scale de NEAR a fade · mid-scale más allá.
  * Omitido / no finito → 1.
  */
 export function lootNameplateScale(dist?: number): number {
   if (dist === undefined || !Number.isFinite(dist)) return 1;
-  if (dist <= 2) return 1;
+  if (dist <= LOOT_NAMEPLATE_NEAR_DIST) return 1;
   if (dist >= LOOT_NAMEPLATE_FADE_DIST) return LOOT_NAMEPLATE_MID_SCALE;
-  const t = (dist - 2) / (LOOT_NAMEPLATE_FADE_DIST - 2);
+  const t =
+    (dist - LOOT_NAMEPLATE_NEAR_DIST) /
+    (LOOT_NAMEPLATE_FADE_DIST - LOOT_NAMEPLATE_NEAR_DIST);
   return 1 + (LOOT_NAMEPLATE_MID_SCALE - 1) * t;
 }
 
@@ -66,15 +71,19 @@ export function truncateLootLabel(label: string): string {
 }
 
 /**
- * 1 en dist ≤ 2 · lerp 1 → 0 de 2 a fade 5.5 · 0 en fade y más allá.
+ * 1 en dist ≤ NEAR · lerp 1 → 0 de NEAR a fade · 0 en fade y más allá.
  * Fuera / no finito → 0. Dist negativa se clampa a 0.
  */
 export function lootNameplateOpacity(dist: number): number {
   if (!Number.isFinite(dist)) return 0;
   if (dist >= LOOT_NAMEPLATE_FADE_DIST) return 0;
   const d = Math.max(0, dist);
-  if (d <= 2) return 1;
-  return 1 - (d - 2) / (LOOT_NAMEPLATE_FADE_DIST - 2);
+  if (d <= LOOT_NAMEPLATE_NEAR_DIST) return 1;
+  return (
+    1 -
+    (d - LOOT_NAMEPLATE_NEAR_DIST) /
+      (LOOT_NAMEPLATE_FADE_DIST - LOOT_NAMEPLATE_NEAR_DIST)
+  );
 }
 
 /**
