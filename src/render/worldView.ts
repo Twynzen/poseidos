@@ -4,7 +4,9 @@ import {
   markerRingOpacity,
   markerRingRadii,
   markerUsesInteractRing,
+  muteBadgeY,
   paletteFor,
+  possessedBadgeY,
   type MarkerRole,
 } from "./markers";
 import {
@@ -1987,7 +1989,8 @@ function attachRoleMarkers(
   if (role === "door") badge.position.y = doorBadgeY;
   else if (role === "bed") badge.position.y = bedBadgeY;
   else if (role === "loot") badge.position.y = 1.12;
-  else badge.position.y = 1.68;
+  else if (role === "mute") badge.position.y = muteBadgeY;
+  else if (role === "possessed") badge.position.y = possessedBadgeY;
   root.add(badge);
 }
 
