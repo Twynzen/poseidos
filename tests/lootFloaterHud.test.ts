@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
 import { itemIconSvg } from "../src/ui/itemIcons";
 import {
@@ -381,5 +383,20 @@ describe("createLootFloaterHud", () => {
     const again = doc.getElementById(LOOT_FLOATER_HUD_ID);
     expect(again).toBe(first);
     expect(again!.textContent).toBe("+b");
+  });
+});
+
+describe("loot floater icon CSS", () => {
+  test(".loot-floater-icon is 36px", () => {
+    const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
+    expect(html).toMatch(
+      /#loot-floater \.loot-floater-icon\s*\{[^}]*width:\s*36px;\s*height:\s*36px/s,
+    );
+    expect(html).toMatch(
+      /#loot-floater \.loot-floater-icon\s*\{[^}]*flex:\s*0 0 36px/s,
+    );
+    expect(html).toMatch(
+      /#loot-floater \.loot-floater-icon svg\s*\{\s*width:\s*36px;\s*height:\s*36px;/,
+    );
   });
 });
