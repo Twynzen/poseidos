@@ -14,7 +14,7 @@ import {
 } from "../src/render/lootFocus";
 
 describe("constantes", () => {
-  test("reach = CONTAINER_REACH 1.6; near 1.5525; far 1.288; pulse 0.066125 / 6", () => {
+  test("reach = CONTAINER_REACH 1.6; near 1.5525; far 1.288; pulse 0.066125 / 6.9", () => {
     expect(LOOT_FOCUS_REACH).toBe(CONTAINER_REACH);
     expect(LOOT_FOCUS_REACH).toBe(1.6);
     expect(LOOT_FOCUS_SCALE_NEAR).toBe(1.5525);
@@ -23,7 +23,8 @@ describe("constantes", () => {
     expect(LOOT_FOCUS_SCALE_FAR).toBeCloseTo(1.12 * 1.15, 10);
     expect(LOOT_FOCUS_PULSE_AMP).toBe(0.066125);
     expect(LOOT_FOCUS_PULSE_AMP).toBeCloseTo(0.0575 * 1.15, 10);
-    expect(LOOT_FOCUS_PULSE_SPEED).toBe(6);
+    expect(LOOT_FOCUS_PULSE_SPEED).toBe(6.9);
+    expect(LOOT_FOCUS_PULSE_SPEED).toBeCloseTo(6 * 1.15, 10);
   });
 });
 
@@ -50,14 +51,14 @@ describe("lootFocusScale", () => {
 });
 
 describe("lootFocusPulse", () => {
-  test("1 + 0.066125 * sin(elapsed * 6)", () => {
+  test("1 + 0.066125 * sin(elapsed * 6.9)", () => {
     expect(lootFocusPulse(0)).toBe(1);
     // sin(π/2) = 1 → 1.066125
-    expect(lootFocusPulse(Math.PI / 12)).toBeCloseTo(1.066125, 10);
+    expect(lootFocusPulse(Math.PI / (2 * 6.9))).toBeCloseTo(1.066125, 10);
     // sin(π) = 0 → 1
-    expect(lootFocusPulse(Math.PI / 6)).toBeCloseTo(1, 10);
+    expect(lootFocusPulse(Math.PI / 6.9)).toBeCloseTo(1, 10);
     // sin(3π/2) = -1 → 0.933875
-    expect(lootFocusPulse(Math.PI / 4)).toBeCloseTo(0.933875, 10);
+    expect(lootFocusPulse((3 * Math.PI) / (2 * 6.9))).toBeCloseTo(0.933875, 10);
   });
 
   test("NaN elapsed trata como 0", () => {
@@ -67,14 +68,14 @@ describe("lootFocusPulse", () => {
 
 describe("lootFocusMul", () => {
   test("en reach: scale * pulse", () => {
-    const elapsed = Math.PI / 12; // pulse = 1.066125
+    const elapsed = Math.PI / (2 * 6.9); // pulse = 1.066125
     expect(lootFocusMul(0, elapsed)).toBeCloseTo(1.5525 * 1.066125, 10);
     expect(lootFocusMul(1.6, elapsed)).toBeCloseTo(1.288 * 1.066125, 10);
     expect(lootFocusMul(0.8, 0)).toBeCloseTo(1.42025, 10);
   });
 
   test("fuera de reach: 1 (sin pulso)", () => {
-    const elapsed = Math.PI / 12; // pulse ≠ 1
+    const elapsed = Math.PI / (2 * 6.9); // pulse ≠ 1
     expect(lootFocusMul(1.61, elapsed)).toBe(1);
     expect(lootFocusMul(8, elapsed)).toBe(1);
     expect(lootFocusMul(Number.NaN, elapsed)).toBe(1);
