@@ -692,4 +692,14 @@ describe("inventory panel CSS", () => {
     expect(html).toMatch(/\.inv-head\s*\{[^}]*color:\s*#e8c36a;/s);
     expect(html).not.toMatch(/\.inv-head\s*\{[^}]*color:\s*var\(--hud-accent\)/s);
   });
+
+  test(".inv-badge border uses gold rgba", () => {
+    const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
+    expect(html).toMatch(
+      /\.inv-badge\s*\{[^}]*border:\s*1px solid rgba\(232,\s*196,\s*106,\s*0\.45\)/s,
+    );
+    expect(html).not.toMatch(
+      /\.inv-badge\s*\{[^}]*border:\s*1px solid rgba\(96,\s*165,\s*250,\s*0\.35\)/s,
+    );
+  });
 });
