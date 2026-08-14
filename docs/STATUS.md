@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** bob de caminar un poco más visible
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After walk bob, look at WALK_LEAN_AMP (0.046) ×1.15 so walk lean reads a bit more at night. Do not change idle/sprint/freq/sway/bob, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** lean de caminar un poco más visible
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After walk lean, look at WALK_SWAY_AMP (0.04025) ×1.15 so walk sway reads a bit more at night. Do not change idle/sprint/freq/bob/lean, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **WALK_LEAN_AMP 0.046→0.0529; bob/sway/idle/sprint/freq/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **WALK_BOB_AMP 0.06325→0.0727375; lean/sway/idle/sprint/freq/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **IDLE_SWAY_AMP 0.0092→0.01058; bob/walk/sprint/freq/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **IDLE_BOB_AMP 0.0138→0.01587; sway/walk/sprint/freq/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
