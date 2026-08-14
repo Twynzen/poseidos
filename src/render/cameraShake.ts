@@ -9,8 +9,8 @@
 export const CAMERA_SHAKE_DURATION = 0.23;
 /** Amplitud pico (unidades mundo, ejes XZ). 0.125 × 1.15 para leer de noche. */
 export const CAMERA_SHAKE_AMP = 0.14375;
-/** Frecuencia del sine (base 42 = 1 ciclo). 42 × 1.15 para leer de noche. */
-export const CAMERA_SHAKE_FREQ = 48.3;
+/** Frecuencia del sine (base 42 = 1 ciclo). 48.3 × 1.15 para leer de noche. */
+export const CAMERA_SHAKE_FREQ = 55.545;
 
 export interface CameraShakeState {
   /** Segundos transcurridos del shake actual. */
