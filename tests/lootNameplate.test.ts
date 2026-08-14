@@ -19,9 +19,9 @@ import {
 } from "../src/render/lootNameplate";
 
 describe("constantes", () => {
-  test("max 20 chars; fade dist 10; y ~1.55; scale 2.6×0.65", () => {
+  test("max 20 chars; fade dist 6.5; y ~1.55; scale 2.6×0.65", () => {
     expect(LOOT_NAMEPLATE_MAX_CHARS).toBe(20);
-    expect(LOOT_NAMEPLATE_FADE_DIST).toBe(10);
+    expect(LOOT_NAMEPLATE_FADE_DIST).toBe(6.5);
     expect(LOOT_NAMEPLATE_Y).toBeCloseTo(1.55);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.6);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.65);
@@ -73,18 +73,22 @@ describe("lootNameplateLabel", () => {
 });
 
 describe("lootNameplateOpacity", () => {
-  test("1 en dist 0; 0 en fade 10; 0 fuera", () => {
+  test("1 en dist ≤ 2 (in-reach 1.6); 0 en fade 6.5; 0 fuera", () => {
     expect(lootNameplateOpacity(0)).toBe(1);
-    expect(lootNameplateOpacity(10)).toBe(0);
-    expect(lootNameplateOpacity(10.01)).toBe(0);
+    expect(lootNameplateOpacity(1.6)).toBe(1);
+    expect(lootNameplateOpacity(2)).toBe(1);
+    expect(lootNameplateOpacity(6.5)).toBe(0);
+    expect(lootNameplateOpacity(6.51)).toBe(0);
+    expect(lootNameplateOpacity(8)).toBe(0);
     expect(lootNameplateOpacity(80)).toBe(0);
   });
 
-  test("lerp lineal dentro del fade", () => {
-    expect(lootNameplateOpacity(5)).toBeCloseTo(0.5, 10);
-    expect(lootNameplateOpacity(2.5)).toBeCloseTo(0.75, 10);
+  test("lerp lineal 1 → 0 de 2 a fade 6.5", () => {
+    // midpoint 4.25: 1 - 0.5 = 0.5
+    expect(lootNameplateOpacity(4.25)).toBeCloseTo(0.5, 10);
     const t = 0.25;
-    expect(lootNameplateOpacity(10 * t)).toBeCloseTo(1 - t, 10);
+    const span = LOOT_NAMEPLATE_FADE_DIST - 2;
+    expect(lootNameplateOpacity(2 + span * t)).toBeCloseTo(1 - t, 10);
   });
 
   test("NaN → 0", () => {
@@ -102,20 +106,23 @@ describe("lootNameplateOpacity", () => {
 });
 
 describe("lootNameplateScale", () => {
-  test("1 en dist ≤ 2; 0.75 en fade 10 y más allá", () => {
+  test("1 en dist ≤ 2 (in-reach 1.6); 0.55 en fade 6.5 y más allá", () => {
     expect(lootNameplateScale(0)).toBe(1);
+    expect(lootNameplateScale(1.6)).toBe(1);
     expect(lootNameplateScale(2)).toBe(1);
-    expect(lootNameplateScale(10)).toBe(0.75);
-    expect(lootNameplateScale(10.01)).toBe(0.75);
-    expect(lootNameplateScale(80)).toBe(0.75);
+    expect(lootNameplateScale(6.5)).toBe(0.55);
+    expect(lootNameplateScale(6.51)).toBe(0.55);
+    expect(lootNameplateScale(8)).toBe(0.55);
+    expect(lootNameplateScale(80)).toBe(0.55);
   });
 
-  test("lerp lineal 1 → 0.75 de 2 a fade 10", () => {
-    // midpoint 6: 1 + (0.75-1)*0.5 = 0.875
-    expect(lootNameplateScale(6)).toBeCloseTo(0.875, 10);
+  test("lerp lineal 1 → 0.55 de 2 a fade 6.5", () => {
+    // midpoint 4.25: 1 + (0.55-1)*0.5 = 0.775
+    expect(lootNameplateScale(4.25)).toBeCloseTo(0.775, 10);
     const t = 0.25;
-    const expected = 1 + (0.75 - 1) * t;
-    expect(lootNameplateScale(2 + 8 * t)).toBeCloseTo(expected, 10);
+    const expected = 1 + (0.55 - 1) * t;
+    const span = LOOT_NAMEPLATE_FADE_DIST - 2;
+    expect(lootNameplateScale(2 + span * t)).toBeCloseTo(expected, 10);
   });
 
   test("omitido / NaN / no finito → 1", () => {
@@ -131,10 +138,13 @@ describe("lootNameplateScale", () => {
 });
 
 describe("lootNameplateVisible", () => {
-  test("visible si opacity > 0; dist >= 10 oculto", () => {
+  test("visible si opacity > 0; dist 1.6 full; dist 8+ hidden", () => {
     expect(lootNameplateVisible(false, 0)).toBe(true);
-    expect(lootNameplateVisible(false, 9.99)).toBe(true);
-    expect(lootNameplateVisible(false, 10)).toBe(false);
+    expect(lootNameplateVisible(false, 1.6)).toBe(true);
+    expect(lootNameplateVisible(false, 2)).toBe(true);
+    expect(lootNameplateVisible(false, 6.49)).toBe(true);
+    expect(lootNameplateVisible(false, 6.5)).toBe(false);
+    expect(lootNameplateVisible(false, 8)).toBe(false);
     expect(lootNameplateVisible(false, 11)).toBe(false);
   });
 
@@ -166,7 +176,7 @@ describe("lootNameplateVisible", () => {
     );
     expect(lootNameplateVisible(lootNameplateInvEmpty(qty0), 0)).toBe(false);
     expect(lootNameplateVisible(lootNameplateInvEmpty(full), 0)).toBe(true);
-    expect(lootNameplateVisible(lootNameplateInvEmpty(full), 10)).toBe(false);
+    expect(lootNameplateVisible(lootNameplateInvEmpty(full), 8)).toBe(false);
   });
 });
 

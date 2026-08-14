@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** badge del player más quieto (opacidad 0.45).
+- **Última rutina:** nameplates lejanas se ocultan antes (fade 10→6.5).
 - **Qué quedó (esta corrida):**
+  - **Nameplates lejanas** hide beyond 6.5 (era 10). Full scale/opacity hasta dist 2 (in-reach 1.6 se lee igual). Mid-distance scale mul 0.55 en el fade edge (era 0.75). Dist 8+ hidden. Empty-container hide e iconos iguales. Sin teclas, gestos ni features nuevas. Linterna / noise rings / chevron / player foot ring/badge / door/bed rings sin cambio.
   - **Badge player 0.45** disc de cabeza más quieto (`PLAYER_BADGE_OPACITY` 0.45, `transparent: true`); siempre visible. Foot ring player sigue 0.42. Otros badges (loot/door/bed/mute/possessed) siguen en 1. `markerBadgeOpacity(role)` en `attachRoleMarkers`. Sin teclas, gestos ni features nuevas. Colores y letras E/Z iguales.
   - **Foot ring player 0.42** mismo radio (RingGeometry 0.42–0.58, y=0.04), siempre visible. Color player `0x3a7fd4` igual. Otros roles (loot/door/bed/mute/possessed) siguen en 0.72. `markerRingOpacity(role)` en `attachRoleMarkers`. Sin teclas, gestos ni features nuevas.
   - **Chevron de facing más claro** triángulo de suelo semi-transparente (`FACING_CHEVRON_COLOR` `0x9ef0ff`, `FACING_CHEVRON_OPACITY` 0.55), siempre visible (también idle). Mismos dist 1.05 y yaw offset 0. Sin teclas, gestos ni features nuevas.
@@ -53,6 +54,6 @@
 - **Controles:** WASD mover · **Shift correr** · **Espacio/V melee** · **X disparar** · E puerta/loot · G loot · **Shift+G stack** · **Q usar slot** (consumible seleccionado / lluvia outdoor) · **U tirar** · **Shift+U stack** · **U inv tirar** · **1-5 hotbar** (selección, highlight azul) · **rueda hotbar** (cicla slot, wrap) · **clic hotbar** · **arrastrar hotbar** · **doble clic usar** · **clic der. info** · **Shift+clic hotbar partir** · **Ctrl+clic hotbar juntar** · **clic inv usar** · **doble clic inv** · **arrastrar inv** · **clic der. inv** · **Shift+clic inv partir** · **Ctrl+clic inv juntar** · **I inventorio (panel; al empezar muestra kit inicial)** · B barricada · **C vendaje** · **H cocinar** · **T diálogo** (calmar / preguntar / amenazar / ofrecer comida / Distraer) · **L linterna** · **M mute ambient** · **+/- zoom** · R descanso/reinicio · **Z dormir** (cama o suelo indoor) · **F1 ayuda** · F5 guardar · F9 cargar · (boot) clic/Espacio saltar loading
 - **Fuera de este slice:** autogenerar modelos en Mesh2Motion (herramienta externa); WebSocket real; lobby UI browser; API LLM real; GTAO; samples de pisadas (sigue beep); samples ambient reales; samples combat reales (sigue beep); samples interact reales (sigue beep); samples speech reales (sigue beep); samples heartbeat reales (sigue beep)
 - **Dirección:** sandbox largo en Three.js (sim primero; render es vista); LLM solo stub/fallback; MP solo stub headless por ahora
-- **Siguiente subtarea concreta:** leftover visual polish chico (nameplates lejanas / similar) — sin gestos nuevos.
+- **Siguiente subtarea concreta:** leftover visual polish chico — sin gestos nuevos.
 - **Bloqueos:** ninguno
 - **Entorno:** Bun; scripts `dev`, `build`, `test`
