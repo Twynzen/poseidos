@@ -20,6 +20,9 @@ export const BLADES_PER_TILE = 3;
 /** Amplitud de oscilación horizontal (unidades mundo). 0.05175 × 1.15 para leer de noche. */
 export const WIND_SWAY = 0.0595125;
 
+/** Multiplicador Z del sway (relativo a WIND_SWAY). 0.65 × 1.15 para leer de noche. */
+export const WIND_SWAY_Z_MUL = 0.7475;
+
 /** Amplitud de yaw por viento (radianes). 0.322 × 1.15 para leer de noche. */
 export const WIND_YAW = 0.3703;
 
@@ -133,7 +136,7 @@ export function bladeWind(
   const w2 = Math.sin(time * (WIND_SPEED * 1.37) + phase * 1.7);
   return {
     dx: w * WIND_SWAY,
-    dz: w2 * WIND_SWAY * 0.65,
+    dz: w2 * WIND_SWAY * WIND_SWAY_Z_MUL,
     dyaw: w * WIND_YAW,
   };
 }

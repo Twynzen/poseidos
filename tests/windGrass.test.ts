@@ -12,6 +12,7 @@ import {
   tileAcceptsGrass,
   WIND_SPEED,
   WIND_SWAY,
+  WIND_SWAY_Z_MUL,
   WIND_YAW,
 } from "../src/render/windGrass";
 import type { TileKind } from "../src/world/tile";
@@ -75,6 +76,8 @@ describe("blade transforms + wind", () => {
   test("wind yaw 0.322 × 1.15; sway/speed/count iguales", () => {
     expect(WIND_SWAY).toBe(0.0595125);
     expect(WIND_SWAY).toBeCloseTo(0.05175 * 1.15, 10);
+    expect(WIND_SWAY_Z_MUL).toBe(0.7475);
+    expect(WIND_SWAY_Z_MUL).toBeCloseTo(0.65 * 1.15, 10);
     expect(WIND_YAW).toBe(0.3703);
     expect(WIND_YAW).toBeCloseTo(0.322 * 1.15, 10);
     expect(WIND_SPEED).toBe(3.174);
