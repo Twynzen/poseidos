@@ -635,7 +635,7 @@ export function createWorldView(
     }
   }
 
-  // Door: anillo/badge teal por tile door. Anillo solo en reach (no FOV).
+  // Door: anillo/badge steel blue-grey por tile door. Anillo solo en reach (no FOV).
   interface DoorMarkerEntry {
     group: THREE.Group;
     x: number;
@@ -655,7 +655,7 @@ export function createWorldView(
     doorMarkerGroups.push({ group, x, y });
   });
 
-  // Bed: anillo/badge rosa por tile cama. Anillo solo en reach (no FOV).
+  // Bed: anillo/badge púrpura sleep por tile cama. Anillo solo en reach (no FOV).
   // Neighborhood: (6,6) y (24,22).
   interface BedMarkerEntry {
     group: THREE.Group;

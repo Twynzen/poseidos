@@ -13,11 +13,11 @@ import {
 } from "../src/render/bedFocus";
 
 describe("constantes", () => {
-  test("reach 1.5; near 1.35; far 1.12; pulse 0.08 / 6", () => {
+  test("reach 1.5; near 1.35; far 1.12; pulse 0.05 / 6", () => {
     expect(BED_FOCUS_REACH).toBe(1.5);
     expect(BED_FOCUS_SCALE_NEAR).toBe(1.35);
     expect(BED_FOCUS_SCALE_FAR).toBe(1.12);
-    expect(BED_FOCUS_PULSE_AMP).toBe(0.08);
+    expect(BED_FOCUS_PULSE_AMP).toBe(0.05);
     expect(BED_FOCUS_PULSE_SPEED).toBe(6);
   });
 });
@@ -50,14 +50,14 @@ describe("bedFocusScale", () => {
 });
 
 describe("bedFocusPulse", () => {
-  test("1 + 0.08 * sin(elapsed * 6)", () => {
+  test("1 + 0.05 * sin(elapsed * 6)", () => {
     expect(bedFocusPulse(0)).toBe(1);
-    // sin(π/2) = 1 → 1.08
-    expect(bedFocusPulse(Math.PI / 12)).toBeCloseTo(1.08, 10);
+    // sin(π/2) = 1 → 1.05
+    expect(bedFocusPulse(Math.PI / 12)).toBeCloseTo(1.05, 10);
     // sin(π) = 0 → 1
     expect(bedFocusPulse(Math.PI / 6)).toBeCloseTo(1, 10);
-    // sin(3π/2) = -1 → 0.92
-    expect(bedFocusPulse(Math.PI / 4)).toBeCloseTo(0.92, 10);
+    // sin(3π/2) = -1 → 0.95
+    expect(bedFocusPulse(Math.PI / 4)).toBeCloseTo(0.95, 10);
   });
 
   test("NaN elapsed trata como 0", () => {
@@ -71,9 +71,9 @@ describe("bedFocusPulse", () => {
 
 describe("bedFocusMul", () => {
   test("en reach: scale * pulse", () => {
-    const elapsed = Math.PI / 12; // pulse = 1.08
-    expect(bedFocusMul(0, elapsed)).toBeCloseTo(1.35 * 1.08, 10);
-    expect(bedFocusMul(1.5, elapsed)).toBeCloseTo(1.12 * 1.08, 10);
+    const elapsed = Math.PI / 12; // pulse = 1.05
+    expect(bedFocusMul(0, elapsed)).toBeCloseTo(1.35 * 1.05, 10);
+    expect(bedFocusMul(1.5, elapsed)).toBeCloseTo(1.12 * 1.05, 10);
     expect(bedFocusMul(0.75, 0)).toBeCloseTo(1.235, 10);
   });
 

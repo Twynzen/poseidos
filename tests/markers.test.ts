@@ -35,27 +35,27 @@ describe("markers (badges + ground rings)", () => {
     expect(MARKER_PALETTE.loot.glyph.length).toBeGreaterThan(0);
   });
 
-  test("paleta: door teal (anillo 0x2ec8b4, badge 0x7eefe4, ⊓)", () => {
+  test("paleta: door steel (anillo 0x5c7388, badge 0x8aa4b8, ⊓)", () => {
     const door = paletteFor("door");
-    expect(door.ring).toBe(0x2ec8b4);
-    expect(door.badge).toBe(0x7eefe4);
-    expect(door.emissive).toBe(0x104038);
+    expect(door.ring).toBe(0x5c7388);
+    expect(door.badge).toBe(0x8aa4b8);
+    expect(door.emissive).toBe(0x182028);
     expect(door.glyph).toBe("⊓");
-    // teal: G y B dominantes sobre R
+    // steel blue-grey: G y B dominantes sobre R
     expect((door.ring >> 8) & 0xff).toBeGreaterThan((door.ring >> 16) & 0xff);
     expect(door.ring & 0xff).toBeGreaterThan((door.ring >> 16) & 0xff);
     expect(MARKER_PALETTE.door.glyph.length).toBeGreaterThan(0);
   });
 
-  test("paleta: bed rosa (anillo 0xe07090, badge 0xffa0b8, ▭)", () => {
+  test("paleta: bed púrpura sleep (anillo 0x7a6490, badge 0xa890b8, ▭)", () => {
     const bed = paletteFor("bed");
-    expect(bed.ring).toBe(0xe07090);
-    expect(bed.badge).toBe(0xffa0b8);
-    expect(bed.emissive).toBe(0x401018);
+    expect(bed.ring).toBe(0x7a6490);
+    expect(bed.badge).toBe(0xa890b8);
+    expect(bed.emissive).toBe(0x201828);
     expect(bed.glyph).toBe("▭");
-    // rosa: R dominante sobre G y B
+    // púrpura: R y B altos, G más bajo
     expect((bed.ring >> 16) & 0xff).toBeGreaterThan((bed.ring >> 8) & 0xff);
-    expect((bed.ring >> 16) & 0xff).toBeGreaterThan(bed.ring & 0xff);
+    expect(bed.ring & 0xff).toBeGreaterThan((bed.ring >> 8) & 0xff);
     expect(MARKER_PALETTE.bed.glyph.length).toBeGreaterThan(0);
   });
 

@@ -13,7 +13,7 @@ export const BED_FOCUS_SCALE_NEAR = 1.35;
 export const BED_FOCUS_SCALE_FAR = 1.12;
 
 /** Amplitud del seno. */
-export const BED_FOCUS_PULSE_AMP = 0.08;
+export const BED_FOCUS_PULSE_AMP = 0.05;
 
 /** Velocidad angular del pulso (rad/s). */
 export const BED_FOCUS_PULSE_SPEED = 6;
@@ -37,7 +37,7 @@ export function bedFocusScale(dist: number): number {
   );
 }
 
-/** 1 + 0.08 * sin(elapsed * 6). */
+/** 1 + 0.05 * sin(elapsed * 6). */
 export function bedFocusPulse(elapsed: number): number {
   const t = Number.isFinite(elapsed) ? elapsed : 0;
   return 1 + BED_FOCUS_PULSE_AMP * Math.sin(t * BED_FOCUS_PULSE_SPEED);
@@ -49,7 +49,7 @@ export function bedFocusMul(dist: number, elapsed: number): number {
   return bedFocusScale(dist) * bedFocusPulse(elapsed);
 }
 
-/** Anillo rosa solo si la cama está en reach. */
+/** Anillo púrpura sleep solo si la cama está en reach. */
 export function bedRingVisible(
   dist: number,
   reach: number = BED_FOCUS_REACH,
