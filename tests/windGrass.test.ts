@@ -73,13 +73,13 @@ describe("collectGrassTiles", () => {
 });
 
 describe("blade transforms + wind", () => {
-  test("wind sway 0.05175 × 1.15; yaw/speed/count iguales", () => {
+  test("wind speed 2.76 × 1.15; sway/yaw/count iguales", () => {
     expect(WIND_SWAY).toBe(0.0595125);
     expect(WIND_SWAY).toBeCloseTo(0.05175 * 1.15, 10);
     expect(WIND_YAW).toBe(0.322);
     expect(WIND_YAW).toBeCloseTo(0.28 * 1.15, 10);
-    expect(WIND_SPEED).toBe(2.76);
-    expect(WIND_SPEED).toBeCloseTo(2.4 * 1.15, 10);
+    expect(WIND_SPEED).toBe(3.174);
+    expect(WIND_SPEED).toBeCloseTo(2.76 * 1.15, 10);
     expect(BLADES_PER_TILE).toBe(3);
     expect(MAX_GRASS_INSTANCES).toBe(320);
   });

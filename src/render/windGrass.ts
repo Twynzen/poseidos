@@ -23,8 +23,8 @@ export const WIND_SWAY = 0.0595125;
 /** Amplitud de yaw por viento (radianes). 0.28 × 1.15 para leer de noche. */
 export const WIND_YAW = 0.322;
 
-/** Velocidad del viento (rad/s en el argumento de sin). 2.4 × 1.15 para leer de noche. */
-export const WIND_SPEED = 2.76;
+/** Velocidad del viento (rad/s en el argumento de sin). 2.76 × 1.15 para leer de noche. */
+export const WIND_SPEED = 3.174;
 
 export interface GrassTile {
   tx: number;
