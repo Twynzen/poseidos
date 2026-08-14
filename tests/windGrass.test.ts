@@ -81,7 +81,7 @@ describe("collectGrassTiles", () => {
 });
 
 describe("blade transforms + wind", () => {
-  test("blade wind seed step 0.17 × 1.15; phase/y/xz/sy/wind/count iguales", () => {
+  test("blades per tile 3 × 1.15 → 4; seed/phase/y/xz/sy/wind iguales", () => {
     expect(WIND_SWAY).toBe(0.0595125);
     expect(WIND_SWAY).toBeCloseTo(0.05175 * 1.15, 10);
     expect(WIND_SWAY_Z_MUL).toBe(0.7475);
@@ -106,7 +106,7 @@ describe("blade transforms + wind", () => {
     expect(BLADE_XZ_PAD).toBeCloseTo(0.18 * 0.87, 10);
     expect(BLADE_Y_MUL).toBe(0.207);
     expect(BLADE_Y_MUL).toBeCloseTo(0.18 * 1.15, 10);
-    expect(BLADES_PER_TILE).toBe(3);
+    expect(BLADES_PER_TILE).toBe(4);
     expect(MAX_GRASS_INSTANCES).toBe(368);
   });
 

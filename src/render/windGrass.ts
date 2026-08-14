@@ -14,8 +14,8 @@ export const GRASS_RADIUS = 8;
 /** Cap duro de instancias (GPU barato). */
 export const MAX_GRASS_INSTANCES = 368;
 
-/** Hojas por tile outdoor (antes del cap). */
-export const BLADES_PER_TILE = 3;
+/** Hojas por tile outdoor (antes del cap). 3 × 1.15 → 3.45, redondeado a 4 para el loop. */
+export const BLADES_PER_TILE = 4;
 
 /** Amplitud de oscilación horizontal (unidades mundo). 0.05175 × 1.15 para leer de noche. */
 export const WIND_SWAY = 0.0595125;
