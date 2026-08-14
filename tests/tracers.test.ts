@@ -26,15 +26,16 @@ describe("constantes", () => {
     expect(TRACER_TTL_MAX).toBe(0.35);
   });
 
-  test("grosor 0.055 × 1.25; worldView usa el knob (no magic 0.055)", () => {
-    expect(TRACER_WIDTH).toBe(0.06875);
-    expect(TRACER_WIDTH).toBeCloseTo(0.055 * 1.25, 10);
+  test("grosor 0.06875 × 1.15; worldView usa el knob (no magic 0.055/0.06875)", () => {
+    expect(TRACER_WIDTH).toBe(0.0790625);
+    expect(TRACER_WIDTH).toBeCloseTo(0.06875 * 1.15, 10);
     const viewSrc = readFileSync(
       resolve(process.cwd(), "src/render/worldView.ts"),
       "utf8",
     );
     expect(viewSrc).toContain("mesh.scale.set(TRACER_WIDTH, TRACER_WIDTH, len)");
     expect(viewSrc).not.toMatch(/scale\.set\(0\.055\b/);
+    expect(viewSrc).not.toMatch(/scale\.set\(0\.06875\b/);
   });
 });
 
