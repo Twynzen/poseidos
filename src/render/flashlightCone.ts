@@ -13,8 +13,8 @@ export const FLASHLIGHT_CONE_HALF_WIDTH = 1.035;
 /** Altura Y de la cuña de suelo (tiles). */
 export const FLASHLIGHT_CONE_Y = 0.092;
 
-/** Penumbra del SpotLight (0 nítido … 1 suave). */
-export const FLASHLIGHT_SPOT_PENUMBRA = 0.2;
+/** Penumbra del SpotLight (0 nítido … 1 suave). 0.2 × 1.15 para leer de noche. */
+export const FLASHLIGHT_SPOT_PENUMBRA = 0.23;
 
 /** Multiplicador de intensidad del SpotLight (sobre torchLightIntensity). */
 export const FLASHLIGHT_SPOT_INTENSITY_MUL = 2.76;
