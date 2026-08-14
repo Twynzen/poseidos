@@ -48,13 +48,23 @@ describe("constantes", () => {
     expect(src).toContain('sprite.name = "lootNameplate"');
   });
 
-  test("icon pad 68; size 64 (legible, no blob)", () => {
+  test("icon size 73.6 (64 × 1.15); pad 68 sin cambio", () => {
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBeCloseTo(64 * 1.15, 5);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBe(68);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(64);
-    expect(LOOT_NAMEPLATE_ICON_PAD).toBeGreaterThan(LOOT_NAMEPLATE_ICON_SIZE);
     expect(LOOT_NAMEPLATE_ICON_PAD).toBeGreaterThanOrEqual(48);
     expect(LOOT_NAMEPLATE_ICON_SIZE).toBeGreaterThanOrEqual(48);
-    expect(LOOT_NAMEPLATE_ICON_SIZE).toBeLessThanOrEqual(72);
+  });
+
+  test("worldView aplica LOOT_NAMEPLATE_ICON_SIZE al icono existente", () => {
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toContain("const iconSize = LOOT_NAMEPLATE_ICON_SIZE");
+    expect(src).toContain(
+      "paintLootNameplateIcon(ctx, itemId, iconX, (H - iconSize) / 2, iconSize)",
+    );
   });
 
   test("nameplate font 34px; canvas 384×80", () => {
