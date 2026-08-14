@@ -22,11 +22,12 @@ import {
 } from "../src/render/lootNameplate";
 
 describe("constantes", () => {
-  test("max 20 chars; fade dist 5.5; mid-scale 0.48; y ~2.15; scale 2.6×0.65", () => {
+  test("y 2.4725 (2.15 × 1.15); fade/mid-scale/font/iconos sin cambio", () => {
     expect(LOOT_NAMEPLATE_MAX_CHARS).toBe(20);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(5.5);
     expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.48);
-    expect(LOOT_NAMEPLATE_Y).toBeCloseTo(2.15);
+    expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
+    expect(LOOT_NAMEPLATE_Y).toBeCloseTo(2.15 * 1.15, 5);
     expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.6);
     expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.65);
     expect(lootNameplateScale()).toBe(1);

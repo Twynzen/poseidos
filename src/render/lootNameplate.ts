@@ -12,8 +12,8 @@ export const LOOT_NAMEPLATE_FADE_DIST = 5.5;
 /** Escala mid-distance en el fade edge (dist ≥ fade). */
 export const LOOT_NAMEPLATE_MID_SCALE = 0.48;
 
-/** Altura local Y del sprite sobre el grupo loot. */
-export const LOOT_NAMEPLATE_Y = 2.15;
+/** Altura local Y del sprite sobre el grupo loot. 2.15 × 1.15 para despejar el mesh de noche. */
+export const LOOT_NAMEPLATE_Y = 2.4725;
 
 /** Escala world del sprite (canvas 384×80). */
 export const LOOT_NAMEPLATE_SCALE_X = 2.6;
