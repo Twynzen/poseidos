@@ -32,7 +32,7 @@ export const RAIN_ACTIVE_MIN = 7;
 export const RAIN_NIGHT_COUNT_CUT = 0.191;
 
 /** Color unlit (azul-gris). */
-export const RAIN_COLOR = 0xc1e1ff;
+export const RAIN_COLOR = 0xdeffff;
 
 /** Hide si intensity ≤ este umbral. */
 export const RAIN_HIDE_BELOW = 0.0174;
