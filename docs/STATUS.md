@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** pulso del anillo de loot un poco más rápido
-- **Siguiente:** leftover visual polish chico — bump `BED_FOCUS_PULSE_SPEED` (currently 6) ×1.15 so the bed ring pulse reads a bit faster at night. Do not change bed amp/scales/reach, loot/door speed, looks, sky/fog/sun/ambient, or controls. No new widgets.
+- **Última rutina:** pulso del anillo de cama un poco más rápido
+- **Siguiente:** leftover visual polish chico — bump `DOOR_FOCUS_PULSE_SPEED` (currently 6) ×1.15 so the door ring pulse reads a bit faster at night. Do not change door amp/scales/reach, loot/bed speed, looks, sky/fog/sun/ambient, or controls. No new widgets.
 - **Qué quedó (esta corrida):**
+  - **BED_FOCUS_PULSE_SPEED 6→6.9; reach/scale/amp/loot/door/looks/sky/fog/sol/teclas iguales.**
   - **LOOT_FOCUS_PULSE_SPEED 6→6.9; reach/scale/amp/bed/door/looks/sky/fog/sol/teclas iguales.**
   - **DOOR_FOCUS_PULSE_AMP 0.0575→0.066125; reach/scale/speed/loot/bed/looks/sky/fog/sol/teclas iguales.**
   - **BED_FOCUS_PULSE_AMP 0.0575→0.066125; reach/scale/speed/loot/door/looks/sky/fog/sol/teclas iguales.**
