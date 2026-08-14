@@ -1,7 +1,10 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   IMPACT_SPARK_DURATION,
   IMPACT_SPARK_PEAK,
+  IMPACT_SPARK_RADIUS,
   createImpactSpark,
   tickImpactSpark,
   triggerImpactSpark,
@@ -11,6 +14,19 @@ describe("constantes", () => {
   test("duración 0.22s y pico 1", () => {
     expect(IMPACT_SPARK_DURATION).toBe(0.22);
     expect(IMPACT_SPARK_PEAK).toBe(1);
+  });
+
+  test("radio 0.09 × 1.25; worldView usa el knob (no magic 0.09)", () => {
+    expect(IMPACT_SPARK_RADIUS).toBe(0.1125);
+    expect(IMPACT_SPARK_RADIUS).toBeCloseTo(0.09 * 1.25, 10);
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain(
+      "new THREE.SphereGeometry(IMPACT_SPARK_RADIUS, 10, 8)",
+    );
+    expect(viewSrc).not.toMatch(/SphereGeometry\(0\.09\b/);
   });
 });
 

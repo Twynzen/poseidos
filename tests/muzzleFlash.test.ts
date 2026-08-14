@@ -1,7 +1,10 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   MUZZLE_FLASH_DURATION,
   MUZZLE_FLASH_PEAK,
+  MUZZLE_FLASH_RADIUS,
   createMuzzleFlash,
   tickMuzzleFlash,
   triggerMuzzleFlash,
@@ -11,6 +14,19 @@ describe("constantes", () => {
   test("duración 0.12s y pico 1", () => {
     expect(MUZZLE_FLASH_DURATION).toBe(0.12);
     expect(MUZZLE_FLASH_PEAK).toBe(1);
+  });
+
+  test("radio 0.11 × 1.25; worldView usa el knob (no magic 0.11)", () => {
+    expect(MUZZLE_FLASH_RADIUS).toBe(0.1375);
+    expect(MUZZLE_FLASH_RADIUS).toBeCloseTo(0.11 * 1.25, 10);
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain(
+      "new THREE.SphereGeometry(MUZZLE_FLASH_RADIUS, 10, 8)",
+    );
+    expect(viewSrc).not.toMatch(/SphereGeometry\(0\.11\b/);
   });
 });
 

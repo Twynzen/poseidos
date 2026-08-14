@@ -7,8 +7,10 @@
 
 /** Duración del flash (s). */
 export const MUZZLE_FLASH_DURATION = 0.12;
-/** Intensidad pico (u=0). */
+/** Intensidad pico (u=0). Opacity del mesh = intensity (ya 1 al trigger). */
 export const MUZZLE_FLASH_PEAK = 1;
+/** Radio de la esfera aditiva (tiles). 0.11 × 1.25 para leer de noche. */
+export const MUZZLE_FLASH_RADIUS = 0.1375;
 
 export interface MuzzleFlashState {
   /** Segundos transcurridos del flash actual. */
