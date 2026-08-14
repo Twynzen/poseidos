@@ -144,6 +144,9 @@ export const AMBIENT_WARM_PUSH = 0.138;
 /** Add r cálido dawn/dusk del ambient (0.2 × 1.15) para que sunrise/sunset se lean. */
 export const AMBIENT_WARM_R = 0.23;
 
+/** Add g cálido dawn/dusk del ambient (0.05 × 1.15) para que sunrise/sunset se lean. */
+export const AMBIENT_WARM_G = 0.0575;
+
 /** Ambient coherente con cielo (más suave, menos saturado). */
 export function ambientRgb(daylight: number, phase: number): Rgb {
   const d = clamp01(daylight);
@@ -161,7 +164,7 @@ export function ambientRgb(daylight: number, phase: number): Rgb {
   // Toque cálido en dawn/dusk (sin tocar warm indoor).
   const warmPush = warm * AMBIENT_WARM_PUSH;
   r += warmPush * AMBIENT_WARM_R;
-  g += warmPush * 0.05;
+  g += warmPush * AMBIENT_WARM_G;
   b -= warmPush * 0.08;
 
   return clampRgb({ r, g, b });
