@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** overlay de carga un poco más legible.
+- **Última rutina:** chevron de facing un poco más visible de noche.
 - **Qué quedó (esta corrida):**
+  - **FACING_CHEVRON_OPACITY 0.55→0.75; color/tamaño/yaw iguales.** worldView mesh sigue el knob (`opacity: FACING_CHEVRON_OPACITY`). `FACING_CHEVRON_COLOR` `0xe8c36a`, DIST 1.2, LEN 0.805, HW 0.322, YAW_OFFSET 0 sin cambio. Cámara / escala / anillos / nameplates / badges / luces / lluvia / linterna / HUD / loading / diálogo / globos / inventario / hotbar / teclas / gestos sin cambio.
   - **loading title 22px / line 14px / hint 12px; skip click/Espacio igual.** `.loading-title` 22px (era 18px). `.loading-line` 14px (era 12.5px). `.loading-hint` 12px (era 10.5px). Card width, bar, colors, overlay `#loading-overlay` / `loading-dismissed` y skip clic/Espacio iguales. TS boot/progress / HUD / moodle / diálogo / globos / nameplate / cámara / markers / anillos / luces / lluvia / linterna / teclas / gestos sin cambio.
   - **Nameplate loot icon 52→64; pad 56→68; Y/fade/empty-hide iguales.** `LOOT_NAMEPLATE_ICON_SIZE` 64 / `LOOT_NAMEPLATE_ICON_PAD` 68 (gutter ~2px). Canvas 384×80, font 28px, scale 2.6×0.65, Y 2.15, fade 6.5, empty-hide y mid-scale 0.55 sin cambio. Atlas 80px cabe el icono 64 (sin clip; sin crecer world scale). `LOOT_BADGE_OPACITY` 0. HUD/moodle/diálogo/globos / cámara / anillos / badges / chevron / luces / lluvia / linterna / teclas / gestos sin cambio.
   - **#hud 13px; copy/F1/debug iguales; moodles 11px iguales.** `#hud` font 13px/1.45 (era 11.5px/1.4). Padding, max-width, glass, posición y `#hud.hud-help` (720px, line-height 1.65, F1 moodle lift) iguales. Copy / CONTROLS_HELP / debug tokens en `hudStatus.ts` sin cambio. Moodles 11px / diálogo 13.5px / globos 14px / cámara / markers / anillos / inventario / hotbar / luces / lluvia / linterna / teclas / gestos sin cambio.
