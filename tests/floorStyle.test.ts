@@ -343,9 +343,9 @@ describe("tintFromTile", () => {
     const r0 = 0x5e;
     const g0 = 0x68;
     const b0 = 0x4a;
-    expect(Math.round(0x52 * 1.15)).toBe(r0);
-    expect(Math.round(0x5a * 1.15)).toBe(g0);
-    expect(Math.round(0x40 * 1.15)).toBe(b0);
+    expect(Math.round((0x52 * 115) / 100)).toBe(r0);
+    expect(Math.round((0x5a * 115) / 100)).toBe(g0);
+    expect(Math.round((0x40 * 115) / 100)).toBe(b0);
 
     let found = false;
     for (let y = 0; y < 32 && !found; y++) {
