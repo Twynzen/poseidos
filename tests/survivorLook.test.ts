@@ -45,8 +45,8 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.620658);
     expect(SURVIVOR_BODY_ROUGHNESS).toBeCloseTo(0.7134 * 0.87, 10);
     expect(SURVIVOR_BODY_ROUGHNESS).toBeGreaterThan(0.6);
-    expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.3915);
-    expect(SURVIVOR_ACCENT_ROUGHNESS).toBeCloseTo(0.45 * 0.87, 10);
+    expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.340605);
+    expect(SURVIVOR_ACCENT_ROUGHNESS).toBeCloseTo(0.3915 * 0.87, 10);
 
     const crushR = (SURVIVOR_CRUSHED_EARTH >> 16) & 0xff;
     expect(bodyR).toBeGreaterThan(crushR);
@@ -69,7 +69,7 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_MAP_TINT).toBe(0xc8bca8);
     expect(SURVIVOR_ACCENT).toBe(0xa39c8c);
     expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.620658);
-    expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.3915);
+    expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.340605);
     expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
   });
 
@@ -87,7 +87,7 @@ describe("survivorLook constants", () => {
   test("body roughness 0.7134 × 0.87; color/looks/teclas iguales", () => {
     expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.620658);
     expect(SURVIVOR_BODY_ROUGHNESS).toBeCloseTo(0.7134 * 0.87, 10);
-    expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.3915);
+    expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.340605);
     expect(SURVIVOR_ACCENT_ROUGHNESS).toBeLessThan(SURVIVOR_BODY_ROUGHNESS);
     expect(SURVIVOR_BODY_COLOR).toBe(0x8a8070);
     expect(SURVIVOR_MAP_TINT).toBe(0xc8bca8);
@@ -98,9 +98,9 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
   });
 
-  test("accent roughness 0.45 × 0.87; color/looks/teclas iguales", () => {
-    expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.3915);
-    expect(SURVIVOR_ACCENT_ROUGHNESS).toBeCloseTo(0.45 * 0.87, 10);
+  test("accent roughness 0.3915 × 0.87; color/looks/teclas iguales", () => {
+    expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.340605);
+    expect(SURVIVOR_ACCENT_ROUGHNESS).toBeCloseTo(0.3915 * 0.87, 10);
     expect(SURVIVOR_ACCENT_ROUGHNESS).toBeLessThan(SURVIVOR_BODY_ROUGHNESS);
     expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.620658);
     expect(SURVIVOR_BODY_COLOR).toBe(0x8a8070);
