@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** nameplate de loot opaco un poco más lejos
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After nameplate near-dist, look at NOISE_RING_WIDTH or markers night opacity. Do not change fade dist, scales, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** anillos de ruido un poco más gruesos
+- **Siguiente:** leftover visual polish chico — bump `DEFAULT_NOISE_RING_LIFE` (currently 0.9775) ×1.15 so the rings last a bit longer at night. Do not change width/inner, kinds, colors, nameplate, looks, sky/fog/sun/ambient, or controls. No new widgets.
 - **Qué quedó (esta corrida):**
+  - **NOISE_RING_WIDTH 0.225→0.25875; inner/life/kinds/nameplate/looks/sky/fog/sol/teclas iguales.**
   - **LOOT_NAMEPLATE_NEAR_DIST 2→2.3; fade/scale/icon/focus/looks/sky/fog/sol/teclas iguales.**
   - **DOOR_FOCUS_SCALE_FAR 1.288→1.4812; near/pulse/reach/loot/bed/looks/sky/fog/sol/teclas iguales.**
   - **DOOR_FOCUS_SCALE_NEAR 1.5525→1.785375; far/pulse/reach/loot/bed/looks/sky/fog/sol/teclas iguales.**
