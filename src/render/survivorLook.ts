@@ -20,8 +20,8 @@ export const SURVIVOR_BODY_EMISSIVE = 0x28251f;
 export const SURVIVOR_ACCENT = 0xbbb3a1;
 /** Alias del acento (mismo valor). */
 export const SURVIVOR_ACCENT_COLOR = SURVIVOR_ACCENT;
-/** Emisión acento (path de visor). */
-export const SURVIVOR_ACCENT_EMISSIVE = 0x2a2820;
+/** Emisión acento (path de visor). 0x2a2820 × 1.15/canal para leer de noche. */
+export const SURVIVOR_ACCENT_EMISSIVE = 0x302e25;
 /** Intensidad del acento. 0.1725 × 1.15 para leer el visor de noche. */
 export const SURVIVOR_ACCENT_EMISSIVE_INTENSITY = 0.198375;
 /** Intensidad del cuerpo. 1 × 1.15 para leer la silueta de noche. */
