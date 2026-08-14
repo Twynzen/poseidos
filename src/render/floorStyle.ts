@@ -38,10 +38,10 @@ export const BARRICADE_COLOR = 0xc49a6c;
 export const BARRICADE_EDGE = 0x8a6239;
 
 /**
- * Multiply de albedo de suelo de noche (día = 1).
+ * Multiply de albedo de suelo de noche (día = 1). 1.45 × 1.15 para leer el suelo de noche.
  * Paleta day queda igual; de noche el pasto se lee sin irse a negro/gris.
  */
-export const GROUND_NIGHT_LIFT = 1.45;
+export const GROUND_NIGHT_LIFT = 1.6675;
 
 /** Máximo oscurecimiento por fake AO (fracción RGB). 0.3 × 0.87 para leer el suelo de noche. */
 export const AO_MAX_DARKEN = 0.261;
