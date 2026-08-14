@@ -5,8 +5,8 @@
  * worldView aplica intensidad a esfera aditiva + PointLight.
  */
 
-/** Duración del flash (s). */
-export const MUZZLE_FLASH_DURATION = 0.12;
+/** Duración del flash (s). 0.12 × 1.15 para leer de noche. */
+export const MUZZLE_FLASH_DURATION = 0.138;
 /** Intensidad pico (u=0). Opacity del mesh = intensity (ya 1 al trigger). */
 export const MUZZLE_FLASH_PEAK = 1;
 /** Radio de la esfera aditiva (tiles). 0.11 × 1.25 para leer de noche. */
