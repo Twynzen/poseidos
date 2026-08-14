@@ -22,8 +22,8 @@ export interface NoiseRingState {
   life: number;
 }
 
-/** Vida visual por defecto (expansión + fade). */
-export const DEFAULT_NOISE_RING_LIFE = 0.9775;
+/** Vida visual por defecto (expansión + fade). 0.9775 × 1.15 para leer de noche. */
+export const DEFAULT_NOISE_RING_LIFE = 1.124125;
 
 /** Grosor del aro unitario (outer=1). 0.225 × 1.15 para leer de noche. */
 export const NOISE_RING_WIDTH = 0.25875;
