@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** cielo de noche un poco menos vacío.
+- **Última rutina:** suelo de noche un poco más legible.
 - **Qué quedó (esta corrida):**
+  - **Ground noche un poco más claro; cielo/fog/luces iguales.** `GROUND_NIGHT_LIFT` 1.45 (`nightGroundLift` / `applyNightGroundLift`). Paleta day `OUTDOOR_GRASS_BASE` `0x3d4f35` y `floorColorAt` iguales. `syncDayNight` multiplica albedo de floor mats + césped `0x4a6a38`. `SKY_NIGHT` 0.07/0.09/0.14, fog 23/59, ambient 0.24 / sun 0.16 sin cambio. Cámara / nameplates / anillos / chevron / lluvia / linterna / HUD / inventario / teclas / gestos sin cambio.
   - **Sky/fog color noche un poco más azul-gris; fog near/far y luces iguales.** `skyRgb` noche `SKY_NIGHT` 0.07/0.09/0.14 (era 0.04/0.05/0.09). Día `SKY_DAY` 0.26/0.33/0.47 igual. `FOG_NEAR_NIGHT` 23 / `FOG_FAR_NIGHT` 59 y día 38/100 iguales. `AMBIENT_INTENSITY_NIGHT` 0.24 / `SUN_INTENSITY_NIGHT` 0.16 sin cambio. Cámara / nameplates / anillos / chevron / lluvia / linterna / HUD / inventario / teclas / gestos sin cambio.
   - **Night opacity add 0.20→0.30; count/largo iguales.** `RAIN_OPACITY_NIGHT_ADD` 0.3 (era 0.2). Opacity día `0.22 + i×0.45` igual; noche `+0.30 × nightMix`. `RAIN_COUNT` 36, largo día 0.55 / noche 0.72, width 0.03, color `0xa8c4e0`, hide ≤ 0.02, active min 6 y night cut 0.22 iguales. `game.ts` sigue pasando `clock.daylight` a `syncRain`. Weather sim sin cambio. Cámara / nameplates / anillos / chevron / luces / linterna / HUD / inventario / teclas / gestos sin cambio.
   - **Nameplate loot stroke 3→4.5; font 34 / Y / fade iguales.** `makeLootNameplateSprite` `ctx.lineWidth` 4.5 (era 3, ~1.5×). `strokeStyle` `rgba(0,0,0,0.7)` y fill `#f0c060` iguales. Font `600 34px`, canvas 384×80, scale 2.6×0.65, Y 2.15, fade 6.5, empty-hide, icon 64 / pad 68 sin cambio. Cámara / anillos / pulso / badges / chevron / luces / lluvia / linterna / HUD / inventario / teclas / gestos sin cambio.

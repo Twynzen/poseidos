@@ -113,6 +113,7 @@ import {
 } from "./impactSpark";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 import {
+  applyNightGroundLift,
   countAoNeighbors,
   floorColorAt,
 } from "./floorStyle";
@@ -442,12 +443,14 @@ export function createWorldView(
   });
   /** Cache de materiales de floor por color final (tint+AO) — barato, sin GTAO. */
   const floorMatByColor = new Map<number, THREE.MeshStandardMaterial>();
+  /** Último daylight visto en syncDayNight; mats nuevos nacen ya lifted. */
+  let lastDaylight = 1;
   function matForFloorColor(color: number): THREE.MeshStandardMaterial {
     const key = color & 0xffffff;
     let m = floorMatByColor.get(key);
     if (m) return m;
     m = new THREE.MeshStandardMaterial({
-      color: key,
+      color: applyNightGroundLift(key, lastDaylight),
       roughness: 0.95,
     });
     floorMatByColor.set(key, m);
@@ -1615,6 +1618,7 @@ export function createWorldView(
     },
     syncDayNight(clock) {
       const d = clock.daylight;
+      lastDaylight = d;
       const atm = atmosphereFor(clock.phase, d);
       ambient.intensity = nightAmbientIntensity(d);
       sun.intensity = nightSunIntensity(d);
@@ -1629,6 +1633,11 @@ export function createWorldView(
         scene.fog.near = atm.near;
         scene.fog.far = atm.far;
       }
+      // Albedo de suelo/pasto: lift de noche; día = paleta intacta.
+      for (const [key, m] of floorMatByColor) {
+        m.color.setHex(applyNightGroundLift(key, d));
+      }
+      grassMat.color.setHex(applyNightGroundLift(0x4a6a38, d));
     },
     syncWarmLight(wx, wy, intensity) {
       const i = Math.max(0, Math.min(1, intensity));

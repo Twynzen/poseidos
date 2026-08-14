@@ -13,6 +13,12 @@ export const INDOOR_FLOOR_COLOR = 0x2a2e38;
 /** Base de pasto outdoor (verde-gris apagado, legible en iso). */
 export const OUTDOOR_GRASS_BASE = 0x3d4f35;
 
+/**
+ * Multiply de albedo de suelo de noche (día = 1).
+ * Paleta day queda igual; de noche el pasto se lee sin irse a negro/gris.
+ */
+export const GROUND_NIGHT_LIFT = 1.45;
+
 /** Máximo oscurecimiento por fake AO (fracción RGB). */
 export const AO_MAX_DARKEN = 0.3;
 
@@ -118,6 +124,25 @@ export function applyAo(color: number, ao: number): number {
   return (clampByte(r) << 16) | (clampByte(g) << 8) | clampByte(b);
 }
 
+/** Multiply de albedo: noche `GROUND_NIGHT_LIFT`; noon 1. */
+export function nightGroundLift(daylight: number): number {
+  const n = 1 - clamp01(daylight);
+  return 1 + (GROUND_NIGHT_LIFT - 1) * n;
+}
+
+/**
+ * Aplica el lift de noche a un hex de suelo (tint+AO).
+ * Día (d=1) = color intacto; noche aclara y G sigue dominando.
+ */
+export function applyNightGroundLift(color: number, daylight: number): number {
+  const lift = nightGroundLift(daylight);
+  if (lift === 1) return color & 0xffffff;
+  const r = clampByte(Math.round(((color >> 16) & 0xff) * lift));
+  const g = clampByte(Math.round(((color >> 8) & 0xff) * lift));
+  const b = clampByte(Math.round((color & 0xff) * lift));
+  return (r << 16) | (g << 8) | b;
+}
+
 /**
  * Color final de un tile floor (tint + AO) listo para MeshStandardMaterial.
  */
@@ -130,6 +155,11 @@ export function floorColorAt(
 ): number {
   const tint = tintFromTile(x, y, outdoor);
   return applyAo(tint, aoFactor(orthoOccluders, diagOccluders));
+}
+
+function clamp01(v: number): number {
+  if (!Number.isFinite(v)) return 0;
+  return Math.max(0, Math.min(1, v));
 }
 
 function clampByte(n: number): number {
