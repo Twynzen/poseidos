@@ -12,10 +12,11 @@ import {
 } from "../src/render/muzzleFlash";
 
 describe("constantes", () => {
-  test("duración 0.12 × 1.15 y pico 1", () => {
+  test("duración 0.12 × 1.15 y pico 1 × 1.15", () => {
     expect(MUZZLE_FLASH_DURATION).toBe(0.138);
     expect(MUZZLE_FLASH_DURATION).toBeCloseTo(0.12 * 1.15, 10);
-    expect(MUZZLE_FLASH_PEAK).toBe(1);
+    expect(MUZZLE_FLASH_PEAK).toBe(1.15);
+    expect(MUZZLE_FLASH_PEAK).toBeCloseTo(1 * 1.15, 10);
   });
 
   test("radio 0.1375 × 1.15; worldView usa el knob (no magic 0.11/0.1375)", () => {
@@ -56,7 +57,7 @@ describe("create / trigger / tick", () => {
     expect(out.intensity).toBe(0);
   });
 
-  test("trigger + primer tick: intensity cerca de 1 (ease-out sine)", () => {
+  test("trigger + primer tick: intensity cerca de 1.15 (ease-out sine)", () => {
     const s = createMuzzleFlash();
     triggerMuzzleFlash(s);
     expect(s.active).toBe(true);
