@@ -5,8 +5,8 @@
  * Dirección XZ unitaria vía RNG inyectable en trigger (tests deterministas).
  */
 
-/** Duración del shake (s). 0.2 × 1.15 para leer de noche. */
-export const CAMERA_SHAKE_DURATION = 0.23;
+/** Duración del shake (s). 0.23 × 1.15 para leer de noche. */
+export const CAMERA_SHAKE_DURATION = 0.2645;
 /** Amplitud pico (unidades mundo, ejes XZ). 0.125 × 1.15 para leer de noche. */
 export const CAMERA_SHAKE_AMP = 0.14375;
 /** Frecuencia del sine (base 42 = 1 ciclo). 48.3 × 1.15 para leer de noche. */
