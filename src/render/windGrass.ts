@@ -53,6 +53,9 @@ export const BLADE_XZ_PAD = 0.1566;
 /** Multiplicador Y de la hoja (offset de altura). 0.18 × 1.15 para leer de noche. */
 export const BLADE_Y_MUL = 0.207;
 
+/** Albedo de la hoja instanced (histórico 0x4a6a38 en worldView). 0x4a6a38 × 1.15 por canal para leer de noche. */
+export const BLADE_COLOR = 0x557a40;
+
 export interface GrassTile {
   tx: number;
   ty: number;

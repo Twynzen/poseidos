@@ -138,6 +138,7 @@ import {
 } from "./fogAtmosphere";
 import {
   bladePoseAt,
+  BLADE_COLOR,
   collectGrassTiles,
   GRASS_RADIUS,
   MAX_GRASS_INSTANCES,
@@ -1181,7 +1182,7 @@ export function createWorldView(
   // Césped wind instanced (outdoor cerca del player) — barato, sin shader custom.
   const grassGeo = new THREE.BoxGeometry(0.045, 0.42, 0.02);
   const grassMat = new THREE.MeshStandardMaterial({
-    color: 0x4a6a38,
+    color: BLADE_COLOR,
     roughness: 0.92,
     metalness: 0,
   });
@@ -1649,7 +1650,7 @@ export function createWorldView(
       for (const [key, m] of floorMatByColor) {
         m.color.setHex(applyNightGroundLift(key, d));
       }
-      grassMat.color.setHex(applyNightGroundLift(0x4a6a38, d));
+      grassMat.color.setHex(applyNightGroundLift(BLADE_COLOR, d));
       wallMat.color.setHex(applyNightGroundLift(WALL_COLOR, d));
       wallBaseMat.color.setHex(applyNightGroundLift(WALL_BASE_COLOR, d));
       furnitureMat.color.setHex(applyNightGroundLift(FURNITURE_COLOR, d));
