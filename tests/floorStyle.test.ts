@@ -298,9 +298,9 @@ describe("night wall albedo lift", () => {
     expect(r).toBe(0x68);
     expect(g).toBe(0x5f);
     expect(b).toBe(0x53);
-    expect(Math.round(0x5a * 1.15)).toBe(r);
-    expect(Math.round(0x53 * 1.15)).toBe(g);
-    expect(Math.round(0x48 * 1.15)).toBe(b);
+    expect(Math.round((0x5a * 115) / 100)).toBe(r);
+    expect(Math.round((0x53 * 115) / 100)).toBe(g);
+    expect(Math.round((0x48 * 115) / 100)).toBe(b);
     expect(INDOOR_FLOOR_COLOR).toBe(0x303540);
     expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
     expect(WALL_BASE_COLOR).toBe(0x1a1c22);
