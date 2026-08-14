@@ -12,8 +12,8 @@ import { Color, MeshStandardMaterial } from "three";
 
 /** Cuerpo sin map: tierra más clara (no el fill aplastado de noche). */
 export const SURVIVOR_BODY_COLOR = 0x9f9381;
-/** Multiply sobre color existente cuando hay map (mantiene variación). */
-export const SURVIVOR_MAP_TINT = 0xc8bca8;
+/** Multiply sobre color existente cuando hay map (mantiene variación). 0xc8bca8 × 1.15/canal para leer de noche. */
+export const SURVIVOR_MAP_TINT = 0xe6d8c1;
 /** Emisión cuerpo muy baja: silueta legible de noche, sin glow. 0x1c1a16 × 1.25. */
 export const SURVIVOR_BODY_EMISSIVE = 0x23201b;
 /** Acento visor/casco: tierra cálida (no gris frío). */
