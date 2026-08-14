@@ -75,8 +75,15 @@ export const DEFAULT_PLACEHOLDER_MANIFEST: CharacterAssetManifest = {
 };
 
 /**
+ * Escala world del GLB del player (Soldier / Survivor).
+ * 1.5 = 1.2× el 1.25 anterior; se lee como persona vs tiles/hostiles.
+ * Hostiles siguen en 1.25 (POSSESSED / MUTE). maybeAttach aplica manifest.scale.
+ */
+export const PLAYER_GLTF_SCALE = 1.5;
+
+/**
  * Mesh2Motion drop-in: `public/models/Survivor.glb`.
- * Roles Idle/Walk/Run/Attack/Hit/Death; scale 1.25, pies en y≈0.
+ * Roles Idle/Walk/Run/Attack/Hit/Death; scale PLAYER_GLTF_SCALE, pies en y≈0.
  * Segundo candidate: boot pide Soldier primero (GLB presente).
  * Gate HTML (#34) sigue si alguien pide este URL ausente.
  */
@@ -91,14 +98,14 @@ export const PLAYER_SURVIVOR_MANIFEST: CharacterAssetManifest = {
     hit: "Hit",
     death: "Death",
   },
-  scale: 1.25,
+  scale: PLAYER_GLTF_SCALE,
   yOffset: 0,
 };
 
 /**
  * Three.js examples Soldier.glb (MIT) — placeholder militar de prueba.
  * Clips reales del GLB: Idle / Walk / Run (+ TPose no mapeado).
- * Escala 1.25, yOffset 0: presencia vs tiles/hostiles; pies en y≈0.
+ * Escala PLAYER_GLTF_SCALE (1.5), yOffset 0: se lee como persona; pies en y≈0.
  * Primer candidate del player (GLB presente). No es el look final survival.
  */
 export const PLAYER_SOLDIER_MANIFEST: CharacterAssetManifest = {
@@ -109,7 +116,7 @@ export const PLAYER_SOLDIER_MANIFEST: CharacterAssetManifest = {
     walk: "Walk",
     run: "Run",
   },
-  scale: 1.25,
+  scale: PLAYER_GLTF_SCALE,
   yOffset: 0,
 };
 
@@ -134,7 +141,7 @@ export function shouldApplySurvivorLook(
 
 /**
  * Poseídos reusan Soldier.glb con tint distinto (`applyPossessedLook`).
- * Misma escala que el player (1.25) para altura comparable.
+ * Escala 1.25 (no PLAYER_GLTF_SCALE): hostiles no crecen con el player.
  */
 export const POSSESSED_SOLDIER_MANIFEST: CharacterAssetManifest = {
   id: "possessed-soldier",
