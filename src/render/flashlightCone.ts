@@ -34,6 +34,9 @@ export const FLASHLIGHT_WEDGE_OPACITY_BASE = 0.727375;
 /** Ganancia de opacidad × intensidad. */
 export const FLASHLIGHT_WEDGE_OPACITY_GAIN = 0.3345925;
 
+/** Canal R del extremo lejano de la cuña (ápice 1,1,1 → far atenuado). 0.16 × 1.15. */
+export const FLASHLIGHT_WEDGE_FAR_R = 0.184;
+
 /** Umbral de intensidad para mostrar cono / luces. */
 export const FLASHLIGHT_CONE_VISIBLE_EPS = 0.0174;
 
@@ -169,7 +172,7 @@ export function flashlightWedgeOpacity(intensity: number): number {
 export function flashlightWedgeVertexColors(): Float32Array {
   return new Float32Array([
     1, 1, 1,
-    0.16, 0.22, 0.3,
-    0.16, 0.22, 0.3,
+    FLASHLIGHT_WEDGE_FAR_R, 0.22, 0.3,
+    FLASHLIGHT_WEDGE_FAR_R, 0.22, 0.3,
   ]);
 }
