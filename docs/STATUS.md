@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** sin floater 3D duplicado.
+- **Última rutina:** door/bed hue split.
 - **Qué quedó (esta corrida):**
+  - **Door/bed hue split** anillos de suelo se leen aparte del loot gold `0xd4a03a`: puerta steel blue-grey `0x5c7388` (era teal `0x2ec8b4`); cama púrpura sleep `0x7a6490` (era rosa `0xe07090`). Pulso door/bed `0.08` → `0.05` (más calmo que loot). Hide-when-out-of-reach igual. Sin nameplates ni widgets.
   - **Sin floater 3D duplicado** G / Shift+G / E-fallback loot ya no spawnean el texto gold 3D (`spawnLootFloater`); solo el chip DOM `#loot-floater` (`lootToast.show` + `lootFloaterLabel`). `lootFloater.ts` / `WorldView.spawnLootFloater` quedan en el repo. Sin widgets nuevos.
   - **Toast contrast** `#loot-floater` glass chip más oscuro para leerse sobre nameplates gold de noche/lluvia: gradiente `white 0.05 → navy 0.38` sobre `rgba(15,23,42,0.88)` + `--hud-bg`; borde `rgba(226,232,240,0.42)`; sombra 0.35 → 0.58. Gold `#ffe080`, SVG, 20px, 2s y errores `#fca5a5` sin cambio. Sin segundo toast ni quitar el floater 3D.
   - **Mid-distance nameplate scale** el letrero encoge al alejarse: `lootNameplateScale(dist)` = 1 en dist ≤ 2, lerp 1 → 0.75 de 2 a fade 10, 0.75 más allá; omitido/NaN = 1. `syncLootFocus` aplica `plate.scale` (base 2.6×0.65 × mul) cada tick, junto a opacity + visible ya cableados. Hide far (dist > 10 / vacío) no se toca. Sin widgets.
@@ -44,6 +45,6 @@
 - **Controles:** WASD mover · **Shift correr** · **Espacio/V melee** · **X disparar** · E puerta/loot · G loot · **Shift+G stack** · **Q usar slot** (consumible seleccionado / lluvia outdoor) · **U tirar** · **Shift+U stack** · **U inv tirar** · **1-5 hotbar** (selección, highlight azul) · **rueda hotbar** (cicla slot, wrap) · **clic hotbar** · **arrastrar hotbar** · **doble clic usar** · **clic der. info** · **Shift+clic hotbar partir** · **Ctrl+clic hotbar juntar** · **clic inv usar** · **doble clic inv** · **arrastrar inv** · **clic der. inv** · **Shift+clic inv partir** · **Ctrl+clic inv juntar** · **I inventorio (panel; al empezar muestra kit inicial)** · B barricada · **C vendaje** · **H cocinar** · **T diálogo** (calmar / preguntar / amenazar / ofrecer comida / Distraer) · **L linterna** · **M mute ambient** · **+/- zoom** · R descanso/reinicio · **Z dormir** (cama o suelo indoor) · **F1 ayuda** · F5 guardar · F9 cargar · (boot) clic/Espacio saltar loading
 - **Fuera de este slice:** autogenerar modelos en Mesh2Motion (herramienta externa); WebSocket real; lobby UI browser; API LLM real; GTAO; samples de pisadas (sigue beep); samples ambient reales; samples combat reales (sigue beep); samples interact reales (sigue beep); samples speech reales (sigue beep); samples heartbeat reales (sigue beep)
 - **Dirección:** sandbox largo en Three.js (sim primero; render es vista); LLM solo stub/fallback; MP solo stub headless por ahora
-- **Siguiente subtarea concreta:** leftover polish.
+- **Siguiente subtarea concreta:** delete dead 3D `spawnLootFloater` (keep `lootFloaterLabel` for DOM chip).
 - **Bloqueos:** ninguno
 - **Entorno:** Bun; scripts `dev`, `build`, `test`

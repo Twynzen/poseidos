@@ -16,7 +16,7 @@ export interface MarkerPalette {
   glyph: string;
 }
 
-/** mute=rojo · poseído=púrpura · player=azul · loot=ámbar · door=teal · bed=rosa */
+/** mute=rojo · poseído=púrpura · player=azul · loot=ámbar · door=steel · bed=púrpura sleep */
 export const MARKER_PALETTE: Readonly<Record<MarkerRole, MarkerPalette>> = {
   player: {
     ring: 0x3a7fd4,
@@ -43,15 +43,15 @@ export const MARKER_PALETTE: Readonly<Record<MarkerRole, MarkerPalette>> = {
     glyph: "▣",
   },
   door: {
-    ring: 0x2ec8b4,
-    badge: 0x7eefe4,
-    emissive: 0x104038,
+    ring: 0x5c7388,
+    badge: 0x8aa4b8,
+    emissive: 0x182028,
     glyph: "⊓",
   },
   bed: {
-    ring: 0xe07090,
-    badge: 0xffa0b8,
-    emissive: 0x401018,
+    ring: 0x7a6490,
+    badge: 0xa890b8,
+    emissive: 0x201828,
     glyph: "▭",
   },
 };

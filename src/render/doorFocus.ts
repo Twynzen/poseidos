@@ -13,7 +13,7 @@ export const DOOR_FOCUS_SCALE_NEAR = 1.35;
 export const DOOR_FOCUS_SCALE_FAR = 1.12;
 
 /** Amplitud del seno. */
-export const DOOR_FOCUS_PULSE_AMP = 0.08;
+export const DOOR_FOCUS_PULSE_AMP = 0.05;
 
 /** Velocidad angular del pulso (rad/s). */
 export const DOOR_FOCUS_PULSE_SPEED = 6;
@@ -37,7 +37,7 @@ export function doorFocusScale(dist: number): number {
   );
 }
 
-/** 1 + 0.08 * sin(elapsed * 6). */
+/** 1 + 0.05 * sin(elapsed * 6). */
 export function doorFocusPulse(elapsed: number): number {
   const t = Number.isFinite(elapsed) ? elapsed : 0;
   return 1 + DOOR_FOCUS_PULSE_AMP * Math.sin(t * DOOR_FOCUS_PULSE_SPEED);
@@ -50,7 +50,7 @@ export function doorFocusMul(dist: number, elapsed: number): number {
 }
 
 /**
- * Anillo teal si la puerta está en reach.
+ * Anillo steel blue-grey si la puerta está en reach.
  * `open` se ignora: abierta o cerrada, ambas se muestran en alcance.
  */
 export function doorRingVisible(
