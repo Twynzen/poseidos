@@ -7,11 +7,11 @@
 
 /** Duración del lean (s). */
 export const HIT_LEAN_DURATION = 0.2645;
-/** Ángulo pico de pitch (rad). yawBias usa la mitad. Pitch de salida es negativo. */
+/** Ángulo pico de pitch (rad). yawBias usa HIT_LEAN_YAW_RATIO. Pitch de salida es negativo. */
 export const HIT_LEAN_ANGLE = 0.4025;
 
-/** yawBias = pitch * este ratio (sesgo, no un yaw completo). */
-const HIT_LEAN_YAW_RATIO = 0.5;
+/** yawBias = pitch * este ratio (sesgo, no un yaw completo). 0.5 × 1.15 para leer de noche. */
+export const HIT_LEAN_YAW_RATIO = 0.575;
 
 export interface HitLeanState {
   /** Segundos transcurridos del lean actual. */

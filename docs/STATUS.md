@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** idle un poco más rápido (freq)
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After idle freq, look at HIT_LEAN_YAW_RATIO in src/render/hitLean.ts (currently a private `0.5`) — export it and bump ×1.15 so hit recoil yaw bias reads a bit stronger at night. Do not change idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** hit lean yaw un poco más fuerte
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After hit lean yaw, look at MELEE_SWING_YAW_RATIO in src/render/meleeSwing.ts (currently a private `0.5`) — export it and bump ×1.15 so melee swing yaw bias reads a bit stronger at night. Do not change hit-lean duration/angle, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **HIT_LEAN_YAW_RATIO 0.5→0.575; duration/angle/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **IDLE_FREQ_HZ 0.35→0.4025; amp/walk/sprint/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **WALK_FREQ_HZ 1.55→1.7825; amp/idle/sprint/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **SPRINT_FREQ_HZ 2.35→2.7025; amp/idle/walk/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
