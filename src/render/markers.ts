@@ -72,8 +72,8 @@ export function markerRingOpacity(role: MarkerRole): number {
   return role === "player" ? PLAYER_FOOT_RING_OPACITY : MARKER_RING_OPACITY;
 }
 
-/** Radio interior del aro loot/puerta/cama (queda fuera del Soldier 1.5). */
-export const INTERACT_RING_INNER = 0.55;
+/** Radio interior del aro loot/puerta/cama. 0.55 × 0.87 para leerse de noche. */
+export const INTERACT_RING_INNER = 0.4785;
 
 /** Radio exterior del aro loot/puerta/cama. 0.78 × 1.15 para leerse de noche. */
 export const INTERACT_RING_OUTER = 0.897;
