@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** base bajo el muro un poco más clara
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After wall base, look at DOOR_CLOSED in src/render/floorStyle.ts (currently `0x8b5a2b`) — bump ×1.15 per RGB channel so closed doors read a bit brighter at night. Do not change indoor/outdoor floor, WALL_COLOR, WALL_BASE_COLOR, DOOR_OPEN, furniture/bed/barricade, AO/night lift, grass blades/wind, rain, tracers, impact, muzzle, melee/hit-lean, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** puerta cerrada un poco más clara
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After closed door, look at DOOR_OPEN in src/render/floorStyle.ts (currently `0xc4a35a`) — bump ×1.15 per RGB channel so open doors read a bit brighter at night. Do not change indoor/outdoor floor, walls/wall-base, DOOR_CLOSED, furniture/bed/barricade, AO/night lift, grass blades/wind, rain, tracers, impact, muzzle, melee/hit-lean, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **DOOR_CLOSED 0x8b5a2b→0xa06831; floors/walls/open-door/AO/lift/grass/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **WALL_BASE_COLOR 0x1a1c22→0x1e2027; floors/walls/doors/AO/lift/grass/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **WALL_COLOR 0x5a5348→0x685f53; floors/wall-base/doors/AO/lift/grass/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **INDOOR_FLOOR_COLOR 0x2a2e38→0x303540; outdoor/walls/doors/AO/lift/grass/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
