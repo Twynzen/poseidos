@@ -24,6 +24,8 @@ export const SURVIVOR_ACCENT_COLOR = SURVIVOR_ACCENT;
 export const SURVIVOR_ACCENT_EMISSIVE = 0x2a2820;
 /** Intensidad del acento. 0.15 × 1.15 para leer el visor de noche. */
 export const SURVIVOR_ACCENT_EMISSIVE_INTENSITY = 0.1725;
+/** Intensidad del cuerpo. 1 × 1.15 para leer la silueta de noche. */
+export const SURVIVOR_BODY_EMISSIVE_INTENSITY = 1.15;
 /**
  * Fill plano que aplastaba el mesh de noche.
  * Lock de nombre únicamente — no aplicar como color de cuerpo.
@@ -67,7 +69,7 @@ function tintMaterial(mat: Material, accent: boolean): Material {
       );
       cloned.emissiveIntensity = accent
         ? SURVIVOR_ACCENT_EMISSIVE_INTENSITY
-        : 1;
+        : SURVIVOR_BODY_EMISSIVE_INTENSITY;
     }
   }
   return cloned;
