@@ -18,8 +18,9 @@ import {
 } from "../src/render/noiseRings";
 
 describe("constantes", () => {
-  test("vida 0.85 / run cooldown 0.4", () => {
-    expect(DEFAULT_NOISE_RING_LIFE).toBe(0.85);
+  test("vida 0.85 × 1.15 / run cooldown 0.4", () => {
+    expect(DEFAULT_NOISE_RING_LIFE).toBe(0.9775);
+    expect(DEFAULT_NOISE_RING_LIFE).toBeCloseTo(0.85 * 1.15, 10);
     expect(RUN_NOISE_RING_MIN_AGE).toBe(0.4);
   });
 
