@@ -77,7 +77,8 @@ export const DEFAULT_PLACEHOLDER_MANIFEST: CharacterAssetManifest = {
 /**
  * Mesh2Motion drop-in: `public/models/Survivor.glb`.
  * Roles Idle/Walk/Run/Attack/Hit/Death; scale 1.25, pies en y≈0.
- * Ausente o load fail → `playerManifestCandidates` cae a Soldier.
+ * Segundo candidate: boot pide Soldier primero (GLB presente).
+ * Gate HTML (#34) sigue si alguien pide este URL ausente.
  */
 export const PLAYER_SURVIVOR_MANIFEST: CharacterAssetManifest = {
   id: "survivor",
@@ -98,7 +99,7 @@ export const PLAYER_SURVIVOR_MANIFEST: CharacterAssetManifest = {
  * Three.js examples Soldier.glb (MIT) — placeholder militar de prueba.
  * Clips reales del GLB: Idle / Walk / Run (+ TPose no mapeado).
  * Escala 1.25, yOffset 0: presencia vs tiles/hostiles; pies en y≈0.
- * Fallback si Survivor.glb no está; no es el look final survival.
+ * Primer candidate del player (GLB presente). No es el look final survival.
  */
 export const PLAYER_SOLDIER_MANIFEST: CharacterAssetManifest = {
   id: "soldier-threejs",
@@ -119,9 +120,9 @@ export function preferSurvivorManifest(
   return hasSurvivor ? PLAYER_SURVIVOR_MANIFEST : PLAYER_SOLDIER_MANIFEST;
 }
 
-/** Orden de attach del player: Survivor primero, Soldier fallback. */
+/** Orden de attach del player: Soldier primero (presente), Survivor si existe. */
 export function playerManifestCandidates(): readonly CharacterAssetManifest[] {
-  return [PLAYER_SURVIVOR_MANIFEST, PLAYER_SOLDIER_MANIFEST];
+  return [PLAYER_SOLDIER_MANIFEST, PLAYER_SURVIVOR_MANIFEST];
 }
 
 /** Tint tierra/visor solo en placeholder militar; Survivor GLB ya es el look. */

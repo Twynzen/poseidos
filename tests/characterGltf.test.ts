@@ -171,7 +171,7 @@ describe("canLoadGltfInThisEnv / loadCharacterGltf", () => {
     }
   });
 
-  test("missing Survivor (HTML) => null so candidate loop reaches Soldier", async () => {
+  test("first candidate is Soldier; HTML Survivor still gated (safety net)", async () => {
     (globalThis as { window?: unknown }).window = {};
     const prevFetch = globalThis.fetch;
     const seen: string[] = [];
@@ -184,22 +184,25 @@ describe("canLoadGltfInThisEnv / loadCharacterGltf", () => {
           headers: { "content-type": "text/html; charset=utf-8" },
         });
       }
-      return new Response("not found", {
-        status: 404,
-        headers: { "content-type": "text/plain" },
+      return new Response(glbBytes(), {
+        status: 200,
+        headers: { "content-type": "model/gltf-binary" },
       });
     }) as typeof fetch;
+    const scene = new Group();
+    parseAsync.mockResolvedValueOnce({ scene, animations: [] });
     try {
       const candidates = playerManifestCandidates();
-      expect(candidates[0]).toBe(PLAYER_SURVIVOR_MANIFEST);
-      expect(candidates[1]).toBe(PLAYER_SOLDIER_MANIFEST);
+      expect(candidates[0]).toBe(PLAYER_SOLDIER_MANIFEST);
+      expect(candidates[1]).toBe(PLAYER_SURVIVOR_MANIFEST);
       const first = await loadCharacterGltf(candidates[0]!.url);
-      expect(first).toBeNull();
-      const second = await loadCharacterGltf(candidates[1]!.url);
-      expect(second).toBeNull();
-      expect(seen[0]).toContain("Survivor.glb");
-      expect(seen[1]).toContain("Soldier.glb");
-      expect(parseAsync).not.toHaveBeenCalled();
+      expect(first).not.toBeNull();
+      expect(seen).toHaveLength(1);
+      expect(seen[0]).toContain("Soldier.glb");
+      expect(seen[0]).not.toContain("Survivor.glb");
+      const survivor = await loadCharacterGltf(candidates[1]!.url);
+      expect(survivor).toBeNull();
+      expect(parseAsync).toHaveBeenCalledTimes(1);
     } finally {
       globalThis.fetch = prevFetch;
     }
