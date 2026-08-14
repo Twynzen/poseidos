@@ -5,7 +5,13 @@
  */
 
 /** Distancia del chevron al origen del player (tiles). */
-export const FACING_CHEVRON_DIST = 1.05;
+export const FACING_CHEVRON_DIST = 1.2;
+
+/** Largo del triángulo de suelo (tiles). 0.70 × 1.15 para Soldier 1.5. */
+export const FACING_CHEVRON_LEN = 0.805;
+
+/** Semi-ancho del triángulo de suelo (tiles). 0.28 × 1.15. */
+export const FACING_CHEVRON_HW = 0.322;
 
 /**
  * Knob de calibración (rad). Default 0 — yaw 0 ya apunta +Z.

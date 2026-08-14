@@ -7,6 +7,8 @@ import {
 } from "./markers";
 import {
   FACING_CHEVRON_COLOR,
+  FACING_CHEVRON_HW,
+  FACING_CHEVRON_LEN,
   FACING_CHEVRON_OPACITY,
   facingChevronOffset,
 } from "./facingChevron";
@@ -742,18 +744,16 @@ export function createWorldView(
   playerMesh.add(muzzleMesh, muzzleLight);
 
   // Chevron de facing: triángulo plano unlit (siempre visible; sin luz extra).
-  // Dist 1.05 (fuera del anillo 0.58); len/hw más grandes; cyan semi-transparente; tilt iso.
-  const CHEVRON_LEN = 0.70;
-  const CHEVRON_HALF_W = 0.28;
+  // Dist/len/hw desde facingChevron knobs; cyan semi-transparente; tilt iso.
   const CHEVRON_Y = 0.12;
   const chevronGeo = new THREE.BufferGeometry();
   chevronGeo.setAttribute(
     "position",
     new THREE.BufferAttribute(
       new Float32Array([
-        0, 0, CHEVRON_LEN * 0.5,
-        CHEVRON_HALF_W, 0, -CHEVRON_LEN * 0.5,
-        -CHEVRON_HALF_W, 0, -CHEVRON_LEN * 0.5,
+        0, 0, FACING_CHEVRON_LEN * 0.5,
+        FACING_CHEVRON_HW, 0, -FACING_CHEVRON_LEN * 0.5,
+        -FACING_CHEVRON_HW, 0, -FACING_CHEVRON_LEN * 0.5,
       ]),
       3,
     ),
