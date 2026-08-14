@@ -200,6 +200,9 @@ export const SUN_WARM_G = 0.023;
 /** Subtract b cálido dawn/dusk del sol (0.14 × 1.15) para que sunrise/sunset se lean. */
 export const SUN_WARM_B = 0.161;
 
+/** Canal r del sol de día (0.91 × 1.15) para que el sol se lea más brillante. */
+export const SUN_DAY_R = 0.91 * 1.15;
+
 /** Color del sol / directional: día cálido suave; noche frío; dawn/dusk ámbar. */
 export function sunRgb(daylight: number, phase: number): Rgb {
   const d = clamp01(daylight);
@@ -209,7 +212,7 @@ export function sunRgb(daylight: number, phase: number): Rgb {
   const warm = Math.max(dawn, dusk);
   const nightMix = 1 - d;
 
-  let r = 0.91 - nightMix * SUN_NIGHT_R_SUB;
+  let r = SUN_DAY_R - nightMix * SUN_NIGHT_R_SUB;
   let g = 0.88 - nightMix * SUN_NIGHT_G_SUB;
   let b = 0.82 + nightMix * SUN_NIGHT_B_ADD;
 
