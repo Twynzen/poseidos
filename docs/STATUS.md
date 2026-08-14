@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** icono del toast de loot un poco más grande.
+- **Última rutina:** panel de inventario un poco más legible.
 - **Qué quedó (esta corrida):**
+  - **inventory-panel 13px; grilla/gestos/iconos 40px iguales.** `#inventory-panel` font 13px/1.5 (era 11.5px/1.45). `.inv-head` 14px (era 12px), gold `#e8c36a` igual. `.inv-weight` / `.inv-hint` 12px (era 10.5px). Width min(360px, …), grilla 5-col, slots 52×52, iconos 40px, selected gold y empty dashed iguales. `inventory.ts` gestos/copy sin cambio. Hotbar / toast / HUD / moodle / diálogo / cámara / markers / anillos / luces / lluvia / linterna / teclas / gestos sin cambio.
   - **loot-floater-icon 30→36px; 2s / copy / gestos iguales.** `#loot-floater .loot-floater-icon` (y su `svg`) 36px; flex `0 0 36px`. Font 20px, animación 2s, gold/error, glass chip y qty badge iguales. `lootFloaterHud.ts` no hardcodea el tamaño. `itemIcons.ts` paths / viewBox sin cambio. Hotbar/inv 40px, cámara / markers / anillos / nameplates / chevron / luces / lluvia / linterna / teclas / gestos sin cambio.
   - **slot icons 32→40px; celdas 52×52 y gestos iguales.** `.hotbar-slot-icon` y `.inv-slot-icon` (y sus `svg`) 40px. Slots 52×52, qty badges, empty dashed, selected gold y teclas 1–5 iguales. `itemIcons.ts` paths / viewBox sin cambio. Cámara / markers / anillos / nameplates / chevron / luces / lluvia / linterna / HUD / loading / diálogo / globos / teclas / gestos sin cambio.
   - **FACING_CHEVRON_OPACITY 0.55→0.75; color/tamaño/yaw iguales.** worldView mesh sigue el knob (`opacity: FACING_CHEVRON_OPACITY`). `FACING_CHEVRON_COLOR` `0xe8c36a`, DIST 1.2, LEN 0.805, HW 0.322, YAW_OFFSET 0 sin cambio. Cámara / escala / anillos / nameplates / badges / luces / lluvia / linterna / HUD / loading / diálogo / globos / inventario / hotbar / teclas / gestos sin cambio.

@@ -682,6 +682,11 @@ describe("inventory slot icon CSS", () => {
 });
 
 describe("inventory panel CSS", () => {
+  test("#inventory-panel font 13px", () => {
+    const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
+    expect(html).toMatch(/#inventory-panel\s*\{[^}]*font:\s*13px\/1\.5/s);
+  });
+
   test(".inv-head uses Diablo gold #e8c36a", () => {
     const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
     expect(html).toMatch(/\.inv-head\s*\{[^}]*color:\s*#e8c36a;/s);
