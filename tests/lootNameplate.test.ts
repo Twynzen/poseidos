@@ -38,7 +38,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.828)");
     expect(LOOT_NAMEPLATE_GOLD_FILL).toBe("rgba(232,195,106,0.368)");
     expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");
-    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
+    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.95125);
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(44.965);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
     expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
@@ -70,7 +70,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.828)");
     expect(LOOT_NAMEPLATE_GOLD_FILL).toBe("rgba(232,195,106,0.368)");
     expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");
-    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
+    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.95125);
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(44.965);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
     expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
@@ -103,7 +103,7 @@ describe("constantes", () => {
     expect(LOOT_NAMEPLATE_PLATE_FILL).toBe("rgba(15, 23, 42, 0.828)");
     expect(LOOT_NAMEPLATE_GOLD_FILL).toBe("rgba(232,195,106,0.368)");
     expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");
-    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
+    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.95125);
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(44.965);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
     expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
@@ -136,7 +136,7 @@ describe("constantes", () => {
     expect(opacity).toBeCloseTo(0.72 * 1.15, 5);
     expect(LOOT_NAMEPLATE_GOLD_FILL).toBe("rgba(232,195,106,0.368)");
     expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");
-    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
+    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.95125);
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(44.965);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
     expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
@@ -166,7 +166,7 @@ describe("constantes", () => {
     expect(opacity).toBe(0.368);
     expect(opacity).toBeCloseTo(0.32 * 1.15, 5);
     expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");
-    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
+    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.95125);
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(44.965);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
     expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
@@ -193,7 +193,7 @@ describe("constantes", () => {
 
   test("fill #ffdd6e (#f0c060 ×1.15); stroke/font/fade/mid-scale/iconos/scale/Y/teclas sin cambio", () => {
     expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");
-    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
+    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.95125);
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(44.965);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
     expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
@@ -215,9 +215,9 @@ describe("constantes", () => {
     expect(src).toContain("ctx.lineWidth = LOOT_NAMEPLATE_STROKE_PX");
   });
 
-  test("stroke 5.175 (4.5 × 1.15); font/fade/mid-scale/iconos/scale/Y/teclas sin cambio", () => {
-    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
-    expect(LOOT_NAMEPLATE_STROKE_PX).toBeCloseTo(4.5 * 1.15, 5);
+  test("stroke 5.95125 (5.175 × 1.15); font/fade/mid-scale/iconos/scale/Y/teclas sin cambio", () => {
+    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.95125);
+    expect(LOOT_NAMEPLATE_STROKE_PX).toBeCloseTo(5.175 * 1.15, 5);
     expect(LOOT_NAMEPLATE_FONT_PX).toBe(44.965);
     expect(LOOT_NAMEPLATE_FADE_DIST).toBe(7.27375);
     expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.6348);
@@ -433,8 +433,8 @@ describe("constantes", () => {
     expect(src).toMatch(/const H = 80;/);
   });
 
-  test("nameplate text stroke 5.175; fill gold; dark outline", () => {
-    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
+  test("nameplate text stroke 5.95125; fill gold; dark outline", () => {
+    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.95125);
     const src = readFileSync(
       resolve(process.cwd(), "src/render/worldView.ts"),
       "utf8",
