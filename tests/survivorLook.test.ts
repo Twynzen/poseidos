@@ -31,7 +31,7 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
     expect(SURVIVOR_ACCENT).toBe(0xbbb3a1);
     expect(SURVIVOR_ACCENT_COLOR).toBe(SURVIVOR_ACCENT);
-    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
+    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x302e25);
     expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
     expect(SURVIVOR_BODY_COLOR).not.toBe(SURVIVOR_CRUSHED_EARTH);
     expect(SURVIVOR_MAP_TINT).not.toBe(SURVIVOR_CRUSHED_EARTH);
@@ -59,6 +59,29 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBeLessThan(0.3);
   });
 
+  test("accent emissive 0x2a2820 × 1.15/canal → 0x302e25; body/map-tint/accent/roughness/intensity/crushed iguales", () => {
+    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x302e25);
+    const r = (SURVIVOR_ACCENT_EMISSIVE >> 16) & 0xff;
+    const g = (SURVIVOR_ACCENT_EMISSIVE >> 8) & 0xff;
+    const b = SURVIVOR_ACCENT_EMISSIVE & 0xff;
+    expect(r).toBe(0x30);
+    expect(g).toBe(0x2e);
+    expect(b).toBe(0x25);
+    expect(Math.round((0x2a * 115) / 100)).toBe(r);
+    expect(Math.round((0x28 * 115) / 100)).toBe(g);
+    expect(Math.round((0x20 * 115) / 100)).toBe(b);
+    expect(SURVIVOR_BODY_COLOR).toBe(0x9f9381);
+    expect(SURVIVOR_MAP_TINT).toBe(0xe6d8c1);
+    expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
+    expect(SURVIVOR_ACCENT).toBe(0xbbb3a1);
+    expect(SURVIVOR_ACCENT_COLOR).toBe(SURVIVOR_ACCENT);
+    expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
+    expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.620658);
+    expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.340605);
+    expect(SURVIVOR_BODY_EMISSIVE_INTENSITY).toBe(1.15);
+    expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBe(0.198375);
+  });
+
   test("accent 0xa39c8c × 1.15/canal → 0xbbb3a1; body/map-tint/emissive/roughness/intensity/crushed iguales", () => {
     expect(SURVIVOR_ACCENT).toBe(0xbbb3a1);
     const r = (SURVIVOR_ACCENT >> 16) & 0xff;
@@ -74,7 +97,7 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_BODY_COLOR).toBe(0x9f9381);
     expect(SURVIVOR_MAP_TINT).toBe(0xe6d8c1);
     expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
-    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
+    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x302e25);
     expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
     expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.620658);
     expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.340605);
@@ -97,7 +120,7 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_MAP_TINT).toBe(0xe6d8c1);
     expect(SURVIVOR_ACCENT).toBe(0xbbb3a1);
     expect(SURVIVOR_ACCENT_COLOR).toBe(SURVIVOR_ACCENT);
-    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
+    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x302e25);
     expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
     expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.620658);
     expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.340605);
@@ -120,7 +143,7 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
     expect(SURVIVOR_ACCENT).toBe(0xbbb3a1);
     expect(SURVIVOR_ACCENT_COLOR).toBe(SURVIVOR_ACCENT);
-    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
+    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x302e25);
     expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
     expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.620658);
     expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.340605);
@@ -143,7 +166,7 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
     expect(SURVIVOR_ACCENT).toBe(0xbbb3a1);
     expect(SURVIVOR_ACCENT_COLOR).toBe(SURVIVOR_ACCENT);
-    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
+    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x302e25);
     expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
     expect(SURVIVOR_BODY_ROUGHNESS).toBe(0.620658);
     expect(SURVIVOR_ACCENT_ROUGHNESS).toBe(0.340605);
@@ -155,7 +178,7 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_BODY_EMISSIVE_INTENSITY).toBe(1.15);
     expect(SURVIVOR_BODY_EMISSIVE_INTENSITY).toBeCloseTo(1 * 1.15, 10);
     expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBe(0.198375);
-    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
+    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x302e25);
     expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
     expect(SURVIVOR_BODY_COLOR).toBe(0x9f9381);
     expect(SURVIVOR_MAP_TINT).toBe(0xe6d8c1);
@@ -168,7 +191,7 @@ describe("survivorLook constants", () => {
   test("accent emissive intensity 0.1725 × 1.15; color/looks iguales", () => {
     expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBe(0.198375);
     expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBeCloseTo(0.1725 * 1.15, 10);
-    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
+    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x302e25);
     expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
     expect(SURVIVOR_BODY_COLOR).toBe(0x9f9381);
     expect(SURVIVOR_MAP_TINT).toBe(0xe6d8c1);
@@ -184,7 +207,7 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_BODY_COLOR).toBe(0x9f9381);
     expect(SURVIVOR_MAP_TINT).toBe(0xe6d8c1);
     expect(SURVIVOR_ACCENT).toBe(0xbbb3a1);
-    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
+    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x302e25);
     expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
     expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBe(0.198375);
     expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
@@ -198,7 +221,7 @@ describe("survivorLook constants", () => {
     expect(SURVIVOR_BODY_COLOR).toBe(0x9f9381);
     expect(SURVIVOR_MAP_TINT).toBe(0xe6d8c1);
     expect(SURVIVOR_ACCENT).toBe(0xbbb3a1);
-    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x2a2820);
+    expect(SURVIVOR_ACCENT_EMISSIVE).toBe(0x302e25);
     expect(SURVIVOR_BODY_EMISSIVE).toBe(0x28251f);
     expect(SURVIVOR_ACCENT_EMISSIVE_INTENSITY).toBe(0.198375);
     expect(SURVIVOR_CRUSHED_EARTH).toBe(0x5c5346);
