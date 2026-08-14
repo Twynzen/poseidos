@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** anillos de marcador un poco más opacos de noche
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After marker ring opacity, look at INTERACT_RING_INNER (0.4785) ×0.87 so interact rings read a bit thicker. Do not change outer/threat/width/life/kinds, colors, nameplate, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** anillos de loot/puerta/cama un poco más gruesos (inner)
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After interact ring inner, look at INTERACT_RING_OUTER (0.897) ×1.15 so interact rings read a bit larger. Do not change threat/opacity/width/life/kinds, colors, nameplate, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **INTERACT_RING_INNER 0.4785→0.416295; outer/threat/opacity/nameplate/looks/sky/fog/sol/teclas iguales.**
   - **MARKER_RING_OPACITY 0.598→0.6877; inner/outer/threat/nameplate/looks/sky/fog/sol/teclas iguales.**
   - **NOISE_RING_INNER 0.67425→0.5865975; width/life/min-age/kinds/nameplate/looks/sky/fog/sol/teclas iguales.**
   - **RUN_NOISE_RING_MIN_AGE 0.348→0.30276; width/life/inner/kinds/nameplate/looks/sky/fog/sol/teclas iguales.**
