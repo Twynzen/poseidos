@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** max grass instances un poco más alto
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After max grass instances, look at the inline `0.65` in `bladeWind` (`dz: w2 * WIND_SWAY * 0.65`) in src/render/windGrass.ts — export it as `WIND_SWAY_Z_MUL` and bump ×1.15 so the Z wind sway reads a bit stronger at night. Do not change grass radius/max/blades/yaw/speed, rain, tracers, impact, muzzle, melee/hit-lean, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** wind sway Z un poco más fuerte
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After wind sway Z, look at the inline `1.37` in `bladeWind` (`Math.sin(time * (WIND_SPEED * 1.37) + ...)`) in src/render/windGrass.ts — export it as `WIND_SPEED_Z_MUL` and bump ×1.15 so the Z wind cycle is a bit faster at night. Do not change grass radius/max/blades/sway/yaw/speed, rain, tracers, impact, muzzle, melee/hit-lean, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **WIND_SWAY_Z_MUL 0.65→0.7475; radius/max/blades/sway/yaw/speed/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **MAX_GRASS_INSTANCES 320→368; radius/blades/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **GRASS_RADIUS 7→8; max/blades/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **RAIN_HIDE_BELOW 0.02→0.0174; base/gain/count/min/cut/width/lengths/opacities/color/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
