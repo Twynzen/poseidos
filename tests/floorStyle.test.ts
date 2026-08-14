@@ -333,7 +333,7 @@ describe("night wall albedo lift", () => {
     expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
     expect(WALL_COLOR).toBe(0x685f53);
     expect(DOOR_CLOSED).toBe(0xa06831);
-    expect(DOOR_OPEN).toBe(0xc4a35a);
+    expect(DOOR_OPEN).toBe(0xe1bb68);
     expect(FURNITURE_COLOR).toBe(0x6b4f2a);
     expect(BED_COLOR).toBe(0x4a1f3d);
     expect(BARRICADE_COLOR).toBe(0xc49a6c);
@@ -393,7 +393,7 @@ describe("night leftover prop albedo lift", () => {
     expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
     expect(WALL_COLOR).toBe(0x685f53);
     expect(WALL_BASE_COLOR).toBe(0x1e2027);
-    expect(DOOR_OPEN).toBe(0xc4a35a);
+    expect(DOOR_OPEN).toBe(0xe1bb68);
     expect(FURNITURE_COLOR).toBe(0x6b4f2a);
     expect(BED_COLOR).toBe(0x4a1f3d);
     expect(BARRICADE_COLOR).toBe(0xc49a6c);
@@ -412,10 +412,44 @@ describe("night leftover prop albedo lift", () => {
     );
   });
 
+  test("DOOR_OPEN 0xc4a35a × 1.15; worldView still uses it", () => {
+    expect(DOOR_OPEN).toBe(0xe1bb68);
+    const r = (DOOR_OPEN >> 16) & 0xff;
+    const g = (DOOR_OPEN >> 8) & 0xff;
+    const b = DOOR_OPEN & 0xff;
+    expect(r).toBe(0xe1);
+    expect(g).toBe(0xbb);
+    expect(b).toBe(0x68);
+    expect(Math.round((0xc4 * 115) / 100)).toBe(r);
+    expect(Math.round((0xa3 * 115) / 100)).toBe(g);
+    expect(Math.round((0x5a * 115) / 100)).toBe(b);
+    expect(INDOOR_FLOOR_COLOR).toBe(0x303540);
+    expect(OUTDOOR_GRASS_BASE).toBe(0x465b3d);
+    expect(WALL_COLOR).toBe(0x685f53);
+    expect(WALL_BASE_COLOR).toBe(0x1e2027);
+    expect(DOOR_CLOSED).toBe(0xa06831);
+    expect(FURNITURE_COLOR).toBe(0x6b4f2a);
+    expect(BED_COLOR).toBe(0x4a1f3d);
+    expect(BARRICADE_COLOR).toBe(0xc49a6c);
+    expect(BARRICADE_EDGE).toBe(0x8a6239);
+    expect(GROUND_NIGHT_LIFT).toBe(1.6675);
+    expect(AO_MAX_DARKEN).toBe(0.261);
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain(
+      "doorOpenMat.color.setHex(applyNightGroundLift(DOOR_OPEN, d))",
+    );
+    expect(viewSrc).toContain(
+      "color: applyNightGroundLift(DOOR_OPEN, lastDaylight)",
+    );
+  });
+
   test("doors/beds/furniture reuse ground lift; day = identity", () => {
     expect(GROUND_NIGHT_LIFT).toBe(1.6675);
     expect(DOOR_CLOSED).toBe(0xa06831);
-    expect(DOOR_OPEN).toBe(0xc4a35a);
+    expect(DOOR_OPEN).toBe(0xe1bb68);
     expect(FURNITURE_COLOR).toBe(0x6b4f2a);
     expect(BED_COLOR).toBe(0x4a1f3d);
     expect(applyNightGroundLift(DOOR_CLOSED, 1)).toBe(DOOR_CLOSED);
@@ -426,7 +460,7 @@ describe("night leftover prop albedo lift", () => {
 
   test("noche props más claros; mismo multiply 1.6675", () => {
     expect(applyNightGroundLift(DOOR_CLOSED, 0)).toBe(0xffad52);
-    expect(applyNightGroundLift(DOOR_OPEN, 0)).toBe(0xffff96);
+    expect(applyNightGroundLift(DOOR_OPEN, 0)).toBe(0xffffad);
     expect(applyNightGroundLift(FURNITURE_COLOR, 0)).toBe(0xb28446);
     expect(applyNightGroundLift(BED_COLOR, 0)).toBe(0x7b3466);
     for (const base of [DOOR_CLOSED, DOOR_OPEN, FURNITURE_COLOR, BED_COLOR]) {

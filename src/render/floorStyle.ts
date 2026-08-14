@@ -23,7 +23,7 @@ export const WALL_BASE_COLOR = 0x1e2027;
 export const DOOR_CLOSED = 0xa06831;
 
 /** Puerta abierta (histórico DOOR_OPEN en worldView). */
-export const DOOR_OPEN = 0xc4a35a;
+export const DOOR_OPEN = 0xe1bb68;
 
 /** Mueble / crate genérico (histórico FURNITURE_COLOR en worldView). */
 export const FURNITURE_COLOR = 0x6b4f2a;
