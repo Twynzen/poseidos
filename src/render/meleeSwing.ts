@@ -5,8 +5,8 @@
  * Envelope ease-out sine: sin(π t) = 0→1→0 en MELEE_SWING_DURATION.
  */
 
-/** Duración del swing (s). */
-export const MELEE_SWING_DURATION = 0.25;
+/** Duración del swing (s). 0.25 × 1.15 para leer de noche. */
+export const MELEE_SWING_DURATION = 0.2875;
 /** Ángulo pico de pitch (rad). yawBias usa la mitad. 0.32 × 1.25 para leer de noche. */
 export const MELEE_SWING_ANGLE = 0.4;
 
