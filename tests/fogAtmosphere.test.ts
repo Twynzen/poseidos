@@ -13,6 +13,8 @@ import {
   fogNearFar,
   nightAmbientIntensity,
   nightSunIntensity,
+  SKY_DAY,
+  SKY_NIGHT,
   skyRgb,
   SUN_INTENSITY_GAIN,
   SUN_INTENSITY_NIGHT,
@@ -101,6 +103,16 @@ describe("skyRgb cinematic", () => {
     const night = skyRgb(0, daylightAt(0));
     expect(night.b).toBeGreaterThanOrEqual(night.r);
     expect(night.r + night.g + night.b).toBeLessThan(0.45);
+  });
+
+  test("knobs: noche 0.07/0.09/0.14; día 0.26/0.33/0.47 sin cambio", () => {
+    expect(SKY_NIGHT).toEqual({ r: 0.07, g: 0.09, b: 0.14 });
+    expect(SKY_DAY).toEqual({ r: 0.26, g: 0.33, b: 0.47 });
+  });
+
+  test("d=0 → night sky/fog; noon d=1 → day sky (día sin cambio)", () => {
+    expect(skyRgb(0, 0)).toEqual(SKY_NIGHT);
+    expect(skyRgb(0.5, 1)).toEqual(SKY_DAY);
   });
 });
 
