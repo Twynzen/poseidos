@@ -15,6 +15,7 @@ import {
   GRASS_RADIUS,
   MAX_GRASS_INSTANCES,
   tileAcceptsGrass,
+  WIND_PHASE_Z_MUL,
   WIND_SPEED,
   WIND_SPEED_Z_MUL,
   WIND_SWAY,
@@ -79,7 +80,7 @@ describe("collectGrassTiles", () => {
 });
 
 describe("blade transforms + wind", () => {
-  test("blade Y mul 0.18 × 1.15; xz/sy/wind/count iguales", () => {
+  test("wind phase Z mul 1.7 × 1.15; y/xz/sy/wind/count iguales", () => {
     expect(WIND_SWAY).toBe(0.0595125);
     expect(WIND_SWAY).toBeCloseTo(0.05175 * 1.15, 10);
     expect(WIND_SWAY_Z_MUL).toBe(0.7475);
@@ -90,6 +91,8 @@ describe("blade transforms + wind", () => {
     expect(WIND_SPEED).toBeCloseTo(2.76 * 1.15, 10);
     expect(WIND_SPEED_Z_MUL).toBe(1.5755);
     expect(WIND_SPEED_Z_MUL).toBeCloseTo(1.37 * 1.15, 10);
+    expect(WIND_PHASE_Z_MUL).toBe(1.955);
+    expect(WIND_PHASE_Z_MUL).toBeCloseTo(1.7 * 1.15, 10);
     expect(BLADE_SY_BASE).toBe(0.8625);
     expect(BLADE_SY_BASE).toBeCloseTo(0.75 * 1.15, 10);
     expect(BLADE_SY_RANGE).toBe(0.6325);

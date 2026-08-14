@@ -32,6 +32,9 @@ export const WIND_SPEED = 3.174;
 /** Multiplicador Z de la velocidad del viento (relativo a WIND_SPEED). 1.37 × 1.15 para leer de noche. */
 export const WIND_SPEED_Z_MUL = 1.5755;
 
+/** Multiplicador Z de la fase del viento (relativo a phase). 1.7 × 1.15 para leer de noche. */
+export const WIND_PHASE_Z_MUL = 1.955;
+
 /** Escala Y base de la hoja. 0.75 × 1.15 para leer de noche. */
 export const BLADE_SY_BASE = 0.8625;
 
@@ -151,7 +154,7 @@ export function bladeWind(
 ): { dx: number; dz: number; dyaw: number } {
   const phase = seed * Math.PI * 2;
   const w = Math.sin(time * WIND_SPEED + phase);
-  const w2 = Math.sin(time * (WIND_SPEED * WIND_SPEED_Z_MUL) + phase * 1.7);
+  const w2 = Math.sin(time * (WIND_SPEED * WIND_SPEED_Z_MUL) + phase * WIND_PHASE_Z_MUL);
   return {
     dx: w * WIND_SWAY,
     dz: w2 * WIND_SWAY * WIND_SWAY_Z_MUL,
