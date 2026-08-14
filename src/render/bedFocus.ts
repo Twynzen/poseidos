@@ -18,6 +18,9 @@ export const BED_FOCUS_PULSE_AMP = 0.05;
 /** Velocidad angular del pulso (rad/s). */
 export const BED_FOCUS_PULSE_SPEED = 6;
 
+/** Letra de tecla en el floatBadge de cama. */
+export const bedBadgeLabel = "Z";
+
 /** True si dist está en reach (incl. el borde). */
 export function bedFocusInReach(dist: number): boolean {
   return Number.isFinite(dist) && dist <= BED_FOCUS_REACH;

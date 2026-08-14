@@ -7,6 +7,7 @@ import {
   DOOR_FOCUS_SCALE_NEAR,
   doorFocusInReach,
   doorFocusMul,
+  doorBadgeLabel,
   doorFocusPulse,
   doorFocusScale,
   doorRingVisible,
@@ -19,6 +20,10 @@ describe("constantes", () => {
     expect(DOOR_FOCUS_SCALE_FAR).toBe(1.12);
     expect(DOOR_FOCUS_PULSE_AMP).toBe(0.05);
     expect(DOOR_FOCUS_PULSE_SPEED).toBe(6);
+  });
+
+  test("doorBadgeLabel es E", () => {
+    expect(doorBadgeLabel).toBe("E");
   });
 });
 

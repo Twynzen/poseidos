@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** door/bed hue split.
+- **Última rutina:** badges E/Z.
 - **Qué quedó (esta corrida):**
+  - **Badges E/Z** floatBadge de puerta/cama pinta la tecla en el disc existente: puerta **E** (anillo slate `0x5c7388`), cama **Z** (anillo púrpura `0x7a6490`). Canvas blanco monospace + stroke oscuro (`doorBadgeLabel` / `bedBadgeLabel`). Loot badge igual. Hide-when-out-of-reach igual. Sin nameplates ni widgets.
   - **Door/bed hue split** anillos de suelo se leen aparte del loot gold `0xd4a03a`: puerta steel blue-grey `0x5c7388` (era teal `0x2ec8b4`); cama púrpura sleep `0x7a6490` (era rosa `0xe07090`). Pulso door/bed `0.08` → `0.05` (más calmo que loot). Hide-when-out-of-reach igual. Sin nameplates ni widgets.
   - **Sin floater 3D duplicado** G / Shift+G / E-fallback loot ya no spawnean el texto gold 3D (`spawnLootFloater`); solo el chip DOM `#loot-floater` (`lootToast.show` + `lootFloaterLabel`). `lootFloater.ts` / `WorldView.spawnLootFloater` quedan en el repo. Sin widgets nuevos.
   - **Toast contrast** `#loot-floater` glass chip más oscuro para leerse sobre nameplates gold de noche/lluvia: gradiente `white 0.05 → navy 0.38` sobre `rgba(15,23,42,0.88)` + `--hud-bg`; borde `rgba(226,232,240,0.42)`; sombra 0.35 → 0.58. Gold `#ffe080`, SVG, 20px, 2s y errores `#fca5a5` sin cambio. Sin segundo toast ni quitar el floater 3D.
