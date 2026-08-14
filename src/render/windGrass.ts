@@ -17,8 +17,8 @@ export const MAX_GRASS_INSTANCES = 320;
 /** Hojas por tile outdoor (antes del cap). */
 export const BLADES_PER_TILE = 3;
 
-/** Amplitud de oscilación horizontal (unidades mundo). */
-export const WIND_SWAY = 0.045;
+/** Amplitud de oscilación horizontal (unidades mundo). 0.045 × 1.15 para leer de noche. */
+export const WIND_SWAY = 0.05175;
 
 /** Amplitud de yaw por viento (radianes). */
 export const WIND_YAW = 0.28;
