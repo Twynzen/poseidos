@@ -32,7 +32,7 @@ export const FURNITURE_COLOR = 0x7b5b30;
 export const BED_COLOR = 0x552446;
 
 /** Barricada: madera clara (histórico BARRICADE_COLOR en worldView). */
-export const BARRICADE_COLOR = 0xc49a6c;
+export const BARRICADE_COLOR = 0xe1b17c;
 
 /** Cruz de barricada (histórico BARRICADE_EDGE en worldView). */
 export const BARRICADE_EDGE = 0x8a6239;
