@@ -10,13 +10,13 @@ import {
 } from "../src/render/facingChevron";
 
 describe("constantes", () => {
-  test("len 0.92575 (0.805 × 1.15); dist/hw/yaw sin cambio (no double-apply)", () => {
+  test("hw 0.3703 (0.322 × 1.15); dist/len/yaw sin cambio (no double-apply)", () => {
     expect(FACING_CHEVRON_DIST).toBe(1.38);
     expect(FACING_CHEVRON_DIST).toBeCloseTo(1.2 * 1.15, 5);
     expect(FACING_CHEVRON_LEN).toBe(0.92575);
     expect(FACING_CHEVRON_LEN).toBeCloseTo(0.805 * 1.15, 5);
-    expect(FACING_CHEVRON_HW).toBeCloseTo(0.322, 5);
-    expect(FACING_CHEVRON_HW).toBeCloseTo(0.28 * 1.15, 5);
+    expect(FACING_CHEVRON_HW).toBe(0.3703);
+    expect(FACING_CHEVRON_HW).toBeCloseTo(0.322 * 1.15, 5);
     expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
   });
 
