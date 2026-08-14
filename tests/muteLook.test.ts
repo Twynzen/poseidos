@@ -71,8 +71,8 @@ describe("muteLook constants", () => {
     expect(MUTE_ACCENT_ROUGHNESS).toBeLessThan(MUTE_BODY_ROUGHNESS);
     expect(MUTE_BODY_EMISSIVE_INTENSITY).toBe(1.15);
     expect(MUTE_BODY_EMISSIVE_INTENSITY).toBeCloseTo(1 * 1.15, 10);
-    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBe(0.4025);
-    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBeCloseTo(0.35 * 1.15, 10);
+    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBe(0.462875);
+    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBeCloseTo(0.4025 * 1.15, 10);
     expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBeGreaterThan(0.2);
     expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBeLessThan(0.6);
 
@@ -84,7 +84,7 @@ describe("muteLook constants", () => {
   test("body emissive intensity 1 × 1.15; color/looks iguales", () => {
     expect(MUTE_BODY_EMISSIVE_INTENSITY).toBe(1.15);
     expect(MUTE_BODY_EMISSIVE_INTENSITY).toBeCloseTo(1 * 1.15, 10);
-    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBe(0.4025);
+    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBe(0.462875);
     expect(MUTE_ACCENT_EMISSIVE).toBe(0x1a2218);
     expect(MUTE_BODY_EMISSIVE).toBe(0x1c2319);
     expect(MUTE_BODY_COLOR).toBe(0x647262);
@@ -95,9 +95,9 @@ describe("muteLook constants", () => {
     expect(MUTE_CRUSHED_BODY).toBe(0x4a5648);
   });
 
-  test("accent emissive intensity 0.35 × 1.15; color/looks iguales", () => {
-    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBe(0.4025);
-    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBeCloseTo(0.35 * 1.15, 10);
+  test("accent emissive intensity 0.4025 × 1.15; color/looks iguales", () => {
+    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBe(0.462875);
+    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBeCloseTo(0.4025 * 1.15, 10);
     expect(MUTE_ACCENT_EMISSIVE).toBe(0x1a2218);
     expect(MUTE_BODY_EMISSIVE).toBe(0x1c2319);
     expect(MUTE_BODY_COLOR).toBe(0x647262);
@@ -116,7 +116,7 @@ describe("muteLook constants", () => {
     expect(MUTE_ACCENT).toBe(0x6b7a68);
     expect(MUTE_ACCENT_EMISSIVE).toBe(0x1a2218);
     expect(MUTE_BODY_EMISSIVE).toBe(0x1c2319);
-    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBe(0.4025);
+    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBe(0.462875);
     expect(MUTE_CRUSHED_BODY).toBe(0x4a5648);
   });
 
@@ -130,7 +130,7 @@ describe("muteLook constants", () => {
     expect(MUTE_ACCENT).toBe(0x6b7a68);
     expect(MUTE_ACCENT_EMISSIVE).toBe(0x1a2218);
     expect(MUTE_BODY_EMISSIVE).toBe(0x1c2319);
-    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBe(0.4025);
+    expect(MUTE_ACCENT_EMISSIVE_INTENSITY).toBe(0.462875);
     expect(MUTE_CRUSHED_BODY).toBe(0x4a5648);
   });
 

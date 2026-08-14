@@ -34,8 +34,8 @@ export const MUTE_BODY_ROUGHNESS = 0.7656;
 export const MUTE_ACCENT_ROUGHNESS = 0.435;
 /** Intensidad del cuerpo. 1 × 1.15 para leer la silueta de noche. */
 export const MUTE_BODY_EMISSIVE_INTENSITY = 1.15;
-/** Intensidad del acento. 0.35 × 1.15 para leer el visor de noche. */
-export const MUTE_ACCENT_EMISSIVE_INTENSITY = 0.4025;
+/** Intensidad del acento. 0.4025 × 1.15 para leer el visor de noche. */
+export const MUTE_ACCENT_EMISSIVE_INTENSITY = 0.462875;
 
 const ACCENT_NAME_RE = /visor|helmet|helm|head/i;
 const MAP_TINT = new Color(MUTE_MAP_TINT);
