@@ -10,12 +10,21 @@ import {
 } from "../src/render/facingChevron";
 
 describe("constantes", () => {
+  test("color 0xffe07a (0xe8c36a × 1.15, r clamp); dist/len/hw/opacity/yaw sin cambio (no double-apply)", () => {
+    expect(FACING_CHEVRON_COLOR).toBe(0xffe07a);
+    expect(FACING_CHEVRON_DIST).toBe(1.587);
+    expect(FACING_CHEVRON_LEN).toBe(0.92575);
+    expect(FACING_CHEVRON_HW).toBe(0.3703);
+    expect(FACING_CHEVRON_OPACITY).toBe(0.8625);
+    expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
+  });
+
   test("dist 1.587 (1.38 × 1.15); len/hw/color/opacity/yaw sin cambio (no double-apply)", () => {
     expect(FACING_CHEVRON_DIST).toBe(1.587);
     expect(FACING_CHEVRON_DIST).toBeCloseTo(1.38 * 1.15, 5);
     expect(FACING_CHEVRON_LEN).toBe(0.92575);
     expect(FACING_CHEVRON_HW).toBe(0.3703);
-    expect(FACING_CHEVRON_COLOR).toBe(0xe8c36a);
+    expect(FACING_CHEVRON_COLOR).toBe(0xffe07a);
     expect(FACING_CHEVRON_OPACITY).toBe(0.8625);
     expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
   });
@@ -31,7 +40,7 @@ describe("constantes", () => {
   });
 
   test("opacity 0.8625 (0.75 × 1.15); color/dist/len/hw/yaw sin cambio (no double-apply)", () => {
-    expect(FACING_CHEVRON_COLOR).toBe(0xe8c36a);
+    expect(FACING_CHEVRON_COLOR).toBe(0xffe07a);
     expect(FACING_CHEVRON_OPACITY).toBe(0.8625);
     expect(FACING_CHEVRON_OPACITY).toBeCloseTo(0.75 * 1.15, 5);
     expect(FACING_CHEVRON_OPACITY).toBeLessThan(1);
