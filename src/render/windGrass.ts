@@ -38,6 +38,9 @@ export const BLADE_SY_BASE = 0.8625;
 /** Rango de variación de altura de la hoja. 0.55 × 1.15 para leer de noche. */
 export const BLADE_SY_RANGE = 0.6325;
 
+/** Rango XZ de la hoja dentro del tile. 0.64 × 1.15 para leer de noche. */
+export const BLADE_XZ_RANGE = 0.736;
+
 export interface GrassTile {
   tx: number;
   ty: number;
@@ -120,8 +123,8 @@ export function bladeBasePose(
   // Offsets deterministas dentro del tile (evita clumping en el centro)
   const a = tileSeed01(tx * 3 + i, ty);
   const b = tileSeed01(ty * 5 + i, tx + i);
-  const ox = 0.18 + a * 0.64;
-  const oz = 0.18 + b * 0.64;
+  const ox = 0.18 + a * BLADE_XZ_RANGE;
+  const oz = 0.18 + b * BLADE_XZ_RANGE;
   const yaw = (seed + a) * Math.PI * 2;
   const sy = BLADE_SY_BASE + b * BLADE_SY_RANGE;
   return {
