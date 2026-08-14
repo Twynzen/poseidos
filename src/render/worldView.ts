@@ -156,6 +156,7 @@ import {
 } from "./rainStreaks";
 import { lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
 import {
+  LOOT_NAMEPLATE_FILL,
   LOOT_NAMEPLATE_FONT_PX,
   LOOT_NAMEPLATE_ICON_PAD,
   LOOT_NAMEPLATE_ICON_SIZE,
@@ -629,7 +630,7 @@ export function createWorldView(
       ctx.strokeStyle = "rgba(0,0,0,0.7)";
       const textX = hasIcon ? ICON_PAD + BASE_W / 2 : W / 2;
       ctx.strokeText(text, textX, H / 2);
-      ctx.fillStyle = "#f0c060";
+      ctx.fillStyle = LOOT_NAMEPLATE_FILL;
       ctx.fillText(text, textX, H / 2);
     }
     const map = new THREE.CanvasTexture(canvas);

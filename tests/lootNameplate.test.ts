@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   LOOT_NAMEPLATE_FADE_DIST,
+  LOOT_NAMEPLATE_FILL,
   LOOT_NAMEPLATE_FONT_PX,
   LOOT_NAMEPLATE_ICON_PAD,
   LOOT_NAMEPLATE_ICON_SIZE,
@@ -24,6 +25,30 @@ import {
 } from "../src/render/lootNameplate";
 
 describe("constantes", () => {
+  test("fill #ffdd6e (#f0c060 ×1.15); stroke/font/fade/mid-scale/iconos/scale/Y/teclas sin cambio", () => {
+    expect(LOOT_NAMEPLATE_FILL).toBe("#ffdd6e");
+    expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
+    expect(LOOT_NAMEPLATE_FONT_PX).toBe(39.1);
+    expect(LOOT_NAMEPLATE_FADE_DIST).toBe(6.325);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.552);
+    expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
+    expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
+    expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.7475);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_PAD).toBe(78.2);
+  });
+
+  test("worldView aplica LOOT_NAMEPLATE_FILL al canvas existente", () => {
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toContain("ctx.fillStyle = LOOT_NAMEPLATE_FILL");
+    expect(src).not.toMatch(/ctx\.fillStyle = "#f0c060"/);
+    expect(src).toMatch(/ctx\.strokeStyle = "rgba\(0,0,0,0\.7\)"/);
+    expect(src).toContain("ctx.lineWidth = LOOT_NAMEPLATE_STROKE_PX");
+  });
+
   test("stroke 5.175 (4.5 × 1.15); font/fade/mid-scale/iconos/scale/Y/teclas sin cambio", () => {
     expect(LOOT_NAMEPLATE_STROKE_PX).toBe(5.175);
     expect(LOOT_NAMEPLATE_STROKE_PX).toBeCloseTo(4.5 * 1.15, 5);
@@ -46,7 +71,7 @@ describe("constantes", () => {
     expect(src).not.toMatch(/ctx\.lineWidth = 4\.5;/);
     expect(src).not.toMatch(/ctx\.lineWidth = 3;/);
     expect(src).toMatch(/ctx\.strokeStyle = "rgba\(0,0,0,0\.7\)"/);
-    expect(src).toMatch(/ctx\.fillStyle = "#f0c060"/);
+    expect(src).toContain("ctx.fillStyle = LOOT_NAMEPLATE_FILL");
   });
 
   test("font 39.1 (34 × 1.15); fade/mid-scale/iconos/scale/Y/teclas sin cambio", () => {
@@ -187,7 +212,8 @@ describe("constantes", () => {
     expect(src).not.toMatch(/ctx\.lineWidth = 4\.5;/);
     expect(src).not.toMatch(/ctx\.lineWidth = 3;/);
     expect(src).toMatch(/ctx\.strokeStyle = "rgba\(0,0,0,0\.7\)"/);
-    expect(src).toMatch(/ctx\.fillStyle = "#f0c060"/);
+    expect(src).toContain("ctx.fillStyle = LOOT_NAMEPLATE_FILL");
+    expect(src).not.toMatch(/ctx\.fillStyle = "#f0c060"/);
   });
 });
 
