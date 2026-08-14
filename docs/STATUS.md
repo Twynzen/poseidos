@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** figuras hostiles un poco más grandes de noche
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After HOSTILE_VISUAL_SCALE, look at LOOT_FOCUS_SCALE_NEAR (1.5525) and bump ×1.15 so the loot ring reads a bit larger at night. Do not change pulse, far scale, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** anillo de loot un poco más grande de cerca
+- **Siguiente:** leftover visual polish chico — bump `LOOT_FOCUS_SCALE_FAR` (currently 1.288) ×1.15 so the loot ring still reads at the edge of reach. Do not change near scale, pulse, bed/door, looks, sky/fog/sun/ambient, or controls. No new widgets.
 - **Qué quedó (esta corrida):**
+  - **LOOT_FOCUS_SCALE_NEAR 1.5525→1.785375; far/pulse/reach/bed/door/looks/sky/fog/sol/teclas iguales.**
   - **HOSTILE_VISUAL_SCALE 1.5→1.725; yaw/focus/looks/sky/fog/sol/teclas iguales.**
   - **DOOR_FOCUS_PULSE_SPEED 6→6.9; reach/scale/amp/loot/bed/looks/sky/fog/sol/teclas iguales.**
   - **BED_FOCUS_PULSE_SPEED 6→6.9; reach/scale/amp/loot/door/looks/sky/fog/sol/teclas iguales.**
