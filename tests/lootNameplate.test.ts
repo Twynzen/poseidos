@@ -22,9 +22,24 @@ import {
 } from "../src/render/lootNameplate";
 
 describe("constantes", () => {
+  test("fade dist 6.325 (5.5 × 1.15); iconos/scale/Y/mid-scale/font/teclas sin cambio", () => {
+    expect(LOOT_NAMEPLATE_FADE_DIST).toBe(6.325);
+    expect(LOOT_NAMEPLATE_FADE_DIST).toBeCloseTo(5.5 * 1.15, 5);
+    expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.48);
+    expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
+    expect(LOOT_NAMEPLATE_SCALE_X).toBe(2.99);
+    expect(LOOT_NAMEPLATE_SCALE_Y).toBe(0.7475);
+    expect(LOOT_NAMEPLATE_ICON_SIZE).toBe(73.6);
+    expect(LOOT_NAMEPLATE_ICON_PAD).toBe(78.2);
+    expect(lootNameplateOpacity(LOOT_NAMEPLATE_FADE_DIST)).toBe(0);
+    expect(lootNameplateScale(LOOT_NAMEPLATE_FADE_DIST)).toBe(
+      LOOT_NAMEPLATE_MID_SCALE,
+    );
+  });
+
   test("scaleY 0.7475 (0.65 × 1.15); X/fade/mid-scale/font/iconos sin cambio", () => {
     expect(LOOT_NAMEPLATE_MAX_CHARS).toBe(20);
-    expect(LOOT_NAMEPLATE_FADE_DIST).toBe(5.5);
+    expect(LOOT_NAMEPLATE_FADE_DIST).toBe(6.325);
     expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.48);
     expect(LOOT_NAMEPLATE_Y).toBe(2.4725);
     expect(LOOT_NAMEPLATE_Y).toBeCloseTo(2.15 * 1.15, 5);
@@ -139,20 +154,21 @@ describe("lootNameplateLabel", () => {
 });
 
 describe("lootNameplateOpacity", () => {
-  test("1 en dist ≤ 2 (in-reach 1.6); 0 en fade 5.5; 0 fuera", () => {
+  test("1 en dist ≤ 2 (in-reach 1.6); 0 en fade 6.325; 0 fuera", () => {
     expect(lootNameplateOpacity(0)).toBe(1);
     expect(lootNameplateOpacity(1.6)).toBe(1);
     expect(lootNameplateOpacity(2)).toBe(1);
-    expect(lootNameplateOpacity(5.5)).toBe(0);
-    expect(lootNameplateOpacity(5.51)).toBe(0);
+    expect(lootNameplateOpacity(5.5)).toBeGreaterThan(0);
+    expect(lootNameplateOpacity(6.325)).toBe(0);
+    expect(lootNameplateOpacity(6.326)).toBe(0);
     expect(lootNameplateOpacity(6.5)).toBe(0);
     expect(lootNameplateOpacity(8)).toBe(0);
     expect(lootNameplateOpacity(80)).toBe(0);
   });
 
-  test("lerp lineal 1 → 0 de 2 a fade 5.5", () => {
-    // midpoint 3.75: 1 - 0.5 = 0.5
-    expect(lootNameplateOpacity(3.75)).toBeCloseTo(0.5, 10);
+  test("lerp lineal 1 → 0 de 2 a fade 6.325", () => {
+    const mid = (2 + LOOT_NAMEPLATE_FADE_DIST) / 2;
+    expect(lootNameplateOpacity(mid)).toBeCloseTo(0.5, 10);
     const t = 0.25;
     const span = LOOT_NAMEPLATE_FADE_DIST - 2;
     expect(lootNameplateOpacity(2 + span * t)).toBeCloseTo(1 - t, 10);
@@ -173,21 +189,22 @@ describe("lootNameplateOpacity", () => {
 });
 
 describe("lootNameplateScale", () => {
-  test("1 en dist ≤ 2 (in-reach 1.6); 0.48 en fade 5.5 y más allá", () => {
+  test("1 en dist ≤ 2 (in-reach 1.6); 0.48 en fade 6.325 y más allá", () => {
     expect(lootNameplateScale(0)).toBe(1);
     expect(lootNameplateScale(1.6)).toBe(1);
     expect(lootNameplateScale(2)).toBe(1);
-    expect(lootNameplateScale(5.5)).toBe(LOOT_NAMEPLATE_MID_SCALE);
-    expect(lootNameplateScale(5.51)).toBe(LOOT_NAMEPLATE_MID_SCALE);
+    expect(lootNameplateScale(6.325)).toBe(LOOT_NAMEPLATE_MID_SCALE);
+    expect(lootNameplateScale(6.326)).toBe(LOOT_NAMEPLATE_MID_SCALE);
     expect(lootNameplateScale(6.5)).toBe(LOOT_NAMEPLATE_MID_SCALE);
     expect(lootNameplateScale(8)).toBe(LOOT_NAMEPLATE_MID_SCALE);
     expect(lootNameplateScale(80)).toBe(LOOT_NAMEPLATE_MID_SCALE);
     expect(LOOT_NAMEPLATE_MID_SCALE).toBe(0.48);
   });
 
-  test("lerp lineal 1 → 0.48 de 2 a fade 5.5", () => {
-    // midpoint 3.75: 1 + (0.48-1)*0.5 = 0.74
-    expect(lootNameplateScale(3.75)).toBeCloseTo(0.74, 10);
+  test("lerp lineal 1 → 0.48 de 2 a fade 6.325", () => {
+    const mid = (2 + LOOT_NAMEPLATE_FADE_DIST) / 2;
+    const expectedMid = 1 + (LOOT_NAMEPLATE_MID_SCALE - 1) * 0.5;
+    expect(lootNameplateScale(mid)).toBeCloseTo(expectedMid, 10);
     const t = 0.25;
     const expected = 1 + (LOOT_NAMEPLATE_MID_SCALE - 1) * t;
     const span = LOOT_NAMEPLATE_FADE_DIST - 2;
@@ -212,7 +229,9 @@ describe("lootNameplateVisible", () => {
     expect(lootNameplateVisible(false, 1.6)).toBe(true);
     expect(lootNameplateVisible(false, 2)).toBe(true);
     expect(lootNameplateVisible(false, 5.49)).toBe(true);
-    expect(lootNameplateVisible(false, 5.5)).toBe(false);
+    expect(lootNameplateVisible(false, 5.5)).toBe(true);
+    expect(lootNameplateVisible(false, 6.324)).toBe(true);
+    expect(lootNameplateVisible(false, 6.325)).toBe(false);
     expect(lootNameplateVisible(false, 6.5)).toBe(false);
     expect(lootNameplateVisible(false, 8)).toBe(false);
     expect(lootNameplateVisible(false, 11)).toBe(false);
