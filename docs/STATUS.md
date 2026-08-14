@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** ambient day-base r un poco más brillante
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After ambient day r/g/b, look at sun day-base RGB in `sunRgb` (historic `0.91` / `0.88` / `0.82`) — extract `SUN_DAY_R` first and bump ×1.15. Do not change g/b sun bases, night mix, warm deltas, sky/fog/ambient, or controls.
+- **Última rutina:** sun day-base r un poco más brillante
+- **Siguiente:** leftover visual polish chico — extract the historic sun day-base g `0.88` in `sunRgb` (`g = 0.88 - nightMix * SUN_NIGHT_G_SUB`) to `SUN_DAY_G` and bump ×1.15 so day sun reads a bit brighter. Do not change r/b bases, night mix, warm deltas, sky/fog/ambient, or controls. No new widgets.
 - **Qué quedó (esta corrida):**
+  - **SUN_DAY_R 0.91→1.0465; g/b/night-mix/warm/sky/fog/ambient/teclas iguales.**
   - **AMBIENT_DAY_R (0x6a/255)→×1.15 (~0.47804); g/b/night-mix/warm/sky/fog/sol/teclas iguales.**
   - **AMBIENT_DAY_G (0x6a/255)→×1.15 (~0.47804); r/b/night-mix/warm/sky/fog/sol/teclas iguales.**
   - **AMBIENT_DAY_B (0x78/255)→×1.15 (~0.54118); r/g/night-mix/warm/sky/fog/sol/teclas iguales.**
