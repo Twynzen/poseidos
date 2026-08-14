@@ -48,7 +48,7 @@ describe("muteLook constants", () => {
   test("split knobs: fill levantado, map tint, crushed lock, emisivos", () => {
     expect(MUTE_BODY_COLOR).toBe(0x647262);
     expect(MUTE_MAP_TINT).toBe(0xa8b8a4);
-    expect(MUTE_BODY_EMISSIVE).toBe(0x161c14);
+    expect(MUTE_BODY_EMISSIVE).toBe(0x1c2319);
     expect(MUTE_ACCENT).toBe(0x6b7a68);
     expect(MUTE_ACCENT_COLOR).toBe(MUTE_ACCENT);
     expect(MUTE_ACCENT_EMISSIVE).toBe(0x1a2218);
