@@ -74,10 +74,12 @@ describe("preferSurvivorManifest / playerManifestCandidates", () => {
     expect(preferSurvivorManifest(false)).toBe(PLAYER_SOLDIER_MANIFEST);
   });
 
-  test("playerManifestCandidates es [Survivor, Soldier]", () => {
-    expect(playerManifestCandidates()).toEqual([
-      PLAYER_SURVIVOR_MANIFEST,
+  test("playerManifestCandidates first candidate is Soldier", () => {
+    const candidates = playerManifestCandidates();
+    expect(candidates[0]).toBe(PLAYER_SOLDIER_MANIFEST);
+    expect(candidates).toEqual([
       PLAYER_SOLDIER_MANIFEST,
+      PLAYER_SURVIVOR_MANIFEST,
     ]);
   });
 

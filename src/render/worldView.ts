@@ -526,7 +526,7 @@ export function createWorldView(
     offsetZ: 0,
     active: false,
   };
-  /** Roles mixer-agnosticos; GLB opcional via candidates (Survivor → Soldier). */
+  /** Roles mixer-agnosticos; GLB opcional via candidates (Soldier first). */
   const playerAnimator = createCharacterAnimator();
   let playerUsesGltfVisual = false;
   let playerMixer: CharacterMixerHandle | null = null;
