@@ -23,7 +23,7 @@ export const FLASHLIGHT_SPOT_INTENSITY_MUL = 3.174;
 export const FLASHLIGHT_FILL_INTENSITY_MUL = 0.727375;
 
 /** Color de la cuña unlit (cian-blanco). */
-export const FLASHLIGHT_WEDGE_COLOR = 0xd0eaff;
+export const FLASHLIGHT_WEDGE_COLOR = 0xefffff;
 
 /** Color del SpotLight (cian-blanco un poco más frío). */
 export const FLASHLIGHT_SPOT_COLOR = 0xd8eeff;
