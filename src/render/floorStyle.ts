@@ -93,7 +93,7 @@ export function tintFromTile(x: number, y: number, outdoor: boolean): number {
     [0x47, 0x55, 0x3e], // gris verdoso
     [0x5e, 0x68, 0x4a], // seco / rastrojo
     [0x35, 0x45, 0x30], // sombra natural
-    [0x48, 0x5e, 0x3c], // verde vivo suave
+    [0x53, 0x6c, 0x45], // verde vivo suave
   ];
   const idx = Math.min(palettes.length - 1, Math.floor(t * palettes.length));
   const [r0, g0, b0] = palettes[idx]!;
