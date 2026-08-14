@@ -161,6 +161,7 @@ import {
   LOOT_NAMEPLATE_ICON_SIZE,
   LOOT_NAMEPLATE_SCALE_X,
   LOOT_NAMEPLATE_SCALE_Y,
+  LOOT_NAMEPLATE_STROKE_PX,
   LOOT_NAMEPLATE_Y,
   lootNameplateInvEmpty,
   lootNameplateLabel,
@@ -624,7 +625,7 @@ export function createWorldView(
       ctx.font = `600 ${LOOT_NAMEPLATE_FONT_PX}px ui-monospace, SF Mono, Menlo, Consolas, monospace`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.lineWidth = 4.5;
+      ctx.lineWidth = LOOT_NAMEPLATE_STROKE_PX;
       ctx.strokeStyle = "rgba(0,0,0,0.7)";
       const textX = hasIcon ? ICON_PAD + BASE_W / 2 : W / 2;
       ctx.strokeText(text, textX, H / 2);

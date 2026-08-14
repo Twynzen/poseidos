@@ -27,6 +27,9 @@ export const LOOT_NAMEPLATE_ICON_SIZE = 73.6;
 /** Tamaño de fuente del label en el canvas. 34 × 1.15 para leer de noche. */
 export const LOOT_NAMEPLATE_FONT_PX = 39.1;
 
+/** Grosor del stroke del label en el canvas. 4.5 × 1.15 para leer de noche. */
+export const LOOT_NAMEPLATE_STROKE_PX = 5.175;
+
 /**
  * 1 en dist ≤ 2 · lerp 1 → mid-scale de 2 a fade 5.5 · mid-scale más allá.
  * Omitido / no finito → 1.
