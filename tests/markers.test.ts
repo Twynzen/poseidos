@@ -101,13 +101,13 @@ describe("markers (badges + ground rings)", () => {
     expect(roleFromHostileKind("possessed")).toBe("possessed");
   });
 
-  test("anillo player oculto (0); loot/door/bed/mute/possessed 0.72", () => {
+  test("anillo player oculto (0); loot/door/bed/mute/possessed 0.52", () => {
     expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
-    expect(MARKER_RING_OPACITY).toBeCloseTo(0.72, 5);
+    expect(MARKER_RING_OPACITY).toBeCloseTo(0.52, 5);
     expect(markerRingOpacity("player")).toBe(0);
     expect(paletteFor("player").ring).toBe(0x3a7fd4);
     for (const role of ["loot", "door", "bed", "mute", "possessed"] as const) {
-      expect(markerRingOpacity(role)).toBeCloseTo(0.72, 5);
+      expect(markerRingOpacity(role)).toBeCloseTo(0.52, 5);
     }
   });
 
