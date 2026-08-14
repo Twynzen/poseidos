@@ -505,6 +505,14 @@ describe("createHotbarHud icons", () => {
   });
 });
 
+describe("hotbar slot icon CSS", () => {
+  test(".hotbar-slot-icon is 40px", () => {
+    const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
+    expect(html).toMatch(/\.hotbar-slot-icon\s*\{[^}]*width:\s*40px;\s*height:\s*40px/s);
+    expect(html).toMatch(/\.hotbar-slot-icon svg\s*\{\s*width:\s*40px;\s*height:\s*40px;/);
+  });
+});
+
 describe("hotbar selected CSS", () => {
   test(".hotbar-selected gold matches .inv-slot-selected; key #e8c36a", () => {
     const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");

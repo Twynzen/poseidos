@@ -673,6 +673,14 @@ describe("inventoryInspectLabel", () => {
   });
 });
 
+describe("inventory slot icon CSS", () => {
+  test(".inv-slot-icon is 40px", () => {
+    const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
+    expect(html).toMatch(/\.inv-slot-icon\s*\{[^}]*width:\s*40px;\s*height:\s*40px/s);
+    expect(html).toMatch(/\.inv-slot-icon svg\s*\{\s*width:\s*40px;\s*height:\s*40px;/);
+  });
+});
+
 describe("inventory panel CSS", () => {
   test(".inv-head uses Diablo gold #e8c36a", () => {
     const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
