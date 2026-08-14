@@ -606,7 +606,7 @@ export function createWorldView(
         const iconX = Math.max(0, (ICON_PAD - iconSize) / 2);
         paintLootNameplateIcon(ctx, itemId, iconX, (H - iconSize) / 2, iconSize);
       }
-      ctx.font = "600 28px ui-monospace, SF Mono, Menlo, Consolas, monospace";
+      ctx.font = "600 34px ui-monospace, SF Mono, Menlo, Consolas, monospace";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.lineWidth = 3;
