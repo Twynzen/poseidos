@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import {
+  RAIN_ACTIVE_BASE,
   RAIN_ACTIVE_MIN,
   RAIN_COLOR,
   RAIN_COUNT,
@@ -33,6 +34,8 @@ describe("constantes", () => {
     expect(RAIN_OPACITY_BASE).toBe(0.29095);
     expect(RAIN_OPACITY_GAIN).toBe(0.595125);
     expect(RAIN_OPACITY_NIGHT_ADD).toBe(0.345);
+    expect(RAIN_ACTIVE_BASE).toBe(0.4025);
+    expect(RAIN_ACTIVE_BASE).toBeCloseTo(0.35 * 1.15, 10);
     expect(RAIN_ACTIVE_MIN).toBe(7);
     expect(RAIN_NIGHT_COUNT_CUT).toBe(0.191);
     expect(RAIN_HIDE_BELOW).toBe(0.02);
@@ -90,14 +93,14 @@ describe("rainStreakOpacity", () => {
 });
 
 describe("rainActiveCount", () => {
-  test("día i=1 → 41; noche d=0 recorta ×0.809", () => {
-    expect(rainActiveCount(1, 1)).toBe(41);
-    expect(rainActiveCount(1, 0)).toBe(Math.floor(41 * 0.809));
+  test("día i=1 → floor(41×1.0525)=43; noche d=0 recorta ×0.809", () => {
+    expect(rainActiveCount(1, 1)).toBe(43);
+    expect(rainActiveCount(1, 0)).toBe(Math.floor(41 * (0.4025 + 0.65) * 0.809));
   });
 
-  test("día i=0 → floor(41×0.35)=14; noche menos; piso 7", () => {
-    expect(rainActiveCount(0, 1)).toBe(14);
-    expect(rainActiveCount(0, 0)).toBe(Math.floor(41 * 0.35 * 0.809));
+  test("día i=0 → floor(41×0.4025)=16; noche menos; piso 7", () => {
+    expect(rainActiveCount(0, 1)).toBe(16);
+    expect(rainActiveCount(0, 0)).toBe(Math.floor(41 * 0.4025 * 0.809));
     expect(rainActiveCount(0, 0)).toBeGreaterThanOrEqual(RAIN_ACTIVE_MIN);
     expect(rainActiveCount(1, 0)).toBeLessThan(rainActiveCount(1, 1));
   });
