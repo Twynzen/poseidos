@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** badges flotantes de mute/poseído ocultos (quedan aros + look).
+- **Última rutina:** globos de habla un poco más legibles.
 - **Qué quedó (esta corrida):**
+  - **speech-bubble 14px / max 280px; tonos iguales; diálogo T igual.** `.speech-bubble` max-width 280px (era 220), padding 9px 13px (era 7px 11px), font 14px/1.4 (era 12px/1.35). Tonos lucidez / demonio / ruega, colores, blur y `translate(-50%, -100%)` iguales. Overlay DOM only (`speechOverlay`); sin path canvas/3D. Diálogo T / verbs / gates / cámara / markers / anillos / badges / nameplates / chevron / inventario / hotbar / luces / lluvia / linterna / teclas / gestos sin cambio.
   - **mute/possessed badge opacity 0; aros 0.50/0.68; E/Z puerta/cama siguen.** `MUTE_BADGE_OPACITY` / `POSSESSED_BADGE_OPACITY` 0. `markerBadgeOpacity("mute"|"possessed"|"loot"|"player")` 0; door/bed siguen 1. `attachRoleMarkers` no crea `floatBadge` si opacity ≤ 0 (el aro threat sí). Badge Y knobs 2.0 sin uso. Cámara / escala / luces / lluvia / linterna / inventario / hotbar / teclas / gestos sin cambio.
   - **FACING_CHEVRON_COLOR 0x9ef0ff→0xe8c36a; tamaño/opacity/yaw iguales.** worldView mesh sigue el knob (`color: FACING_CHEVRON_COLOR`). `FACING_CHEVRON_OPACITY` 0.55, DIST 1.2, LEN 0.805, HW 0.322, YAW_OFFSET 0 sin cambio. Cámara / escala / anillos / nameplates / badges / luces / lluvia / linterna / inventario / hotbar / teclas / gestos sin cambio.
   - **`.inv-head` `#e8c36a`; badges/gestos/hotbar iguales.** Título del panel I en oro Diablo (antes `--hud-accent` `#60a5fa`). Font-size / letter-spacing / uppercase / margin iguales. `.inv-badge` borde azul de equipo sin cambio. Hotbar selected gold, slot sizes, empty dashed, qty, iconos y gestos sin cambio. Cámara / markers / anillos / nameplates / luces / lluvia / linterna sin cambio.
