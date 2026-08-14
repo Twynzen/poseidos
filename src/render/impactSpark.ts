@@ -11,6 +11,8 @@ export const IMPACT_SPARK_DURATION = 0.22;
 export const IMPACT_SPARK_PEAK = 1;
 /** Radio de la esfera aditiva (tiles). 0.09 × 1.25 para leer de noche. */
 export const IMPACT_SPARK_RADIUS = 0.1125;
+/** Pico de PointLight en worldView. 1.4 × 1.25 para leer de noche. */
+export const IMPACT_SPARK_LIGHT_PEAK = 1.75;
 
 export interface ImpactSparkState {
   /** Segundos transcurridos del spark actual. */

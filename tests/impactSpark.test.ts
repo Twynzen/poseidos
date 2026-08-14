@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   IMPACT_SPARK_DURATION,
+  IMPACT_SPARK_LIGHT_PEAK,
   IMPACT_SPARK_PEAK,
   IMPACT_SPARK_RADIUS,
   createImpactSpark,
@@ -27,6 +28,18 @@ describe("constantes", () => {
       "new THREE.SphereGeometry(IMPACT_SPARK_RADIUS, 10, 8)",
     );
     expect(viewSrc).not.toMatch(/SphereGeometry\(0\.09\b/);
+  });
+
+  test("luz PointLight 1.4 × 1.25; worldView usa el knob (no magic 1.4)", () => {
+    expect(IMPACT_SPARK_LIGHT_PEAK).toBe(1.75);
+    expect(IMPACT_SPARK_LIGHT_PEAK).toBeCloseTo(1.4 * 1.25, 10);
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain("IMPACT_SPARK_LIGHT_PEAK * out.intensity");
+    expect(viewSrc).not.toMatch(/const IMPACT_SPARK_LIGHT_PEAK = 1\.4/);
+    expect(viewSrc).not.toMatch(/impactLight\.intensity = .*\b1\.4\b/);
   });
 });
 
