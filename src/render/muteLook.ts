@@ -21,8 +21,8 @@ export const MUTE_BODY_EMISSIVE = 0x20281d;
 export const MUTE_ACCENT = 0x7b8c78;
 /** Alias del acento (mismo valor). */
 export const MUTE_ACCENT_COLOR = MUTE_ACCENT;
-/** Emisión del acento (ojos/visor mute, verde oscuro). */
-export const MUTE_ACCENT_EMISSIVE = 0x1a2218;
+/** Emisión del acento (ojos/visor mute, verde oscuro). 0x1a2218 × 1.15/canal para leer de noche. */
+export const MUTE_ACCENT_EMISSIVE = 0x1e271c;
 /**
  * Fill plano que aplastaba el mesh de noche.
  * Lock de nombre únicamente — no aplicar como color de cuerpo.
