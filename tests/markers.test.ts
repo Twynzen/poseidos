@@ -128,25 +128,25 @@ describe("markers (badges + ground rings)", () => {
     expect(markerRingOpacity("player")).toBe(0);
   });
 
-  test("mute/possessed usan aro threat 0.37845–0.782; interact sigue 0.416295–1.03155", () => {
+  test("mute/possessed usan aro threat 0.37845–0.8993; interact sigue 0.416295–1.03155", () => {
     expect(THREAT_RING_INNER).toBe(0.37845);
     expect(THREAT_RING_INNER).toBeCloseTo(0.435 * 0.87, 5);
-    expect(THREAT_RING_OUTER).toBe(0.782);
-    expect(THREAT_RING_OUTER).toBeCloseTo(0.68 * 1.15, 5);
+    expect(THREAT_RING_OUTER).toBe(0.8993);
+    expect(THREAT_RING_OUTER).toBeCloseTo(0.782 * 1.15, 5);
     expect(INTERACT_RING_INNER).toBeCloseTo(0.416295, 5);
     expect(INTERACT_RING_OUTER).toBeCloseTo(1.03155, 5);
     for (const role of ["mute", "possessed"] as const) {
       expect(markerUsesInteractRing(role)).toBe(false);
       const r = markerRingRadii(role);
       expect(r.inner).toBeCloseTo(0.37845, 5);
-      expect(r.outer).toBeCloseTo(0.782, 5);
+      expect(r.outer).toBeCloseTo(0.8993, 5);
     }
   });
 
   test("aros mute/possessed no pulsan (amp 0); radios/opacity iguales", () => {
     expect(THREAT_RING_PULSE_AMP).toBe(0);
     expect(THREAT_RING_INNER).toBeCloseTo(0.37845, 5);
-    expect(THREAT_RING_OUTER).toBeCloseTo(0.782, 5);
+    expect(THREAT_RING_OUTER).toBeCloseTo(0.8993, 5);
     expect(MARKER_RING_OPACITY).toBeCloseTo(0.6877, 5);
     expect(INTERACT_RING_INNER).toBeCloseTo(0.416295, 5);
     expect(INTERACT_RING_OUTER).toBeCloseTo(1.03155, 5);
