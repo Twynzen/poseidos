@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** texto del nameplate un poco más grande
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After FONT_PX, look at LOOT_NAMEPLATE_STROKE_PX (5.175) ×1.15 so the label stroke is a bit thicker at night. Do not change near/fade/mid/Y/scale/icon/font, rings, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** stroke del nameplate un poco más grueso
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After STROKE_PX, look at LOOT_NAMEPLATE_ICON_STROKE (1.725) ×1.15 so the gold icon stroke is a bit thicker at night. Do not change near/fade/mid/Y/scale/icon/font, rings, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **LOOT_NAMEPLATE_STROKE_PX 5.175→5.95125; font/icon/scale/Y/near/fade/mid/focus/looks/sky/fog/sol/teclas iguales.**
   - **LOOT_NAMEPLATE_FONT_PX 39.1→44.965; stroke/icon/scale/Y/near/fade/mid/focus/looks/sky/fog/sol/teclas iguales.**
   - **LOOT_NAMEPLATE_ICON_SIZE 73.6→84.64; pad/scale/Y/near/fade/mid/font/focus/looks/sky/fog/sol/teclas iguales.**
   - **LOOT_NAMEPLATE_ICON_PAD 78.2→89.93; size/scale/Y/near/fade/mid/font/focus/looks/sky/fog/sol/teclas iguales.**
