@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** nameplates lejanas se ocultan antes (fade 10→6.5).
+- **Última rutina:** player más legible de noche (albedo).
 - **Qué quedó (esta corrida):**
+  - **Survivor look no aplasta el mesh a un fill plano; Soldier se lee de noche.** `applySurvivorLook` ya no pinta el cuerpo a `SURVIVOR_CRUSHED_EARTH` `0x5c5346`. Sin map: fill `SURVIVOR_BODY_COLOR` `0x8a8070`. Con map: `color.multiply(SURVIVOR_MAP_TINT` `0xc8bca8)` (conserva variación). Cuerpo siempre `SURVIVOR_BODY_EMISSIVE` `0x1c1a16`. Acento `SURVIVOR_ACCENT` `0xa39c8c` + `SURVIVOR_ACCENT_EMISSIVE` `0x2a2820`. Solo path player/survivor. possessedLook / muteLook / linterna / teclas / gestos sin cambio.
   - **Nameplates lejanas** hide beyond 6.5 (era 10). Full scale/opacity hasta dist 2 (in-reach 1.6 se lee igual). Mid-distance scale mul 0.55 en el fade edge (era 0.75). Dist 8+ hidden. Empty-container hide e iconos iguales. Sin teclas, gestos ni features nuevas. Linterna / noise rings / chevron / player foot ring/badge / door/bed rings sin cambio.
   - **Badge player 0.45** disc de cabeza más quieto (`PLAYER_BADGE_OPACITY` 0.45, `transparent: true`); siempre visible. Foot ring player sigue 0.42. Otros badges (loot/door/bed/mute/possessed) siguen en 1. `markerBadgeOpacity(role)` en `attachRoleMarkers`. Sin teclas, gestos ni features nuevas. Colores y letras E/Z iguales.
   - **Foot ring player 0.42** mismo radio (RingGeometry 0.42–0.58, y=0.04), siempre visible. Color player `0x3a7fd4` igual. Otros roles (loot/door/bed/mute/possessed) siguen en 0.72. `markerRingOpacity(role)` en `attachRoleMarkers`. Sin teclas, gestos ni features nuevas.
