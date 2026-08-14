@@ -1,6 +1,9 @@
 import { describe, expect, test } from "vitest";
 import {
   MARKER_PALETTE,
+  MARKER_RING_OPACITY,
+  PLAYER_FOOT_RING_OPACITY,
+  markerRingOpacity,
   markerVisibleInFov,
   paletteFor,
   roleFromHostileKind,
@@ -78,5 +81,15 @@ describe("markers (badges + ground rings)", () => {
   test("roleFromHostileKind mapea mute/possessed", () => {
     expect(roleFromHostileKind("mute")).toBe("mute");
     expect(roleFromHostileKind("possessed")).toBe("possessed");
+  });
+
+  test("anillo player más quieto (0.42); otros roles 0.72", () => {
+    expect(PLAYER_FOOT_RING_OPACITY).toBeCloseTo(0.42, 5);
+    expect(MARKER_RING_OPACITY).toBeCloseTo(0.72, 5);
+    expect(markerRingOpacity("player")).toBeCloseTo(0.42, 5);
+    expect(paletteFor("player").ring).toBe(0x3a7fd4);
+    for (const role of ["mute", "possessed", "loot", "door", "bed"] as const) {
+      expect(markerRingOpacity(role)).toBeCloseTo(0.72, 5);
+    }
   });
 });
