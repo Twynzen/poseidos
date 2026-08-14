@@ -31,7 +31,8 @@ export const SURVIVOR_ACCENT_EMISSIVE_INTENSITY = 0.1725;
 export const SURVIVOR_CRUSHED_EARTH = 0x5c5346;
 /** Roughness alto = look mate / usado. 0.82 × 0.87 para leer el cuerpo de noche. */
 export const SURVIVOR_BODY_ROUGHNESS = 0.7134;
-export const SURVIVOR_ACCENT_ROUGHNESS = 0.45;
+/** Roughness acento visor. 0.45 × 0.87 para leer el visor de noche. */
+export const SURVIVOR_ACCENT_ROUGHNESS = 0.3915;
 
 const ACCENT_NAME_RE = /visor|helmet|helm/i;
 const MAP_TINT = new Color(SURVIVOR_MAP_TINT);
