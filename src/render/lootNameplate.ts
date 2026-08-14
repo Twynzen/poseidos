@@ -4,7 +4,7 @@
  */
 
 /** Máximo de caracteres del label. */
-export const LOOT_NAMEPLATE_MAX_CHARS = 20;
+export const LOOT_NAMEPLATE_MAX_CHARS = 23;
 
 /** Distancia a la que el nameplate sigue opaco / escala 1. 2 × 1.15 para leer de noche. */
 export const LOOT_NAMEPLATE_NEAR_DIST = 2.3;
@@ -59,7 +59,7 @@ export function lootNameplateScale(dist?: number): number {
   return 1 + (LOOT_NAMEPLATE_MID_SCALE - 1) * t;
 }
 
-/** Corta el nombre a 20 chars (sin ellipsis). */
+/** Corta el nombre a 23 chars (sin ellipsis). */
 export function lootNameplateLabel(label: string): string {
   if (typeof label !== "string") return "";
   if (label.length <= LOOT_NAMEPLATE_MAX_CHARS) return label;
