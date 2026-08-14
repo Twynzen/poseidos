@@ -73,11 +73,13 @@ describe("collectGrassTiles", () => {
 });
 
 describe("blade transforms + wind", () => {
-  test("wind sway amp 0.05175; yaw/speed/count iguales", () => {
+  test("wind yaw/speed 0.28 × 1.15 / 2.4 × 1.15; sway/count iguales", () => {
+    expect(WIND_YAW).toBe(0.322);
+    expect(WIND_YAW).toBeCloseTo(0.28 * 1.15, 10);
+    expect(WIND_SPEED).toBe(2.76);
+    expect(WIND_SPEED).toBeCloseTo(2.4 * 1.15, 10);
     expect(WIND_SWAY).toBe(0.05175);
     expect(WIND_SWAY).toBeCloseTo(0.045 * 1.15, 10);
-    expect(WIND_YAW).toBe(0.28);
-    expect(WIND_SPEED).toBe(2.4);
     expect(BLADES_PER_TILE).toBe(3);
     expect(MAX_GRASS_INSTANCES).toBe(320);
   });
@@ -91,9 +93,11 @@ describe("blade transforms + wind", () => {
     expect(base.sy).toBeGreaterThan(0.5);
 
     const w0 = bladeWind(0, 0.25);
-    const w1 = bladeWind(Math.PI / (2 * 2.4), 0.25); // ~sin peak-ish
+    const w1 = bladeWind(Math.PI / (2 * WIND_SPEED), 0.25); // ~sin peak-ish
     expect(Math.abs(w0.dx)).toBeLessThanOrEqual(WIND_SWAY + 1e-9);
+    expect(Math.abs(w0.dyaw)).toBeLessThanOrEqual(WIND_YAW + 1e-9);
     expect(Math.abs(w1.dx) + Math.abs(w1.dz)).toBeGreaterThan(0);
+    expect(Math.abs(w1.dyaw)).toBeLessThanOrEqual(WIND_YAW + 1e-9);
 
     const p0 = bladePoseAt(5, 2, 1, 0.4, 0);
     const p1 = bladePoseAt(5, 2, 1, 0.4, 1.1);
