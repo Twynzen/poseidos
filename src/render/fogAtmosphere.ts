@@ -144,6 +144,26 @@ export function sunRgb(daylight: number, phase: number): Rgb {
   return clampRgb({ r, g, b });
 }
 
+/**
+ * Intensidad AmbientLight / DirectionalLight (headless).
+ * Floor de noche más alto para que albedo survivor/possessed/mute se lea;
+ * pico de mediodía igual que el histórico (0.70 / 1.20).
+ */
+export const AMBIENT_INTENSITY_NIGHT = 0.24;
+export const AMBIENT_INTENSITY_GAIN = 0.46;
+export const SUN_INTENSITY_NIGHT = 0.16;
+export const SUN_INTENSITY_GAIN = 1.04;
+
+/** Ambient: 0.24 + d * 0.46 (noche ~0.277 @ d=0.08; noon 0.70). */
+export function nightAmbientIntensity(daylight: number): number {
+  return AMBIENT_INTENSITY_NIGHT + clamp01(daylight) * AMBIENT_INTENSITY_GAIN;
+}
+
+/** Sol: 0.16 + d * 1.04 (noche ~0.243 @ d=0.08; noon 1.20). */
+export function nightSunIntensity(daylight: number): number {
+  return SUN_INTENSITY_NIGHT + clamp01(daylight) * SUN_INTENSITY_GAIN;
+}
+
 /** Snapshot completo para syncDayNight. */
 export function atmosphereFor(phase: number, daylight: number): FogAtmosphere {
   const { near, far } = fogNearFar(daylight);
