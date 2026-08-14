@@ -110,7 +110,11 @@ import {
   countAoNeighbors,
   floorColorAt,
 } from "./floorStyle";
-import { atmosphereFor } from "./fogAtmosphere";
+import {
+  atmosphereFor,
+  nightAmbientIntensity,
+  nightSunIntensity,
+} from "./fogAtmosphere";
 import {
   bladePoseAt,
   collectGrassTiles,
@@ -1578,8 +1582,8 @@ export function createWorldView(
     syncDayNight(clock) {
       const d = clock.daylight;
       const atm = atmosphereFor(clock.phase, d);
-      ambient.intensity = 0.18 + d * 0.52;
-      sun.intensity = 0.12 + d * 1.08;
+      ambient.intensity = nightAmbientIntensity(d);
+      sun.intensity = nightSunIntensity(d);
       ambientColor.setRGB(atm.ambient.r, atm.ambient.g, atm.ambient.b);
       ambient.color.copy(ambientColor);
       sunColor.setRGB(atm.sun.r, atm.sun.g, atm.sun.b);
