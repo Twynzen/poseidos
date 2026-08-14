@@ -1,8 +1,9 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** globos de habla un poco más legibles.
+- **Última rutina:** panel de diálogo un poco más legible.
 - **Qué quedó (esta corrida):**
+  - **dialogue-panel 13.5px; verbos/gates T iguales; globos 14px iguales.** `#dialogue-panel` font 13.5px/1.5 (era 12px/1.45). `.dialogue-head` 14px (era 12.5). `.dialogue-trust` 12.5px (era 11.5). `.dialogue-reply` / `.dialogue-btn` padding 9px 12px (era 8px 10px). `.dialogue-hint` 11.5px (era 10.5). Width min(360px, …), posición, tonos, hover de intents y blur iguales. Panel DOM only (`dialoguePanel`); verbs/gates/copy en TS sin cambio. Speech-bubble 14px / 280px sin cambio. Cámara / markers / anillos / badges / nameplates / chevron / inventario / hotbar / luces / lluvia / linterna / teclas / gestos sin cambio.
   - **speech-bubble 14px / max 280px; tonos iguales; diálogo T igual.** `.speech-bubble` max-width 280px (era 220), padding 9px 13px (era 7px 11px), font 14px/1.4 (era 12px/1.35). Tonos lucidez / demonio / ruega, colores, blur y `translate(-50%, -100%)` iguales. Overlay DOM only (`speechOverlay`); sin path canvas/3D. Diálogo T / verbs / gates / cámara / markers / anillos / badges / nameplates / chevron / inventario / hotbar / luces / lluvia / linterna / teclas / gestos sin cambio.
   - **mute/possessed badge opacity 0; aros 0.50/0.68; E/Z puerta/cama siguen.** `MUTE_BADGE_OPACITY` / `POSSESSED_BADGE_OPACITY` 0. `markerBadgeOpacity("mute"|"possessed"|"loot"|"player")` 0; door/bed siguen 1. `attachRoleMarkers` no crea `floatBadge` si opacity ≤ 0 (el aro threat sí). Badge Y knobs 2.0 sin uso. Cámara / escala / luces / lluvia / linterna / inventario / hotbar / teclas / gestos sin cambio.
   - **FACING_CHEVRON_COLOR 0x9ef0ff→0xe8c36a; tamaño/opacity/yaw iguales.** worldView mesh sigue el knob (`color: FACING_CHEVRON_COLOR`). `FACING_CHEVRON_OPACITY` 0.55, DIST 1.2, LEN 0.805, HW 0.322, YAW_OFFSET 0 sin cambio. Cámara / escala / anillos / nameplates / badges / luces / lluvia / linterna / inventario / hotbar / teclas / gestos sin cambio.
