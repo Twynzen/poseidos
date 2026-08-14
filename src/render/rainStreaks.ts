@@ -39,7 +39,9 @@ export const RAIN_HIDE_BELOW = 0.02;
 
 /** Fracción de count por intensity (histórico). */
 export const RAIN_ACTIVE_BASE = 0.4025;
-const RAIN_ACTIVE_GAIN = 0.65;
+
+/** Ganancia de count × intensity. */
+export const RAIN_ACTIVE_GAIN = 0.7475;
 
 function clamp01(v: number): number {
   if (!Number.isFinite(v)) return 0;
@@ -81,7 +83,7 @@ export function rainStreakOpacity(intensity: number, daylight: number): number {
 }
 
 /**
- * Streaks activos: max(min, floor(COUNT × (0.4025 + i×0.65) × (1 − cut×nightMix))).
+ * Streaks activos: max(min, floor(COUNT × (0.4025 + i×0.7475) × (1 − cut×nightMix))).
  */
 export function rainActiveCount(intensity: number, daylight: number): number {
   const i = clamp01(intensity);
