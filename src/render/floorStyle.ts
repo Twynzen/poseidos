@@ -35,7 +35,7 @@ export const BED_COLOR = 0x552446;
 export const BARRICADE_COLOR = 0xe1b17c;
 
 /** Cruz de barricada (histórico BARRICADE_EDGE en worldView). */
-export const BARRICADE_EDGE = 0x8a6239;
+export const BARRICADE_EDGE = 0x9f7142;
 
 /**
  * Multiply de albedo de suelo de noche (día = 1). 1.45 × 1.15 para leer el suelo de noche.

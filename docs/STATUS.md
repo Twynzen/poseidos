@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** barricadas un poco más claras
-- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After barricade, look at BARRICADE_EDGE in src/render/floorStyle.ts (currently `0x8a6239`) — bump ×1.15 per RGB channel so barricade crosses read a bit brighter at night. Do not change indoor/outdoor floor, walls/wall-base, doors, furniture, bed, BARRICADE_COLOR, AO/night lift, grass blades/wind, rain, tracers, impact, muzzle, melee/hit-lean, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
+- **Última rutina:** cruz de barricada un poco más clara
+- **Siguiente:** leftover visual polish chico — next unused visual knob in src/render (no new widgets). Prefer an existing exported constant or extract one inline magic number and bump ×1.15 (or ×0.87 if smaller/thicker reads better at night). After barricade edge, floorStyle tile colors are done — look at the grass blade albedo in src/render/windGrass.ts (often an inline hex like `0x4a6a38`) and bump ×1.15 per RGB channel so the blades themselves read a bit brighter at night. Do not change floorStyle colors, grass radius/max/blades/sy/xz/y/wind, rain, tracers, impact, muzzle, melee/hit-lean, idle/walk/sprint/amp, chevron, flashlight, nameplate, rings, looks, sky/fog/sun/ambient, or controls.
 - **Qué quedó (esta corrida):**
+  - **BARRICADE_EDGE 0x8a6239→0x9f7142; floors/walls/doors/furniture/bed/barricade/AO/lift/grass/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **BARRICADE_COLOR 0xc49a6c→0xe1b17c; floors/walls/doors/furniture/bed/edge/AO/lift/grass/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **BED_COLOR 0x4a1f3d→0x552446; floors/walls/doors/furniture/barricade/AO/lift/grass/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
   - **FURNITURE_COLOR 0x6b4f2a→0x7b5b30; floors/walls/doors/bed/barricade/AO/lift/grass/wind/rain/tracers/impact/muzzle/melee/hit-lean/loco/chevron/flashlight/nameplate/rings/looks/sky/fog/sol/teclas iguales.**
