@@ -109,27 +109,27 @@ describe("PLAYER_SOLDIER_MANIFEST", () => {
 });
 
 describe("POSSESSED_SOLDIER_MANIFEST", () => {
-  test("mismo Soldier.glb, id possessed-soldier, scale 1.25", () => {
+  test("mismo Soldier.glb, id possessed-soldier, scale 1.5", () => {
     expect(usesPlaceholderMesh(POSSESSED_SOLDIER_MANIFEST)).toBe(false);
     expect(isValidManifest(POSSESSED_SOLDIER_MANIFEST)).toBe(true);
     expect(POSSESSED_SOLDIER_MANIFEST.id).toBe("possessed-soldier");
     expect(POSSESSED_SOLDIER_MANIFEST.url).toBe(PLAYER_SOLDIER_MANIFEST.url);
     expect(POSSESSED_SOLDIER_MANIFEST.url).toBe("/models/Soldier.glb");
-    expect(POSSESSED_SOLDIER_MANIFEST.scale).toBe(1.25);
+    expect(POSSESSED_SOLDIER_MANIFEST.scale).toBe(1.5);
     expect(POSSESSED_SOLDIER_MANIFEST.yOffset).toBe(0);
     expect(clipNameForRole(POSSESSED_SOLDIER_MANIFEST, "idle")).toBe("Idle");
   });
 });
 
 describe("MUTE_SOLDIER_MANIFEST", () => {
-  test("mismo Soldier.glb, id mute-soldier, scale 1.25", () => {
+  test("mismo Soldier.glb, id mute-soldier, scale 1.5", () => {
     expect(usesPlaceholderMesh(MUTE_SOLDIER_MANIFEST)).toBe(false);
     expect(isValidManifest(MUTE_SOLDIER_MANIFEST)).toBe(true);
     expect(MUTE_SOLDIER_MANIFEST.id).toBe("mute-soldier");
     expect(MUTE_SOLDIER_MANIFEST.url).toBe(PLAYER_SOLDIER_MANIFEST.url);
     expect(MUTE_SOLDIER_MANIFEST.url).toBe(POSSESSED_SOLDIER_MANIFEST.url);
     expect(MUTE_SOLDIER_MANIFEST.url).toBe("/models/Soldier.glb");
-    expect(MUTE_SOLDIER_MANIFEST.scale).toBe(1.25);
+    expect(MUTE_SOLDIER_MANIFEST.scale).toBe(1.5);
     expect(MUTE_SOLDIER_MANIFEST.yOffset).toBe(0);
     expect(clipNameForRole(MUTE_SOLDIER_MANIFEST, "idle")).toBe("Idle");
     expect(clipNameForRole(MUTE_SOLDIER_MANIFEST, "walk")).toBe("Walk");
@@ -176,16 +176,16 @@ describe("usesPlaceholderMesh / clipNameForRole / isValidManifest", () => {
 });
 
 describe("PLAYER_GLTF_SCALE vs hostiles", () => {
-  test("player 1.5; hostiles stay 1.25", () => {
+  test("player 1.5; hostiles 1.5", () => {
     expect(PLAYER_GLTF_SCALE).toBe(1.5);
     expect(PLAYER_SOLDIER_MANIFEST.scale).toBe(PLAYER_GLTF_SCALE);
     expect(PLAYER_SURVIVOR_MANIFEST.scale).toBe(PLAYER_GLTF_SCALE);
-    expect(POSSESSED_SOLDIER_MANIFEST.scale).toBe(1.25);
-    expect(MUTE_SOLDIER_MANIFEST.scale).toBe(1.25);
-    expect(PLAYER_SOLDIER_MANIFEST.scale).not.toBe(
+    expect(POSSESSED_SOLDIER_MANIFEST.scale).toBe(1.5);
+    expect(MUTE_SOLDIER_MANIFEST.scale).toBe(1.5);
+    expect(PLAYER_SOLDIER_MANIFEST.scale).toBe(
       POSSESSED_SOLDIER_MANIFEST.scale,
     );
-    expect(PLAYER_SOLDIER_MANIFEST.scale).not.toBe(MUTE_SOLDIER_MANIFEST.scale);
+    expect(PLAYER_SOLDIER_MANIFEST.scale).toBe(MUTE_SOLDIER_MANIFEST.scale);
   });
 });
 

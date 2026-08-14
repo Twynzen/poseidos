@@ -76,8 +76,9 @@ export const DEFAULT_PLACEHOLDER_MANIFEST: CharacterAssetManifest = {
 
 /**
  * Escala world del GLB del player (Soldier / Survivor).
- * 1.5 = 1.2× el 1.25 anterior; se lee como persona vs tiles/hostiles.
- * Hostiles siguen en 1.25 (POSSESSED / MUTE). maybeAttach aplica manifest.scale.
+ * 1.5 = 1.2× el 1.25 anterior; se lee como persona vs tiles.
+ * Hostiles (POSSESSED / MUTE) usan la misma escala 1.5; looks siguen distintos.
+ * maybeAttach aplica manifest.scale.
  */
 export const PLAYER_GLTF_SCALE = 1.5;
 
@@ -141,7 +142,7 @@ export function shouldApplySurvivorLook(
 
 /**
  * Poseídos reusan Soldier.glb con tint distinto (`applyPossessedLook`).
- * Escala 1.25 (no PLAYER_GLTF_SCALE): hostiles no crecen con el player.
+ * Escala 1.5 (misma que el player); look violeta/rojo sigue distinto.
  */
 export const POSSESSED_SOLDIER_MANIFEST: CharacterAssetManifest = {
   id: "possessed-soldier",
@@ -151,13 +152,13 @@ export const POSSESSED_SOLDIER_MANIFEST: CharacterAssetManifest = {
     walk: "Walk",
     run: "Run",
   },
-  scale: 1.25,
+  scale: 1.5,
   yOffset: 0,
 };
 
 /**
  * Mutes reusan el mismo Soldier.glb con tint gris-verde (`applyMuteLook`).
- * Misma escala 1.25; boxes × HOSTILE_VISUAL_SCALE solo si GLB pending/fail.
+ * Misma escala 1.5; boxes × HOSTILE_VISUAL_SCALE solo si GLB pending/fail.
  */
 export const MUTE_SOLDIER_MANIFEST: CharacterAssetManifest = {
   id: "mute-soldier",
@@ -167,7 +168,7 @@ export const MUTE_SOLDIER_MANIFEST: CharacterAssetManifest = {
     walk: "Walk",
     run: "Run",
   },
-  scale: 1.25,
+  scale: 1.5,
   yOffset: 0,
 };
 
