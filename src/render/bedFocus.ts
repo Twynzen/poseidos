@@ -30,8 +30,8 @@ export const bedBadgeLetterScale = 2.76;
 /** Escala del disc de cama (1.5 × 1.15 vs badge compartido, para leerse de noche). */
 export const bedBadgeDiscScale = 1.725;
 
-/** Altura world del floatBadge Z (queda por encima del Soldier 1.5). */
-export const bedBadgeY = 2.3;
+/** Altura world del floatBadge Z (2.3 × 1.15, para leerse de noche; queda por encima del Soldier 1.5). */
+export const bedBadgeY = 2.645;
 
 /** True si dist está en reach (incl. el borde). */
 export function bedFocusInReach(dist: number): boolean {
