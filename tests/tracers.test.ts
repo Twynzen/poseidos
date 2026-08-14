@@ -17,14 +17,15 @@ import {
 } from "../src/render/tracers";
 
 describe("constantes", () => {
-  test("TTL 0.22 × 1.15 / altura 1.2075 × 1.15 / rango 0.1725–0.35", () => {
+  test("TTL 0.22 × 1.15 / altura 1.2075 × 1.15 / rango 0.1725–0.4025", () => {
     expect(DEFAULT_TRACER_TTL).toBe(0.253);
     expect(DEFAULT_TRACER_TTL).toBeCloseTo(0.22 * 1.15, 10);
     expect(TRACER_HEIGHT).toBe(1.388625);
     expect(TRACER_HEIGHT).toBeCloseTo(1.2075 * 1.15, 10);
     expect(TRACER_TTL_MIN).toBe(0.1725);
     expect(TRACER_TTL_MIN).toBeCloseTo(0.15 * 1.15, 10);
-    expect(TRACER_TTL_MAX).toBe(0.35);
+    expect(TRACER_TTL_MAX).toBe(0.4025);
+    expect(TRACER_TTL_MAX).toBeCloseTo(0.35 * 1.15, 10);
   });
 
   test("grosor 0.06875 × 1.15; worldView usa el knob (no magic 0.055/0.06875)", () => {
@@ -57,9 +58,10 @@ describe("tracers (geometría headless)", () => {
     expect(p.y).toBeCloseTo(5, 5);
   });
 
-  test("clampTracerTtl respeta 0.1725–0.35", () => {
+  test("clampTracerTtl respeta 0.1725–0.4025", () => {
     expect(clampTracerTtl(0.01)).toBe(TRACER_TTL_MIN);
     expect(clampTracerTtl(1)).toBe(TRACER_TTL_MAX);
+    expect(clampTracerTtl(1)).toBe(0.4025);
     expect(clampTracerTtl(DEFAULT_TRACER_TTL)).toBe(DEFAULT_TRACER_TTL);
     expect(clampTracerTtl(Number.NaN)).toBe(DEFAULT_TRACER_TTL);
   });
