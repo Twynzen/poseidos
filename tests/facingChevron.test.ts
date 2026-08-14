@@ -1,6 +1,8 @@
 import { describe, expect, test } from "vitest";
 import {
+  FACING_CHEVRON_COLOR,
   FACING_CHEVRON_DIST,
+  FACING_CHEVRON_OPACITY,
   FACING_CHEVRON_YAW_OFFSET,
   facingChevronOffset,
 } from "../src/render/facingChevron";
@@ -9,6 +11,13 @@ describe("constantes", () => {
   test("yaw offset 0 (no double-apply: yaw ya trae PLAYER_GLTF_YAW_OFFSET)", () => {
     expect(FACING_CHEVRON_DIST).toBe(1.05);
     expect(FACING_CHEVRON_YAW_OFFSET).toBe(0);
+  });
+
+  test("color cian suave + opacidad cue (no losa sólida)", () => {
+    expect(FACING_CHEVRON_COLOR).toBe(0x9ef0ff);
+    expect(FACING_CHEVRON_OPACITY).toBeCloseTo(0.55, 5);
+    expect(FACING_CHEVRON_OPACITY).toBeLessThan(1);
+    expect(FACING_CHEVRON_OPACITY).toBeGreaterThan(0.35);
   });
 });
 
