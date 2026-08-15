@@ -334,6 +334,8 @@ export const PLAYER_BODY_HEIGHT = 1.288;
 export const PLAYER_BODY_DEPTH = 0.552;
 /** Alto del muro. 2.2 × 1.15 para leerse un poco más alto de noche. */
 export const WALL_HEIGHT = 2.53;
+/** Altura Y del muro. 1.1 × 1.15 para sentarse un poco más alto de noche. */
+export const WALL_BASE_Y = 1.265;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -2188,7 +2190,7 @@ function fillTileContent(
     base.position.set(x + 0.5, 0, y + 0.5);
     content.add(base);
     const wall = new THREE.Mesh(wallGeo, wallMat);
-    wall.position.set(x + 0.5, 1.1, y + 0.5);
+    wall.position.set(x + 0.5, WALL_BASE_Y, y + 0.5);
     content.add(wall);
   }
   if (tile.kind === "door") {
