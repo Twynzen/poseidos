@@ -350,6 +350,8 @@ export const BED_BASE_Y = 0.20125;
 export const BED_DEPTH = 0.805;
 /** Alto de la caja/furniture genérico. 0.85 × 1.15 para leerse un poco más alta de noche. */
 export const FURNITURE_HEIGHT = 0.9775;
+/** Ancho/profundidad XZ de la caja/furniture genérico. 0.7 × 1.15 para leerse un poco más ancha de noche. */
+export const FURNITURE_XZ = 0.805;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -574,7 +576,7 @@ export function createWorldView(
   const floorGeo = new THREE.PlaneGeometry(1, 1);
   const wallGeo = new THREE.BoxGeometry(1, WALL_HEIGHT, 1);
   const doorGeo = new THREE.BoxGeometry(1, DOOR_HEIGHT, DOOR_DEPTH);
-  const furnitureGeo = new THREE.BoxGeometry(0.7, FURNITURE_HEIGHT, 0.7);
+  const furnitureGeo = new THREE.BoxGeometry(FURNITURE_XZ, FURNITURE_HEIGHT, FURNITURE_XZ);
   /** Planchas apiladas: más bajas y estrechas que un muro. */
   const barricadeGeo = new THREE.BoxGeometry(0.92, 1.35, 0.55);
   /** Último daylight visto en syncDayNight; mats nuevos nacen ya lifted. */
