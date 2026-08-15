@@ -1,6 +1,6 @@
 /**
  * Collector possession gated → snapshot wire F7.
- * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary / lineSource / line / tone); no intents crudos.
+ * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary / lineSource / line / tone / trigger); no intents crudos.
  */
 import {
   isPacified,
@@ -20,6 +20,7 @@ import {
   formatMemorySummary,
   type MemoryEntry,
 } from "../possession/memory";
+import type { SpeechTrigger } from "../possession/speech";
 import type { NetPossessionSnap } from "./session";
 
 /** Fuente opcional de sesgo ya validado (`speech.getMoodBias`). */
@@ -58,6 +59,15 @@ export type ToneLookup =
   | ((id: string) => string | null | undefined)
   | {
       getActive(id: string): { tone?: string | null } | null | undefined;
+    };
+
+/** Fuente opcional de trigger de utterance ya validado (`speech.getActive.trigger`). */
+export type TriggerLookup =
+  | ((id: string) => SpeechTrigger | string | null | undefined)
+  | {
+      getActive(
+        id: string,
+      ): { trigger?: SpeechTrigger | string | null } | null | undefined;
     };
 
 function readMoodBias(
@@ -130,6 +140,23 @@ function readTone(
   return compactMoodBias(raw);
 }
 
+/** Trigger ya validado; vacío / desconocido / sin utterance se omite. No inventa enum. */
+function compactSpeechTrigger(raw?: string | null): SpeechTrigger | "" {
+  if (typeof raw !== "string") return "";
+  const t = raw.trim();
+  return t === "periodic" || t === "see_player" || t === "dialogue" ? t : "";
+}
+
+function readTrigger(
+  source: TriggerLookup | undefined,
+  id: string,
+): SpeechTrigger | "" {
+  if (!source) return "";
+  const raw =
+    typeof source === "function" ? source(id) : source.getActive(id)?.trigger;
+  return compactSpeechTrigger(raw);
+}
+
 /**
  * Serializa estado gated de poseídos.
  * `hostileIds` = ids a incluir; si se omite, todos los del ledger.
@@ -139,6 +166,7 @@ function readTone(
  * `lineSourceOf` = getter o SpeechDirector; si se omite, no se pinta lineSource.
  * `lineOf` = getter o SpeechDirector; si se omite, no se pinta line.
  * `toneOf` = getter o SpeechDirector; si se omite, no se pinta tone.
+ * `triggerOf` = getter o SpeechDirector; si se omite, no se pinta trigger.
  */
 export function collectPossessionFrom(
   ledger: TrustLedger,
@@ -150,6 +178,7 @@ export function collectPossessionFrom(
   lineSourceOf?: LineSourceLookup,
   lineOf?: LineLookup,
   toneOf?: ToneLookup,
+  triggerOf?: TriggerLookup,
 ): NetPossessionSnap[] {
   const ids = hostileIds ?? ledger.ids();
   const out: NetPossessionSnap[] = [];
@@ -168,6 +197,7 @@ export function collectPossessionFrom(
     const lineSource = readLineSource(lineSourceOf, id);
     const line = readLine(lineOf, id);
     const tone = readTone(toneOf, id);
+    const trigger = readTrigger(triggerOf, id);
     out.push({
       id,
       trust,
@@ -184,6 +214,7 @@ export function collectPossessionFrom(
       ...(lineSource ? { lineSource } : {}),
       ...(line ? { line } : {}),
       ...(tone ? { tone } : {}),
+      ...(trigger ? { trigger } : {}),
     });
   }
   return out;

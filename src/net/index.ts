@@ -25,6 +25,7 @@ export {
   type LineSourceLookup,
   type LineLookup,
   type ToneLookup,
+  type TriggerLookup,
 } from "./snapshotPossession";
 
 export {
