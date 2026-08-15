@@ -346,6 +346,8 @@ export const DOOR_DEPTH = 0.207;
 export const BED_HEIGHT = 0.4025;
 /** Altura Y de la cama. 0.175 × 1.15 para sentarse un poco más alto de noche. */
 export const BED_BASE_Y = 0.20125;
+/** Profundidad de la cama. 0.7 × 1.15 para leerse un poco más profunda de noche. */
+export const BED_DEPTH = 0.805;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -580,7 +582,7 @@ export function createWorldView(
     roughness: 0.8,
   });
   /** Cama: más baja y ancha que furniture genérico (reuse geo/mat). */
-  const bedGeo = new THREE.BoxGeometry(1.0, BED_HEIGHT, 0.7);
+  const bedGeo = new THREE.BoxGeometry(1.0, BED_HEIGHT, BED_DEPTH);
   const bedMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(BED_COLOR, lastDaylight),
     roughness: 0.85,
