@@ -226,6 +226,8 @@ export const POSSESSED_HEAD_EMISSIVE = 0x30124a;
 export const WARM_LIGHT_COLOR = 0xffca81;
 /** Color de la esfera aditiva de hocico. 0xfff2c0 × 1.15/canal (r/g clamp) para leerse de noche. */
 export const MUZZLE_FLASH_COLOR = 0xffffdd;
+/** Color del PointLight de hocico. 0xffe8a0 × 1.15/canal (r/g clamp) para leerse de noche. */
+export const MUZZLE_LIGHT_COLOR = 0xffffb8;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -773,7 +775,7 @@ export function createWorldView(
   const muzzleMesh = new THREE.Mesh(muzzleGeo, muzzleMat);
   muzzleMesh.visible = false;
   const muzzleLight = new THREE.PointLight(
-    0xffe8a0,
+    MUZZLE_LIGHT_COLOR,
     0,
     MUZZLE_LIGHT_DISTANCE,
     2,
