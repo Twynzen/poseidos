@@ -242,6 +242,8 @@ export const WARM_LIGHT_AMBER_B = 0.437;
 export const WARM_LIGHT_AMBER_B_GAIN = 0.115;
 /** Umbral de intensidad para mostrar el PointLight cálido indoor. 0.02 × 0.87 para aparecer un poco antes de noche. */
 export const WARM_LIGHT_VISIBLE_EPS = 0.0174;
+/** Decay del PointLight cálido indoor. 2 × 0.87 para caer un poco más lento de noche. */
+export const WARM_LIGHT_DECAY = 1.74;
 /** Color de la esfera aditiva de hocico. 0xfff2c0 × 1.15/canal (r/g clamp) para leerse de noche. */
 export const MUZZLE_FLASH_COLOR = 0xffffdd;
 /** Color del PointLight de hocico. 0xffe8a0 × 1.15/canal (r/g clamp) para leerse de noche. */
@@ -462,7 +464,7 @@ export function createWorldView(
   scene.add(sun);
 
   // Pool cálido indoor de noche (landscapes / chess board light).
-  const warmLight = new THREE.PointLight(WARM_LIGHT_COLOR, 0, 7.5, 2);
+  const warmLight = new THREE.PointLight(WARM_LIGHT_COLOR, 0, 7.5, WARM_LIGHT_DECAY);
   warmLight.position.set(0, 1.6, 0);
   scene.add(warmLight);
 
