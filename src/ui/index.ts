@@ -6,8 +6,10 @@ export {
 
 export {
   createDialoguePanel,
+  formatGateLine,
   type DialoguePanel,
   type DialoguePanelView,
+  type GateLineInput,
 } from "./dialoguePanel";
 
 export {
