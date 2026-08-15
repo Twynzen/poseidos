@@ -230,6 +230,8 @@ export const WARM_LIGHT_INTENSITY_MUL = 1.7825;
 export const WARM_LIGHT_Y = 1.7825;
 /** Distancia base del PointLight cálido indoor. 6.5 × 1.15 para alcanzar un poco más de noche. */
 export const WARM_LIGHT_DISTANCE_BASE = 7.475;
+/** Ganancia de distancia del PointLight cálido indoor × intensidad. 2.5 × 1.15 para estirar un poco más de noche. */
+export const WARM_LIGHT_DISTANCE_GAIN = 2.875;
 /** Color de la esfera aditiva de hocico. 0xfff2c0 × 1.15/canal (r/g clamp) para leerse de noche. */
 export const MUZZLE_FLASH_COLOR = 0xffffdd;
 /** Color del PointLight de hocico. 0xffe8a0 × 1.15/canal (r/g clamp) para leerse de noche. */
@@ -1706,7 +1708,7 @@ export function createWorldView(
     syncWarmLight(wx, wy, intensity) {
       const i = Math.max(0, Math.min(1, intensity));
       warmLight.intensity = i * WARM_LIGHT_INTENSITY_MUL;
-      warmLight.distance = WARM_LIGHT_DISTANCE_BASE + i * 2.5;
+      warmLight.distance = WARM_LIGHT_DISTANCE_BASE + i * WARM_LIGHT_DISTANCE_GAIN;
       warmLight.position.set(wx, WARM_LIGHT_Y, wy);
       warmLight.visible = i > 0.02;
       // Tinte un poco más ámbar cuando está fuerte.
