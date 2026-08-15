@@ -222,6 +222,8 @@ const POSSESSED_EMISSIVE = 0x1e0925;
 export const POSSESSED_HEAD_COLOR = 0x8c469f;
 /** Emisivo de la silueta fallback poseída (cabeza). 0x2a1040 × 1.15/canal para leerse de noche. */
 export const POSSESSED_HEAD_EMISSIVE = 0x30124a;
+/** Color del pool cálido indoor de noche. 0xffb070 × 1.15/canal (r clamp) para leerse de noche. */
+export const WARM_LIGHT_COLOR = 0xffca81;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -416,7 +418,7 @@ export function createWorldView(
   scene.add(sun);
 
   // Pool cálido indoor de noche (landscapes / chess board light).
-  const warmLight = new THREE.PointLight(0xffb070, 0, 7.5, 2);
+  const warmLight = new THREE.PointLight(WARM_LIGHT_COLOR, 0, 7.5, 2);
   warmLight.position.set(0, 1.6, 0);
   scene.add(warmLight);
 
