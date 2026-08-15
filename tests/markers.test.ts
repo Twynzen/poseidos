@@ -73,7 +73,7 @@ describe("markers (badges + ground rings)", () => {
     const bed = paletteFor("bed");
     expect(bed.ring).toBe(0x8c73a6);
     expect(bed.badge).toBe(0xc1a6d4);
-    expect(bed.emissive).toBe(0x201828);
+    expect(bed.emissive).toBe(0x251c2e);
     expect(bed.glyph).toBe("▭");
     // púrpura: R y B altos, G más bajo
     expect((bed.ring >> 16) & 0xff).toBeGreaterThan((bed.ring >> 8) & 0xff);
@@ -181,7 +181,7 @@ describe("markers (badges + ground rings)", () => {
     expect(MARKER_PALETTE.possessed.emissive).toBe(0x30124a);
     expect(MARKER_PALETTE.loot.emissive).toBe(0x4a3712);
     expect(MARKER_PALETTE.door.emissive).toBe(0x1c252e);
-    expect(MARKER_PALETTE.bed.emissive).toBe(0x201828);
+    expect(MARKER_PALETTE.bed.emissive).toBe(0x251c2e);
     expect(PLAYER_BADGE_OPACITY).toBe(0);
     expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
@@ -255,7 +255,7 @@ describe("markers (badges + ground rings)", () => {
     expect(MARKER_PALETTE.possessed.emissive).toBe(0x30124a);
     expect(MARKER_PALETTE.loot.emissive).toBe(0x4a3712);
     expect(MARKER_PALETTE.door.emissive).toBe(0x1c252e);
-    expect(MARKER_PALETTE.bed.emissive).toBe(0x201828);
+    expect(MARKER_PALETTE.bed.emissive).toBe(0x251c2e);
     expect(PLAYER_BADGE_OPACITY).toBe(0);
     expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
@@ -329,7 +329,7 @@ describe("markers (badges + ground rings)", () => {
     expect(MARKER_PALETTE.mute.emissive).toBe(0x4a1212);
     expect(MARKER_PALETTE.loot.emissive).toBe(0x4a3712);
     expect(MARKER_PALETTE.door.emissive).toBe(0x1c252e);
-    expect(MARKER_PALETTE.bed.emissive).toBe(0x201828);
+    expect(MARKER_PALETTE.bed.emissive).toBe(0x251c2e);
     expect(PLAYER_BADGE_OPACITY).toBe(0);
     expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
@@ -403,7 +403,7 @@ describe("markers (badges + ground rings)", () => {
     expect(MARKER_PALETTE.mute.emissive).toBe(0x4a1212);
     expect(MARKER_PALETTE.possessed.emissive).toBe(0x30124a);
     expect(MARKER_PALETTE.door.emissive).toBe(0x1c252e);
-    expect(MARKER_PALETTE.bed.emissive).toBe(0x201828);
+    expect(MARKER_PALETTE.bed.emissive).toBe(0x251c2e);
     expect(PLAYER_BADGE_OPACITY).toBe(0);
     expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
@@ -477,7 +477,7 @@ describe("markers (badges + ground rings)", () => {
     expect(MARKER_PALETTE.mute.emissive).toBe(0x4a1212);
     expect(MARKER_PALETTE.possessed.emissive).toBe(0x30124a);
     expect(MARKER_PALETTE.loot.emissive).toBe(0x4a3712);
-    expect(MARKER_PALETTE.bed.emissive).toBe(0x201828);
+    expect(MARKER_PALETTE.bed.emissive).toBe(0x251c2e);
     expect(PLAYER_BADGE_OPACITY).toBe(0);
     expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
@@ -496,7 +496,7 @@ describe("markers (badges + ground rings)", () => {
     expect(Math.round((0x64 * 115) / 100)).toBe(g);
     expect(Math.round((0x90 * 115) / 100)).toBe(b);
     expect(bed.badge).toBe(0xc1a6d4);
-    expect(bed.emissive).toBe(0x201828);
+    expect(bed.emissive).toBe(0x251c2e);
     expect(bed.glyph).toBe("▭");
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_PALETTE.mute.ring).toBe(0xe14545);
@@ -520,13 +520,38 @@ describe("markers (badges + ground rings)", () => {
     expect(Math.round((0x90 * 115) / 100)).toBe(g);
     expect(Math.round((0xb8 * 115) / 100)).toBe(b);
     expect(bed.ring).toBe(0x8c73a6);
-    expect(bed.emissive).toBe(0x201828);
+    expect(bed.emissive).toBe(0x251c2e);
     expect(bed.glyph).toBe("▭");
     expect(MARKER_PALETTE.player.badge).toBe(0x91d1ff);
     expect(MARKER_PALETTE.mute.badge).toBe(0xff7b7b);
     expect(MARKER_PALETTE.possessed.badge).toBe(0xe590ff);
     expect(MARKER_PALETTE.loot.badge).toBe(0xffdd6e);
     expect(MARKER_PALETTE.door.badge).toBe(0x9fbdd4);
+    expect(PLAYER_BADGE_OPACITY).toBe(0);
+    expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
+    expect(MARKER_RING_OPACITY).toBe(0.6877);
+  });
+
+  test("bed emissive 0x201828 × 1.15/canal → 0x251c2e; ring/badge/glyph/other-roles/opacities iguales", () => {
+    const bed = paletteFor("bed");
+    expect(bed.emissive).toBe(0x251c2e);
+    const r = (bed.emissive >> 16) & 0xff;
+    const g = (bed.emissive >> 8) & 0xff;
+    const b = bed.emissive & 0xff;
+    expect(r).toBe(0x25);
+    expect(g).toBe(0x1c);
+    expect(b).toBe(0x2e);
+    expect(Math.round((0x20 * 115) / 100)).toBe(r);
+    expect(Math.round((0x18 * 115) / 100)).toBe(g);
+    expect(Math.round((0x28 * 115) / 100)).toBe(b);
+    expect(bed.ring).toBe(0x8c73a6);
+    expect(bed.badge).toBe(0xc1a6d4);
+    expect(bed.glyph).toBe("▭");
+    expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
+    expect(MARKER_PALETTE.mute.emissive).toBe(0x4a1212);
+    expect(MARKER_PALETTE.possessed.emissive).toBe(0x30124a);
+    expect(MARKER_PALETTE.loot.emissive).toBe(0x4a3712);
+    expect(MARKER_PALETTE.door.emissive).toBe(0x1c252e);
     expect(PLAYER_BADGE_OPACITY).toBe(0);
     expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
