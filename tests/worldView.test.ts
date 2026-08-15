@@ -163,7 +163,42 @@ describe("worldView possessed fallback body mesh", () => {
     expect(src).toContain("emissive: PLAYER_HEAD_EMISSIVE");
     expect(src).toContain("emissiveIntensity: 0.22");
     expect(src).not.toMatch(/color:\s*0x5a2d6b/);
-    expect(src).toContain("const POSSESSED_EMISSIVE = 0x1a0820");
+    expect(src).toContain("const POSSESSED_EMISSIVE = 0x1e0925");
+    expect(HOSTILE_COLOR).toBe(0x7b1e1e);
+    expect(PLAYER_COLOR).toBe(0x55a4f4);
+    expect(PLAYER_HEAD_COLOR).toBe(0x91d1ff);
+    expect(PLAYER_HEAD_EMISSIVE).toBe(0x122537);
+    expect(MARKER_PALETTE.player.badge).toBe(0x91d1ff);
+    expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
+    expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
+    expect(MARKER_RING_OPACITY).toBe(0.6877);
+    expect(muteBadgeY).toBe(2.3);
+    expect(possessedBadgeY).toBe(2.3);
+  });
+});
+
+describe("worldView possessed fallback body emissive", () => {
+  test("possessed body emissive 0x1a0820 × 1.15/canal → 0x1e0925; color/hostile/player/head/intensity/palette/badge-Y iguales", () => {
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toContain("const POSSESSED_EMISSIVE = 0x1e0925");
+    expect(src).toContain("emissive: POSSESSED_EMISSIVE");
+    expect(src).toContain("color: POSSESSED_COLOR");
+    expect(src).not.toMatch(/const POSSESSED_EMISSIVE = 0x1a0820/);
+    const r = 0x1e;
+    const g = 0x09;
+    const b = 0x25;
+    expect(Math.round((0x1a * 115) / 100)).toBe(r);
+    expect(Math.round((0x08 * 115) / 100)).toBe(g);
+    expect(Math.round((0x20 * 115) / 100)).toBe(b);
+    expect(src).toContain("emissiveIntensity: 0.22");
+    expect(src).toContain("color: HOSTILE_COLOR");
+    expect(src).toContain("color: PLAYER_COLOR");
+    expect(src).toContain("color: PLAYER_HEAD_COLOR");
+    expect(src).toContain("emissive: PLAYER_HEAD_EMISSIVE");
+    expect(POSSESSED_COLOR).toBe(0x68347b);
     expect(HOSTILE_COLOR).toBe(0x7b1e1e);
     expect(PLAYER_COLOR).toBe(0x55a4f4);
     expect(PLAYER_HEAD_COLOR).toBe(0x91d1ff);
