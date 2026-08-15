@@ -1,6 +1,6 @@
 /**
  * Collector possession gated → snapshot wire F7.
- * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected / gateLine / moodBias / toneBias); no intents crudos.
+ * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary); no intents crudos.
  */
 import {
   isPacified,
@@ -12,6 +12,10 @@ import {
   type DialogueBehaviorGates,
 } from "../possession/gates";
 import { compactMoodBias } from "../possession/llmBridge";
+import {
+  formatMemorySummary,
+  type MemoryEntry,
+} from "../possession/memory";
 import type { NetPossessionSnap } from "./session";
 
 /** Fuente opcional de sesgo ya validado (`speech.getMoodBias`). */
@@ -23,6 +27,11 @@ export type MoodBiasLookup =
 export type ToneBiasLookup =
   | ((id: string) => string | null | undefined)
   | { toneBias(id: string): string | null | undefined };
+
+/** Fuente opcional de resumen compacto ya validado (`formatMemorySummary` / `memory.recent`). */
+export type MemorySummaryLookup =
+  | ((id: string) => string | readonly MemoryEntry[] | null | undefined)
+  | { recent(id: string): readonly MemoryEntry[] | null | undefined };
 
 function readMoodBias(
   source: MoodBiasLookup | undefined,
@@ -43,10 +52,27 @@ function readToneBias(
 }
 
 /**
+ * Compacta el resumen: string ya formateado → trim (omit whitespace);
+ * entradas pasan por `formatMemorySummary` (único cap MEMORY_SUMMARY_MAX_LEN).
+ */
+function readMemorySummary(
+  source: MemorySummaryLookup | undefined,
+  id: string,
+): string {
+  if (!source) return "";
+  const raw = typeof source === "function" ? source(id) : source.recent(id);
+  if (raw == null) return "";
+  if (typeof raw === "string") return raw.trim();
+  if (!Array.isArray(raw)) return "";
+  return formatMemorySummary(raw);
+}
+
+/**
  * Serializa estado gated de poseídos.
  * `hostileIds` = ids a incluir; si se omite, todos los del ledger.
  * `moodBiasOf` = getter o SpeechDirector; si se omite, no se pinta moodBias.
  * `toneBiasOf` = getter o ShortMemory; si se omite, no se pinta toneBias.
+ * `memoryOf` = getter o ShortMemory; si se omite, no se pinta memorySummary.
  */
 export function collectPossessionFrom(
   ledger: TrustLedger,
@@ -54,6 +80,7 @@ export function collectPossessionFrom(
   hostileIds?: readonly string[],
   moodBiasOf?: MoodBiasLookup,
   toneBiasOf?: ToneBiasLookup,
+  memoryOf?: MemorySummaryLookup,
 ): NetPossessionSnap[] {
   const ids = hostileIds ?? ledger.ids();
   const out: NetPossessionSnap[] = [];
@@ -68,6 +95,7 @@ export function collectPossessionFrom(
     const gateLine = compactGateLine(gates.gateLine(id));
     const moodBias = readMoodBias(moodBiasOf, id);
     const toneBias = readToneBias(toneBiasOf, id);
+    const memorySummary = readMemorySummary(memoryOf, id);
     out.push({
       id,
       trust,
@@ -80,6 +108,7 @@ export function collectPossessionFrom(
       ...(gateLine ? { gateLine } : {}),
       ...(moodBias ? { moodBias } : {}),
       ...(toneBias ? { toneBias } : {}),
+      ...(memorySummary ? { memorySummary } : {}),
     });
   }
   return out;
