@@ -4638,8 +4638,8 @@ describe("worldView facing chevron tilt", () => {
     expect(src).toContain("export const NOISE_RING_Y = 0.0575");
     expect(src).toContain("mesh.position.y = NOISE_RING_Y");
     expect(src).toContain("slot.mesh.position.set(state.x, NOISE_RING_Y, state.y)");
-    expect(src).not.toMatch(/const NOISE_RING_Y = 0\.05/);
-    expect(src).not.toMatch(/export const NOISE_RING_Y = 0\.05/);
+    expect(src).not.toMatch(/const NOISE_RING_Y = 0\.05;/);
+    expect(src).not.toMatch(/export const NOISE_RING_Y = 0\.05;/);
     expect(src).toContain("export const CHEVRON_Y = 0.138");
     expect(src).toContain("chevronMesh.position.set(x, CHEVRON_Y, z)");
     expect(src).not.toMatch(/const CHEVRON_Y = 0\.12/);
@@ -4849,8 +4849,8 @@ describe("worldView noise ring Y", () => {
     expect(src).toContain("export const NOISE_RING_Y = 0.0575");
     expect(src).toContain("mesh.position.y = NOISE_RING_Y");
     expect(src).toContain("slot.mesh.position.set(state.x, NOISE_RING_Y, state.y)");
-    expect(src).not.toMatch(/const NOISE_RING_Y = 0\.05/);
-    expect(src).not.toMatch(/export const NOISE_RING_Y = 0\.05/);
+    expect(src).not.toMatch(/const NOISE_RING_Y = 0\.05;/);
+    expect(src).not.toMatch(/export const NOISE_RING_Y = 0\.05;/);
     expect(src).toContain("export const CHEVRON_TILT = -0.4025");
     expect(src).toContain("chevronMesh.rotation.x = CHEVRON_TILT");
     expect(src).not.toMatch(/chevronMesh\.rotation\.x = -0\.35/);
