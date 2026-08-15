@@ -338,6 +338,8 @@ export const WALL_HEIGHT = 2.53;
 export const WALL_BASE_Y = 1.265;
 /** Alto de la puerta. 2.0 × 1.15 para leerse un poco más alta de noche. */
 export const DOOR_HEIGHT = 2.3;
+/** Altura Y de la puerta. 1.0 × 1.15 para sentarse un poco más alto de noche. */
+export const DOOR_BASE_Y = 1.15;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -1738,10 +1740,10 @@ export function createWorldView(
       mesh.material = open ? doorOpenMat : doorClosedMat;
       if (open) {
         mesh.rotation.y = Math.PI / 2;
-        mesh.position.set(tx + 0.15, 1.0, ty + 0.5);
+        mesh.position.set(tx + 0.15, DOOR_BASE_Y, ty + 0.5);
       } else {
         mesh.rotation.y = 0;
-        mesh.position.set(tx + 0.5, 1.0, ty + 0.5);
+        mesh.position.set(tx + 0.5, DOOR_BASE_Y, ty + 0.5);
       }
     },
     remeshTile,
@@ -2202,9 +2204,9 @@ function fillTileContent(
     );
     if (tile.open) {
       door.rotation.y = Math.PI / 2;
-      door.position.set(x + 0.15, 1.0, y + 0.5);
+      door.position.set(x + 0.15, DOOR_BASE_Y, y + 0.5);
     } else {
-      door.position.set(x + 0.5, 1.0, y + 0.5);
+      door.position.set(x + 0.5, DOOR_BASE_Y, y + 0.5);
     }
     content.add(door);
     doorMeshes.set(doorKey(x, y), door);
