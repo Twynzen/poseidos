@@ -15,6 +15,7 @@ import {
   DialogueBehaviorGates,
   proposeDialogueGates,
   GATE_CALM_PACIFY_TTL,
+  GATE_LINE_MAX_LEN,
 } from "../src/possession";
 import {
   ContainerRegistry,
@@ -244,6 +245,8 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect(snaps[0]!.lastApplied).toEqual(["pacify_ttl"]);
     expect(snaps[0]!.lastRejected).toBeUndefined();
     expect("lastRejected" in snaps[0]!).toBe(false);
+    expect(snaps[0]!.gateLine).toBeUndefined();
+    expect("gateLine" in snaps[0]!).toBe(false);
 
     gates.tick(GATE_CALM_PACIFY_TTL + 0.1);
     const afterTtl = collectPossessionFrom(ledger, gates, ["p1"]);
@@ -253,6 +256,7 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect(afterTtl[0]!.speedBumpMul).toBe(1);
     expect(afterTtl[0]!.lastApplied).toEqual(["pacify_ttl"]);
     expect(afterTtl[0]!.lastRejected).toBeUndefined();
+    expect(afterTtl[0]!.gateLine).toBeUndefined();
   });
 
   test("collector: lastApplied omitido si vacío; tags desconocidos se descartan", () => {
@@ -274,6 +278,8 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect("lastApplied" in none[0]!).toBe(false);
     expect(none[0]!.lastRejected).toBeUndefined();
     expect("lastRejected" in none[0]!).toBe(false);
+    expect(none[0]!.gateLine).toBeUndefined();
+    expect("gateLine" in none[0]!).toBe(false);
 
     gates.restoreLastApplied("p1", [
       "pacify_ttl",
@@ -308,6 +314,8 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect(none[0]!.lastRejected).toBeUndefined();
     expect("lastRejected" in none[0]!).toBe(false);
     expect(none[0]!.lastApplied).toBeUndefined();
+    expect(none[0]!.gateLine).toBeUndefined();
+    expect("gateLine" in none[0]!).toBe(false);
 
     gates.restoreLastRejected("p1", [
       "pacify_ttl",
@@ -347,6 +355,8 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect(snaps[0]!.lastRejected).toEqual(["pacify_ttl"]);
     expect(snaps[0]!.lastApplied).toBeUndefined();
     expect("lastApplied" in snaps[0]!).toBe(false);
+    expect(snaps[0]!.gateLine).toBeUndefined();
+    expect("gateLine" in snaps[0]!).toBe(false);
 
     gates.tick(GATE_CALM_PACIFY_TTL + 0.1);
     const afterTtl = collectPossessionFrom(ledger, gates, ["p1"]);
@@ -356,6 +366,7 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect(afterTtl[0]!.speedBumpMul).toBe(1);
     expect(afterTtl[0]!.lastRejected).toEqual(["pacify_ttl"]);
     expect(afterTtl[0]!.lastApplied).toBeUndefined();
+    expect(afterTtl[0]!.gateLine).toBeUndefined();
   });
 
   test("collector: sin ids → todos del ledger; default vacío si ledger vacío", () => {
@@ -373,6 +384,75 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect(all.find((s) => s.id === "b")!.lastApplied).toBeUndefined();
     expect(all.find((s) => s.id === "a")!.lastRejected).toBeUndefined();
     expect(all.find((s) => s.id === "b")!.lastRejected).toBeUndefined();
+    expect(all.find((s) => s.id === "a")!.gateLine).toBeUndefined();
+    expect(all.find((s) => s.id === "b")!.gateLine).toBeUndefined();
+  });
+
+  test("collector: gateLine presente; vacío omitido; over-cap truncado; tags/trust/TTL sin cambio", () => {
+    const ledger = new TrustLedger();
+    ledger.register("p1", 65);
+    const gates = new DialogueBehaviorGates();
+    const proposal = proposeDialogueGates("calmar", ledger.get("p1"));
+    gates.apply("p1", proposal);
+    gates.restoreLastRejected("p1", ["offer_food"]);
+
+    const none = collectPossessionFrom(ledger, gates, ["p1"]);
+    expect(none[0]!.gateLine).toBeUndefined();
+    expect("gateLine" in none[0]!).toBe(false);
+    expect(none[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(none[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(none[0]!.trust).toBe(65);
+    expect(none[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(none[0]!.speedBumpLeft).toBe(0);
+    expect(none[0]!.speedBumpMul).toBe(1);
+    expect(none[0]!.pacified).toBe(true);
+
+    gates.restoreGateLine("p1", "   ");
+    const blank = collectPossessionFrom(ledger, gates, ["p1"]);
+    expect(blank[0]!.gateLine).toBeUndefined();
+    expect("gateLine" in blank[0]!).toBe(false);
+
+    gates.restoreGateLine("p1", "código: aplicado (pacify_ttl)");
+    const applied = collectPossessionFrom(ledger, gates, ["p1"]);
+    expect(applied[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(applied[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(applied[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(applied[0]!.trust).toBe(65);
+    expect(applied[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(applied[0]!.speedBumpLeft).toBe(0);
+    expect(applied[0]!.speedBumpMul).toBe(1);
+    expect(applied[0]!.pacified).toBe(true);
+
+    gates.restoreGateLine("p1", "código: rechazado (trust)");
+    const rejected = collectPossessionFrom(ledger, gates, ["p1"]);
+    expect(rejected[0]!.gateLine).toBe("código: rechazado (trust)");
+    expect(rejected[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(rejected[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(rejected[0]!.trust).toBe(65);
+    expect(rejected[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+
+    const long = "x".repeat(GATE_LINE_MAX_LEN + 8);
+    gates.restoreGateLine("p1", `  ${long}  `);
+    const capped = collectPossessionFrom(ledger, gates, ["p1"]);
+    expect(capped[0]!.gateLine).toBe("x".repeat(GATE_LINE_MAX_LEN));
+    expect(capped[0]!.gateLine!.length).toBe(GATE_LINE_MAX_LEN);
+    expect(capped[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(capped[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(capped[0]!.trust).toBe(65);
+    expect(capped[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(capped[0]!.speedBumpLeft).toBe(0);
+    expect(capped[0]!.speedBumpMul).toBe(1);
+    expect(capped[0]!.pacified).toBe(true);
+
+    gates.tick(GATE_CALM_PACIFY_TTL + 0.1);
+    const afterTtl = collectPossessionFrom(ledger, gates, ["p1"]);
+    expect(afterTtl[0]!.gateLine).toBe("x".repeat(GATE_LINE_MAX_LEN));
+    expect(afterTtl[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(afterTtl[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(afterTtl[0]!.trust).toBe(65);
+    expect(afterTtl[0]!.pacifiedLeft).toBe(0);
+    expect(afterTtl[0]!.speedBumpLeft).toBe(0);
+    expect(afterTtl[0]!.speedBumpMul).toBe(1);
   });
 
   test("buildNetSnapshot incluye possession; default vacío", () => {
