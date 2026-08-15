@@ -45,6 +45,17 @@ export function collectBarricadesFromMap(map: TileMap): NetBarricadeSnap[] {
 }
 
 /**
+ * Game/host: un tick → collector existente → loopback.
+ * No inventa campos (solo x / y). Bulk replace.
+ */
+export function publishHostBarricades(
+  session: LocalLoopbackSession,
+  map: TileMap,
+): void {
+  session.setBarricades(collectBarricadesFromMap(map));
+}
+
+/**
  * Contenedores del registry → snap compacto.
  * Solo stacks con qty > 0; id como string (ItemId).
  */

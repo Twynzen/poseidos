@@ -9,6 +9,7 @@ import {
   collectHostPossessionFrom,
   collectPossessionFrom,
   LocalLoopbackSession,
+  publishHostBarricades,
   publishHostContainers,
   publishHostDoors,
   publishHostHostiles,
@@ -440,6 +441,84 @@ describe("LocalLoopbackSession", () => {
     expect(empty.containers).toEqual([]);
     expect(empty.hostiles).toEqual([{ id: "a", x: 1, y: 2, mode: "chase" }]);
     expect(empty.doors).toHaveLength(2);
+    expect(empty.possession[0]!.trust).toBe(65);
+    expect(empty.possession[0]!.moodBias).toBe("lucidez");
+    expect(empty.possession[0]!.line).toBe("host línea");
+    expect(empty.possession[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+  });
+
+  test("Game/host publish: TileMap barricades → loopback x/y; vacío → []; hostiles+doors+containers+possession sin cambio", () => {
+    const session = new LocalLoopbackSession({ playerX: 0, playerY: 0 });
+    expect(session.getSnapshot().barricades).toEqual([]);
+
+    const map = new TileMap(6, 6, makeFloor);
+    map.set(1, 1, makeDoor(false));
+    map.set(2, 3, makeDoor(true));
+    map.set(4, 4, makeBarricade());
+    map.set(5, 1, makeBarricade());
+
+    const reg = new ContainerRegistry([
+      createWorldContainer("c1", 3, 5, "caja", [{ id: "wood", qty: 2 }]),
+    ]);
+
+    const sim = new HostileSim();
+    const a = sim.add("a", 1, 2);
+    a.mode = "chase";
+
+    const ledger = new TrustLedger();
+    ledger.register("p1", 65);
+    const gates = new DialogueBehaviorGates();
+    const proposal = proposeDialogueGates("calmar", ledger.get("p1"));
+    gates.apply("p1", proposal);
+    const speech = new SpeechDirector({}, () => 0.5);
+    speech.forceSpeak("p1", "demonio", "host línea", "dialogue", "llm");
+    speech.setMoodBias("p1", "lucidez");
+    const mem = new ShortMemory();
+    mem.remember("p1", {
+      who: "player",
+      intent: "preguntar",
+      trustDelta: 6,
+      tone: "lucidez",
+    });
+
+    publishHostPossession(session, ledger, gates, ledger.ids(), speech, mem);
+    publishHostHostiles(session, sim);
+    publishHostDoors(session, map);
+    publishHostContainers(session, reg);
+    publishHostBarricades(session, map);
+
+    const snap = session.getSnapshot();
+    expect(snap.barricades).toContainEqual({ x: 4, y: 4 });
+    expect(snap.barricades).toContainEqual({ x: 5, y: 1 });
+    expect(snap.barricades).toHaveLength(2);
+    expect(Object.keys(snap.barricades[0]!).sort()).toEqual(["x", "y"]);
+    expect(snap.barricades[0]).not.toHaveProperty("hp");
+    expect(snap.barricades[0]).not.toHaveProperty("kind");
+    expect(snap.barricades[0]).not.toHaveProperty("facing");
+    expect(snap.hostiles).toEqual([{ id: "a", x: 1, y: 2, mode: "chase" }]);
+    expect(snap.doors).toContainEqual({ x: 1, y: 1, open: false });
+    expect(snap.doors).toContainEqual({ x: 2, y: 3, open: true });
+    expect(snap.doors).toHaveLength(2);
+    expect(snap.containers).toEqual([
+      { id: "c1", x: 3, y: 5, slots: [{ id: "wood", qty: 2 }] },
+    ]);
+    expect(snap.possession[0]!.trust).toBe(65);
+    expect(snap.possession[0]!.moodBias).toBe("lucidez");
+    expect(snap.possession[0]!.line).toBe("host línea");
+    expect(snap.possession[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+
+    session.setBarricades([{ x: 9, y: 9 }]);
+    expect(session.getSnapshot().barricades).toEqual([{ x: 9, y: 9 }]);
+    publishHostBarricades(session, map);
+    expect(session.getSnapshot().barricades).not.toContainEqual({ x: 9, y: 9 });
+    expect(session.getSnapshot().barricades).toHaveLength(2);
+
+    publishHostBarricades(session, new TileMap(4, 4, makeFloor));
+    const empty = session.getSnapshot();
+    expect(empty.barricades).toEqual([]);
+    expect(empty.hostiles).toEqual([{ id: "a", x: 1, y: 2, mode: "chase" }]);
+    expect(empty.doors).toHaveLength(2);
+    expect(empty.containers).toHaveLength(1);
     expect(empty.possession[0]!.trust).toBe(65);
     expect(empty.possession[0]!.moodBias).toBe("lucidez");
     expect(empty.possession[0]!.line).toBe("host línea");
