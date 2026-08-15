@@ -364,6 +364,8 @@ export const BARRICADE_DEPTH = 0.6325;
 export const BARRICADE_PLANK_Y = 0.805;
 /** Altura Y de las cruces de barricada. 0.55 × 1.15 para sentarse un poco más alto de noche. */
 export const BARRICADE_CROSS_Y = 0.6325;
+/** Escala Y de las cruces de barricada. 0.7 × 1.15 para leerse un poco más altas de noche. */
+export const BARRICADE_CROSS_SCALE_Y = 0.805;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -2257,7 +2259,7 @@ function fillTileContent(
     const cross = new THREE.Mesh(barricadeGeo, barricadeEdgeMat);
     cross.position.set(x + 0.5, BARRICADE_CROSS_Y, y + 0.5);
     cross.rotation.y = -Math.PI / 5;
-    cross.scale.set(0.95, 0.7, 0.9);
+    cross.scale.set(0.95, BARRICADE_CROSS_SCALE_Y, 0.9);
     content.add(cross);
   }
 }
