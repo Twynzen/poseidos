@@ -308,6 +308,8 @@ export const MARKER_BADGE_RADIUS = 0.184;
 export const MARKER_BADGE_TILT = 2.99;
 /** Altura Y del torso fallback del player. 0.56 × 1.15 para sentarse un poco más alto de noche. */
 export const PLAYER_BODY_BASE_Y = 0.644;
+/** Altura Y de la cabeza fallback del player. 1.32 × 1.15 para sentarse un poco más alto de noche. */
+export const PLAYER_HEAD_BASE_Y = 1.518;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -622,7 +624,6 @@ export function createWorldView(
     emissive: PLAYER_HEAD_EMISSIVE,
     emissiveIntensity: 0.22,
   });
-  const PLAYER_HEAD_BASE_Y = 1.32;
   const playerMesh = new THREE.Group();
   /** Hijo de silueta: bobY + lean/sway; root queda en suelo (x,0,y). */
   const playerLocoRoot = new THREE.Group();
