@@ -73,6 +73,7 @@ import {
   DIALOGUE_REACH,
   StubLlmBridge,
   type DialogueIntent,
+  type GateTag,
   type LlmBridge,
   type PossessionTone,
 } from "../possession";
@@ -1613,6 +1614,7 @@ export class Game {
     const speedBumpLeft = this.hudSpeedBumpLeft();
     const moodBias = this.hudMoodBias();
     const memoryTone = this.hudMemoryTone();
+    const lastApplied = this.hudLastApplied();
     this.moodlesHud.sync(this.buildPlayerHudMoodles());
     this.hotbarHud.sync(hotbarSlots(this.player.inventory), this.hotbarSelected);
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
@@ -1642,6 +1644,7 @@ export class Game {
       speedBumpLeft,
       moodBias,
       memoryTone,
+      lastApplied,
       indoor,
       safeHint,
       raining,
@@ -1734,6 +1737,26 @@ export class Game {
     return nearRemembered
       ? this.memory.toneBias(nearRemembered.id) ?? null
       : null;
+  }
+
+  /**
+   * Últimos tags de gate para el HUD: target del panel si está abierto,
+   * si no el poseído más cercano con `gates.lastApplied` (DIALOGUE_REACH).
+   * Un solo store: `DialogueBehaviorGates.lastApplied` — no es TTL.
+   */
+  private hudLastApplied(): readonly GateTag[] {
+    if (this.dialogue.open && this.dialogue.target) {
+      return this.gates.lastApplied(this.dialogue.target);
+    }
+    const nearGated = nearestPossessed(
+      this.hostiles.hostiles.filter(
+        (h) => this.gates.lastApplied(h.id).length > 0,
+      ),
+      this.player.x,
+      this.player.y,
+      DIALOGUE_REACH,
+    );
+    return nearGated ? this.gates.lastApplied(nearGated.id) : [];
   }
 
   /** +/- zoom iso: ajusta frustum y reaplica proyección. */
