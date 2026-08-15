@@ -232,6 +232,8 @@ export const MUZZLE_LIGHT_COLOR = 0xffffb8;
 export const IMPACT_SPARK_COLOR = 0xffef93;
 /** Color del PointLight de impacto. 0xffd080 × 1.15/canal (r clamp) para leerse de noche. */
 export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93;
+/** Color de la malla del tracer. 0xffe8a0 × 1.15/canal (r/g clamp) para leerse de noche. */
+export const TRACER_COLOR = 0xffffb8;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -964,7 +966,7 @@ export function createWorldView(
   // Tracers de disparo (línea fina + flash puntual en hocico).
   const tracerGeo = new THREE.BoxGeometry(1, 1, 1);
   const tracerMatBase = new THREE.MeshBasicMaterial({
-    color: 0xffe8a0,
+    color: TRACER_COLOR,
     transparent: true,
     opacity: 1,
     depthWrite: false,
