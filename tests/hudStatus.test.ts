@@ -3,6 +3,7 @@ import {
   CONTROLS_HELP,
   formatHudDebugTokens,
   formatHudStatus,
+  formatPacifyHud,
   type HudStatusInput,
 } from "../src/ui/hudStatus";
 
@@ -151,5 +152,25 @@ describe("formatHudStatus compact", () => {
     expect(formatHudStatus(base({ audioHint: "♪" }))).toContain("♪");
     expect(formatHudStatus(base({ audioHint: "mute" }))).toContain("mute");
     expect(formatHudStatus(base({ audioHint: "lluvia♪" }))).toContain("lluvia♪");
+  });
+
+  test("pacifyLeft 0 / ausente no pinta CALMA; > 0 sí", () => {
+    expect(formatPacifyHud(undefined)).toBeNull();
+    expect(formatPacifyHud(0)).toBeNull();
+    expect(formatPacifyHud(-1)).toBeNull();
+    expect(formatPacifyHud(8)).toBe("CALMA 8");
+    expect(formatPacifyHud(7.2)).toBe("CALMA 8");
+    expect(formatPacifyHud(0.4)).toBe("CALMA 1");
+
+    const bare = formatHudStatus(base());
+    expect(bare).not.toContain("CALMA");
+    expect(formatHudStatus(base({ pacifyLeft: 0 }))).not.toContain("CALMA");
+    expect(formatHudStatus(base({ pacifyLeft: 8 }))).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CALMA 8 · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(formatHudStatus(base({ pacifyLeft: 7.2 }))).toContain("CALMA 8");
+    expect(
+      formatHudStatus(base({ gameOver: true, pacifyLeft: 8 })),
+    ).not.toContain("CALMA");
   });
 });
