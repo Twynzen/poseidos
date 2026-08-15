@@ -220,6 +220,8 @@ export const POSSESSED_COLOR = 0x68347b;
 const POSSESSED_EMISSIVE = 0x1e0925;
 /** Color de la silueta fallback poseída (cabeza). 0x7a3d8a × 1.15/canal para leerse de noche. */
 export const POSSESSED_HEAD_COLOR = 0x8c469f;
+/** Emisivo de la silueta fallback poseída (cabeza). 0x2a1040 × 1.15/canal para leerse de noche. */
+export const POSSESSED_HEAD_EMISSIVE = 0x30124a;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -910,7 +912,7 @@ export function createWorldView(
   });
   const possessedHeadMat = new THREE.MeshStandardMaterial({
     color: POSSESSED_HEAD_COLOR,
-    emissive: 0x2a1040,
+    emissive: POSSESSED_HEAD_EMISSIVE,
     emissiveIntensity: 0.7,
     roughness: 0.45,
   });
