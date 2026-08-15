@@ -322,6 +322,8 @@ export const HOSTILE_BODY_WIDTH = 0.667;
 export const HOSTILE_BODY_HEIGHT = 1.288;
 /** Profundidad del torso fallback mute/poseído. 0.48 × 1.15 para leerse un poco más grueso de noche. */
 export const HOSTILE_BODY_DEPTH = 0.552;
+/** Tamaño del cubo de cabeza fallback poseído. 0.34 × 1.15 para leerse un poco más grande de noche. */
+export const HOSTILE_HEAD_SIZE = 0.391;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -995,7 +997,7 @@ export function createWorldView(
   }
 
   const hostileGeo = new THREE.BoxGeometry(HOSTILE_BODY_WIDTH, HOSTILE_BODY_HEIGHT, HOSTILE_BODY_DEPTH);
-  const hostileHeadGeo = new THREE.BoxGeometry(0.34, 0.34, 0.34);
+  const hostileHeadGeo = new THREE.BoxGeometry(HOSTILE_HEAD_SIZE, HOSTILE_HEAD_SIZE, HOSTILE_HEAD_SIZE);
   const hostileMat = new THREE.MeshStandardMaterial({
     color: HOSTILE_COLOR,
     roughness: 0.55,
