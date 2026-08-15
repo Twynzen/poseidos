@@ -1,5 +1,6 @@
 /**
  * Save/load mínimo (F2): player, needs, inventario, puertas, barricadas, contenedores, clock.
+ * F5: possession runtime (trust / TTLs de gates / mood bias) — campo opcional.
  * Headless (JSON string / storage abstracto) + localStorage en browser.
  */
 
@@ -13,6 +14,16 @@ import { makeBarricade, makeFloor } from "../world/tile";
 import type { ContainerRegistry } from "../items";
 import type { ItemId, ItemStack, Inventory } from "../items";
 import { ITEM_DEFS } from "../items";
+import type { TrustLedger } from "../possession/trust";
+import type { DialogueBehaviorGates } from "../possession/gates";
+import type { SpeechDirector } from "../possession/speech";
+import {
+  applyPossession,
+  capturePossession,
+  emptyPossession,
+  normalizePossession,
+  type SavePossession,
+} from "../possession/persist";
 
 export const SAVE_VERSION = 1;
 export const SAVE_SLOT_KEY = "poseidos.save.slot0";
@@ -54,6 +65,8 @@ export interface SaveGame {
   /** Barricadas colocadas (tiles floor → barricade). */
   barricades: SaveBarricade[];
   containers: SaveContainer[];
+  /** Runtime possession (opcional en saves antiguos → vacío). */
+  possession: SavePossession;
 }
 
 /** Storage mínimo (localStorage o memoria para tests). */
@@ -96,6 +109,12 @@ export interface SaveWorld {
   player: PlayerSim;
   map: TileMap;
   containers: ContainerRegistry;
+  /** Si falta, capture escribe possession vacío y apply no toca ledgers. */
+  possession?: {
+    trust: TrustLedger;
+    gates: DialogueBehaviorGates;
+    speech: SpeechDirector;
+  };
 }
 
 /** Captura estado mínimo serializable. */
@@ -134,6 +153,13 @@ export function captureSave(world: SaveWorld): SaveGame {
     doors,
     barricades,
     containers,
+    possession: world.possession
+      ? capturePossession(
+          world.possession.trust,
+          world.possession.gates,
+          world.possession.speech,
+        )
+      : emptyPossession(),
   };
 }
 
@@ -173,6 +199,15 @@ export function applySave(world: SaveWorld, save: SaveGame): void {
       maxSlots: sc.maxSlots,
       maxWeight: sc.maxWeight,
     });
+  }
+
+  if (world.possession) {
+    applyPossession(
+      world.possession.trust,
+      world.possession.gates,
+      world.possession.speech,
+      parsed.possession,
+    );
   }
 }
 
@@ -328,6 +363,19 @@ function normalizeSave(raw: unknown): SaveGame {
     };
   });
 
+  // Possession opcional (saves antiguos sin campo → vacío). v=1 se mantiene.
+  let possession: SavePossession = emptyPossession();
+  if (o.possession !== undefined) {
+    if (
+      !o.possession ||
+      typeof o.possession !== "object" ||
+      Array.isArray(o.possession)
+    ) {
+      throw new Error("save: possession inválida");
+    }
+    possession = normalizePossession(o.possession);
+  }
+
   return {
     v: SAVE_VERSION,
     clock: { elapsed: Math.max(0, clock.elapsed) },
@@ -345,5 +393,6 @@ function normalizeSave(raw: unknown): SaveGame {
     doors,
     barricades,
     containers,
+    possession,
   };
 }

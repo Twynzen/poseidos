@@ -346,6 +346,11 @@ export class Game {
       player: this.player,
       map: this.map,
       containers: this.containers,
+      possession: {
+        trust: this.trust,
+        gates: this.gates,
+        speech: this.speech,
+      },
     };
   }
 

@@ -83,3 +83,12 @@ export {
   type GateProposal,
   type DialogueGateContext,
 } from "./gates";
+
+export {
+  emptyPossession,
+  capturePossession,
+  normalizePossession,
+  applyPossession,
+  type SavePossession,
+  type SaveGateState,
+} from "./persist";

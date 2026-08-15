@@ -1,9 +1,10 @@
 # Status — Poseídos
 
 - **Fase actual:** 5/6 — gates diálogo→comportamiento (F5) + LLM stub; prep F7 MP stub
-- **Última rutina:** HUD muestra sesgo de lucidez (mood bias)
-- **Siguiente:** persistir trust / TTLs de gates / mood bias en F5/F9 (`save` no tiene possession hoy). No leftover visual knobs. No F7 transport. No widget nuevo.
+- **Última rutina:** F5/F9 persiste trust, TTLs de gates y mood bias
+- **Siguiente:** persistir memoria corta (`ShortMemory`) en F5/F9. No leftover visual knobs. No F7 transport. No widget nuevo.
 - **Qué quedó (esta corrida):**
+  - **F5/F9 possession runtime.** `capturePossession` / `applyPossession` serializan trust por id, TTLs de gates (pacify + speed-bump + mul) y mood bias. F5/F9 vía `save.ts` (campo opcional; v=1; save viejo sin possession = vacío). Clamp del ledger; tonos desconocidos se descartan; TTL ≤ 0 se omite. No burbujas / timers / LLM / memoria. HUD `CALMA`/`FURIA`/`LUCIDEZ` / umbrales / trust math / `formatGateLine` / preview-gate / worldView leftovers sin cambio.
   - **HUD: sesgo de lucidez.** `formatHudStatus` / `formatMoodBiasHud` pintan `LUCIDEZ` / `DEMONIO` / `RUEGA` (ES, un campo) si `speech.getMoodBias` tiene tono; omitido si null. Fuente: target del panel si abierto, si no `nearestPossessed` filtrado por bias (`DIALOGUE_REACH`). Sync en `refreshHud`. No es TTL. `CALMA N` / `FURIA N` / umbrales / trust / `formatGateLine` / preview-gate / CSS font / worldView leftovers sin cambio.
   - **HUD: TTL de speed-bump.** `formatHudStatus` / `formatSpeedBumpHud` pintan `FURIA N` (ceil, ES) si `speedBumpLeft > 0`; omitido si 0. Fuente: target del panel si abierto, si no `nearestPossessed` filtrado por `gates.speedBumpLeft > 0` (mismo reloj, `DIALOGUE_REACH`). Sync en `refreshHud`. `CALMA N` / umbrales / trust / `formatGateLine` / preview-gate / CSS font / worldView leftovers sin cambio.
   - **HUD: TTL de pacify.** `formatHudStatus` / `formatPacifyHud` pintan `CALMA N` (ceil, ES) si `pacifyLeft > 0`; omitido si 0. Fuente: target del panel si abierto, si no `nearestPossessed` filtrado por `gates.pacifiedLeft > 0` (mismo reloj, `DIALOGUE_REACH`). Sync en `refreshHud`. Umbrales / trust / `formatGateLine` / preview-gate / CSS font / worldView leftovers sin cambio.
@@ -549,6 +550,6 @@
 - **Controles:** WASD mover · **Shift correr** · **Espacio/V melee** · **X disparar** · E puerta/loot · G loot · **Shift+G stack** · **Q usar slot** (consumible seleccionado / lluvia outdoor) · **U tirar** · **Shift+U stack** · **U inv tirar** · **1-5 hotbar** (selección, highlight oro) · **rueda hotbar** (cicla slot, wrap) · **clic hotbar** · **arrastrar hotbar** · **doble clic usar** · **clic der. info** · **Shift+clic hotbar partir** · **Ctrl+clic hotbar juntar** · **clic inv usar** · **doble clic inv** · **arrastrar inv** · **clic der. inv** · **Shift+clic inv partir** · **Ctrl+clic inv juntar** · **I inventorio (panel; al empezar muestra kit inicial)** · B barricada · **C vendaje** · **H cocinar** · **T diálogo** (calmar / preguntar / amenazar / ofrecer comida / Distraer) · **L linterna** · **M mute ambient** · **+/- zoom** · R descanso/reinicio · **Z dormir** (cama o suelo indoor) · **F1 ayuda** · F5 guardar · F9 cargar · (boot) clic/Espacio saltar loading
 - **Fuera de este slice:** autogenerar modelos en Mesh2Motion (herramienta externa); WebSocket real; lobby UI browser; API LLM real; GTAO; samples de pisadas (sigue beep); samples ambient reales; samples combat reales (sigue beep); samples interact reales (sigue beep); samples speech reales (sigue beep); samples heartbeat reales (sigue beep)
 - **Dirección:** sandbox largo en Three.js (sim primero; render es vista); LLM solo stub/fallback; MP solo stub headless por ahora
-- **Siguiente subtarea concreta:** Persistir trust / TTLs de gates / mood bias en F5/F9 (`save` no tiene possession hoy). No leftover visual knobs. No F7 WebSocket. No widget nuevo.
+- **Siguiente subtarea concreta:** Persistir memoria corta (`ShortMemory`) en F5/F9. No leftover visual knobs. No F7 WebSocket. No widget nuevo.
 - **Bloqueos:** ninguno
 - **Entorno:** Bun; scripts `dev`, `build`, `test`
