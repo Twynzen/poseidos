@@ -20,7 +20,7 @@ export interface MarkerPalette {
 export const MARKER_PALETTE: Readonly<Record<MarkerRole, MarkerPalette>> = {
   player: {
     ring: 0x4392f4,
-    badge: 0x7eb6ef,
+    badge: 0x91d1ff,
     emissive: 0x1a4060,
     glyph: "●",
   },
