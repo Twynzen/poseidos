@@ -11,6 +11,8 @@ import {
   DIALOGUE_REACH,
   DialogueSession,
   ShortMemory,
+  formatMemorySummary,
+  MEMORY_SUMMARY_MAX_LEN,
   toneBiasFromEntries,
   applyDialogueChoice,
   applyDialogueChoiceAsync,
@@ -24,6 +26,7 @@ import {
   pickTone,
   StubLlmBridge,
   MemoryLlmFileIo,
+  formatLlmPrompt,
   resolveLineWithBridge,
   proposeDialogueGates,
   DialogueBehaviorGates,
@@ -42,6 +45,7 @@ import {
   capturePossession,
   normalizePossession,
   applyPossession,
+  type LlmAskSnapshot,
   type LlmBridge,
 } from "../src/possession";
 import { formatGateLine } from "../src/ui/dialoguePanel";
@@ -494,6 +498,43 @@ describe("short memory", () => {
     expect(mem.has("p")).toBe(false);
     expect(mem.ids()).toEqual([]);
   });
+
+  test("formatMemorySummary compacta intent/tono/delta; vacío → \"\"", () => {
+    expect(formatMemorySummary([])).toBe("");
+    const mem = new ShortMemory();
+    mem.remember("p", {
+      who: "player",
+      intent: "calmar",
+      trustDelta: 14,
+      tone: "ruega",
+    });
+    mem.remember("p", {
+      who: "player",
+      intent: "amenazar",
+      trustDelta: -20,
+      tone: "demonio",
+    });
+    const summary = formatMemorySummary(mem.recent("p"));
+    expect(summary).toContain("calmar");
+    expect(summary).toContain("ruega");
+    expect(summary).toContain("+14");
+    expect(summary).toContain("amenazar");
+    expect(summary).toContain("demonio");
+    expect(summary).toContain("-20");
+    expect(summary.length).toBeLessThanOrEqual(MEMORY_SUMMARY_MAX_LEN);
+  });
+
+  test("formatMemorySummary recorta a cap (~140) por recencia", () => {
+    const many = Array.from({ length: 8 }, () => ({
+      who: "player" as const,
+      intent: "preguntar" as const,
+      trustDelta: 6,
+      tone: "lucidez" as const,
+    }));
+    const summary = formatMemorySummary(many, 40);
+    expect(summary.length).toBeLessThanOrEqual(40);
+    expect(summary).toContain("preguntar");
+  });
 });
 
 describe("llm bridge stub", () => {
@@ -627,6 +668,144 @@ describe("llm bridge stub", () => {
     expect(asks).toBe(0);
     expect(u2.lineSource).toBe("bank");
     expect(LINE_BANK.demonio).toContain(u2.line);
+  });
+
+  test("formatLlmPrompt incluye intent, trust y memoria si hay", () => {
+    const bare = formatLlmPrompt({
+      tone: "lucidez",
+      intent: "preguntar",
+      trust: 56,
+    });
+    expect(bare).toContain("lucidez");
+    expect(bare).toContain("preguntar");
+    expect(bare).toContain("56");
+    expect(bare.toLowerCase()).not.toContain("memoria:");
+
+    const withMem = formatLlmPrompt({
+      tone: "ruega",
+      intent: "calmar",
+      trust: 64,
+      memorySummary: "calmar/ruega/+14",
+    });
+    expect(withMem).toContain("calmar");
+    expect(withMem).toContain("64");
+    expect(withMem).toContain("calmar/ruega/+14");
+  });
+
+  test("applyDialogueChoiceAsync rellena memorySummary tras remember(); vacío se omite", async () => {
+    const snaps: LlmAskSnapshot[] = [];
+    const bridge = new StubLlmBridge({
+      responder: (s) => {
+        snaps.push(s);
+        return null;
+      },
+    });
+    const ledger = new TrustLedger();
+    ledger.register("poss-sum", 50);
+    const mem = new ShortMemory();
+
+    const empty = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-sum",
+      "calmar",
+      seqRng([0]),
+      mem,
+      { enabled: true, bridge },
+    );
+    expect(empty.lineSource).toBe("bank");
+    expect(snaps[0]!.memorySummary ?? "").toBe("");
+    expect(snaps[0]!.prompt).toContain("calmar");
+    expect(snaps[0]!.prompt).toContain("64");
+
+    mem.remember("poss-sum", {
+      who: "player",
+      intent: "amenazar",
+      trustDelta: -20,
+      tone: "demonio",
+    });
+    const filled = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-sum",
+      "preguntar",
+      seqRng([0]),
+      mem,
+      { enabled: true, bridge },
+    );
+    expect(filled.trustAfter).toBe(ledger.get("poss-sum"));
+    expect(snaps[1]!.memorySummary).toBeTruthy();
+    expect(snaps[1]!.memorySummary).toContain("amenazar");
+    expect(snaps[1]!.memorySummary).toContain("demonio");
+    expect(snaps[1]!.memorySummary).toContain("-20");
+    expect(snaps[1]!.prompt).toContain("preguntar");
+    expect(snaps[1]!.prompt).toContain(String(snaps[1]!.trust));
+    expect(snaps[1]!.prompt).toContain(snaps[1]!.memorySummary!);
+  });
+
+  test("applyDialogueChoiceAsync sin memory: memorySummary omitido; prompt con intent/trust", async () => {
+    let seen: LlmAskSnapshot | undefined;
+    const bridge = new StubLlmBridge({
+      responder: (s) => {
+        seen = s;
+        return "línea stub";
+      },
+    });
+    const ledger = new TrustLedger();
+    ledger.register("poss-nomem", 50);
+    const r = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-nomem",
+      "ofrecer",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+    );
+    expect(r.lineSource).toBe("llm");
+    expect(seen!.memorySummary ?? "").toBe("");
+    expect(seen!.prompt).toContain("ofrecer");
+    expect(seen!.prompt).toContain(String(seen!.trust));
+    expect(seen!.intent).toBe("ofrecer");
+  });
+
+  test("StubLlmBridge file IO: body incluye memorySummary y prompt", async () => {
+    const files = new MemoryLlmFileIo();
+    const bridge = new StubLlmBridge({ files, timeoutMs: 80, pollMs: 5 });
+    const ledger = new TrustLedger();
+    ledger.register("poss-fio", 50);
+    const mem = new ShortMemory();
+    mem.remember("poss-fio", {
+      who: "player",
+      intent: "calmar",
+      trustDelta: 14,
+      tone: "ruega",
+    });
+    const askP = applyDialogueChoiceAsync(
+      ledger,
+      "poss-fio",
+      "preguntar",
+      seqRng([0]),
+      mem,
+      { enabled: true, bridge },
+    );
+    await new Promise((r) => setTimeout(r, 15));
+    expect(files.requests.size).toBe(1);
+    const reqId = [...files.requests.keys()][0]!;
+    const body = files.requests.get(reqId)!;
+    const parsed = JSON.parse(body) as {
+      memorySummary: string | null;
+      prompt: string | null;
+      intent: string | null;
+      trust: number | null;
+    };
+    expect(parsed.memorySummary).toContain("calmar");
+    expect(parsed.memorySummary).toContain("ruega");
+    expect(parsed.memorySummary).toContain("+14");
+    expect(parsed.prompt).toContain("preguntar");
+    expect(parsed.prompt).toContain(String(parsed.trust));
+    expect(parsed.intent).toBe("preguntar");
+    files.seedResponse(reqId, JSON.stringify({ line: "Desde el archivo con memoria." }));
+    const r = await askP;
+    expect(r.line).toBe("Desde el archivo con memoria.");
+    expect(r.lineSource).toBe("llm");
   });
 
   test("DEFAULT_CONFIG.llm.enabled es false", () => {
