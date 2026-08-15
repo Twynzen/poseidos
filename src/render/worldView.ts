@@ -342,6 +342,8 @@ export const DOOR_HEIGHT = 2.3;
 export const DOOR_BASE_Y = 1.15;
 /** Profundidad de la puerta. 0.18 × 1.15 para leerse un poco más gruesa de noche. */
 export const DOOR_DEPTH = 0.207;
+/** Offset X de la puerta abierta respecto al tile. 0.15 × 1.15 para sentarse un poco más lejos del quicio de noche. */
+export const DOOR_OPEN_X = 0.1725;
 /** Alto de la cama. 0.35 × 1.15 para leerse un poco más alta de noche. */
 export const BED_HEIGHT = 0.4025;
 /** Altura Y de la cama. 0.175 × 1.15 para sentarse un poco más alto de noche. */
@@ -1770,7 +1772,7 @@ export function createWorldView(
       mesh.material = open ? doorOpenMat : doorClosedMat;
       if (open) {
         mesh.rotation.y = Math.PI / 2;
-        mesh.position.set(tx + 0.15, DOOR_BASE_Y, ty + 0.5);
+        mesh.position.set(tx + DOOR_OPEN_X, DOOR_BASE_Y, ty + 0.5);
       } else {
         mesh.rotation.y = 0;
         mesh.position.set(tx + 0.5, DOOR_BASE_Y, ty + 0.5);
@@ -2234,7 +2236,7 @@ function fillTileContent(
     );
     if (tile.open) {
       door.rotation.y = Math.PI / 2;
-      door.position.set(x + 0.15, DOOR_BASE_Y, y + 0.5);
+      door.position.set(x + DOOR_OPEN_X, DOOR_BASE_Y, y + 0.5);
     } else {
       door.position.set(x + 0.5, DOOR_BASE_Y, y + 0.5);
     }
