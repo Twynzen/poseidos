@@ -3,7 +3,7 @@
  * F1 (showHelp) revela CONTROLS_HELP y tokens de debug (tile / chunks / fov).
  */
 
-import type { GateTag, PossessionTone } from "../possession";
+import type { GateTag, LineSource, PossessionTone } from "../possession";
 
 export const CONTROLS_HELP = [
   "Mover: WASD · Shift correr · +/- zoom",
@@ -49,6 +49,8 @@ export type HudStatusInput = {
   lastApplied?: readonly GateTag[] | null;
   /** Últimos tags rechazados del poseído relevante (`gates.lastRejected`). Vacío/omitido = no pintar. */
   lastRejected?: readonly GateTag[] | null;
+  /** Fuente de la última línea (`speech.getActive.lineSource`). Null/omitido = no pintar. */
+  lineSource?: LineSource | null;
   tileX: number;
   tileY: number;
   chunksLoaded: number;
@@ -149,6 +151,22 @@ export function formatLastRejectedHud(
   return `RECHAZO ${tags.join(",")}`;
 }
 
+const LINE_SOURCE_HUD: Record<LineSource, string> = {
+  llm: "STUB",
+  bank: "BANCO",
+};
+
+/**
+ * Fuente de la última línea. Token corto ES; oculto si no hay utterance / source.
+ * Distinto de CÓDIGO / RECHAZO / CALMA / FURIA / LUCIDEZ / MEMORIA.
+ */
+export function formatLineSourceHud(
+  source: LineSource | null | undefined,
+): string | null {
+  if (source == null) return null;
+  return LINE_SOURCE_HUD[source] ?? null;
+}
+
 /**
  * Formato compacto por defecto (sin muro WASD ni dump tile/chunks/fov).
  * Con showHelp: CONTROLS_HELP + línea de estado (debug tokens) + F1 cerrar.
@@ -176,6 +194,7 @@ export function formatHudStatus(input: HudStatusInput): string {
     formatMemoryToneHud(input.memoryTone),
     formatLastGateHud(input.lastApplied),
     formatLastRejectedHud(input.lastRejected),
+    formatLineSourceHud(input.lineSource),
     input.noiseHint?.trim() || null,
     input.invLine?.trim() || null,
     input.nearHint?.trim() || null,

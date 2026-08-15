@@ -30,6 +30,8 @@ export interface SpeechActive {
   line: string;
   tone: PossessionTone;
   trigger: SpeechTrigger;
+  /** Origen de la línea actual; omitido si no hay source. */
+  lineSource?: LineSource;
 }
 
 export interface SpeechDirectorOptions {
@@ -189,7 +191,7 @@ export class SpeechDirector {
       };
       st.speakGen += 1;
       const gen = st.speakGen;
-      st.current = { line, tone, trigger };
+      st.current = { line, tone, trigger, lineSource: "bank" };
       st.displayLeft = this.displayDuration;
       st.cooldownLeft =
         trigger === "see_player" ? this.seePlayerCooldown : this.cooldown;
@@ -238,7 +240,7 @@ export class SpeechDirector {
       trigger,
       lineSource,
     };
-    st.current = { line, tone, trigger };
+    st.current = { line, tone, trigger, lineSource };
     st.displayLeft = this.displayDuration;
     st.cooldownLeft = this.seePlayerCooldown;
     st.periodicLeft = this.nextPeriodic();
@@ -293,7 +295,7 @@ export class SpeechDirector {
         if (!line) return;
         const st = this.states.get(id);
         if (!st || st.speakGen !== gen || !st.current) return;
-        st.current = { ...st.current, line };
+        st.current = { ...st.current, line, lineSource: "llm" };
       } catch {
         // ignore — bubble ya tiene banco
       }
