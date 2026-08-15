@@ -69,9 +69,9 @@ describe("markers (badges + ground rings)", () => {
     expect(MARKER_PALETTE.door.glyph.length).toBeGreaterThan(0);
   });
 
-  test("paleta: bed púrpura sleep (anillo 0x7a6490, badge 0xa890b8, ▭)", () => {
+  test("paleta: bed púrpura sleep (anillo 0x8c73a6, badge 0xa890b8, ▭)", () => {
     const bed = paletteFor("bed");
-    expect(bed.ring).toBe(0x7a6490);
+    expect(bed.ring).toBe(0x8c73a6);
     expect(bed.badge).toBe(0xa890b8);
     expect(bed.emissive).toBe(0x201828);
     expect(bed.glyph).toBe("▭");
@@ -132,7 +132,7 @@ describe("markers (badges + ground rings)", () => {
     expect(MARKER_PALETTE.possessed.ring).toBe(0xa046d4);
     expect(MARKER_PALETTE.loot.ring).toBe(0xf4b843);
     expect(MARKER_PALETTE.door.ring).toBe(0x6a849c);
-    expect(MARKER_PALETTE.bed.ring).toBe(0x7a6490);
+    expect(MARKER_PALETTE.bed.ring).toBe(0x8c73a6);
     expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
   });
@@ -206,7 +206,7 @@ describe("markers (badges + ground rings)", () => {
     expect(MARKER_PALETTE.possessed.ring).toBe(0xa046d4);
     expect(MARKER_PALETTE.loot.ring).toBe(0xf4b843);
     expect(MARKER_PALETTE.door.ring).toBe(0x6a849c);
-    expect(MARKER_PALETTE.bed.ring).toBe(0x7a6490);
+    expect(MARKER_PALETTE.bed.ring).toBe(0x8c73a6);
     expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
   });
@@ -280,7 +280,7 @@ describe("markers (badges + ground rings)", () => {
     expect(MARKER_PALETTE.mute.ring).toBe(0xe14545);
     expect(MARKER_PALETTE.loot.ring).toBe(0xf4b843);
     expect(MARKER_PALETTE.door.ring).toBe(0x6a849c);
-    expect(MARKER_PALETTE.bed.ring).toBe(0x7a6490);
+    expect(MARKER_PALETTE.bed.ring).toBe(0x8c73a6);
     expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
   });
@@ -354,7 +354,7 @@ describe("markers (badges + ground rings)", () => {
     expect(MARKER_PALETTE.mute.ring).toBe(0xe14545);
     expect(MARKER_PALETTE.possessed.ring).toBe(0xa046d4);
     expect(MARKER_PALETTE.door.ring).toBe(0x6a849c);
-    expect(MARKER_PALETTE.bed.ring).toBe(0x7a6490);
+    expect(MARKER_PALETTE.bed.ring).toBe(0x8c73a6);
     expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
   });
@@ -428,7 +428,7 @@ describe("markers (badges + ground rings)", () => {
     expect(MARKER_PALETTE.mute.ring).toBe(0xe14545);
     expect(MARKER_PALETTE.possessed.ring).toBe(0xa046d4);
     expect(MARKER_PALETTE.loot.ring).toBe(0xf4b843);
-    expect(MARKER_PALETTE.bed.ring).toBe(0x7a6490);
+    expect(MARKER_PALETTE.bed.ring).toBe(0x8c73a6);
     expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
   });
@@ -479,6 +479,30 @@ describe("markers (badges + ground rings)", () => {
     expect(MARKER_PALETTE.loot.emissive).toBe(0x4a3712);
     expect(MARKER_PALETTE.bed.emissive).toBe(0x201828);
     expect(PLAYER_BADGE_OPACITY).toBe(0);
+    expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
+    expect(MARKER_RING_OPACITY).toBe(0.6877);
+  });
+
+  test("bed ring 0x7a6490 × 1.15/canal → 0x8c73a6; badge/emissive/glyph/other-roles/opacities iguales", () => {
+    const bed = paletteFor("bed");
+    expect(bed.ring).toBe(0x8c73a6);
+    const r = (bed.ring >> 16) & 0xff;
+    const g = (bed.ring >> 8) & 0xff;
+    const b = bed.ring & 0xff;
+    expect(r).toBe(0x8c);
+    expect(g).toBe(0x73);
+    expect(b).toBe(0xa6);
+    expect(Math.round((0x7a * 115) / 100)).toBe(r);
+    expect(Math.round((0x64 * 115) / 100)).toBe(g);
+    expect(Math.round((0x90 * 115) / 100)).toBe(b);
+    expect(bed.badge).toBe(0xa890b8);
+    expect(bed.emissive).toBe(0x201828);
+    expect(bed.glyph).toBe("▭");
+    expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
+    expect(MARKER_PALETTE.mute.ring).toBe(0xe14545);
+    expect(MARKER_PALETTE.possessed.ring).toBe(0xa046d4);
+    expect(MARKER_PALETTE.loot.ring).toBe(0xf4b843);
+    expect(MARKER_PALETTE.door.ring).toBe(0x6a849c);
     expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
   });
