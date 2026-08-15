@@ -7,6 +7,7 @@ export {
 export {
   createDialoguePanel,
   formatGateLine,
+  wouldRejectDialogueOption,
   type DialoguePanel,
   type DialoguePanelView,
   type GateLineInput,

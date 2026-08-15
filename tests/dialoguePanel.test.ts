@@ -8,6 +8,7 @@ import { afterEach, describe, expect, test } from "vitest";
 import {
   createDialoguePanel,
   formatGateLine,
+  wouldRejectDialogueOption,
 } from "../src/ui/dialoguePanel";
 
 describe("dialogue panel CSS", () => {
@@ -41,6 +42,29 @@ describe("formatGateLine", () => {
 
   test("both empty → null", () => {
     expect(formatGateLine({ applied: [], rejected: [] })).toBeNull();
+  });
+});
+
+describe("wouldRejectDialogueOption", () => {
+  test("calmar at low trust → blocked", () => {
+    expect(wouldRejectDialogueOption("calmar", 40)).toBe(true);
+  });
+
+  test("calmar at high trust → open", () => {
+    expect(wouldRejectDialogueOption("calmar", 70)).toBe(false);
+  });
+
+  test("ofrecer without food → blocked", () => {
+    expect(wouldRejectDialogueOption("ofrecer", 80, { hasOfferFood: false })).toBe(
+      true,
+    );
+    expect(wouldRejectDialogueOption("ofrecer", 80)).toBe(true);
+  });
+
+  test("ofrecer with food + enough trust → open", () => {
+    expect(wouldRejectDialogueOption("ofrecer", 50, { hasOfferFood: true })).toBe(
+      false,
+    );
   });
 });
 
@@ -101,6 +125,110 @@ describe("dialogue panel gate line", () => {
     const el = gateEl();
     expect(el.hidden).toBe(true);
     expect(el.textContent).toBe("");
+    panel.dispose();
+  });
+});
+
+describe("dialogue panel preview-gate", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  function mount() {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    return createDialoguePanel(root);
+  }
+
+  function btn(intent: string): HTMLButtonElement {
+    const el = root.querySelector<HTMLButtonElement>(
+      `button[data-intent="${intent}"]`,
+    );
+    expect(el).toBeTruthy();
+    return el!;
+  }
+
+  function expectBlocked(intent: string, blocked: boolean): void {
+    const el = btn(intent);
+    expect(el.disabled).toBe(blocked);
+    expect(el.classList.contains("dialogue-btn-blocked")).toBe(blocked);
+    expect(el.getAttribute("aria-disabled")).toBe(blocked ? "true" : "false");
+    expect(el.hidden).toBe(false);
+  }
+
+  test("marca calmar bloqueado a trust bajo y abierto a trust alto", () => {
+    const panel = mount();
+    panel.sync({
+      open: true,
+      targetId: "poss-1",
+      trust: 40,
+      lastLine: null,
+      lastTone: null,
+    });
+    expectBlocked("calmar", true);
+    panel.sync({
+      open: true,
+      targetId: "poss-1",
+      trust: 70,
+      lastLine: null,
+      lastTone: null,
+    });
+    expectBlocked("calmar", false);
+    panel.dispose();
+  });
+
+  test("marca ofrecer bloqueado sin comida y abierto con comida + trust", () => {
+    const panel = mount();
+    panel.sync({
+      open: true,
+      targetId: "poss-1",
+      trust: 80,
+      lastLine: null,
+      lastTone: null,
+      hasOfferFood: false,
+    });
+    expectBlocked("ofrecer", true);
+    panel.sync({
+      open: true,
+      targetId: "poss-1",
+      trust: 50,
+      lastLine: null,
+      lastTone: null,
+      hasOfferFood: true,
+    });
+    expectBlocked("ofrecer", false);
+    panel.dispose();
+  });
+
+  test("clic en botón bloqueado no aplica la elección", () => {
+    const panel = mount();
+    const seen: string[] = [];
+    panel.onChoice((intent) => {
+      seen.push(intent);
+    });
+    panel.sync({
+      open: true,
+      targetId: "poss-1",
+      trust: 40,
+      lastLine: null,
+      lastTone: null,
+      hasOfferFood: false,
+    });
+    btn("calmar").click();
+    btn("ofrecer").click();
+    expect(seen).toEqual([]);
+    panel.sync({
+      open: true,
+      targetId: "poss-1",
+      trust: 70,
+      lastLine: null,
+      lastTone: null,
+      hasOfferFood: true,
+    });
+    btn("calmar").click();
+    expect(seen).toEqual(["calmar"]);
     panel.dispose();
   });
 });

@@ -5,10 +5,16 @@
 
 import {
   DIALOGUE_OPTIONS,
+  optionFor,
   type DialogueIntent,
   type DialogueOption,
 } from "../possession/dialogue";
-import type { GateTag } from "../possession/gates";
+import {
+  proposeDialogueGates,
+  type DialogueGateContext,
+  type GateTag,
+} from "../possession/gates";
+import { clampTrust } from "../possession/trust";
 
 export interface DialoguePanelView {
   open: boolean;
@@ -19,6 +25,8 @@ export interface DialoguePanelView {
   lastTone: string | null;
   /** Último outcome de gates (formato corto; oculto si vacío). */
   gateLine?: string | null;
+  /** Inventario tiene canned_food o hot_meal (gate "ofrecer"). */
+  hasOfferFood?: boolean;
 }
 
 /** Input mínimo para la línea de gate (propuesta o applied/rejected). */
@@ -39,6 +47,22 @@ export function formatGateLine(input: GateLineInput): string | null {
     return "código: rechazado (trust)";
   }
   return null;
+}
+
+/**
+ * Preview: el código rechazaría este intent con el trust actual.
+ * trustAfter = clampTrust(trust + option.trustDelta), mismo clamp del ledger.
+ * Rechazado = rejected nonempty y applied vacío (mismo criterio que formatGateLine).
+ */
+export function wouldRejectDialogueOption(
+  intent: DialogueIntent,
+  trust: number,
+  ctx?: DialogueGateContext,
+): boolean {
+  const opt = optionFor(intent);
+  const trustAfter = clampTrust(trust + opt.trustDelta);
+  const proposal = proposeDialogueGates(intent, trustAfter, ctx);
+  return proposal.rejected.length > 0 && proposal.applied.length === 0;
 }
 
 export interface DialoguePanel {
@@ -96,7 +120,8 @@ export function createDialoguePanel(root: HTMLElement): DialoguePanel {
   const onClick = (e: Event) => {
     const t = e.target as HTMLElement | null;
     const btn = t?.closest?.("button[data-intent]") as HTMLButtonElement | null;
-    if (!btn || panel.hidden) return;
+    if (!btn || panel.hidden || btn.disabled) return;
+    if (btn.classList.contains("dialogue-btn-blocked")) return;
     const intent = btn.dataset.intent as DialogueIntent;
     if (intent && choiceHandler) choiceHandler(intent);
   };
@@ -128,6 +153,13 @@ export function createDialoguePanel(root: HTMLElement): DialoguePanel {
       } else {
         gateEl.hidden = true;
         gateEl.textContent = "";
+      }
+      const ctx = { hasOfferFood: view.hasOfferFood === true };
+      for (const [intent, btn] of buttons) {
+        const blocked = wouldRejectDialogueOption(intent, view.trust, ctx);
+        btn.disabled = blocked;
+        btn.classList.toggle("dialogue-btn-blocked", blocked);
+        btn.setAttribute("aria-disabled", blocked ? "true" : "false");
       }
     },
     onChoice(handler) {
