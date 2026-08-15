@@ -16,6 +16,15 @@ import {
 import { createNeighborhood } from "../src/world/neighborhood";
 import { PlayerSim } from "../src/actors/player";
 import { addItem, inventorySummary, totalQty, tryBuildBarricade } from "../src/items";
+import {
+  DialogueBehaviorGates,
+  SpeechDirector,
+  TrustLedger,
+  proposeDialogueGates,
+  GATE_CALM_PACIFY_TTL,
+  GATE_THREAT_SPEED_TTL,
+  GATE_THREAT_SPEED_MUL,
+} from "../src/possession";
 
 function makeWorld() {
   const neighborhood = createNeighborhood(48);
@@ -43,6 +52,7 @@ describe("save/load", () => {
     expect(save.containers.length).toBe(world.containers.list.length);
     expect(save.containers.some((c) => c.id === "cocina-spawn")).toBe(true);
     expect(save.containers.some((c) => c.id === "madera-spawn")).toBe(true);
+    expect(save.possession).toEqual({ trust: {}, gates: {}, moodBias: {} });
   });
 
   test("roundtrip JSON string restaura estado mutado", () => {
@@ -168,5 +178,54 @@ describe("save/load", () => {
     expect(world.map.getTile(24, 14)?.kind).toBe("barricade");
     expect(world.map.getTile(25, 14)?.kind).toBe("floor");
     expect(world.map.countKind("barricade")).toBe(1);
+  });
+
+  test("save antiguo sin possession sigue cargando (vacío)", () => {
+    const world = makeWorld();
+    const save = captureSave(world);
+    const { possession: _dropped, ...legacy } = save;
+    expect("possession" in legacy).toBe(false);
+    const loaded = loadFromString(JSON.stringify(legacy));
+    expect(loaded.v).toBe(SAVE_VERSION);
+    expect(loaded.possession).toEqual({ trust: {}, gates: {}, moodBias: {} });
+    applySave(world, loaded);
+    expect(world.player.x).toBeCloseTo(save.player.x);
+  });
+
+  test("roundtrip possession: trust + ambos TTLs + lucidez", () => {
+    const trust = new TrustLedger();
+    const gates = new DialogueBehaviorGates();
+    const speech = new SpeechDirector({}, () => 0.1);
+    trust.set("poss-a", 72);
+    gates.apply("poss-a", proposeDialogueGates("calmar", 72));
+    gates.apply("poss-a", proposeDialogueGates("amenazar", 20));
+    speech.setMoodBias("poss-a", "lucidez");
+
+    const world = { ...makeWorld(), possession: { trust, gates, speech } };
+    const json = saveToString(world);
+    const loaded = loadFromString(json);
+    expect(loaded.v).toBe(SAVE_VERSION);
+    expect(loaded.possession.trust["poss-a"]).toBe(72);
+    expect(loaded.possession.gates["poss-a"]).toEqual({
+      pacifiedLeft: GATE_CALM_PACIFY_TTL,
+      speedBumpLeft: GATE_THREAT_SPEED_TTL,
+      speedBumpMul: GATE_THREAT_SPEED_MUL,
+    });
+    expect(loaded.possession.moodBias["poss-a"]).toBe("lucidez");
+
+    const trust2 = new TrustLedger();
+    const gates2 = new DialogueBehaviorGates();
+    const speech2 = new SpeechDirector({}, () => 0.9);
+    trust2.set("leftover", 11);
+    applySave(
+      { ...makeWorld(), possession: { trust: trust2, gates: gates2, speech: speech2 } },
+      loaded,
+    );
+    expect(trust2.has("leftover")).toBe(false);
+    expect(trust2.get("poss-a")).toBe(72);
+    expect(gates2.pacifiedLeft("poss-a")).toBe(GATE_CALM_PACIFY_TTL);
+    expect(gates2.speedBumpLeft("poss-a")).toBe(GATE_THREAT_SPEED_TTL);
+    expect(gates2.speedBumpMul("poss-a")).toBe(GATE_THREAT_SPEED_MUL);
+    expect(speech2.getMoodBias("poss-a")).toBe("lucidez");
   });
 });

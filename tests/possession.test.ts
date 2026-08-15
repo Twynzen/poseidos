@@ -38,6 +38,9 @@ import {
   GATE_OFFER_PACIFY_TTL,
   GATE_DISTRACT_MIN_TRUST,
   GATE_DISTRACT_DEFAULT_OFFSET,
+  capturePossession,
+  normalizePossession,
+  applyPossession,
   type LlmBridge,
 } from "../src/possession";
 import { NoiseBus } from "../src/world/noise";
@@ -965,5 +968,68 @@ describe("dialogue → behavior gates", () => {
     expect(gates.mergeAttitude("poss-offer", ledger.attitude("poss-offer")).pacified).toBe(
       true,
     );
+  });
+});
+
+describe("possession persist (F5/F9)", () => {
+  test("roundtrip trust + ambos TTLs + lucidez; no persiste burbuja", () => {
+    const ledger = new TrustLedger();
+    const gates = new DialogueBehaviorGates();
+    const speech = new SpeechDirector({}, () => 0.2);
+    ledger.set("poss-a", 72);
+    gates.apply("poss-a", proposeDialogueGates("calmar", 72));
+    gates.apply("poss-a", proposeDialogueGates("amenazar", 20));
+    speech.setMoodBias("poss-a", "lucidez");
+    speech.forceSpeak("poss-a", "lucidez", "línea que no se guarda");
+
+    const snap = capturePossession(ledger, gates, speech);
+    expect(snap.trust["poss-a"]).toBe(72);
+    expect(snap.gates["poss-a"]).toEqual({
+      pacifiedLeft: GATE_CALM_PACIFY_TTL,
+      speedBumpLeft: GATE_THREAT_SPEED_TTL,
+      speedBumpMul: GATE_THREAT_SPEED_MUL,
+    });
+    expect(snap.moodBias["poss-a"]).toBe("lucidez");
+    expect(JSON.stringify(snap)).not.toContain("línea que no se guarda");
+
+    const ledger2 = new TrustLedger();
+    const gates2 = new DialogueBehaviorGates();
+    const speech2 = new SpeechDirector({}, () => 0.8);
+    ledger2.set("stale", 9);
+    gates2.apply("stale", proposeDialogueGates("calmar", 80));
+    applyPossession(ledger2, gates2, speech2, snap);
+    expect(ledger2.has("stale")).toBe(false);
+    expect(gates2.pacifiedLeft("stale")).toBe(0);
+    expect(ledger2.get("poss-a")).toBe(72);
+    expect(gates2.pacifiedLeft("poss-a")).toBe(GATE_CALM_PACIFY_TTL);
+    expect(gates2.speedBumpLeft("poss-a")).toBe(GATE_THREAT_SPEED_TTL);
+    expect(gates2.speedBumpMul("poss-a")).toBe(GATE_THREAT_SPEED_MUL);
+    expect(speech2.getMoodBias("poss-a")).toBe("lucidez");
+    expect(speech2.getActive("poss-a")).toBeNull();
+  });
+
+  test("normalize: clamp trust, descarta tono desconocido, omite TTL ≤ 0", () => {
+    const n = normalizePossession({
+      trust: { a: 150, b: -3, c: 50.4 },
+      gates: {
+        a: { pacifiedLeft: 8, speedBumpLeft: 0, speedBumpMul: 1.55 },
+        b: { pacifiedLeft: 0, speedBumpLeft: 0, speedBumpMul: 2 },
+        c: { pacifiedLeft: -1, speedBumpLeft: 3.5, speedBumpMul: 1.55 },
+      },
+      moodBias: { a: "lucidez", b: "scream", c: "demonio" },
+    });
+    expect(n.trust).toEqual({ a: 100, b: 0, c: 50 });
+    expect(n.gates.a).toEqual({
+      pacifiedLeft: 8,
+      speedBumpLeft: 0,
+      speedBumpMul: 1,
+    });
+    expect(n.gates.b).toBeUndefined();
+    expect(n.gates.c).toEqual({
+      pacifiedLeft: 0,
+      speedBumpLeft: 3.5,
+      speedBumpMul: 1.55,
+    });
+    expect(n.moodBias).toEqual({ a: "lucidez", c: "demonio" });
   });
 });

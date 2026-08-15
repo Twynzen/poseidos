@@ -116,6 +116,11 @@ export class SpeechDirector {
     return this.states.has(id);
   }
 
+  /** Ids registrados (mood bias / timers). */
+  ids(): readonly string[] {
+    return [...this.states.keys()];
+  }
+
   getActive(id: string): SpeechActive | null {
     return this.states.get(id)?.current ?? null;
   }

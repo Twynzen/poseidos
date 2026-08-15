@@ -203,6 +203,32 @@ export class DialogueBehaviorGates {
     this.states.delete(id);
   }
 
+  /** Ids con TTL activo. */
+  ids(): readonly string[] {
+    return [...this.states.keys()];
+  }
+
+  /**
+   * Restaura TTLs (F5/F9). Omite si ambos TTL ≤ 0.
+   * No mergea: reemplaza el estado de ese id.
+   */
+  restore(
+    id: string,
+    state: { pacifiedLeft: number; speedBumpLeft: number; speedBumpMul: number },
+  ): void {
+    const pacifiedLeft = Number.isFinite(state.pacifiedLeft)
+      ? Math.max(0, state.pacifiedLeft)
+      : 0;
+    const speedBumpLeft = Number.isFinite(state.speedBumpLeft)
+      ? Math.max(0, state.speedBumpLeft)
+      : 0;
+    if (pacifiedLeft <= 0 && speedBumpLeft <= 0) return;
+    const mulRaw = state.speedBumpMul;
+    const speedBumpMul =
+      speedBumpLeft > 0 && Number.isFinite(mulRaw) && mulRaw > 0 ? mulRaw : 1;
+    this.states.set(id, { pacifiedLeft, speedBumpLeft, speedBumpMul });
+  }
+
   pacifiedLeft(id: string): number {
     return this.states.get(id)?.pacifiedLeft ?? 0;
   }
