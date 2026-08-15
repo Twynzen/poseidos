@@ -98,6 +98,11 @@ export interface NetPossessionSnap {
    * Cap LLM_LINE_MAX_LEN via compactLlmLine.
    */
   line?: string;
+  /**
+   * Tono de la utterance actual ya validado (`speech.getActive.tone`);
+   * omitido si vacío / sin utterance. Distinto de moodBias, toneBias y line.
+   */
+  tone?: PossessionTone;
 }
 
 /**
@@ -122,7 +127,7 @@ export interface NetSnapshot {
   doors: NetDoorSnap[];
   barricades: NetBarricadeSnap[];
   containers: NetContainerSnap[];
-  /** Poseídos: trust + TTLs gated + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary / lineSource / line (default []). */
+  /** Poseídos: trust + TTLs gated + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary / lineSource / line / tone (default []). */
   possession: NetPossessionSnap[];
 }
 
