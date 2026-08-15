@@ -1026,6 +1026,69 @@ describe("dialogue → behavior gates", () => {
     gates.clear();
     expect(gates.lastApplied("q")).toEqual([]);
   });
+
+  test("apply records lastRejected; applied no pisa; clear/unregister limpian ambos", () => {
+    const gates = new DialogueBehaviorGates();
+    expect(gates.lastRejected("p")).toEqual([]);
+
+    const rejectedCalm = proposeDialogueGates("calmar", GATE_CALM_MIN_TRUST - 1);
+    expect(rejectedCalm.applied).toEqual([]);
+    expect(rejectedCalm.rejected).toEqual(["pacify_ttl"]);
+    gates.apply("p", rejectedCalm);
+    expect(gates.lastRejected("p")).toEqual(["pacify_ttl"]);
+    expect(gates.lastApplied("p")).toEqual([]);
+
+    const rejectedOffer = proposeDialogueGates("ofrecer", GATE_OFFER_MIN_TRUST);
+    expect(rejectedOffer.rejected).toEqual(["offer_food", "offer_pacify"]);
+    gates.apply("p", rejectedOffer);
+    expect(gates.lastRejected("p")).toEqual(["offer_food", "offer_pacify"]);
+
+    const applied = proposeDialogueGates("calmar", GATE_CALM_MIN_TRUST);
+    expect(applied.rejected).toEqual([]);
+    gates.apply("p", applied);
+    expect(gates.lastApplied("p")).toEqual(["pacify_ttl"]);
+    expect(gates.lastRejected("p")).toEqual(["offer_food", "offer_pacify"]);
+
+    const rejectedAsk = proposeDialogueGates("preguntar", GATE_ASK_MIN_TRUST - 1);
+    expect(rejectedAsk.applied).toEqual([]);
+    gates.apply("p", rejectedAsk);
+    expect(gates.lastRejected("p")).toEqual(["ask_heal", "ask_lucidity"]);
+    expect(gates.lastApplied("p")).toEqual(["pacify_ttl"]);
+
+    const rejectedThreat = proposeDialogueGates(
+      "amenazar",
+      GATE_THREAT_MAX_TRUST + 1,
+    );
+    gates.apply("q", rejectedThreat);
+    expect(gates.lastRejected("q")).toEqual([
+      "threat_noise",
+      "threat_chase",
+      "threat_speed",
+    ]);
+
+    gates.tick(GATE_CALM_PACIFY_TTL + 1);
+    expect(gates.pacifiedLeft("p")).toBe(0);
+    expect(gates.lastRejected("p")).toEqual(["ask_heal", "ask_lucidity"]);
+    expect(gates.lastApplied("p")).toEqual(["pacify_ttl"]);
+    expect(gates.lastRejected("q")).toEqual([
+      "threat_noise",
+      "threat_chase",
+      "threat_speed",
+    ]);
+
+    gates.unregister("p");
+    expect(gates.lastRejected("p")).toEqual([]);
+    expect(gates.lastApplied("p")).toEqual([]);
+    expect(gates.lastRejected("q")).toEqual([
+      "threat_noise",
+      "threat_chase",
+      "threat_speed",
+    ]);
+
+    gates.clear();
+    expect(gates.lastRejected("q")).toEqual([]);
+    expect(gates.lastApplied("q")).toEqual([]);
+  });
 });
 
 describe("possession persist (F5/F9)", () => {
@@ -1070,6 +1133,7 @@ describe("possession persist (F5/F9)", () => {
       "threat_chase",
       "threat_speed",
     ]);
+    expect(snap).not.toHaveProperty("lastRejected");
 
     const ledger2 = new TrustLedger();
     const gates2 = new DialogueBehaviorGates();
@@ -1211,6 +1275,27 @@ describe("possession persist (F5/F9)", () => {
     expect(n.lastApplied.junk).toBeUndefined();
     expect(n.lastApplied.unknownOnly).toBeUndefined();
     expect(n.lastApplied.keep).toEqual(["pacify_ttl", "offer_food"]);
+  });
+
+  test("capturePossession no serializa lastRejected", () => {
+    const gates = new DialogueBehaviorGates();
+    gates.apply("p", proposeDialogueGates("calmar", GATE_CALM_MIN_TRUST - 1));
+    expect(gates.lastRejected("p")).toEqual(["pacify_ttl"]);
+    const snap = capturePossession(
+      new TrustLedger(),
+      gates,
+      new SpeechDirector({}, () => 0.2),
+      new ShortMemory(),
+    );
+    expect(snap).not.toHaveProperty("lastRejected");
+    expect(Object.keys(snap)).toEqual([
+      "trust",
+      "gates",
+      "moodBias",
+      "memory",
+      "lastApplied",
+    ]);
+    expect(snap.lastApplied).toEqual({});
   });
 
   test("normalize memory: descarta intent/tono/who/delta inválidos; recorta capacity", () => {
