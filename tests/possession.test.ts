@@ -682,6 +682,7 @@ describe("llm bridge stub", () => {
     expect(bare.toLowerCase()).not.toContain("memoria:");
     expect(bare.toLowerCase()).not.toContain("gate:");
     expect(bare.toLowerCase()).not.toContain("aplicado:");
+    expect(bare.toLowerCase()).not.toContain("rechazado:");
 
     const withMem = formatLlmPrompt({
       tone: "ruega",
@@ -694,6 +695,7 @@ describe("llm bridge stub", () => {
     expect(withMem).toContain("calmar/ruega/+14");
     expect(withMem.toLowerCase()).not.toContain("gate:");
     expect(withMem.toLowerCase()).not.toContain("aplicado:");
+    expect(withMem.toLowerCase()).not.toContain("rechazado:");
   });
 
   test("formatLlmPrompt incluye Gate si hay; vacío se omite", () => {
@@ -715,6 +717,7 @@ describe("llm bridge stub", () => {
     });
     expect(emptyGate.toLowerCase()).not.toContain("gate:");
     expect(emptyGate.toLowerCase()).not.toContain("aplicado:");
+    expect(emptyGate.toLowerCase()).not.toContain("rechazado:");
   });
 
   test("formatLlmPrompt incluye Aplicado si hay lastApplied; vacío se omite", () => {
@@ -735,6 +738,7 @@ describe("llm bridge stub", () => {
       lastApplied: [],
     });
     expect(emptyApplied.toLowerCase()).not.toContain("aplicado:");
+    expect(emptyApplied.toLowerCase()).not.toContain("rechazado:");
 
     const unknownOnly = formatLlmPrompt({
       tone: "demonio",
@@ -743,6 +747,36 @@ describe("llm bridge stub", () => {
       lastApplied: ["not_a_tag" as unknown as "pacify_ttl"],
     });
     expect(unknownOnly.toLowerCase()).not.toContain("aplicado:");
+    expect(unknownOnly.toLowerCase()).not.toContain("rechazado:");
+  });
+
+  test("formatLlmPrompt incluye Rechazado si hay lastRejected; vacío se omite", () => {
+    const withRejected = formatLlmPrompt({
+      tone: "ruega",
+      intent: "calmar",
+      trust: 64,
+      lastRejected: ["pacify_ttl", "offer_food"],
+    });
+    expect(withRejected).toContain("Rechazado: pacify_ttl, offer_food");
+    expect(withRejected).toContain("calmar");
+    expect(withRejected).toContain("64");
+    expect(withRejected.toLowerCase()).not.toContain("aplicado:");
+
+    const emptyRejected = formatLlmPrompt({
+      tone: "lucidez",
+      intent: "preguntar",
+      trust: 56,
+      lastRejected: [],
+    });
+    expect(emptyRejected.toLowerCase()).not.toContain("rechazado:");
+
+    const unknownOnly = formatLlmPrompt({
+      tone: "demonio",
+      intent: "amenazar",
+      trust: 30,
+      lastRejected: ["not_a_tag" as unknown as "pacify_ttl"],
+    });
+    expect(unknownOnly.toLowerCase()).not.toContain("rechazado:");
   });
 
   test("applyDialogueChoiceAsync rellena memorySummary tras remember(); vacío se omite", async () => {
@@ -769,10 +803,12 @@ describe("llm bridge stub", () => {
     expect(snaps[0]!.memorySummary ?? "").toBe("");
     expect(snaps[0]!.gateLine ?? "").toBe("");
     expect(snaps[0]!.lastApplied ?? []).toEqual([]);
+    expect(snaps[0]!.lastRejected ?? []).toEqual([]);
     expect(snaps[0]!.prompt).toContain("calmar");
     expect(snaps[0]!.prompt).toContain("64");
     expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("gate:");
     expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("aplicado:");
+    expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("rechazado:");
 
     mem.remember("poss-sum", {
       who: "player",
@@ -820,11 +856,13 @@ describe("llm bridge stub", () => {
     expect(seen!.memorySummary ?? "").toBe("");
     expect(seen!.gateLine ?? "").toBe("");
     expect(seen!.lastApplied ?? []).toEqual([]);
+    expect(seen!.lastRejected ?? []).toEqual([]);
     expect(seen!.prompt).toContain("ofrecer");
     expect(seen!.prompt).toContain(String(seen!.trust));
     expect(seen!.intent).toBe("ofrecer");
     expect(seen!.prompt!.toLowerCase()).not.toContain("gate:");
     expect(seen!.prompt!.toLowerCase()).not.toContain("aplicado:");
+    expect(seen!.prompt!.toLowerCase()).not.toContain("rechazado:");
   });
 
   test("applyDialogueChoiceAsync rellena gateLine si se pasa; vacío se omite", async () => {
@@ -903,6 +941,7 @@ describe("llm bridge stub", () => {
     expect(snaps[4]!.gateLine).toBe("x".repeat(GATE_LINE_MAX_LEN));
     expect(snaps[4]!.gateLine!.length).toBe(GATE_LINE_MAX_LEN);
     expect(snaps[4]!.lastApplied ?? []).toEqual([]);
+    expect(snaps[4]!.lastRejected ?? []).toEqual([]);
   });
 
   test("applyDialogueChoiceAsync rellena lastApplied si se pasa; vacío/null se omite", async () => {
@@ -926,7 +965,9 @@ describe("llm bridge stub", () => {
     );
     expect(omitted.lineSource).toBe("bank");
     expect(snaps[0]!.lastApplied ?? []).toEqual([]);
+    expect(snaps[0]!.lastRejected ?? []).toEqual([]);
     expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("aplicado:");
+    expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("rechazado:");
 
     const empty = await applyDialogueChoiceAsync(
       ledger,
@@ -982,7 +1023,95 @@ describe("llm bridge stub", () => {
     );
     expect(unknownOnly.lineSource).toBe("bank");
     expect(snaps[4]!.lastApplied ?? []).toEqual([]);
+    expect(snaps[4]!.lastRejected ?? []).toEqual([]);
     expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("aplicado:");
+    expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("rechazado:");
+  });
+
+  test("applyDialogueChoiceAsync rellena lastRejected si se pasa; vacío/null se omite", async () => {
+    const snaps: LlmAskSnapshot[] = [];
+    const bridge = new StubLlmBridge({
+      responder: (s) => {
+        snaps.push(s);
+        return null;
+      },
+    });
+    const ledger = new TrustLedger();
+    ledger.register("poss-rejected", 50);
+
+    const omitted = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-rejected",
+      "calmar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+    );
+    expect(omitted.lineSource).toBe("bank");
+    expect(snaps[0]!.lastRejected ?? []).toEqual([]);
+    expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("rechazado:");
+
+    const empty = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-rejected",
+      "preguntar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      undefined,
+      undefined,
+      [],
+    );
+    expect(snaps[1]!.lastRejected ?? []).toEqual([]);
+    expect(snaps[1]!.prompt!.toLowerCase()).not.toContain("rechazado:");
+
+    const fromNull = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-rejected",
+      "distraer",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      undefined,
+      undefined,
+      null,
+    );
+    expect(snaps[2]!.lastRejected ?? []).toEqual([]);
+    expect(snaps[2]!.prompt!.toLowerCase()).not.toContain("rechazado:");
+
+    const filled = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-rejected",
+      "amenazar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      undefined,
+      undefined,
+      ["pacify_ttl", "not_a_real_tag", "offer_food", "pacify_ttl"],
+    );
+    expect(filled.tone).toBe("demonio");
+    expect(snaps[3]!.lastRejected).toEqual(["pacify_ttl", "offer_food"]);
+    expect(snaps[3]!.prompt).toContain("Rechazado: pacify_ttl, offer_food");
+    expect(snaps[3]!.prompt).toContain("amenazar");
+    expect(snaps[3]!.prompt).toContain(String(snaps[3]!.trust));
+    expect(snaps[3]!.lastApplied ?? []).toEqual([]);
+    expect(snaps[3]!.prompt!.toLowerCase()).not.toContain("aplicado:");
+
+    const unknownOnly = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-rejected",
+      "ofrecer",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      undefined,
+      undefined,
+      ["nope", "also_nope"],
+    );
+    expect(unknownOnly.lineSource).toBe("bank");
+    expect(snaps[4]!.lastRejected ?? []).toEqual([]);
+    expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("rechazado:");
   });
 
   test("StubLlmBridge file IO: body incluye memorySummary y prompt", async () => {
@@ -1016,6 +1145,7 @@ describe("llm bridge stub", () => {
       trust: number | null;
       gateLine: string | null;
       lastApplied: string[] | null;
+      lastRejected: string[] | null;
     };
     expect(parsed.memorySummary).toContain("calmar");
     expect(parsed.memorySummary).toContain("ruega");
@@ -1025,6 +1155,7 @@ describe("llm bridge stub", () => {
     expect(parsed.intent).toBe("preguntar");
     expect(parsed.gateLine).toBeNull();
     expect(parsed.lastApplied).toBeNull();
+    expect(parsed.lastRejected).toBeNull();
     files.seedResponse(reqId, JSON.stringify({ line: "Desde el archivo con memoria." }));
     const r = await askP;
     expect(r.line).toBe("Desde el archivo con memoria.");
@@ -1084,15 +1215,53 @@ describe("llm bridge stub", () => {
     const body = files.requests.get(reqId)!;
     const parsed = JSON.parse(body) as {
       lastApplied: string[] | null;
+      lastRejected: string[] | null;
       prompt: string | null;
       intent: string | null;
     };
     expect(parsed.lastApplied).toEqual(["pacify_ttl", "offer_pacify"]);
+    expect(parsed.lastRejected).toBeNull();
     expect(parsed.prompt).toContain("Aplicado: pacify_ttl, offer_pacify");
     expect(parsed.intent).toBe("calmar");
     files.seedResponse(reqId, JSON.stringify({ line: "Desde el archivo con aplicado." }));
     const r = await askP;
     expect(r.line).toBe("Desde el archivo con aplicado.");
+    expect(r.lineSource).toBe("llm");
+  });
+
+  test("StubLlmBridge file IO: body incluye lastRejected", async () => {
+    const files = new MemoryLlmFileIo();
+    const bridge = new StubLlmBridge({ files, timeoutMs: 80, pollMs: 5 });
+    const ledger = new TrustLedger();
+    ledger.register("poss-fio-rejected", 50);
+    const askP = applyDialogueChoiceAsync(
+      ledger,
+      "poss-fio-rejected",
+      "calmar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      undefined,
+      undefined,
+      ["pacify_ttl", "offer_pacify"],
+    );
+    await new Promise((r) => setTimeout(r, 15));
+    expect(files.requests.size).toBe(1);
+    const reqId = [...files.requests.keys()][0]!;
+    const body = files.requests.get(reqId)!;
+    const parsed = JSON.parse(body) as {
+      lastRejected: string[] | null;
+      lastApplied: string[] | null;
+      prompt: string | null;
+      intent: string | null;
+    };
+    expect(parsed.lastRejected).toEqual(["pacify_ttl", "offer_pacify"]);
+    expect(parsed.lastApplied).toBeNull();
+    expect(parsed.prompt).toContain("Rechazado: pacify_ttl, offer_pacify");
+    expect(parsed.intent).toBe("calmar");
+    files.seedResponse(reqId, JSON.stringify({ line: "Desde el archivo con rechazado." }));
+    const r = await askP;
+    expect(r.line).toBe("Desde el archivo con rechazado.");
     expect(r.lineSource).toBe("llm");
   });
 
