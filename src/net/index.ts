@@ -22,6 +22,7 @@ export {
   type MoodBiasLookup,
   type ToneBiasLookup,
   type MemorySummaryLookup,
+  type LineSourceLookup,
 } from "./snapshotPossession";
 
 export {

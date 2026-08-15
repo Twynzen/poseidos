@@ -1,6 +1,6 @@
 /**
  * Collector possession gated → snapshot wire F7.
- * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary); no intents crudos.
+ * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary / lineSource); no intents crudos.
  */
 import {
   isPacified,
@@ -11,7 +11,7 @@ import {
   compactKnownGateTags,
   type DialogueBehaviorGates,
 } from "../possession/gates";
-import { compactMoodBias } from "../possession/llmBridge";
+import { compactMoodBias, type LineSource } from "../possession/llmBridge";
 import {
   formatMemorySummary,
   type MemoryEntry,
@@ -32,6 +32,15 @@ export type ToneBiasLookup =
 export type MemorySummaryLookup =
   | ((id: string) => string | readonly MemoryEntry[] | null | undefined)
   | { recent(id: string): readonly MemoryEntry[] | null | undefined };
+
+/** Fuente opcional de origen ya validado (`speech.getActive.lineSource`). */
+export type LineSourceLookup =
+  | ((id: string) => LineSource | string | null | undefined)
+  | {
+      getActive(
+        id: string,
+      ): { lineSource?: LineSource | string | null } | null | undefined;
+    };
 
 function readMoodBias(
   source: MoodBiasLookup | undefined,
@@ -67,12 +76,30 @@ function readMemorySummary(
   return formatMemorySummary(raw);
 }
 
+/** Fuente ya validada; vacío / desconocido / sin utterance se omite. No mapea STUB/BANCO. */
+function compactLineSource(raw?: string | null): LineSource | "" {
+  if (typeof raw !== "string") return "";
+  const t = raw.trim();
+  return t === "llm" || t === "bank" ? t : "";
+}
+
+function readLineSource(
+  source: LineSourceLookup | undefined,
+  id: string,
+): LineSource | "" {
+  if (!source) return "";
+  const raw =
+    typeof source === "function" ? source(id) : source.getActive(id)?.lineSource;
+  return compactLineSource(raw);
+}
+
 /**
  * Serializa estado gated de poseídos.
  * `hostileIds` = ids a incluir; si se omite, todos los del ledger.
  * `moodBiasOf` = getter o SpeechDirector; si se omite, no se pinta moodBias.
  * `toneBiasOf` = getter o ShortMemory; si se omite, no se pinta toneBias.
  * `memoryOf` = getter o ShortMemory; si se omite, no se pinta memorySummary.
+ * `lineSourceOf` = getter o SpeechDirector; si se omite, no se pinta lineSource.
  */
 export function collectPossessionFrom(
   ledger: TrustLedger,
@@ -81,6 +108,7 @@ export function collectPossessionFrom(
   moodBiasOf?: MoodBiasLookup,
   toneBiasOf?: ToneBiasLookup,
   memoryOf?: MemorySummaryLookup,
+  lineSourceOf?: LineSourceLookup,
 ): NetPossessionSnap[] {
   const ids = hostileIds ?? ledger.ids();
   const out: NetPossessionSnap[] = [];
@@ -96,6 +124,7 @@ export function collectPossessionFrom(
     const moodBias = readMoodBias(moodBiasOf, id);
     const toneBias = readToneBias(toneBiasOf, id);
     const memorySummary = readMemorySummary(memoryOf, id);
+    const lineSource = readLineSource(lineSourceOf, id);
     out.push({
       id,
       trust,
@@ -109,6 +138,7 @@ export function collectPossessionFrom(
       ...(moodBias ? { moodBias } : {}),
       ...(toneBias ? { toneBias } : {}),
       ...(memorySummary ? { memorySummary } : {}),
+      ...(lineSource ? { lineSource } : {}),
     });
   }
   return out;
