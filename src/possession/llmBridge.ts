@@ -169,6 +169,21 @@ function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+/**
+ * Prompt corto ES/neutral a partir de campos ya validados del snapshot.
+ * No inventa un segundo tipo: Pick de LlmAskSnapshot.
+ */
+export function formatLlmPrompt(
+  fields: Pick<LlmAskSnapshot, "tone" | "intent" | "trust" | "memorySummary">,
+): string {
+  const bits = [`Tono: ${fields.tone}`];
+  if (fields.intent) bits.push(`Intent: ${fields.intent}`);
+  if (fields.trust !== undefined) bits.push(`Trust: ${fields.trust}`);
+  const mem = fields.memorySummary?.trim();
+  if (mem) bits.push(`Memoria: ${mem}`);
+  return bits.join(". ") + ".";
+}
+
 export interface ResolveLineOptions {
   enabled: boolean;
   bridge?: LlmBridge | null;

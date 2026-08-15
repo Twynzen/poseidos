@@ -46,7 +46,9 @@ export {
 
 export {
   MEMORY_CAPACITY,
+  MEMORY_SUMMARY_MAX_LEN,
   ShortMemory,
+  formatMemorySummary,
   toneBiasFromEntries,
   type MemoryEntry,
 } from "./memory";
@@ -54,6 +56,7 @@ export {
 export {
   StubLlmBridge,
   MemoryLlmFileIo,
+  formatLlmPrompt,
   resolveLineWithBridge,
   type LlmAskSnapshot,
   type LlmBridge,

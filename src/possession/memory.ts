@@ -7,6 +7,8 @@ import type { DialogueIntent } from "./dialogue";
 import type { PossessionTone } from "./lineBank";
 
 export const MEMORY_CAPACITY = 5;
+/** Cap compacto para el stub LLM (cabe en LlmAskSnapshot.memorySummary). */
+export const MEMORY_SUMMARY_MAX_LEN = 140;
 
 export interface MemoryEntry {
   /** Interlocutor (hoy: "player"). */
@@ -23,6 +25,35 @@ const INTENT_TONE: Record<DialogueIntent, PossessionTone> = {
   ofrecer: "ruega",
   distraer: "demonio",
 };
+
+/**
+ * Resumen compacto de ShortMemory.recent para el stub LLM.
+ * Reusa intent / tone / trustDelta; vacío → "". Recorta por recencia si excede el cap.
+ */
+export function formatMemorySummary(
+  entries: ReadonlyArray<MemoryEntry>,
+  maxLen: number = MEMORY_SUMMARY_MAX_LEN,
+): string {
+  if (entries.length === 0) return "";
+  const cap = Math.max(1, maxLen);
+  const parts: string[] = [];
+  for (const e of entries) {
+    const delta =
+      e.trustDelta > 0 ? `+${e.trustDelta}` : `${e.trustDelta}`;
+    parts.push(`${e.intent}/${e.tone}/${delta}`);
+  }
+  // Más recientes primero si hay que recortar.
+  let keep = parts;
+  let out = keep.join(" · ");
+  while (out.length > cap && keep.length > 1) {
+    keep = keep.slice(1);
+    out = keep.join(" · ");
+  }
+  if (out.length > cap) {
+    return out.slice(0, cap);
+  }
+  return out;
+}
 
 /** Tono sugerido a partir de entradas recientes (recencia ponderada). */
 export function toneBiasFromEntries(

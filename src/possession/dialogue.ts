@@ -5,8 +5,9 @@
 
 import { pickLine, type PossessionTone } from "./lineBank";
 import { TrustLedger } from "./trust";
-import type { ShortMemory } from "./memory";
+import { formatMemorySummary, type ShortMemory } from "./memory";
 import {
+  formatLlmPrompt,
   resolveLineWithBridge,
   type LlmBridge,
   type LineSource,
@@ -167,16 +168,25 @@ export async function applyDialogueChoiceAsync(
   const opt = optionFor(intent);
   const trustBefore = ledger.get(entityId);
   const trustAfter = ledger.adjust(entityId, opt.trustDelta);
+  const memorySummary = formatMemorySummary(memory?.recent(entityId) ?? []);
+  const snapshot = {
+    entityId,
+    tone: opt.tone,
+    trigger: "dialogue",
+    intent,
+    trust: trustAfter,
+    ...(memorySummary ? { memorySummary } : {}),
+    prompt: formatLlmPrompt({
+      tone: opt.tone,
+      intent,
+      trust: trustAfter,
+      ...(memorySummary ? { memorySummary } : {}),
+    }),
+  };
   const resolved = await resolveLineWithBridge({
     enabled: llm?.enabled ?? false,
     bridge: llm?.bridge ?? null,
-    snapshot: {
-      entityId,
-      tone: opt.tone,
-      trigger: "dialogue",
-      intent,
-      trust: trustAfter,
-    },
+    snapshot,
     fallback: () => pickLine(opt.tone, rng),
   });
   memory?.remember(entityId, {
