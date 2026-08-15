@@ -91,6 +91,7 @@ import {
   stepHotbarIndex,
   swapHotbarStacks,
   formatHudStatus,
+  formatGateLine,
   HIT_FLASH_PEAK,
   createHitFlash,
   triggerHitFlash,
@@ -181,6 +182,7 @@ export class Game {
   private readonly hitFlash: HitFlash;
   private dialogueLastLine: string | null = null;
   private dialogueLastTone: string | null = null;
+  private dialogueGateLine: string | null = null;
   private noise: NoiseBus;
   private view: WorldView;
   private readonly input: Input;
@@ -325,6 +327,7 @@ export class Game {
     this.dialogue.close();
     this.dialogueLastLine = null;
     this.dialogueLastTone = null;
+    this.dialogueGateLine = null;
     for (const s of defaultHostileSpawns()) {
       this.hostiles.add(s.id, s.x, s.y);
     }
@@ -554,6 +557,7 @@ export class Game {
       trust: id ? this.trust.get(id) : 50,
       lastLine: open ? this.dialogueLastLine : null,
       lastTone: open ? this.dialogueLastTone : null,
+      gateLine: open ? this.dialogueGateLine : null,
     });
   }
 
@@ -645,6 +649,7 @@ export class Game {
     if (bias && !proposal.lucidityBoost) this.speech.setMoodBias(id, bias);
     this.dialogueLastLine = result.line;
     this.dialogueLastTone = result.tone;
+    this.dialogueGateLine = formatGateLine(proposal);
     const sign = result.trustDelta >= 0 ? "+" : "";
     let gateHint =
       proposal.applied.length > 0
@@ -668,6 +673,7 @@ export class Game {
       this.dialogue.close();
       this.dialogueLastLine = null;
       this.dialogueLastTone = null;
+      this.dialogueGateLine = null;
       this.syncDialoguePanel();
       return;
     }
@@ -686,6 +692,7 @@ export class Game {
     this.dialogue.begin(near.id);
     this.dialogueLastLine = null;
     this.dialogueLastTone = null;
+    this.dialogueGateLine = null;
     this.lastLootMsg = `diálogo ${near.id}`;
     this.hudAcc = 1;
     this.syncDialoguePanel();
@@ -1064,6 +1071,7 @@ export class Game {
             this.dialogue.close();
             this.dialogueLastLine = null;
             this.dialogueLastTone = null;
+            this.dialogueGateLine = null;
           }
         }
         this.showNoiseRing(this.noise.emitAttack(this.player.x, this.player.y));
@@ -1106,6 +1114,7 @@ export class Game {
               this.dialogue.close();
               this.dialogueLastLine = null;
               this.dialogueLastTone = null;
+              this.dialogueGateLine = null;
             }
           }
         }
@@ -1331,6 +1340,7 @@ export class Game {
       this.dialogue.close();
       this.dialogueLastLine = null;
       this.dialogueLastTone = null;
+      this.dialogueGateLine = null;
     }
     if (this.dialogue.open) {
       this.dialogue.validate(
@@ -1342,6 +1352,7 @@ export class Game {
       if (!this.dialogue.open) {
         this.dialogueLastLine = null;
         this.dialogueLastTone = null;
+        this.dialogueGateLine = null;
       }
     }
     if (this.input.consumeFlashlightToggle()) {

@@ -8,6 +8,7 @@ import {
   type DialogueIntent,
   type DialogueOption,
 } from "../possession/dialogue";
+import type { GateTag } from "../possession/gates";
 
 export interface DialoguePanelView {
   open: boolean;
@@ -16,6 +17,28 @@ export interface DialoguePanelView {
   /** Última línea del poseído tras elegir (opcional). */
   lastLine: string | null;
   lastTone: string | null;
+  /** Último outcome de gates (formato corto; oculto si vacío). */
+  gateLine?: string | null;
+}
+
+/** Input mínimo para la línea de gate (propuesta o applied/rejected). */
+export interface GateLineInput {
+  applied: readonly GateTag[];
+  rejected: readonly GateTag[];
+}
+
+/**
+ * Línea corta ES: el código aplicó o rechazó el gate.
+ * applied nonempty gana; solo rejected → trust; ambos vacíos → null.
+ */
+export function formatGateLine(input: GateLineInput): string | null {
+  if (input.applied.length > 0) {
+    return `código: aplicado (${input.applied.join(", ")})`;
+  }
+  if (input.rejected.length > 0) {
+    return "código: rechazado (trust)";
+  }
+  return null;
 }
 
 export interface DialoguePanel {
@@ -43,6 +66,10 @@ export function createDialoguePanel(root: HTMLElement): DialoguePanel {
   reply.className = "dialogue-reply";
   reply.hidden = true;
 
+  const gateEl = document.createElement("div");
+  gateEl.className = "dialogue-gate";
+  gateEl.hidden = true;
+
   const opts = document.createElement("div");
   opts.className = "dialogue-options";
 
@@ -61,7 +88,7 @@ export function createDialoguePanel(root: HTMLElement): DialoguePanel {
     buttons.set(opt.intent, btn);
   }
 
-  panel.append(head, trustEl, reply, opts, hint);
+  panel.append(head, trustEl, reply, gateEl, opts, hint);
   root.appendChild(panel);
 
   let choiceHandler: ((intent: DialogueIntent) => void) | null = null;
@@ -93,6 +120,14 @@ export function createDialoguePanel(root: HTMLElement): DialoguePanel {
       } else {
         reply.hidden = true;
         reply.textContent = "";
+      }
+      const gateLine = view.gateLine ?? null;
+      if (gateLine) {
+        gateEl.hidden = false;
+        gateEl.textContent = gateLine;
+      } else {
+        gateEl.hidden = true;
+        gateEl.textContent = "";
       }
     },
     onChoice(handler) {
