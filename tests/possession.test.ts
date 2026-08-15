@@ -681,6 +681,7 @@ describe("llm bridge stub", () => {
     expect(bare).toContain("56");
     expect(bare.toLowerCase()).not.toContain("memoria:");
     expect(bare.toLowerCase()).not.toContain("gate:");
+    expect(bare.toLowerCase()).not.toContain("aplicado:");
 
     const withMem = formatLlmPrompt({
       tone: "ruega",
@@ -692,6 +693,7 @@ describe("llm bridge stub", () => {
     expect(withMem).toContain("64");
     expect(withMem).toContain("calmar/ruega/+14");
     expect(withMem.toLowerCase()).not.toContain("gate:");
+    expect(withMem.toLowerCase()).not.toContain("aplicado:");
   });
 
   test("formatLlmPrompt incluye Gate si hay; vacío se omite", () => {
@@ -712,6 +714,35 @@ describe("llm bridge stub", () => {
       gateLine: "   ",
     });
     expect(emptyGate.toLowerCase()).not.toContain("gate:");
+    expect(emptyGate.toLowerCase()).not.toContain("aplicado:");
+  });
+
+  test("formatLlmPrompt incluye Aplicado si hay lastApplied; vacío se omite", () => {
+    const withApplied = formatLlmPrompt({
+      tone: "ruega",
+      intent: "calmar",
+      trust: 64,
+      lastApplied: ["pacify_ttl", "offer_food"],
+    });
+    expect(withApplied).toContain("Aplicado: pacify_ttl, offer_food");
+    expect(withApplied).toContain("calmar");
+    expect(withApplied).toContain("64");
+
+    const emptyApplied = formatLlmPrompt({
+      tone: "lucidez",
+      intent: "preguntar",
+      trust: 56,
+      lastApplied: [],
+    });
+    expect(emptyApplied.toLowerCase()).not.toContain("aplicado:");
+
+    const unknownOnly = formatLlmPrompt({
+      tone: "demonio",
+      intent: "amenazar",
+      trust: 30,
+      lastApplied: ["not_a_tag" as unknown as "pacify_ttl"],
+    });
+    expect(unknownOnly.toLowerCase()).not.toContain("aplicado:");
   });
 
   test("applyDialogueChoiceAsync rellena memorySummary tras remember(); vacío se omite", async () => {
@@ -737,9 +768,11 @@ describe("llm bridge stub", () => {
     expect(empty.lineSource).toBe("bank");
     expect(snaps[0]!.memorySummary ?? "").toBe("");
     expect(snaps[0]!.gateLine ?? "").toBe("");
+    expect(snaps[0]!.lastApplied ?? []).toEqual([]);
     expect(snaps[0]!.prompt).toContain("calmar");
     expect(snaps[0]!.prompt).toContain("64");
     expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("gate:");
+    expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("aplicado:");
 
     mem.remember("poss-sum", {
       who: "player",
@@ -786,10 +819,12 @@ describe("llm bridge stub", () => {
     expect(r.lineSource).toBe("llm");
     expect(seen!.memorySummary ?? "").toBe("");
     expect(seen!.gateLine ?? "").toBe("");
+    expect(seen!.lastApplied ?? []).toEqual([]);
     expect(seen!.prompt).toContain("ofrecer");
     expect(seen!.prompt).toContain(String(seen!.trust));
     expect(seen!.intent).toBe("ofrecer");
     expect(seen!.prompt!.toLowerCase()).not.toContain("gate:");
+    expect(seen!.prompt!.toLowerCase()).not.toContain("aplicado:");
   });
 
   test("applyDialogueChoiceAsync rellena gateLine si se pasa; vacío se omite", async () => {
@@ -867,6 +902,87 @@ describe("llm bridge stub", () => {
     );
     expect(snaps[4]!.gateLine).toBe("x".repeat(GATE_LINE_MAX_LEN));
     expect(snaps[4]!.gateLine!.length).toBe(GATE_LINE_MAX_LEN);
+    expect(snaps[4]!.lastApplied ?? []).toEqual([]);
+  });
+
+  test("applyDialogueChoiceAsync rellena lastApplied si se pasa; vacío/null se omite", async () => {
+    const snaps: LlmAskSnapshot[] = [];
+    const bridge = new StubLlmBridge({
+      responder: (s) => {
+        snaps.push(s);
+        return null;
+      },
+    });
+    const ledger = new TrustLedger();
+    ledger.register("poss-applied", 50);
+
+    const omitted = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-applied",
+      "calmar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+    );
+    expect(omitted.lineSource).toBe("bank");
+    expect(snaps[0]!.lastApplied ?? []).toEqual([]);
+    expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("aplicado:");
+
+    const empty = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-applied",
+      "preguntar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      undefined,
+      [],
+    );
+    expect(snaps[1]!.lastApplied ?? []).toEqual([]);
+    expect(snaps[1]!.prompt!.toLowerCase()).not.toContain("aplicado:");
+
+    const fromNull = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-applied",
+      "distraer",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      undefined,
+      null,
+    );
+    expect(snaps[2]!.lastApplied ?? []).toEqual([]);
+    expect(snaps[2]!.prompt!.toLowerCase()).not.toContain("aplicado:");
+
+    const filled = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-applied",
+      "amenazar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      undefined,
+      ["pacify_ttl", "not_a_real_tag", "offer_food", "pacify_ttl"],
+    );
+    expect(filled.tone).toBe("demonio");
+    expect(snaps[3]!.lastApplied).toEqual(["pacify_ttl", "offer_food"]);
+    expect(snaps[3]!.prompt).toContain("Aplicado: pacify_ttl, offer_food");
+    expect(snaps[3]!.prompt).toContain("amenazar");
+    expect(snaps[3]!.prompt).toContain(String(snaps[3]!.trust));
+
+    const unknownOnly = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-applied",
+      "ofrecer",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      undefined,
+      ["nope", "also_nope"],
+    );
+    expect(unknownOnly.lineSource).toBe("bank");
+    expect(snaps[4]!.lastApplied ?? []).toEqual([]);
+    expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("aplicado:");
   });
 
   test("StubLlmBridge file IO: body incluye memorySummary y prompt", async () => {
@@ -899,6 +1015,7 @@ describe("llm bridge stub", () => {
       intent: string | null;
       trust: number | null;
       gateLine: string | null;
+      lastApplied: string[] | null;
     };
     expect(parsed.memorySummary).toContain("calmar");
     expect(parsed.memorySummary).toContain("ruega");
@@ -907,6 +1024,7 @@ describe("llm bridge stub", () => {
     expect(parsed.prompt).toContain(String(parsed.trust));
     expect(parsed.intent).toBe("preguntar");
     expect(parsed.gateLine).toBeNull();
+    expect(parsed.lastApplied).toBeNull();
     files.seedResponse(reqId, JSON.stringify({ line: "Desde el archivo con memoria." }));
     const r = await askP;
     expect(r.line).toBe("Desde el archivo con memoria.");
@@ -942,6 +1060,39 @@ describe("llm bridge stub", () => {
     files.seedResponse(reqId, JSON.stringify({ line: "Desde el archivo con gate." }));
     const r = await askP;
     expect(r.line).toBe("Desde el archivo con gate.");
+    expect(r.lineSource).toBe("llm");
+  });
+
+  test("StubLlmBridge file IO: body incluye lastApplied", async () => {
+    const files = new MemoryLlmFileIo();
+    const bridge = new StubLlmBridge({ files, timeoutMs: 80, pollMs: 5 });
+    const ledger = new TrustLedger();
+    ledger.register("poss-fio-applied", 50);
+    const askP = applyDialogueChoiceAsync(
+      ledger,
+      "poss-fio-applied",
+      "calmar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      undefined,
+      ["pacify_ttl", "offer_pacify"],
+    );
+    await new Promise((r) => setTimeout(r, 15));
+    expect(files.requests.size).toBe(1);
+    const reqId = [...files.requests.keys()][0]!;
+    const body = files.requests.get(reqId)!;
+    const parsed = JSON.parse(body) as {
+      lastApplied: string[] | null;
+      prompt: string | null;
+      intent: string | null;
+    };
+    expect(parsed.lastApplied).toEqual(["pacify_ttl", "offer_pacify"]);
+    expect(parsed.prompt).toContain("Aplicado: pacify_ttl, offer_pacify");
+    expect(parsed.intent).toBe("calmar");
+    files.seedResponse(reqId, JSON.stringify({ line: "Desde el archivo con aplicado." }));
+    const r = await askP;
+    expect(r.line).toBe("Desde el archivo con aplicado.");
     expect(r.lineSource).toBe("llm");
   });
 

@@ -6,7 +6,7 @@
 import { pickLine, type PossessionTone } from "./lineBank";
 import { TrustLedger } from "./trust";
 import { formatMemorySummary, type ShortMemory } from "./memory";
-import { GATE_LINE_MAX_LEN } from "./gates";
+import { GATE_LINE_MAX_LEN, compactKnownGateTags } from "./gates";
 import {
   formatLlmPrompt,
   resolveLineWithBridge,
@@ -165,6 +165,7 @@ export async function applyDialogueChoiceAsync(
   memory?: ShortMemory,
   llm?: DialogueLlmOpts,
   gateLine?: string | null,
+  lastApplied?: readonly string[] | null,
 ): Promise<DialogueResult> {
   ledger.register(entityId);
   const opt = optionFor(intent);
@@ -172,6 +173,7 @@ export async function applyDialogueChoiceAsync(
   const trustAfter = ledger.adjust(entityId, opt.trustDelta);
   const memorySummary = formatMemorySummary(memory?.recent(entityId) ?? []);
   const compactGate = compactGateLine(gateLine);
+  const compactApplied = compactKnownGateTags(lastApplied);
   const snapshot = {
     entityId,
     tone: opt.tone,
@@ -180,12 +182,14 @@ export async function applyDialogueChoiceAsync(
     trust: trustAfter,
     ...(memorySummary ? { memorySummary } : {}),
     ...(compactGate ? { gateLine: compactGate } : {}),
+    ...(compactApplied.length > 0 ? { lastApplied: compactApplied } : {}),
     prompt: formatLlmPrompt({
       tone: opt.tone,
       intent,
       trust: trustAfter,
       ...(memorySummary ? { memorySummary } : {}),
       ...(compactGate ? { gateLine: compactGate } : {}),
+      ...(compactApplied.length > 0 ? { lastApplied: compactApplied } : {}),
     }),
   };
   const resolved = await resolveLineWithBridge({
@@ -262,3 +266,4 @@ function compactGateLine(line?: string | null): string {
     ? trimmed.slice(0, GATE_LINE_MAX_LEN)
     : trimmed;
 }
+

@@ -5,6 +5,7 @@
  */
 
 import type { PossessionTone } from "./lineBank";
+import { compactKnownGateTags, type GateTag } from "./gates";
 
 export interface LlmAskSnapshot {
   entityId: string;
@@ -18,6 +19,8 @@ export interface LlmAskSnapshot {
   memorySummary?: string;
   /** Última línea ya validada (`formatGateLine`); omitida si vacía. */
   gateLine?: string;
+  /** Últimos tags aplicados (`gates.lastApplied`); omitido si vacío. */
+  lastApplied?: GateTag[];
 }
 
 /** Interfaz mínima del bridge (stub hoy; API real después). */
@@ -126,6 +129,7 @@ export class StubLlmBridge implements LlmBridge {
       prompt: snapshot.prompt ?? null,
       memorySummary: snapshot.memorySummary ?? null,
       gateLine: snapshot.gateLine ?? null,
+      lastApplied: snapshot.lastApplied ?? null,
     });
     await files.writeRequest(requestId, body);
 
@@ -179,7 +183,7 @@ function sleep(ms: number): Promise<void> {
 export function formatLlmPrompt(
   fields: Pick<
     LlmAskSnapshot,
-    "tone" | "intent" | "trust" | "memorySummary" | "gateLine"
+    "tone" | "intent" | "trust" | "memorySummary" | "gateLine" | "lastApplied"
   >,
 ): string {
   const bits = [`Tono: ${fields.tone}`];
@@ -189,6 +193,8 @@ export function formatLlmPrompt(
   if (mem) bits.push(`Memoria: ${mem}`);
   const gate = fields.gateLine?.trim();
   if (gate) bits.push(`Gate: ${gate}`);
+  const applied = compactKnownGateTags(fields.lastApplied);
+  if (applied.length > 0) bits.push(`Aplicado: ${applied.join(", ")}`);
   return bits.join(". ") + ".";
 }
 

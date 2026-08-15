@@ -54,6 +54,38 @@ export type GateTag =
   | "distract_noise"
   | "distract_lure";
 
+/** Tags conocidos (filtro / cap para snapshot LLM; no cambia umbrales). */
+export const GATE_TAGS: readonly GateTag[] = [
+  "pacify_ttl",
+  "threat_noise",
+  "threat_chase",
+  "threat_speed",
+  "ask_heal",
+  "ask_lucidity",
+  "offer_food",
+  "offer_pacify",
+  "distract_noise",
+  "distract_lure",
+] as const;
+
+const GATE_TAG_SET = new Set<string>(GATE_TAGS);
+
+export function isGateTag(value: unknown): value is GateTag {
+  return typeof value === "string" && GATE_TAG_SET.has(value);
+}
+
+/** Tags conocidos nonempty; desconocidos / vacíos / null se omiten. Cap = set conocido. */
+export function compactKnownGateTags(
+  tags?: readonly string[] | null,
+): GateTag[] {
+  if (!tags || tags.length === 0) return [];
+  const out: GateTag[] = [];
+  for (const t of tags) {
+    if (isGateTag(t) && !out.includes(t)) out.push(t);
+  }
+  return out;
+}
+
 /**
  * Propuesta de efectos (aún no aplicada).
  * `applied` = gates que pasan umbral; `rejected` = intent sin umbral.
