@@ -234,6 +234,8 @@ export const IMPACT_SPARK_COLOR = 0xffef93;
 export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93;
 /** Color de la malla del tracer. 0xffe8a0 × 1.15/canal (r/g clamp) para leerse de noche. */
 export const TRACER_COLOR = 0xffffb8;
+/** Color del PointLight del flash del tracer. 0xffc060 × 1.15/canal (r clamp) para leerse de noche. */
+export const TRACER_FLASH_COLOR = 0xffdd6e;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -992,7 +994,7 @@ export function createWorldView(
     mesh.rotation.y = tracerYaw(from, to);
     scene.add(mesh);
 
-    const flash = new THREE.PointLight(0xffc060, 2.4, 3.2, 2);
+    const flash = new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2);
     flash.position.set(from.x, TRACER_HEIGHT + 0.15, from.y);
     scene.add(flash);
 
