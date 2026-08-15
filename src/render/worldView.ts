@@ -290,6 +290,8 @@ export const FLASHLIGHT_SPOT_DECAY = 1.74;
 export const FLASHLIGHT_SPOT_TARGET_Y = 0.138;
 /** Offset XZ del flash de hocico (mesh + PointLight) según facing. 0.48 × 1.15 para sentarse un poco más adelante de noche. */
 export const MUZZLE_FORWARD = 0.552;
+/** Altura Y del chevron de facing. 0.12 × 1.15 para sentarse un poco más alto de noche. */
+export const CHEVRON_Y = 0.138;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -846,7 +848,6 @@ export function createWorldView(
 
   // Chevron de facing: triángulo plano unlit (siempre visible; sin luz extra).
   // Dist/len/hw/color/opacity desde facingChevron knobs; oro HUD; tilt iso.
-  const CHEVRON_Y = 0.12;
   const chevronGeo = new THREE.BufferGeometry();
   chevronGeo.setAttribute(
     "position",
