@@ -240,6 +240,8 @@ export const WARM_LIGHT_AMBER_G_GAIN = 0.092;
 export const WARM_LIGHT_AMBER_B = 0.437;
 /** Ganancia del canal B del tinte ámbar del PointLight cálido indoor × intensidad. 0.1 × 1.15 para leerse un poco más ámbar-azul de noche. */
 export const WARM_LIGHT_AMBER_B_GAIN = 0.115;
+/** Umbral de intensidad para mostrar el PointLight cálido indoor. 0.02 × 0.87 para aparecer un poco antes de noche. */
+export const WARM_LIGHT_VISIBLE_EPS = 0.0174;
 /** Color de la esfera aditiva de hocico. 0xfff2c0 × 1.15/canal (r/g clamp) para leerse de noche. */
 export const MUZZLE_FLASH_COLOR = 0xffffdd;
 /** Color del PointLight de hocico. 0xffe8a0 × 1.15/canal (r/g clamp) para leerse de noche. */
@@ -1718,7 +1720,7 @@ export function createWorldView(
       warmLight.intensity = i * WARM_LIGHT_INTENSITY_MUL;
       warmLight.distance = WARM_LIGHT_DISTANCE_BASE + i * WARM_LIGHT_DISTANCE_GAIN;
       warmLight.position.set(wx, WARM_LIGHT_Y, wy);
-      warmLight.visible = i > 0.02;
+      warmLight.visible = i > WARM_LIGHT_VISIBLE_EPS;
       // Tinte un poco más ámbar cuando está fuerte.
       warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN);
     },
