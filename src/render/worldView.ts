@@ -272,6 +272,8 @@ export const FLASHLIGHT_SPOT_Y = 1.7825;
 export const FLASHLIGHT_SPOT_DISTANCE_EXTRA = 1.84;
 /** Ganancia de distancia del SpotLight de la linterna × intensidad. 2 × 1.15 para estirar un poco más de noche. */
 export const FLASHLIGHT_SPOT_DISTANCE_GAIN = 2.3;
+/** Decay del SpotLight de la linterna. 2 × 0.87 para caer un poco más lento de noche. */
+export const FLASHLIGHT_SPOT_DECAY = 1.74;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -481,7 +483,7 @@ export function createWorldView(
     FLASHLIGHT_CONE_LENGTH + 2.4,
     flashlightSpotAngle(),
     FLASHLIGHT_SPOT_PENUMBRA,
-    2,
+    FLASHLIGHT_SPOT_DECAY,
   );
   torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0);
   torchSpot.visible = false;
