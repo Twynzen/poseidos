@@ -344,6 +344,8 @@ export const DOOR_BASE_Y = 1.15;
 export const DOOR_DEPTH = 0.207;
 /** Alto de la cama. 0.35 × 1.15 para leerse un poco más alta de noche. */
 export const BED_HEIGHT = 0.4025;
+/** Altura Y de la cama. 0.175 × 1.15 para sentarse un poco más alto de noche. */
+export const BED_BASE_Y = 0.20125;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -2219,7 +2221,7 @@ function fillTileContent(
   if (tile.kind === "furniture") {
     if (tile.variant === "bed") {
       const bed = new THREE.Mesh(bedGeo, bedMat);
-      bed.position.set(x + 0.5, 0.175, y + 0.5);
+      bed.position.set(x + 0.5, BED_BASE_Y, y + 0.5);
       content.add(bed);
     } else {
       const furn = new THREE.Mesh(furnitureGeo, furnitureMat);
