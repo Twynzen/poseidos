@@ -6,6 +6,7 @@ import type { HostileMode } from "../ai/hostile";
 import type { HostileSim } from "../ai/hostile";
 import type { GateTag } from "../possession/gates";
 import type { PossessionTone } from "../possession/lineBank";
+import type { LineSource } from "../possession/llmBridge";
 
 /** Input de cliente → host (stub: solo move). */
 export interface NetInput {
@@ -85,6 +86,12 @@ export interface NetPossessionSnap {
    * omitido si vacío. Distinto de toneBias. Cap MEMORY_SUMMARY_MAX_LEN.
    */
   memorySummary?: string;
+  /**
+   * Fuente de la última línea ya validada (`speech.getActive.lineSource`);
+   * omitido si vacío / sin utterance. Distinto de memorySummary.
+   * Wire: `llm` | `bank` — no se mapea a STUB/BANCO.
+   */
+  lineSource?: LineSource;
 }
 
 /**
@@ -109,7 +116,7 @@ export interface NetSnapshot {
   doors: NetDoorSnap[];
   barricades: NetBarricadeSnap[];
   containers: NetContainerSnap[];
-  /** Poseídos: trust + TTLs gated + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary (default []). */
+  /** Poseídos: trust + TTLs gated + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary / lineSource (default []). */
   possession: NetPossessionSnap[];
 }
 

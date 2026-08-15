@@ -1104,6 +1104,310 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect(afterTtl[0]!.speedBumpMul).toBe(1);
   });
 
+  test("collector: lineSource presente (llm/bank); unset/sin utterance/unknown/omitido omitido; memorySummary/toneBias/moodBias/tags/gateLine/trust/TTL sin cambio", () => {
+    const ledger = new TrustLedger();
+    ledger.register("p1", 65);
+    const gates = new DialogueBehaviorGates();
+    const proposal = proposeDialogueGates("calmar", ledger.get("p1"));
+    gates.apply("p1", proposal);
+    gates.restoreLastRejected("p1", ["offer_food"]);
+    gates.restoreGateLine("p1", "código: aplicado (pacify_ttl)");
+    const speech = new SpeechDirector({}, () => 0.5);
+    speech.setMoodBias("p1", "lucidez");
+    const mem = new ShortMemory();
+    mem.remember("p1", {
+      who: "player",
+      intent: "preguntar",
+      trustDelta: 6,
+      tone: "lucidez",
+    });
+    expect(mem.toneBias("p1")).toBe("lucidez");
+    const expectedMem = formatMemorySummary(mem.recent("p1"));
+    expect(expectedMem).toBe("preguntar/lucidez/+6");
+
+    const threeArg = collectPossessionFrom(ledger, gates, ["p1"]);
+    expect(threeArg[0]!.lineSource).toBeUndefined();
+    expect("lineSource" in threeArg[0]!).toBe(false);
+    expect(threeArg[0]!.memorySummary).toBeUndefined();
+    expect(threeArg[0]!.toneBias).toBeUndefined();
+    expect(threeArg[0]!.moodBias).toBeUndefined();
+    expect(threeArg[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(threeArg[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(threeArg[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(threeArg[0]!.trust).toBe(65);
+    expect(threeArg[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(threeArg[0]!.speedBumpLeft).toBe(0);
+    expect(threeArg[0]!.speedBumpMul).toBe(1);
+    expect(threeArg[0]!.pacified).toBe(true);
+
+    const fourArg = collectPossessionFrom(ledger, gates, ["p1"], speech);
+    expect(fourArg[0]!.lineSource).toBeUndefined();
+    expect("lineSource" in fourArg[0]!).toBe(false);
+    expect(fourArg[0]!.memorySummary).toBeUndefined();
+    expect(fourArg[0]!.toneBias).toBeUndefined();
+    expect(fourArg[0]!.moodBias).toBe("lucidez");
+    expect(fourArg[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(fourArg[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(fourArg[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(fourArg[0]!.trust).toBe(65);
+    expect(fourArg[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(fourArg[0]!.speedBumpLeft).toBe(0);
+    expect(fourArg[0]!.speedBumpMul).toBe(1);
+    expect(fourArg[0]!.pacified).toBe(true);
+
+    const fiveArg = collectPossessionFrom(ledger, gates, ["p1"], speech, mem);
+    expect(fiveArg[0]!.lineSource).toBeUndefined();
+    expect("lineSource" in fiveArg[0]!).toBe(false);
+    expect(fiveArg[0]!.memorySummary).toBeUndefined();
+    expect(fiveArg[0]!.toneBias).toBe("lucidez");
+    expect(fiveArg[0]!.moodBias).toBe("lucidez");
+    expect(fiveArg[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(fiveArg[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(fiveArg[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(fiveArg[0]!.trust).toBe(65);
+    expect(fiveArg[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(fiveArg[0]!.speedBumpLeft).toBe(0);
+    expect(fiveArg[0]!.speedBumpMul).toBe(1);
+    expect(fiveArg[0]!.pacified).toBe(true);
+
+    const sixArg = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      speech,
+      mem,
+      mem,
+    );
+    expect(sixArg[0]!.lineSource).toBeUndefined();
+    expect("lineSource" in sixArg[0]!).toBe(false);
+    expect(sixArg[0]!.memorySummary).toBe(expectedMem);
+    expect(sixArg[0]!.toneBias).toBe("lucidez");
+    expect(sixArg[0]!.moodBias).toBe("lucidez");
+    expect(sixArg[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(sixArg[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(sixArg[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(sixArg[0]!.trust).toBe(65);
+    expect(sixArg[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(sixArg[0]!.speedBumpLeft).toBe(0);
+    expect(sixArg[0]!.speedBumpMul).toBe(1);
+    expect(sixArg[0]!.pacified).toBe(true);
+
+    expect(speech.getActive("p1")).toBeNull();
+    const noUtterance = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      speech,
+      mem,
+      mem,
+      speech,
+    );
+    expect(noUtterance[0]!.lineSource).toBeUndefined();
+    expect("lineSource" in noUtterance[0]!).toBe(false);
+    expect(noUtterance[0]!.memorySummary).toBe(expectedMem);
+    expect(noUtterance[0]!.toneBias).toBe("lucidez");
+    expect(noUtterance[0]!.moodBias).toBe("lucidez");
+    expect(noUtterance[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(noUtterance[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(noUtterance[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(noUtterance[0]!.trust).toBe(65);
+
+    const blank = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      speech,
+      mem,
+      mem,
+      () => "",
+    );
+    expect(blank[0]!.lineSource).toBeUndefined();
+    expect("lineSource" in blank[0]!).toBe(false);
+    expect(blank[0]!.memorySummary).toBe(expectedMem);
+    expect(blank[0]!.toneBias).toBe("lucidez");
+    expect(blank[0]!.moodBias).toBe("lucidez");
+
+    const whitespace = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      speech,
+      mem,
+      mem,
+      () => "   ",
+    );
+    expect(whitespace[0]!.lineSource).toBeUndefined();
+    expect("lineSource" in whitespace[0]!).toBe(false);
+    expect(whitespace[0]!.toneBias).toBe("lucidez");
+
+    const nulled = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      speech,
+      mem,
+      mem,
+      () => null,
+    );
+    expect(nulled[0]!.lineSource).toBeUndefined();
+    expect("lineSource" in nulled[0]!).toBe(false);
+    expect(nulled[0]!.toneBias).toBe("lucidez");
+
+    const unset = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      speech,
+      mem,
+      mem,
+      () => undefined,
+    );
+    expect(unset[0]!.lineSource).toBeUndefined();
+    expect("lineSource" in unset[0]!).toBe(false);
+
+    const unknown = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      speech,
+      mem,
+      mem,
+      () => "STUB",
+    );
+    expect(unknown[0]!.lineSource).toBeUndefined();
+    expect("lineSource" in unknown[0]!).toBe(false);
+    expect(unknown[0]!.memorySummary).toBe(expectedMem);
+    expect(unknown[0]!.toneBias).toBe("lucidez");
+    expect(unknown[0]!.moodBias).toBe("lucidez");
+
+    const bancoHud = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      speech,
+      mem,
+      mem,
+      () => "BANCO",
+    );
+    expect(bancoHud[0]!.lineSource).toBeUndefined();
+    expect("lineSource" in bancoHud[0]!).toBe(false);
+
+    speech.forceSpeak("p1", "lucidez", "una línea", "dialogue", "bank");
+    expect(speech.getActive("p1")?.lineSource).toBe("bank");
+    const bank = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      speech,
+      mem,
+      mem,
+      speech,
+    );
+    expect(bank[0]!.lineSource).toBe("bank");
+    expect(bank[0]!.memorySummary).toBe(expectedMem);
+    expect(bank[0]!.toneBias).toBe("lucidez");
+    expect(bank[0]!.moodBias).toBe("lucidez");
+    expect(bank[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(bank[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(bank[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(bank[0]!.trust).toBe(65);
+    expect(bank[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(bank[0]!.speedBumpLeft).toBe(0);
+    expect(bank[0]!.speedBumpMul).toBe(1);
+    expect(bank[0]!.pacified).toBe(true);
+    expect("line" in bank[0]!).toBe(false);
+
+    const viaGetter = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      speech,
+      mem,
+      mem,
+      (id) => speech.getActive(id)?.lineSource,
+    );
+    expect(viaGetter[0]!.lineSource).toBe("bank");
+    expect(viaGetter[0]!.memorySummary).toBe(expectedMem);
+    expect(viaGetter[0]!.toneBias).toBe("lucidez");
+    expect(viaGetter[0]!.moodBias).toBe("lucidez");
+
+    speech.forceSpeak("p1", "lucidez", "otra línea", "dialogue", "llm");
+    expect(speech.getActive("p1")?.lineSource).toBe("llm");
+    const llm = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      speech,
+      mem,
+      mem,
+      speech,
+    );
+    expect(llm[0]!.lineSource).toBe("llm");
+    expect(llm[0]!.memorySummary).toBe(expectedMem);
+    expect(llm[0]!.toneBias).toBe("lucidez");
+    expect(llm[0]!.moodBias).toBe("lucidez");
+    expect(llm[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(llm[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(llm[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(llm[0]!.trust).toBe(65);
+    expect(llm[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(llm[0]!.speedBumpLeft).toBe(0);
+    expect(llm[0]!.speedBumpMul).toBe(1);
+    expect(llm[0]!.pacified).toBe(true);
+    expect("line" in llm[0]!).toBe(false);
+
+    const stillSix = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      speech,
+      mem,
+      mem,
+    );
+    expect(stillSix[0]!.lineSource).toBeUndefined();
+    expect("lineSource" in stillSix[0]!).toBe(false);
+    expect(stillSix[0]!.memorySummary).toBe(expectedMem);
+    expect(stillSix[0]!.toneBias).toBe("lucidez");
+    expect(stillSix[0]!.moodBias).toBe("lucidez");
+
+    const unregistered = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      speech,
+      mem,
+      mem,
+      new SpeechDirector({}, () => 0.5),
+    );
+    expect(unregistered[0]!.lineSource).toBeUndefined();
+    expect("lineSource" in unregistered[0]!).toBe(false);
+    expect(unregistered[0]!.memorySummary).toBe(expectedMem);
+    expect(unregistered[0]!.toneBias).toBe("lucidez");
+    expect(unregistered[0]!.moodBias).toBe("lucidez");
+
+    gates.tick(GATE_CALM_PACIFY_TTL + 0.1);
+    const afterTtl = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      speech,
+      mem,
+      mem,
+      speech,
+    );
+    expect(afterTtl[0]!.lineSource).toBe("llm");
+    expect(afterTtl[0]!.memorySummary).toBe(expectedMem);
+    expect(afterTtl[0]!.toneBias).toBe("lucidez");
+    expect(afterTtl[0]!.moodBias).toBe("lucidez");
+    expect(afterTtl[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(afterTtl[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(afterTtl[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(afterTtl[0]!.trust).toBe(65);
+    expect(afterTtl[0]!.pacifiedLeft).toBe(0);
+    expect(afterTtl[0]!.speedBumpLeft).toBe(0);
+    expect(afterTtl[0]!.speedBumpMul).toBe(1);
+  });
+
   test("buildNetSnapshot incluye possession; default vacío", () => {
     const empty = buildNetSnapshot({
       playerX: 0,
