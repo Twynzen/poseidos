@@ -5,6 +5,7 @@
 import type { HostileMode } from "../ai/hostile";
 import type { HostileSim } from "../ai/hostile";
 import type { GateTag } from "../possession/gates";
+import type { PossessionTone } from "../possession/lineBank";
 
 /** Input de cliente → host (stub: solo move). */
 export interface NetInput {
@@ -69,6 +70,11 @@ export interface NetPossessionSnap {
    * No se reformatea — cap GATE_LINE_MAX_LEN.
    */
   gateLine?: string;
+  /**
+   * Sesgo de habla ya validado (`speech.getMoodBias`); omitido si vacío.
+   * Distinto de ShortMemory.toneBias.
+   */
+  moodBias?: PossessionTone;
 }
 
 /**
@@ -93,7 +99,7 @@ export interface NetSnapshot {
   doors: NetDoorSnap[];
   barricades: NetBarricadeSnap[];
   containers: NetContainerSnap[];
-  /** Poseídos: trust + TTLs gated + lastApplied / lastRejected / gateLine (default []). */
+  /** Poseídos: trust + TTLs gated + lastApplied / lastRejected / gateLine / moodBias (default []). */
   possession: NetPossessionSnap[];
 }
 

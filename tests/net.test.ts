@@ -13,6 +13,7 @@ import {
 import {
   TrustLedger,
   DialogueBehaviorGates,
+  SpeechDirector,
   proposeDialogueGates,
   GATE_CALM_PACIFY_TTL,
   GATE_LINE_MAX_LEN,
@@ -247,6 +248,8 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect("lastRejected" in snaps[0]!).toBe(false);
     expect(snaps[0]!.gateLine).toBeUndefined();
     expect("gateLine" in snaps[0]!).toBe(false);
+    expect(snaps[0]!.moodBias).toBeUndefined();
+    expect("moodBias" in snaps[0]!).toBe(false);
 
     gates.tick(GATE_CALM_PACIFY_TTL + 0.1);
     const afterTtl = collectPossessionFrom(ledger, gates, ["p1"]);
@@ -257,6 +260,7 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect(afterTtl[0]!.lastApplied).toEqual(["pacify_ttl"]);
     expect(afterTtl[0]!.lastRejected).toBeUndefined();
     expect(afterTtl[0]!.gateLine).toBeUndefined();
+    expect(afterTtl[0]!.moodBias).toBeUndefined();
   });
 
   test("collector: lastApplied omitido si vacío; tags desconocidos se descartan", () => {
@@ -280,6 +284,8 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect("lastRejected" in none[0]!).toBe(false);
     expect(none[0]!.gateLine).toBeUndefined();
     expect("gateLine" in none[0]!).toBe(false);
+    expect(none[0]!.moodBias).toBeUndefined();
+    expect("moodBias" in none[0]!).toBe(false);
 
     gates.restoreLastApplied("p1", [
       "pacify_ttl",
@@ -316,6 +322,8 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect(none[0]!.lastApplied).toBeUndefined();
     expect(none[0]!.gateLine).toBeUndefined();
     expect("gateLine" in none[0]!).toBe(false);
+    expect(none[0]!.moodBias).toBeUndefined();
+    expect("moodBias" in none[0]!).toBe(false);
 
     gates.restoreLastRejected("p1", [
       "pacify_ttl",
@@ -357,6 +365,8 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect("lastApplied" in snaps[0]!).toBe(false);
     expect(snaps[0]!.gateLine).toBeUndefined();
     expect("gateLine" in snaps[0]!).toBe(false);
+    expect(snaps[0]!.moodBias).toBeUndefined();
+    expect("moodBias" in snaps[0]!).toBe(false);
 
     gates.tick(GATE_CALM_PACIFY_TTL + 0.1);
     const afterTtl = collectPossessionFrom(ledger, gates, ["p1"]);
@@ -386,6 +396,8 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect(all.find((s) => s.id === "b")!.lastRejected).toBeUndefined();
     expect(all.find((s) => s.id === "a")!.gateLine).toBeUndefined();
     expect(all.find((s) => s.id === "b")!.gateLine).toBeUndefined();
+    expect(all.find((s) => s.id === "a")!.moodBias).toBeUndefined();
+    expect(all.find((s) => s.id === "b")!.moodBias).toBeUndefined();
   });
 
   test("collector: gateLine presente; vacío omitido; over-cap truncado; tags/trust/TTL sin cambio", () => {
@@ -399,6 +411,8 @@ describe("collectPossessionFrom + snapshot possession", () => {
     const none = collectPossessionFrom(ledger, gates, ["p1"]);
     expect(none[0]!.gateLine).toBeUndefined();
     expect("gateLine" in none[0]!).toBe(false);
+    expect(none[0]!.moodBias).toBeUndefined();
+    expect("moodBias" in none[0]!).toBe(false);
     expect(none[0]!.lastApplied).toEqual(["pacify_ttl"]);
     expect(none[0]!.lastRejected).toEqual(["offer_food"]);
     expect(none[0]!.trust).toBe(65);
@@ -449,6 +463,95 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect(afterTtl[0]!.gateLine).toBe("x".repeat(GATE_LINE_MAX_LEN));
     expect(afterTtl[0]!.lastApplied).toEqual(["pacify_ttl"]);
     expect(afterTtl[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(afterTtl[0]!.trust).toBe(65);
+    expect(afterTtl[0]!.pacifiedLeft).toBe(0);
+    expect(afterTtl[0]!.speedBumpLeft).toBe(0);
+    expect(afterTtl[0]!.speedBumpMul).toBe(1);
+    expect(afterTtl[0]!.moodBias).toBeUndefined();
+  });
+
+  test("collector: moodBias presente; vacío/null/desconocido omitido; tags/gateLine/trust/TTL sin cambio", () => {
+    const ledger = new TrustLedger();
+    ledger.register("p1", 65);
+    const gates = new DialogueBehaviorGates();
+    const proposal = proposeDialogueGates("calmar", ledger.get("p1"));
+    gates.apply("p1", proposal);
+    gates.restoreLastRejected("p1", ["offer_food"]);
+    gates.restoreGateLine("p1", "código: aplicado (pacify_ttl)");
+
+    const none = collectPossessionFrom(ledger, gates, ["p1"]);
+    expect(none[0]!.moodBias).toBeUndefined();
+    expect("moodBias" in none[0]!).toBe(false);
+    expect(none[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(none[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(none[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(none[0]!.trust).toBe(65);
+    expect(none[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(none[0]!.speedBumpLeft).toBe(0);
+    expect(none[0]!.speedBumpMul).toBe(1);
+    expect(none[0]!.pacified).toBe(true);
+
+    const blank = collectPossessionFrom(ledger, gates, ["p1"], () => "");
+    expect(blank[0]!.moodBias).toBeUndefined();
+    expect("moodBias" in blank[0]!).toBe(false);
+
+    const nulled = collectPossessionFrom(ledger, gates, ["p1"], () => null);
+    expect(nulled[0]!.moodBias).toBeUndefined();
+    expect("moodBias" in nulled[0]!).toBe(false);
+
+    const unknown = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      () => "scream" as "lucidez",
+    );
+    expect(unknown[0]!.moodBias).toBeUndefined();
+    expect("moodBias" in unknown[0]!).toBe(false);
+
+    const speech = new SpeechDirector({}, () => 0.5);
+    speech.setMoodBias("p1", "lucidez");
+    const set = collectPossessionFrom(ledger, gates, ["p1"], speech);
+    expect(set[0]!.moodBias).toBe("lucidez");
+    expect(set[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(set[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(set[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(set[0]!.trust).toBe(65);
+    expect(set[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(set[0]!.speedBumpLeft).toBe(0);
+    expect(set[0]!.speedBumpMul).toBe(1);
+    expect(set[0]!.pacified).toBe(true);
+
+    speech.setMoodBias("p1", "demonio");
+    const demon = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      (id) => speech.getMoodBias(id),
+    );
+    expect(demon[0]!.moodBias).toBe("demonio");
+    expect(demon[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(demon[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(demon[0]!.trust).toBe(65);
+
+    speech.setMoodBias("p1", "ruega");
+    const plea = collectPossessionFrom(ledger, gates, ["p1"], speech);
+    expect(plea[0]!.moodBias).toBe("ruega");
+
+    const unregistered = collectPossessionFrom(
+      ledger,
+      gates,
+      ["p1"],
+      new SpeechDirector(),
+    );
+    expect(unregistered[0]!.moodBias).toBeUndefined();
+    expect("moodBias" in unregistered[0]!).toBe(false);
+
+    gates.tick(GATE_CALM_PACIFY_TTL + 0.1);
+    const afterTtl = collectPossessionFrom(ledger, gates, ["p1"], speech);
+    expect(afterTtl[0]!.moodBias).toBe("ruega");
+    expect(afterTtl[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(afterTtl[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(afterTtl[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
     expect(afterTtl[0]!.trust).toBe(65);
     expect(afterTtl[0]!.pacifiedLeft).toBe(0);
     expect(afterTtl[0]!.speedBumpLeft).toBe(0);

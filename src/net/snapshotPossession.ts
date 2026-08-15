@@ -1,6 +1,6 @@
 /**
  * Collector possession gated → snapshot wire F7.
- * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected / gateLine); no intents crudos.
+ * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected / gateLine / moodBias); no intents crudos.
  */
 import {
   isPacified,
@@ -11,16 +11,33 @@ import {
   compactKnownGateTags,
   type DialogueBehaviorGates,
 } from "../possession/gates";
+import { compactMoodBias } from "../possession/llmBridge";
 import type { NetPossessionSnap } from "./session";
+
+/** Fuente opcional de sesgo ya validado (`speech.getMoodBias`). */
+export type MoodBiasLookup =
+  | ((id: string) => string | null | undefined)
+  | { getMoodBias(id: string): string | null | undefined };
+
+function readMoodBias(
+  source: MoodBiasLookup | undefined,
+  id: string,
+): ReturnType<typeof compactMoodBias> {
+  if (!source) return "";
+  const raw = typeof source === "function" ? source(id) : source.getMoodBias(id);
+  return compactMoodBias(raw);
+}
 
 /**
  * Serializa estado gated de poseídos.
  * `hostileIds` = ids a incluir; si se omite, todos los del ledger.
+ * `moodBiasOf` = getter o SpeechDirector; si se omite, no se pinta moodBias.
  */
 export function collectPossessionFrom(
   ledger: TrustLedger,
   gates: DialogueBehaviorGates,
   hostileIds?: readonly string[],
+  moodBiasOf?: MoodBiasLookup,
 ): NetPossessionSnap[] {
   const ids = hostileIds ?? ledger.ids();
   const out: NetPossessionSnap[] = [];
@@ -33,6 +50,7 @@ export function collectPossessionFrom(
     const lastApplied = compactKnownGateTags(gates.lastApplied(id));
     const lastRejected = compactKnownGateTags(gates.lastRejected(id));
     const gateLine = compactGateLine(gates.gateLine(id));
+    const moodBias = readMoodBias(moodBiasOf, id);
     out.push({
       id,
       trust,
@@ -43,6 +61,7 @@ export function collectPossessionFrom(
       ...(lastApplied.length > 0 ? { lastApplied } : {}),
       ...(lastRejected.length > 0 ? { lastRejected } : {}),
       ...(gateLine ? { gateLine } : {}),
+      ...(moodBias ? { moodBias } : {}),
     });
   }
   return out;
