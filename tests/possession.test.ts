@@ -123,6 +123,7 @@ describe("SpeechDirector triggers", () => {
     expect(active!.trigger).toBe("see_player");
     expect(active!.line.length).toBeGreaterThan(5);
     expect(POSSESSION_TONES).toContain(active!.tone);
+    expect(active!.lineSource).toBe("bank");
   });
 
   test("habla periódico si no ve al player", () => {
@@ -180,6 +181,9 @@ describe("SpeechDirector triggers", () => {
     expect(u!.trigger).toBe("dialogue");
     expect(dir.getActive("poss-d")?.tone).toBe("demonio");
     expect(dir.getActive("poss-d")?.line).toContain("miedo");
+    expect(dir.getActive("poss-d")?.lineSource).toBe("bank");
+    dir.forceSpeak("poss-d", "lucidez", "El puente habla.", "dialogue", "llm");
+    expect(dir.getActive("poss-d")?.lineSource).toBe("llm");
   });
 });
 
@@ -790,6 +794,7 @@ describe("llm bridge stub", () => {
     const u = await dirOn.speakWithBridge("p1", "lucidez", "see_player");
     expect(u.line).toBe("Hablo por el puente.");
     expect(u.lineSource).toBe("llm");
+    expect(dirOn.getActive("p1")?.lineSource).toBe("llm");
 
     let asks = 0;
     const spy = new StubLlmBridge({
@@ -805,6 +810,7 @@ describe("llm bridge stub", () => {
     const u2 = await dirOff.speakWithBridge("p2", "demonio", "periodic");
     expect(asks).toBe(0);
     expect(u2.lineSource).toBe("bank");
+    expect(dirOff.getActive("p2")?.lineSource).toBe("bank");
     expect(LINE_BANK.demonio).toContain(u2.line);
   });
 

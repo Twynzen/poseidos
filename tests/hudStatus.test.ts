@@ -9,6 +9,7 @@ import {
   formatMemoryToneHud,
   formatLastGateHud,
   formatLastRejectedHud,
+  formatLineSourceHud,
   type HudStatusInput,
 } from "../src/ui/hudStatus";
 
@@ -434,5 +435,93 @@ describe("formatHudStatus compact", () => {
     expect(
       formatHudStatus(base({ lastRejected: ["pacify_ttl"] })),
     ).not.toContain("CÓDIGO");
+  });
+
+  test("lineSource ausente no pinta token; llm → STUB; bank → BANCO", () => {
+    expect(formatLineSourceHud(undefined)).toBeNull();
+    expect(formatLineSourceHud(null)).toBeNull();
+    expect(formatLineSourceHud("llm")).toBe("STUB");
+    expect(formatLineSourceHud("bank")).toBe("BANCO");
+
+    const bare = formatHudStatus(base());
+    expect(bare).not.toContain("STUB");
+    expect(bare).not.toContain("BANCO");
+    expect(formatHudStatus(base({ lineSource: null }))).not.toContain("STUB");
+    expect(formatHudStatus(base({ lineSource: null }))).not.toContain("BANCO");
+    expect(formatHudStatus(base({ lineSource: "llm" }))).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · STUB · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(formatHudStatus(base({ lineSource: "bank" }))).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · BANCO · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(formatHudStatus(base({ lineSource: "llm" }))).not.toContain("BANCO");
+    expect(formatHudStatus(base({ lineSource: "bank" }))).not.toContain("STUB");
+    expect(
+      formatHudStatus(base({ gameOver: true, lineSource: "llm" })),
+    ).not.toContain("STUB");
+  });
+
+  test("STUB / BANCO no chocan con CÓDIGO / RECHAZO / CALMA / FURIA / LUCIDEZ / MEMORIA", () => {
+    expect(formatLineSourceHud("llm")).toBe("STUB");
+    expect(formatLineSourceHud("bank")).toBe("BANCO");
+    expect(formatLastGateHud(["pacify_ttl"])).toBe("CÓDIGO pacify_ttl");
+    expect(formatLastRejectedHud(["pacify_ttl"])).toBe("RECHAZO pacify_ttl");
+    expect(
+      formatHudStatus(
+        base({
+          pacifyLeft: 8,
+          speedBumpLeft: 3.5,
+          moodBias: "lucidez",
+          memoryTone: "demonio",
+          lastApplied: ["pacify_ttl"],
+          lastRejected: ["offer_food", "offer_pacify"],
+          lineSource: "llm",
+        }),
+      ),
+    ).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CALMA 8 · FURIA 4 · LUCIDEZ · MEMORIA DEMONIO · CÓDIGO pacify_ttl · RECHAZO offer_food,offer_pacify · STUB · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(
+      formatHudStatus(
+        base({
+          pacifyLeft: 8,
+          speedBumpLeft: 3.5,
+          moodBias: "lucidez",
+          memoryTone: "demonio",
+          lastApplied: ["pacify_ttl"],
+          lastRejected: ["offer_food", "offer_pacify"],
+          lineSource: "bank",
+        }),
+      ),
+    ).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CALMA 8 · FURIA 4 · LUCIDEZ · MEMORIA DEMONIO · CÓDIGO pacify_ttl · RECHAZO offer_food,offer_pacify · BANCO · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(
+      formatHudStatus(
+        base({
+          pacifyLeft: 8,
+          speedBumpLeft: 3.5,
+          moodBias: "lucidez",
+          memoryTone: "demonio",
+          lastApplied: ["pacify_ttl"],
+          lastRejected: ["offer_food", "offer_pacify"],
+        }),
+      ),
+    ).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CALMA 8 · FURIA 4 · LUCIDEZ · MEMORIA DEMONIO · CÓDIGO pacify_ttl · RECHAZO offer_food,offer_pacify · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(formatHudStatus(base({ lastRejected: ["pacify_ttl"] }))).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · RECHAZO pacify_ttl · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(formatHudStatus(base({ lastRejected: ["pacify_ttl"] }))).not.toContain(
+      "STUB",
+    );
+    expect(formatHudStatus(base({ lastRejected: ["pacify_ttl"] }))).not.toContain(
+      "BANCO",
+    );
+    expect(formatHudStatus(base({ lineSource: "llm" }))).not.toContain("CÓDIGO");
+    expect(formatHudStatus(base({ lineSource: "llm" }))).not.toContain(
+      "RECHAZO",
+    );
   });
 });

@@ -66,6 +66,7 @@ export {
   formatMemoryToneHud,
   formatLastGateHud,
   formatLastRejectedHud,
+  formatLineSourceHud,
   type HudDebugInput,
   type HudStatusInput,
 } from "./hudStatus";

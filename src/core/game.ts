@@ -74,6 +74,7 @@ import {
   StubLlmBridge,
   type DialogueIntent,
   type GateTag,
+  type LineSource,
   type LlmBridge,
   type PossessionTone,
 } from "../possession";
@@ -1637,6 +1638,7 @@ export class Game {
     const memoryTone = this.hudMemoryTone();
     const lastApplied = this.hudLastApplied();
     const lastRejected = this.hudLastRejected();
+    const lineSource = this.hudLineSource();
     this.moodlesHud.sync(this.buildPlayerHudMoodles());
     this.hotbarHud.sync(hotbarSlots(this.player.inventory), this.hotbarSelected);
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
@@ -1668,6 +1670,7 @@ export class Game {
       memoryTone,
       lastApplied,
       lastRejected,
+      lineSource,
       indoor,
       safeHint,
       raining,
@@ -1800,6 +1803,28 @@ export class Game {
       DIALOGUE_REACH,
     );
     return nearRejected ? this.gates.lastRejected(nearRejected.id) : [];
+  }
+
+  /**
+   * Fuente de la última línea para el HUD: target del panel si está abierto,
+   * si no el poseído más cercano con `speech.getActive.lineSource` (DIALOGUE_REACH).
+   * Un solo store: `SpeechDirector.getActive` — runtime, no persist.
+   */
+  private hudLineSource(): LineSource | null {
+    if (this.dialogue.open && this.dialogue.target) {
+      return this.speech.getActive(this.dialogue.target)?.lineSource ?? null;
+    }
+    const nearSourced = nearestPossessed(
+      this.hostiles.hostiles.filter(
+        (h) => this.speech.getActive(h.id)?.lineSource != null,
+      ),
+      this.player.x,
+      this.player.y,
+      DIALOGUE_REACH,
+    );
+    return nearSourced
+      ? this.speech.getActive(nearSourced.id)?.lineSource ?? null
+      : null;
   }
 
   /** +/- zoom iso: ajusta frustum y reaplica proyección. */
