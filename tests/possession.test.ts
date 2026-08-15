@@ -473,6 +473,25 @@ describe("short memory", () => {
     expect(r.tone).toBe("ruega");
     expect(r.trustAfter).toBe(64);
   });
+
+  test("ids + restore reemplazan el buffer y omiten listas vacías", () => {
+    const mem = new ShortMemory(3);
+    mem.remember("p", {
+      who: "player",
+      intent: "calmar",
+      trustDelta: 14,
+      tone: "ruega",
+    });
+    expect(mem.ids()).toEqual(["p"]);
+    mem.restore("p", [
+      { who: "player", intent: "amenazar", trustDelta: -20, tone: "demonio" },
+      { who: "player", intent: "preguntar", trustDelta: 6, tone: "lucidez" },
+    ]);
+    expect(mem.recent("p").map((e) => e.intent)).toEqual(["amenazar", "preguntar"]);
+    mem.restore("p", [{ who: "", intent: "calmar", trustDelta: 14, tone: "ruega" }]);
+    expect(mem.has("p")).toBe(false);
+    expect(mem.ids()).toEqual([]);
+  });
 });
 
 describe("llm bridge stub", () => {
@@ -972,17 +991,30 @@ describe("dialogue → behavior gates", () => {
 });
 
 describe("possession persist (F5/F9)", () => {
-  test("roundtrip trust + ambos TTLs + lucidez; no persiste burbuja", () => {
+  test("roundtrip trust + ambos TTLs + lucidez + memory; no persiste burbuja", () => {
     const ledger = new TrustLedger();
     const gates = new DialogueBehaviorGates();
     const speech = new SpeechDirector({}, () => 0.2);
+    const memory = new ShortMemory();
     ledger.set("poss-a", 72);
     gates.apply("poss-a", proposeDialogueGates("calmar", 72));
     gates.apply("poss-a", proposeDialogueGates("amenazar", 20));
     speech.setMoodBias("poss-a", "lucidez");
     speech.forceSpeak("poss-a", "lucidez", "línea que no se guarda");
+    memory.remember("poss-a", {
+      who: "player",
+      intent: "calmar",
+      trustDelta: 14,
+      tone: "ruega",
+    });
+    memory.remember("poss-a", {
+      who: "player",
+      intent: "amenazar",
+      trustDelta: -20,
+      tone: "demonio",
+    });
 
-    const snap = capturePossession(ledger, gates, speech);
+    const snap = capturePossession(ledger, gates, speech, memory);
     expect(snap.trust["poss-a"]).toBe(72);
     expect(snap.gates["poss-a"]).toEqual({
       pacifiedLeft: GATE_CALM_PACIFY_TTL,
@@ -990,22 +1022,63 @@ describe("possession persist (F5/F9)", () => {
       speedBumpMul: GATE_THREAT_SPEED_MUL,
     });
     expect(snap.moodBias["poss-a"]).toBe("lucidez");
+    expect(snap.memory["poss-a"]).toEqual([
+      { who: "player", intent: "calmar", trustDelta: 14, tone: "ruega" },
+      { who: "player", intent: "amenazar", trustDelta: -20, tone: "demonio" },
+    ]);
     expect(JSON.stringify(snap)).not.toContain("línea que no se guarda");
 
     const ledger2 = new TrustLedger();
     const gates2 = new DialogueBehaviorGates();
     const speech2 = new SpeechDirector({}, () => 0.8);
+    const memory2 = new ShortMemory();
     ledger2.set("stale", 9);
     gates2.apply("stale", proposeDialogueGates("calmar", 80));
-    applyPossession(ledger2, gates2, speech2, snap);
+    memory2.remember("stale", {
+      who: "player",
+      intent: "calmar",
+      trustDelta: 14,
+      tone: "ruega",
+    });
+    applyPossession(ledger2, gates2, speech2, memory2, snap);
     expect(ledger2.has("stale")).toBe(false);
     expect(gates2.pacifiedLeft("stale")).toBe(0);
+    expect(memory2.has("stale")).toBe(false);
     expect(ledger2.get("poss-a")).toBe(72);
     expect(gates2.pacifiedLeft("poss-a")).toBe(GATE_CALM_PACIFY_TTL);
     expect(gates2.speedBumpLeft("poss-a")).toBe(GATE_THREAT_SPEED_TTL);
     expect(gates2.speedBumpMul("poss-a")).toBe(GATE_THREAT_SPEED_MUL);
     expect(speech2.getMoodBias("poss-a")).toBe("lucidez");
     expect(speech2.getActive("poss-a")).toBeNull();
+    expect(memory2.recent("poss-a")).toEqual(snap.memory["poss-a"]);
+    expect(memory2.toneBias("poss-a")).toBe("demonio");
+  });
+
+  test("blob viejo sin memory carga vacío; leftover ids se reemplazan", () => {
+    const n = normalizePossession({
+      trust: { a: 50 },
+      gates: {},
+      moodBias: { a: "ruega" },
+    });
+    expect(n.memory).toEqual({});
+
+    const memory = new ShortMemory();
+    memory.remember("leftover", {
+      who: "player",
+      intent: "preguntar",
+      trustDelta: 6,
+      tone: "lucidez",
+    });
+    applyPossession(
+      new TrustLedger(),
+      new DialogueBehaviorGates(),
+      new SpeechDirector({}, () => 0.1),
+      memory,
+      n,
+    );
+    expect(memory.has("leftover")).toBe(false);
+    expect(memory.ids()).toEqual([]);
+    expect(memory.toneBias("a")).toBeUndefined();
   });
 
   test("normalize: clamp trust, descarta tono desconocido, omite TTL ≤ 0", () => {
@@ -1031,5 +1104,41 @@ describe("possession persist (F5/F9)", () => {
       speedBumpMul: 1.55,
     });
     expect(n.moodBias).toEqual({ a: "lucidez", c: "demonio" });
+    expect(n.memory).toEqual({});
+  });
+
+  test("normalize memory: descarta intent/tono/who/delta inválidos; recorta capacity", () => {
+    const n = normalizePossession({
+      memory: {
+        "": [{ who: "player", intent: "calmar", trustDelta: 14, tone: "ruega" }],
+        keep: [
+          { who: "", intent: "calmar", trustDelta: 14, tone: "ruega" },
+          { who: "player", intent: "scream", trustDelta: 14, tone: "ruega" },
+          { who: "player", intent: "calmar", trustDelta: 14, tone: "scream" },
+          { who: "player", intent: "calmar", trustDelta: Number.NaN, tone: "ruega" },
+          { who: "player", intent: "calmar", trustDelta: Infinity, tone: "ruega" },
+          { who: "player", intent: "preguntar", trustDelta: 6, tone: "lucidez" },
+          { who: "player", intent: "amenazar", trustDelta: -20, tone: "demonio" },
+        ],
+        empty: [],
+        junk: "nope",
+        overflow: [
+          { who: "player", intent: "calmar", trustDelta: 1, tone: "ruega" },
+          { who: "player", intent: "calmar", trustDelta: 2, tone: "ruega" },
+          { who: "player", intent: "calmar", trustDelta: 3, tone: "ruega" },
+          { who: "player", intent: "calmar", trustDelta: 4, tone: "ruega" },
+          { who: "player", intent: "calmar", trustDelta: 5, tone: "ruega" },
+          { who: "player", intent: "calmar", trustDelta: 6, tone: "ruega" },
+        ],
+      },
+    });
+    expect(n.memory[""]).toBeUndefined();
+    expect(n.memory.empty).toBeUndefined();
+    expect(n.memory.junk).toBeUndefined();
+    expect(n.memory.keep).toEqual([
+      { who: "player", intent: "preguntar", trustDelta: 6, tone: "lucidez" },
+      { who: "player", intent: "amenazar", trustDelta: -20, tone: "demonio" },
+    ]);
+    expect(n.memory.overflow?.map((e) => e.trustDelta)).toEqual([2, 3, 4, 5, 6]);
   });
 });

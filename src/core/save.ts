@@ -1,6 +1,6 @@
 /**
  * Save/load mínimo (F2): player, needs, inventario, puertas, barricadas, contenedores, clock.
- * F5: possession runtime (trust / TTLs de gates / mood bias) — campo opcional.
+ * F5: possession runtime (trust / TTLs de gates / mood bias / ShortMemory) — campo opcional.
  * Headless (JSON string / storage abstracto) + localStorage en browser.
  */
 
@@ -17,6 +17,7 @@ import { ITEM_DEFS } from "../items";
 import type { TrustLedger } from "../possession/trust";
 import type { DialogueBehaviorGates } from "../possession/gates";
 import type { SpeechDirector } from "../possession/speech";
+import type { ShortMemory } from "../possession/memory";
 import {
   applyPossession,
   capturePossession,
@@ -114,6 +115,7 @@ export interface SaveWorld {
     trust: TrustLedger;
     gates: DialogueBehaviorGates;
     speech: SpeechDirector;
+    memory: ShortMemory;
   };
 }
 
@@ -158,6 +160,7 @@ export function captureSave(world: SaveWorld): SaveGame {
           world.possession.trust,
           world.possession.gates,
           world.possession.speech,
+          world.possession.memory,
         )
       : emptyPossession(),
   };
@@ -206,6 +209,7 @@ export function applySave(world: SaveWorld, save: SaveGame): void {
       world.possession.trust,
       world.possession.gates,
       world.possession.speech,
+      world.possession.memory,
       parsed.possession,
     );
   }
