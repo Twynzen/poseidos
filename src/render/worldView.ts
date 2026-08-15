@@ -226,6 +226,8 @@ export const POSSESSED_HEAD_EMISSIVE = 0x30124a;
 export const WARM_LIGHT_COLOR = 0xffca81;
 /** Multiplicador de intensidad del PointLight cálido indoor. 1.55 × 1.15 para leerse un poco más fuerte de noche. */
 export const WARM_LIGHT_INTENSITY_MUL = 1.7825;
+/** Altura Y del PointLight cálido indoor. 1.55 × 1.15 para sentarse un poco más alto de noche. */
+export const WARM_LIGHT_Y = 1.7825;
 /** Color de la esfera aditiva de hocico. 0xfff2c0 × 1.15/canal (r/g clamp) para leerse de noche. */
 export const MUZZLE_FLASH_COLOR = 0xffffdd;
 /** Color del PointLight de hocico. 0xffe8a0 × 1.15/canal (r/g clamp) para leerse de noche. */
@@ -1703,7 +1705,7 @@ export function createWorldView(
       const i = Math.max(0, Math.min(1, intensity));
       warmLight.intensity = i * WARM_LIGHT_INTENSITY_MUL;
       warmLight.distance = 6.5 + i * 2.5;
-      warmLight.position.set(wx, 1.55, wy);
+      warmLight.position.set(wx, WARM_LIGHT_Y, wy);
       warmLight.visible = i > 0.02;
       // Tinte un poco más ámbar cuando está fuerte.
       warmLight.color.setRGB(1, 0.66 + i * 0.08, 0.38 + i * 0.1);
