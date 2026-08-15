@@ -1,11 +1,11 @@
 /**
  * Snapshot/restore headless del runtime possession (F5/F9).
- * Solo consecuencias ya validadas: trust, TTLs de gates, mood bias, memoria corta.
+ * Solo consecuencias ya validadas: trust, TTLs de gates, lastApplied, mood bias, memoria corta.
  * No burbujas, timers de display ni LLM.
  */
 
 import { clampTrust, type TrustLedger } from "./trust";
-import type { DialogueBehaviorGates } from "./gates";
+import type { DialogueBehaviorGates, GateTag } from "./gates";
 import type { SpeechDirector } from "./speech";
 import { POSSESSION_TONES, type PossessionTone } from "./lineBank";
 import { DIALOGUE_OPTIONS, type DialogueIntent } from "./dialogue";
@@ -27,10 +27,27 @@ export interface SavePossession {
   moodBias: Record<string, PossessionTone>;
   /** Últimas interacciones validadas; solo ids con entradas. */
   memory: Record<string, MemoryEntry[]>;
+  /**
+   * Últimos tags aplicados por id (hermano de `gates`, no TTL).
+   * Solo ids con tags conocidos nonempty. Puede existir tras TTL 0.
+   */
+  lastApplied: Record<string, GateTag[]>;
 }
 
 const TONE_SET = new Set<string>(POSSESSION_TONES);
 const INTENT_SET = new Set<string>(DIALOGUE_OPTIONS.map((o) => o.intent));
+const GATE_TAG_SET = new Set<string>([
+  "pacify_ttl",
+  "threat_noise",
+  "threat_chase",
+  "threat_speed",
+  "ask_heal",
+  "ask_lucidity",
+  "offer_food",
+  "offer_pacify",
+  "distract_noise",
+  "distract_lure",
+] satisfies GateTag[]);
 
 function isTone(value: unknown): value is PossessionTone {
   return typeof value === "string" && TONE_SET.has(value);
@@ -40,12 +57,16 @@ function isIntent(value: unknown): value is DialogueIntent {
   return typeof value === "string" && INTENT_SET.has(value);
 }
 
+function isGateTag(value: unknown): value is GateTag {
+  return typeof value === "string" && GATE_TAG_SET.has(value);
+}
+
 function finiteNumber(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
 export function emptyPossession(): SavePossession {
-  return { trust: {}, gates: {}, moodBias: {}, memory: {} };
+  return { trust: {}, gates: {}, moodBias: {}, memory: {}, lastApplied: {} };
 }
 
 /** Serializa solo ids con estado. */
@@ -85,7 +106,14 @@ export function capturePossession(
     memoryOut[id] = entries.slice(-MEMORY_CAPACITY).map((e) => ({ ...e }));
   }
 
-  return { trust, gates: gateOut, moodBias, memory: memoryOut };
+  const lastApplied: Record<string, GateTag[]> = {};
+  for (const id of gates.lastAppliedIds()) {
+    const tags = gates.lastApplied(id);
+    if (tags.length === 0) continue;
+    lastApplied[id] = [...tags];
+  }
+
+  return { trust, gates: gateOut, moodBias, memory: memoryOut, lastApplied };
 }
 
 /**
@@ -94,6 +122,7 @@ export function capturePossession(
  * TTL ≤ 0 se omite (id entero si ambos ≤ 0).
  * Memory: intents/tonos desconocidos, who vacío y trustDelta no finito se descartan;
  * listas vacías se omiten; cada lista se recorta a MEMORY_CAPACITY (más recientes).
+ * lastApplied: tags desconocidos se descartan; listas vacías se omiten.
  */
 export function normalizePossession(raw: unknown): SavePossession {
   const out = emptyPossession();
@@ -157,10 +186,28 @@ export function normalizePossession(raw: unknown): SavePossession {
     }
   }
 
+  if (
+    o.lastApplied &&
+    typeof o.lastApplied === "object" &&
+    !Array.isArray(o.lastApplied)
+  ) {
+    for (const [id, rawTags] of Object.entries(
+      o.lastApplied as Record<string, unknown>,
+    )) {
+      if (!id || !Array.isArray(rawTags)) continue;
+      const tags: GateTag[] = [];
+      for (const rawTag of rawTags) {
+        if (isGateTag(rawTag)) tags.push(rawTag);
+      }
+      if (tags.length === 0) continue;
+      out.lastApplied[id] = tags;
+    }
+  }
+
   return out;
 }
 
-/** Reemplaza trust + gates + memory; aplica mood bias (no toca burbujas ajenas al snap). */
+/** Reemplaza trust + gates + lastApplied + memory; aplica mood bias (no toca burbujas ajenas al snap). */
 export function applyPossession(
   ledger: TrustLedger,
   gates: DialogueBehaviorGates,
@@ -177,6 +224,9 @@ export function applyPossession(
   }
   for (const [id, g] of Object.entries(parsed.gates)) {
     gates.restore(id, g);
+  }
+  for (const [id, tags] of Object.entries(parsed.lastApplied)) {
+    gates.restoreLastApplied(id, tags);
   }
   for (const [id, tone] of Object.entries(parsed.moodBias)) {
     speech.setMoodBias(id, tone);

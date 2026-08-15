@@ -1065,8 +1065,11 @@ describe("possession persist (F5/F9)", () => {
       { who: "player", intent: "amenazar", trustDelta: -20, tone: "demonio" },
     ]);
     expect(JSON.stringify(snap)).not.toContain("línea que no se guarda");
-    expect(JSON.stringify(snap)).not.toContain("lastApplied");
-    expect(JSON.stringify(snap)).not.toContain("pacify_ttl");
+    expect(snap.lastApplied["poss-a"]).toEqual([
+      "threat_noise",
+      "threat_chase",
+      "threat_speed",
+    ]);
 
     const ledger2 = new TrustLedger();
     const gates2 = new DialogueBehaviorGates();
@@ -1080,6 +1083,7 @@ describe("possession persist (F5/F9)", () => {
       trustDelta: 14,
       tone: "ruega",
     });
+    expect(gates2.lastApplied("stale")).toEqual(["pacify_ttl"]);
     applyPossession(ledger2, gates2, speech2, memory2, snap);
     expect(ledger2.has("stale")).toBe(false);
     expect(gates2.pacifiedLeft("stale")).toBe(0);
@@ -1092,17 +1096,56 @@ describe("possession persist (F5/F9)", () => {
     expect(speech2.getActive("poss-a")).toBeNull();
     expect(memory2.recent("poss-a")).toEqual(snap.memory["poss-a"]);
     expect(memory2.toneBias("poss-a")).toBe("demonio");
-    expect(gates2.lastApplied("poss-a")).toEqual([]);
+    expect(gates2.lastApplied("poss-a")).toEqual([
+      "threat_noise",
+      "threat_chase",
+      "threat_speed",
+    ]);
     expect(gates2.lastApplied("stale")).toEqual([]);
   });
 
-  test("blob viejo sin memory carga vacío; leftover ids se reemplazan", () => {
+  test("roundtrip lastApplied tras TTL 0; leftover lastApplied se reemplaza", () => {
+    const ledger = new TrustLedger();
+    const gates = new DialogueBehaviorGates();
+    const speech = new SpeechDirector({}, () => 0.2);
+    const memory = new ShortMemory();
+    gates.apply("p", proposeDialogueGates("calmar", GATE_CALM_MIN_TRUST));
+    gates.tick(GATE_CALM_PACIFY_TTL + 1);
+    expect(gates.pacifiedLeft("p")).toBe(0);
+    expect(gates.lastApplied("p")).toEqual(["pacify_ttl"]);
+
+    const snap = capturePossession(ledger, gates, speech, memory);
+    expect(snap.gates["p"]).toBeUndefined();
+    expect(snap.lastApplied["p"]).toEqual(["pacify_ttl"]);
+
+    const gates2 = new DialogueBehaviorGates();
+    gates2.apply(
+      "stale",
+      proposeDialogueGates("ofrecer", GATE_OFFER_MIN_TRUST, {
+        hasOfferFood: true,
+      }),
+    );
+    expect(gates2.lastApplied("stale")).toEqual(["offer_food", "offer_pacify"]);
+    applyPossession(
+      new TrustLedger(),
+      gates2,
+      new SpeechDirector({}, () => 0.1),
+      new ShortMemory(),
+      snap,
+    );
+    expect(gates2.pacifiedLeft("p")).toBe(0);
+    expect(gates2.lastApplied("p")).toEqual(["pacify_ttl"]);
+    expect(gates2.lastApplied("stale")).toEqual([]);
+  });
+
+  test("blob viejo sin memory / lastApplied carga vacío; leftover ids se reemplazan", () => {
     const n = normalizePossession({
       trust: { a: 50 },
       gates: {},
       moodBias: { a: "ruega" },
     });
     expect(n.memory).toEqual({});
+    expect(n.lastApplied).toEqual({});
 
     const memory = new ShortMemory();
     memory.remember("leftover", {
@@ -1111,9 +1154,11 @@ describe("possession persist (F5/F9)", () => {
       trustDelta: 6,
       tone: "lucidez",
     });
+    const leftoverGates = new DialogueBehaviorGates();
+    leftoverGates.apply("leftover", proposeDialogueGates("calmar", 80));
     applyPossession(
       new TrustLedger(),
-      new DialogueBehaviorGates(),
+      leftoverGates,
       new SpeechDirector({}, () => 0.1),
       memory,
       n,
@@ -1121,6 +1166,7 @@ describe("possession persist (F5/F9)", () => {
     expect(memory.has("leftover")).toBe(false);
     expect(memory.ids()).toEqual([]);
     expect(memory.toneBias("a")).toBeUndefined();
+    expect(leftoverGates.lastApplied("leftover")).toEqual([]);
   });
 
   test("normalize: clamp trust, descarta tono desconocido, omite TTL ≤ 0", () => {
@@ -1147,6 +1193,24 @@ describe("possession persist (F5/F9)", () => {
     });
     expect(n.moodBias).toEqual({ a: "lucidez", c: "demonio" });
     expect(n.memory).toEqual({});
+    expect(n.lastApplied).toEqual({});
+  });
+
+  test("normalize lastApplied: descarta tags desconocidos; omite listas vacías", () => {
+    const n = normalizePossession({
+      lastApplied: {
+        "": ["pacify_ttl"],
+        keep: ["pacify_ttl", "not_a_tag", "offer_food"],
+        unknownOnly: ["scream", 12, null],
+        empty: [],
+        junk: "nope",
+      },
+    });
+    expect(n.lastApplied[""]).toBeUndefined();
+    expect(n.lastApplied.empty).toBeUndefined();
+    expect(n.lastApplied.junk).toBeUndefined();
+    expect(n.lastApplied.unknownOnly).toBeUndefined();
+    expect(n.lastApplied.keep).toEqual(["pacify_ttl", "offer_food"]);
   });
 
   test("normalize memory: descarta intent/tono/who/delta inválidos; recorta capacity", () => {

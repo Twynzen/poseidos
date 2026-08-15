@@ -58,6 +58,7 @@ describe("save/load", () => {
       gates: {},
       moodBias: {},
       memory: {},
+      lastApplied: {},
     });
   });
 
@@ -198,6 +199,7 @@ describe("save/load", () => {
       gates: {},
       moodBias: {},
       memory: {},
+      lastApplied: {},
     });
     applySave(world, loaded);
     expect(world.player.x).toBeCloseTo(save.player.x);
@@ -240,12 +242,18 @@ describe("save/load", () => {
       { who: "player", intent: "calmar", trustDelta: 14, tone: "ruega" },
       { who: "player", intent: "amenazar", trustDelta: -20, tone: "demonio" },
     ]);
+    expect(loaded.possession.lastApplied["poss-a"]).toEqual([
+      "threat_noise",
+      "threat_chase",
+      "threat_speed",
+    ]);
 
     const trust2 = new TrustLedger();
     const gates2 = new DialogueBehaviorGates();
     const speech2 = new SpeechDirector({}, () => 0.9);
     const memory2 = new ShortMemory();
     trust2.set("leftover", 11);
+    gates2.apply("leftover", proposeDialogueGates("calmar", 80));
     memory2.remember("leftover", {
       who: "player",
       intent: "preguntar",
@@ -268,6 +276,12 @@ describe("save/load", () => {
     expect(speech2.getMoodBias("poss-a")).toBe("lucidez");
     expect(memory2.recent("poss-a")).toEqual(loaded.possession.memory["poss-a"]);
     expect(memory2.toneBias("poss-a")).toBe("demonio");
+    expect(gates2.lastApplied("poss-a")).toEqual([
+      "threat_noise",
+      "threat_chase",
+      "threat_speed",
+    ]);
+    expect(gates2.lastApplied("leftover")).toEqual([]);
   });
 
   test("possession viejo sin memory sigue cargando (vacío)", () => {
@@ -284,5 +298,6 @@ describe("save/load", () => {
     expect(loaded.possession.trust["poss-a"]).toBe(64);
     expect(loaded.possession.moodBias["poss-a"]).toBe("ruega");
     expect(loaded.possession.memory).toEqual({});
+    expect(loaded.possession.lastApplied).toEqual({});
   });
 });
