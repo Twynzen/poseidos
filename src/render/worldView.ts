@@ -362,6 +362,8 @@ export const BARRICADE_WIDTH = 1.058;
 export const BARRICADE_DEPTH = 0.6325;
 /** Altura Y de las tablas de barricada. 0.7 × 1.15 para sentarse un poco más alto de noche. */
 export const BARRICADE_PLANK_Y = 0.805;
+/** Altura Y de las cruces de barricada. 0.55 × 1.15 para sentarse un poco más alto de noche. */
+export const BARRICADE_CROSS_Y = 0.6325;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -2253,7 +2255,7 @@ function fillTileContent(
     plank.rotation.y = Math.PI / 8;
     content.add(plank);
     const cross = new THREE.Mesh(barricadeGeo, barricadeEdgeMat);
-    cross.position.set(x + 0.5, 0.55, y + 0.5);
+    cross.position.set(x + 0.5, BARRICADE_CROSS_Y, y + 0.5);
     cross.rotation.y = -Math.PI / 5;
     cross.scale.set(0.95, 0.7, 0.9);
     content.add(cross);
