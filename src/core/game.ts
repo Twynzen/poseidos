@@ -1615,6 +1615,7 @@ export class Game {
     const moodBias = this.hudMoodBias();
     const memoryTone = this.hudMemoryTone();
     const lastApplied = this.hudLastApplied();
+    const lastRejected = this.hudLastRejected();
     this.moodlesHud.sync(this.buildPlayerHudMoodles());
     this.hotbarHud.sync(hotbarSlots(this.player.inventory), this.hotbarSelected);
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
@@ -1645,6 +1646,7 @@ export class Game {
       moodBias,
       memoryTone,
       lastApplied,
+      lastRejected,
       indoor,
       safeHint,
       raining,
@@ -1757,6 +1759,26 @@ export class Game {
       DIALOGUE_REACH,
     );
     return nearGated ? this.gates.lastApplied(nearGated.id) : [];
+  }
+
+  /**
+   * Últimos tags rechazados para el HUD: target del panel si está abierto,
+   * si no el poseído más cercano con `gates.lastRejected` (DIALOGUE_REACH).
+   * Un solo store: `DialogueBehaviorGates.lastRejected` — no es TTL.
+   */
+  private hudLastRejected(): readonly GateTag[] {
+    if (this.dialogue.open && this.dialogue.target) {
+      return this.gates.lastRejected(this.dialogue.target);
+    }
+    const nearRejected = nearestPossessed(
+      this.hostiles.hostiles.filter(
+        (h) => this.gates.lastRejected(h.id).length > 0,
+      ),
+      this.player.x,
+      this.player.y,
+      DIALOGUE_REACH,
+    );
+    return nearRejected ? this.gates.lastRejected(nearRejected.id) : [];
   }
 
   /** +/- zoom iso: ajusta frustum y reaplica proyección. */

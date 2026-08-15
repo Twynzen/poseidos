@@ -8,6 +8,7 @@ import {
   formatMoodBiasHud,
   formatMemoryToneHud,
   formatLastGateHud,
+  formatLastRejectedHud,
   type HudStatusInput,
 } from "../src/ui/hudStatus";
 
@@ -359,5 +360,79 @@ describe("formatHudStatus compact", () => {
     expect(formatHudStatus(base({ memoryTone: "lucidez" }))).toBe(
       "día (21%) · mudos 3 · poseídos 2 · MEMORIA LUCIDEZ · inv food×1 (0.5kg) · F1 ayuda",
     );
+  });
+
+  test("lastRejected vacío / ausente no pinta RECHAZO; tags → RECHAZO tag", () => {
+    expect(formatLastRejectedHud(undefined)).toBeNull();
+    expect(formatLastRejectedHud(null)).toBeNull();
+    expect(formatLastRejectedHud([])).toBeNull();
+    expect(formatLastRejectedHud(["pacify_ttl"])).toBe("RECHAZO pacify_ttl");
+    expect(formatLastRejectedHud(["offer_food", "offer_pacify"])).toBe(
+      "RECHAZO offer_food,offer_pacify",
+    );
+    expect(
+      formatLastRejectedHud(["threat_noise", "threat_chase", "threat_speed"]),
+    ).toBe("RECHAZO threat_noise,threat_chase,threat_speed");
+
+    const bare = formatHudStatus(base());
+    expect(bare).not.toContain("RECHAZO");
+    expect(formatHudStatus(base({ lastRejected: null }))).not.toContain(
+      "RECHAZO",
+    );
+    expect(formatHudStatus(base({ lastRejected: [] }))).not.toContain("RECHAZO");
+    expect(formatHudStatus(base({ lastRejected: ["pacify_ttl"] }))).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · RECHAZO pacify_ttl · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(
+      formatHudStatus(base({ lastRejected: ["offer_food", "offer_pacify"] })),
+    ).toContain("RECHAZO offer_food,offer_pacify");
+    expect(
+      formatHudStatus(base({ gameOver: true, lastRejected: ["pacify_ttl"] })),
+    ).not.toContain("RECHAZO");
+  });
+
+  test("RECHAZO no choca con CÓDIGO / CALMA / FURIA / LUCIDEZ / MEMORIA", () => {
+    expect(formatLastGateHud(["pacify_ttl"])).toBe("CÓDIGO pacify_ttl");
+    expect(formatLastRejectedHud(["pacify_ttl"])).toBe("RECHAZO pacify_ttl");
+    expect(formatLastRejectedHud(["offer_food", "offer_pacify"])).toBe(
+      "RECHAZO offer_food,offer_pacify",
+    );
+    expect(formatMemoryToneHud("lucidez")).toBe("MEMORIA LUCIDEZ");
+    expect(
+      formatHudStatus(
+        base({
+          pacifyLeft: 8,
+          speedBumpLeft: 3.5,
+          moodBias: "lucidez",
+          memoryTone: "demonio",
+          lastApplied: ["pacify_ttl"],
+          lastRejected: ["offer_food", "offer_pacify"],
+        }),
+      ),
+    ).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CALMA 8 · FURIA 4 · LUCIDEZ · MEMORIA DEMONIO · CÓDIGO pacify_ttl · RECHAZO offer_food,offer_pacify · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(
+      formatHudStatus(
+        base({
+          pacifyLeft: 8,
+          speedBumpLeft: 3.5,
+          moodBias: "lucidez",
+          memoryTone: "demonio",
+          lastApplied: ["pacify_ttl"],
+        }),
+      ),
+    ).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CALMA 8 · FURIA 4 · LUCIDEZ · MEMORIA DEMONIO · CÓDIGO pacify_ttl · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(formatHudStatus(base({ lastApplied: ["pacify_ttl"] }))).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CÓDIGO pacify_ttl · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(formatHudStatus(base({ lastApplied: ["pacify_ttl"] }))).not.toContain(
+      "RECHAZO",
+    );
+    expect(
+      formatHudStatus(base({ lastRejected: ["pacify_ttl"] })),
+    ).not.toContain("CÓDIGO");
   });
 });
