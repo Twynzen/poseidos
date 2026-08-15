@@ -8,6 +8,7 @@ import { TrustLedger } from "./trust";
 import { formatMemorySummary, type ShortMemory } from "./memory";
 import { GATE_LINE_MAX_LEN, compactKnownGateTags } from "./gates";
 import {
+  compactMoodBias,
   formatLlmPrompt,
   resolveLineWithBridge,
   type LlmBridge,
@@ -167,6 +168,7 @@ export async function applyDialogueChoiceAsync(
   gateLine?: string | null,
   lastApplied?: readonly string[] | null,
   lastRejected?: readonly string[] | null,
+  moodBias?: PossessionTone | string | null,
 ): Promise<DialogueResult> {
   ledger.register(entityId);
   const opt = optionFor(intent);
@@ -176,6 +178,7 @@ export async function applyDialogueChoiceAsync(
   const compactGate = compactGateLine(gateLine);
   const compactApplied = compactKnownGateTags(lastApplied);
   const compactRejected = compactKnownGateTags(lastRejected);
+  const compactBias = compactMoodBias(moodBias);
   const snapshot = {
     entityId,
     tone: opt.tone,
@@ -186,6 +189,7 @@ export async function applyDialogueChoiceAsync(
     ...(compactGate ? { gateLine: compactGate } : {}),
     ...(compactApplied.length > 0 ? { lastApplied: compactApplied } : {}),
     ...(compactRejected.length > 0 ? { lastRejected: compactRejected } : {}),
+    ...(compactBias ? { moodBias: compactBias } : {}),
     prompt: formatLlmPrompt({
       tone: opt.tone,
       intent,
@@ -194,6 +198,7 @@ export async function applyDialogueChoiceAsync(
       ...(compactGate ? { gateLine: compactGate } : {}),
       ...(compactApplied.length > 0 ? { lastApplied: compactApplied } : {}),
       ...(compactRejected.length > 0 ? { lastRejected: compactRejected } : {}),
+      ...(compactBias ? { moodBias: compactBias } : {}),
     }),
   };
   const resolved = await resolveLineWithBridge({

@@ -4,7 +4,7 @@
  * Estilo Vivant: ai-req / ai-resp por archivos inyectables; nunca bloquea el sim.
  */
 
-import type { PossessionTone } from "./lineBank";
+import { POSSESSION_TONES, type PossessionTone } from "./lineBank";
 import { compactKnownGateTags, type GateTag } from "./gates";
 
 export interface LlmAskSnapshot {
@@ -23,6 +23,8 @@ export interface LlmAskSnapshot {
   lastApplied?: GateTag[];
   /** Últimos tags rechazados (`gates.lastRejected`); omitido si vacío. */
   lastRejected?: GateTag[];
+  /** Sesgo de habla ya validado (`speech.getMoodBias`); omitido si vacío. */
+  moodBias?: PossessionTone;
 }
 
 /** Interfaz mínima del bridge (stub hoy; API real después). */
@@ -133,6 +135,7 @@ export class StubLlmBridge implements LlmBridge {
       gateLine: snapshot.gateLine ?? null,
       lastApplied: snapshot.lastApplied ?? null,
       lastRejected: snapshot.lastRejected ?? null,
+      moodBias: snapshot.moodBias ?? null,
     });
     await files.writeRequest(requestId, body);
 
@@ -193,6 +196,7 @@ export function formatLlmPrompt(
     | "gateLine"
     | "lastApplied"
     | "lastRejected"
+    | "moodBias"
   >,
 ): string {
   const bits = [`Tono: ${fields.tone}`];
@@ -206,7 +210,18 @@ export function formatLlmPrompt(
   if (applied.length > 0) bits.push(`Aplicado: ${applied.join(", ")}`);
   const rejected = compactKnownGateTags(fields.lastRejected);
   if (rejected.length > 0) bits.push(`Rechazado: ${rejected.join(", ")}`);
+  const bias = compactMoodBias(fields.moodBias);
+  if (bias) bits.push(`Sesgo: ${bias}`);
   return bits.join(". ") + ".";
+}
+
+/** Sesgo de habla ya validado; vacío / desconocido se omite. */
+export function compactMoodBias(bias?: string | null): PossessionTone | "" {
+  if (typeof bias !== "string") return "";
+  const t = bias.trim();
+  return (POSSESSION_TONES as readonly string[]).includes(t)
+    ? (t as PossessionTone)
+    : "";
 }
 
 export interface ResolveLineOptions {

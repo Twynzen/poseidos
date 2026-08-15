@@ -587,6 +587,7 @@ export class Game {
     const lastGateLine = this.gates.gateLine(id);
     const lastApplied = this.gates.lastApplied(id);
     const lastRejected = this.gates.lastRejected(id);
+    const lastMoodBias = this.speech.getMoodBias(id);
     const result = await applyDialogueChoiceAsync(
       this.trust,
       id,
@@ -597,6 +598,7 @@ export class Game {
       lastGateLine,
       lastApplied,
       lastRejected,
+      lastMoodBias,
     );
     // Ofrecer: detectar comida antes de validar gates (diálogo propone; código valida)
     const inv = this.player.inventory;
