@@ -260,6 +260,8 @@ export const IMPACT_SPARK_LIGHT_DECAY = 1.74;
 export const TRACER_COLOR = 0xffffb8;
 /** Color del PointLight del flash del tracer. 0xffc060 × 1.15/canal (r clamp) para leerse de noche. */
 export const TRACER_FLASH_COLOR = 0xffdd6e;
+/** Decay del PointLight del flash del tracer. 2 × 0.87 para caer un poco más lento de noche. */
+export const TRACER_FLASH_DECAY = 1.74;
 /** Color del PointLight fill de la linterna. 0xb0d0ff × 1.15/canal (b clamp) para leerse de noche. */
 export const FLASHLIGHT_FILL_COLOR = 0xcaefff;
 /** Distancia base del PointLight fill de la linterna. 7 × 1.15 para alcanzar un poco más de noche. */
@@ -1036,7 +1038,7 @@ export function createWorldView(
     mesh.rotation.y = tracerYaw(from, to);
     scene.add(mesh);
 
-    const flash = new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2);
+    const flash = new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY);
     flash.position.set(from.x, TRACER_HEIGHT + 0.15, from.y);
     scene.add(flash);
 
