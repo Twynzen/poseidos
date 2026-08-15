@@ -241,6 +241,47 @@ describe("collectPossessionFrom + snapshot possession", () => {
     });
     expect(snaps[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
     expect(snaps[0]!.pacifiedLeft).toBeGreaterThan(0);
+    expect(snaps[0]!.lastApplied).toEqual(["pacify_ttl"]);
+
+    gates.tick(GATE_CALM_PACIFY_TTL + 0.1);
+    const afterTtl = collectPossessionFrom(ledger, gates, ["p1"]);
+    expect(afterTtl[0]!.trust).toBe(65);
+    expect(afterTtl[0]!.pacifiedLeft).toBe(0);
+    expect(afterTtl[0]!.speedBumpLeft).toBe(0);
+    expect(afterTtl[0]!.speedBumpMul).toBe(1);
+    expect(afterTtl[0]!.lastApplied).toEqual(["pacify_ttl"]);
+  });
+
+  test("collector: lastApplied omitido si vacío; tags desconocidos se descartan", () => {
+    const ledger = new TrustLedger();
+    ledger.register("p1", 50);
+    const gates = new DialogueBehaviorGates();
+
+    const none = collectPossessionFrom(ledger, gates, ["p1"]);
+    expect(none).toHaveLength(1);
+    expect(none[0]).toEqual({
+      id: "p1",
+      trust: 50,
+      pacifiedLeft: 0,
+      speedBumpLeft: 0,
+      speedBumpMul: 1,
+      pacified: false,
+    });
+    expect(none[0]!.lastApplied).toBeUndefined();
+    expect("lastApplied" in none[0]!).toBe(false);
+
+    gates.restoreLastApplied("p1", [
+      "pacify_ttl",
+      "not_a_tag" as "pacify_ttl",
+      "offer_food",
+    ]);
+    const mixed = collectPossessionFrom(ledger, gates, ["p1"]);
+    expect(mixed[0]!.lastApplied).toEqual(["pacify_ttl", "offer_food"]);
+    expect(mixed[0]!.trust).toBe(50);
+    expect(mixed[0]!.pacifiedLeft).toBe(0);
+    expect(mixed[0]!.speedBumpLeft).toBe(0);
+    expect(mixed[0]!.speedBumpMul).toBe(1);
+    expect(mixed[0]!.pacified).toBe(false);
   });
 
   test("collector: sin ids → todos del ledger; default vacío si ledger vacío", () => {
@@ -254,6 +295,8 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect(all.map((s) => s.id).sort()).toEqual(["a", "b"]);
     expect(all.find((s) => s.id === "b")!.pacified).toBe(true); // trust ≥ 70
     expect(all.find((s) => s.id === "a")!.pacified).toBe(false);
+    expect(all.find((s) => s.id === "a")!.lastApplied).toBeUndefined();
+    expect(all.find((s) => s.id === "b")!.lastApplied).toBeUndefined();
   });
 
   test("buildNetSnapshot incluye possession; default vacío", () => {

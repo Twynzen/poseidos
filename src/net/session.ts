@@ -4,6 +4,7 @@
  */
 import type { HostileMode } from "../ai/hostile";
 import type { HostileSim } from "../ai/hostile";
+import type { GateTag } from "../possession/gates";
 
 /** Input de cliente → host (stub: solo move). */
 export interface NetInput {
@@ -59,6 +60,8 @@ export interface NetPossessionSnap {
   speedBumpMul: number;
   /** Attitude efectiva (trust OR TTL). */
   pacified: boolean;
+  /** Últimos tags aplicados (`gates.lastApplied`); omitido si vacío. */
+  lastApplied?: GateTag[];
 }
 
 /**
@@ -83,7 +86,7 @@ export interface NetSnapshot {
   doors: NetDoorSnap[];
   barricades: NetBarricadeSnap[];
   containers: NetContainerSnap[];
-  /** Poseídos: trust + TTLs gated (default []). */
+  /** Poseídos: trust + TTLs gated + lastApplied (default []). */
   possession: NetPossessionSnap[];
 }
 
