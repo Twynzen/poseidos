@@ -159,6 +159,7 @@ import {
 import { WeatherSystem, rainNeedsMult } from "../world/weather";
 import {
   LocalLoopbackSession,
+  publishHostDoors,
   publishHostHostiles,
   publishHostPossession,
 } from "../net";
@@ -1095,6 +1096,7 @@ export class Game {
     this.spawnGrace = tickSpawnGrace(this.spawnGrace, dt);
     this.tickSpeech(dt);
     publishHostHostiles(this.session, this.hostiles);
+    publishHostDoors(this.session, this.map);
     this.publishPossessionSnap();
     if (!this.player.alive) {
       this.enterGameOver();

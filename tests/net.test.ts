@@ -9,6 +9,7 @@ import {
   collectHostPossessionFrom,
   collectPossessionFrom,
   LocalLoopbackSession,
+  publishHostDoors,
   publishHostHostiles,
   publishHostPossession,
   type NetSnapshot,
@@ -276,6 +277,75 @@ describe("LocalLoopbackSession", () => {
     expect(empty.possession[0]!.lastApplied).toEqual(["pacify_ttl"]);
     expect(empty.possession[0]!.lastRejected).toEqual(["offer_food"]);
     expect(empty.possession[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(empty.possession[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+  });
+
+  test("Game/host publish: TileMap doors → loopback x/y/open; vacío → []; hostiles+possession sin cambio", () => {
+    const session = new LocalLoopbackSession({ playerX: 0, playerY: 0 });
+    expect(session.getSnapshot().doors).toEqual([]);
+
+    const map = new TileMap(6, 6, makeFloor);
+    map.set(1, 1, makeDoor(false));
+    map.set(2, 3, makeDoor(true));
+    map.set(4, 4, makeBarricade());
+
+    const sim = new HostileSim();
+    const a = sim.add("a", 1, 2);
+    a.mode = "chase";
+
+    const ledger = new TrustLedger();
+    ledger.register("p1", 65);
+    const gates = new DialogueBehaviorGates();
+    const proposal = proposeDialogueGates("calmar", ledger.get("p1"));
+    gates.apply("p1", proposal);
+    const speech = new SpeechDirector({}, () => 0.5);
+    speech.forceSpeak("p1", "demonio", "host línea", "dialogue", "llm");
+    speech.setMoodBias("p1", "lucidez");
+    const mem = new ShortMemory();
+    mem.remember("p1", {
+      who: "player",
+      intent: "preguntar",
+      trustDelta: 6,
+      tone: "lucidez",
+    });
+
+    publishHostPossession(session, ledger, gates, ledger.ids(), speech, mem);
+    publishHostHostiles(session, sim);
+    publishHostDoors(session, map);
+
+    const snap = session.getSnapshot();
+    expect(snap.doors).toContainEqual({ x: 1, y: 1, open: false });
+    expect(snap.doors).toContainEqual({ x: 2, y: 3, open: true });
+    expect(snap.doors).toHaveLength(2);
+    expect(Object.keys(snap.doors[0]!).sort()).toEqual(["open", "x", "y"]);
+    expect(snap.doors[0]).not.toHaveProperty("kind");
+    expect(snap.hostiles).toEqual([{ id: "a", x: 1, y: 2, mode: "chase" }]);
+    expect(snap.possession[0]!.trust).toBe(65);
+    expect(snap.possession[0]!.moodBias).toBe("lucidez");
+    expect(snap.possession[0]!.line).toBe("host línea");
+    expect(snap.possession[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+
+    session.setDoor(9, 9, false);
+    expect(session.getSnapshot().doors).toContainEqual({ x: 9, y: 9, open: false });
+    publishHostDoors(session, map);
+    expect(session.getSnapshot().doors).not.toContainEqual({
+      x: 9,
+      y: 9,
+      open: false,
+    });
+    expect(session.getSnapshot().doors).toHaveLength(2);
+
+    map.set(1, 1, makeDoor(true));
+    publishHostDoors(session, map);
+    expect(session.getSnapshot().doors).toContainEqual({ x: 1, y: 1, open: true });
+
+    publishHostDoors(session, new TileMap(4, 4, makeFloor));
+    const empty = session.getSnapshot();
+    expect(empty.doors).toEqual([]);
+    expect(empty.hostiles).toEqual([{ id: "a", x: 1, y: 2, mode: "chase" }]);
+    expect(empty.possession[0]!.trust).toBe(65);
+    expect(empty.possession[0]!.moodBias).toBe("lucidez");
+    expect(empty.possession[0]!.line).toBe("host línea");
     expect(empty.possession[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
   });
 
