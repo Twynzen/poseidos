@@ -213,8 +213,8 @@ export const PLAYER_COLOR = 0x55a4f4;
 export const PLAYER_HEAD_COLOR = 0x91d1ff;
 /** Emisivo de la silueta fallback (cabeza). 0x102030 × 1.15/canal para leerse de noche. */
 export const PLAYER_HEAD_EMISSIVE = 0x122537;
-/** Amenaza muda: rojo oscuro. */
-const HOSTILE_COLOR = 0x6b1a1a;
+/** Amenaza muda: rojo oscuro. 0x6b1a1a × 1.15/canal para leerse de noche. */
+export const HOSTILE_COLOR = 0x7b1e1e;
 /** Poseído: púrpura enfermo. */
 const POSSESSED_COLOR = 0x5a2d6b;
 const POSSESSED_EMISSIVE = 0x1a0820;
