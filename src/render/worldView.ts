@@ -224,6 +224,8 @@ export const POSSESSED_HEAD_COLOR = 0x8c469f;
 export const POSSESSED_HEAD_EMISSIVE = 0x30124a;
 /** Color del pool cálido indoor de noche. 0xffb070 × 1.15/canal (r clamp) para leerse de noche. */
 export const WARM_LIGHT_COLOR = 0xffca81;
+/** Multiplicador de intensidad del PointLight cálido indoor. 1.55 × 1.15 para leerse un poco más fuerte de noche. */
+export const WARM_LIGHT_INTENSITY_MUL = 1.7825;
 /** Color de la esfera aditiva de hocico. 0xfff2c0 × 1.15/canal (r/g clamp) para leerse de noche. */
 export const MUZZLE_FLASH_COLOR = 0xffffdd;
 /** Color del PointLight de hocico. 0xffe8a0 × 1.15/canal (r/g clamp) para leerse de noche. */
@@ -1699,7 +1701,7 @@ export function createWorldView(
     },
     syncWarmLight(wx, wy, intensity) {
       const i = Math.max(0, Math.min(1, intensity));
-      warmLight.intensity = i * 1.55;
+      warmLight.intensity = i * WARM_LIGHT_INTENSITY_MUL;
       warmLight.distance = 6.5 + i * 2.5;
       warmLight.position.set(wx, 1.55, wy);
       warmLight.visible = i > 0.02;
