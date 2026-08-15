@@ -37,7 +37,7 @@ export const MARKER_PALETTE: Readonly<Record<MarkerRole, MarkerPalette>> = {
     glyph: "◆",
   },
   loot: {
-    ring: 0xd4a03a,
+    ring: 0xf4b843,
     badge: 0xf0c060,
     emissive: 0x403010,
     glyph: "▣",
