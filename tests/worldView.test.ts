@@ -52,6 +52,7 @@ import {
   CHEVRON_Y,
   CHEVRON_TILT,
   NOISE_RING_Y,
+  MARKER_RING_Y,
 } from "../src/render/worldView";
 
 describe("worldView player head mesh", () => {
@@ -4595,6 +4596,8 @@ describe("worldView facing chevron tilt", () => {
     expect(CHEVRON_TILT).toBeCloseTo(-0.35 * 1.15, 10);
     expect(NOISE_RING_Y).toBe(0.0575);
     expect(NOISE_RING_Y).toBeCloseTo(0.05 * 1.15, 10);
+    expect(MARKER_RING_Y).toBe(0.046);
+    expect(MARKER_RING_Y).toBeCloseTo(0.04 * 1.15, 10);
     expect(CHEVRON_Y).toBe(0.138);
     expect(MUZZLE_FORWARD).toBe(0.552);
     expect(FLASHLIGHT_SPOT_TARGET_Y).toBe(0.138);
@@ -4640,6 +4643,11 @@ describe("worldView facing chevron tilt", () => {
     expect(src).toContain("slot.mesh.position.set(state.x, NOISE_RING_Y, state.y)");
     expect(src).not.toMatch(/const NOISE_RING_Y = 0\.05;/);
     expect(src).not.toMatch(/export const NOISE_RING_Y = 0\.05;/);
+    expect(src).toContain("export const MARKER_RING_Y = 0.046");
+    expect(src).toContain("ring.position.y = MARKER_RING_Y");
+    expect(src).not.toMatch(/ring\.position\.y = 0\.04/);
+    expect(src).not.toMatch(/const MARKER_RING_Y = 0\.04;/);
+    expect(src).not.toMatch(/export const MARKER_RING_Y = 0\.04;/);
     expect(src).toContain("export const CHEVRON_Y = 0.138");
     expect(src).toContain("chevronMesh.position.set(x, CHEVRON_Y, z)");
     expect(src).not.toMatch(/const CHEVRON_Y = 0\.12/);
@@ -4810,6 +4818,8 @@ describe("worldView noise ring Y", () => {
   test("noise ring Y 0.05 × 1.15 → 0.0575; chevron-tilt/chevron-y/muzzle-forward/spot-target-y/y-offset/distance/intensity/decay/impact-spark-decay/muzzle-decay/spot-decay/fill-decay/warm-decay/visible-eps/amber-B-gain/amber-B/amber-G-gain/amber-G/gain/base/Y/intensity/color/spot-gain/extra/spot-Y/fill-Y/gain/base/flash/mesh/color/possessed/hostile/player/palette/badge-Y iguales", () => {
     expect(NOISE_RING_Y).toBe(0.0575);
     expect(NOISE_RING_Y).toBeCloseTo(0.05 * 1.15, 10);
+    expect(MARKER_RING_Y).toBe(0.046);
+    expect(MARKER_RING_Y).toBeCloseTo(0.04 * 1.15, 10);
     expect(CHEVRON_TILT).toBe(-0.4025);
     expect(CHEVRON_Y).toBe(0.138);
     expect(MUZZLE_FORWARD).toBe(0.552);
@@ -4846,6 +4856,233 @@ describe("worldView noise ring Y", () => {
       resolve(process.cwd(), "src/render/worldView.ts"),
       "utf8",
     );
+    expect(src).toContain("export const NOISE_RING_Y = 0.0575");
+    expect(src).toContain("mesh.position.y = NOISE_RING_Y");
+    expect(src).toContain("slot.mesh.position.set(state.x, NOISE_RING_Y, state.y)");
+    expect(src).not.toMatch(/const NOISE_RING_Y = 0\.05;/);
+    expect(src).not.toMatch(/export const NOISE_RING_Y = 0\.05;/);
+    expect(src).toContain("export const MARKER_RING_Y = 0.046");
+    expect(src).toContain("ring.position.y = MARKER_RING_Y");
+    expect(src).not.toMatch(/ring\.position\.y = 0\.04/);
+    expect(src).not.toMatch(/const MARKER_RING_Y = 0\.04;/);
+    expect(src).not.toMatch(/export const MARKER_RING_Y = 0\.04;/);
+    expect(src).toContain("export const CHEVRON_TILT = -0.4025");
+    expect(src).toContain("chevronMesh.rotation.x = CHEVRON_TILT");
+    expect(src).not.toMatch(/chevronMesh\.rotation\.x = -0\.35/);
+    expect(src).not.toMatch(/const CHEVRON_TILT = -0\.35/);
+    expect(src).not.toMatch(/export const CHEVRON_TILT = -0\.35/);
+    expect(src).toContain("export const CHEVRON_Y = 0.138");
+    expect(src).toContain("chevronMesh.position.set(x, CHEVRON_Y, z)");
+    expect(src).not.toMatch(/const CHEVRON_Y = 0\.12/);
+    expect(src).not.toMatch(/export const CHEVRON_Y = 0\.12/);
+    expect(src).not.toMatch(/chevronMesh\.position\.set\(x, 0\.12, z\)/);
+    expect(src).toContain("export const MUZZLE_FORWARD = 0.552");
+    expect(src).toContain("Math.sin(playerGltfYaw) * MUZZLE_FORWARD");
+    expect(src).toContain("Math.cos(playerGltfYaw) * MUZZLE_FORWARD");
+    expect(src).toContain("muzzleMesh.position.set(ox, TRACER_HEIGHT, oz)");
+    expect(src).toContain("muzzleLight.position.set(ox, TRACER_HEIGHT, oz)");
+    expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
+    expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
+    expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
+    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
+    expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
+    expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
+    expect(src).toContain("flash.position.set(from.x, TRACER_HEIGHT + TRACER_FLASH_Y_OFFSET, from.y)");
+    expect(src).not.toMatch(/flash\.position\.set\(from\.x, TRACER_HEIGHT \+ 0\.15, from\.y\)/);
+    expect(src).not.toMatch(/export const TRACER_FLASH_Y_OFFSET = 0\.15/);
+    expect(src).toContain("export const TRACER_FLASH_DISTANCE = 3.68");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, TRACER_FLASH_INTENSITY, TRACER_FLASH_DISTANCE, TRACER_FLASH_DECAY)");
+    expect(src).not.toMatch(/new THREE\.PointLight\(TRACER_FLASH_COLOR, TRACER_FLASH_INTENSITY, 3\.2, TRACER_FLASH_DECAY\)/);
+    expect(src).not.toMatch(/new THREE\.PointLight\(TRACER_FLASH_COLOR, 2\.4, 3\.2, TRACER_FLASH_DECAY\)/);
+    expect(src).not.toMatch(/new THREE\.PointLight\(TRACER_FLASH_COLOR, 2\.4, 3\.2, 2\)/);
+    expect(src).not.toMatch(/export const TRACER_FLASH_DISTANCE = 3\.2/);
+    expect(src).toContain("t.flash.intensity = TRACER_FLASH_INTENSITY * op");
+    expect(src).not.toMatch(/t\.flash\.intensity = 2\.4 \* op/);
+    expect(src).toContain("export const TRACER_FLASH_INTENSITY = 2.76");
+    expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
+    expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
+    expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
+    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    IMPACT_SPARK_LIGHT_DECAY,");
+    expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
+    expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
+    expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
+    expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
+    expect(src).toContain("new THREE.PointLight(\n    IMPACT_SPARK_LIGHT_COLOR,");
+    expect(src).toContain("export const MUZZLE_LIGHT_DECAY = 1.74");
+    expect(src).toContain("MUZZLE_LIGHT_DISTANCE,\n    MUZZLE_LIGHT_DECAY,");
+    expect(src).not.toMatch(/MUZZLE_LIGHT_DISTANCE,\s*\n\s*2,/);
+    expect(src).not.toMatch(/export const MUZZLE_LIGHT_DECAY = 2/);
+    expect(src).toContain("const MUZZLE_LIGHT_DISTANCE = 2.6");
+    expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
+    expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
+    expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
+    expect(src).toContain("FLASHLIGHT_SPOT_PENUMBRA,\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
+    expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
+    expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
+    expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
+    expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
+    expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, 0, 7.5, WARM_LIGHT_DECAY)");
+    expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
+    expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
+    expect(src).toContain("warmLight.visible = i > WARM_LIGHT_VISIBLE_EPS");
+    expect(src).not.toMatch(/warmLight\.visible = i > 0\.02/);
+    expect(src).not.toMatch(/export const WARM_LIGHT_VISIBLE_EPS = 0\.02/);
+    expect(src).toContain("export const WARM_LIGHT_AMBER_B_GAIN = 0.115");
+    expect(src).toContain("export const WARM_LIGHT_AMBER_B = 0.437");
+    expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
+    expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
+    expect(src).toContain(
+      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+    );
+    expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
+    expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
+    expect(src).toContain("export const WARM_LIGHT_DISTANCE_BASE = 7.475");
+    expect(src).toContain(
+      "warmLight.distance = WARM_LIGHT_DISTANCE_BASE + i * WARM_LIGHT_DISTANCE_GAIN",
+    );
+    expect(src).not.toMatch(/export const WARM_LIGHT_DISTANCE_GAIN = 2\.5/);
+    expect(src).not.toMatch(
+      /warmLight\.distance = WARM_LIGHT_DISTANCE_BASE \+ i \* 2\.5/,
+    );
+    expect(src).not.toMatch(/warmLight\.distance = 6\.5 \+ i \* 2\.5/);
+    expect(src).toContain("export const WARM_LIGHT_Y = 1.7825");
+    expect(src).toContain("warmLight.position.set(wx, WARM_LIGHT_Y, wy)");
+    expect(src).not.toMatch(/export const WARM_LIGHT_Y = 1\.55/);
+    expect(src).not.toMatch(/warmLight\.position\.set\(wx, 1\.55, wy\)/);
+    expect(src).toContain("warmLight.position.set(0, 1.6, 0)");
+    expect(src).toContain("export const WARM_LIGHT_INTENSITY_MUL = 1.7825");
+    expect(src).toContain("warmLight.intensity = i * WARM_LIGHT_INTENSITY_MUL");
+    expect(src).not.toMatch(/export const WARM_LIGHT_INTENSITY_MUL = 1\.55/);
+    expect(src).not.toMatch(/warmLight\.intensity = i \* 1\.55/);
+    expect(src).toContain("export const FLASHLIGHT_SPOT_DISTANCE_GAIN = 2.3");
+    expect(src).toContain("export const FLASHLIGHT_SPOT_DISTANCE_EXTRA = 1.84");
+    expect(src).toContain(
+      "torchSpot.distance = FLASHLIGHT_CONE_LENGTH + FLASHLIGHT_SPOT_DISTANCE_EXTRA + i * FLASHLIGHT_SPOT_DISTANCE_GAIN",
+    );
+    expect(src).toContain("export const FLASHLIGHT_SPOT_Y = 1.7825");
+    expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
+    expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
+    expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
+    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
+    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
+    expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
+    expect(src).toContain(
+      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+    );
+    expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
+    expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
+    expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
+    expect(src).toContain("color: TRACER_COLOR");
+    expect(src).toContain("export const IMPACT_SPARK_COLOR = 0xffef93");
+    expect(src).toContain("color: IMPACT_SPARK_COLOR");
+    expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
+    expect(src).toContain("color: MUZZLE_FLASH_COLOR");
+    expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
+    expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
+    expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
+    expect(src).toContain("color: POSSESSED_HEAD_COLOR");
+    expect(src).toContain("export const POSSESSED_HEAD_COLOR = 0x8c469f");
+    expect(src).toContain("emissive: POSSESSED_EMISSIVE");
+    expect(src).toContain("color: POSSESSED_COLOR");
+    expect(src).toContain("const POSSESSED_EMISSIVE = 0x1e0925");
+    expect(src).toContain("emissiveIntensity: 0.22");
+    expect(src).toContain("color: HOSTILE_COLOR");
+    expect(src).toContain("color: PLAYER_COLOR");
+    expect(src).toContain("color: PLAYER_HEAD_COLOR");
+    expect(src).toContain("emissive: PLAYER_HEAD_EMISSIVE");
+    expect(TRACER_FLASH_COLOR).toBe(0xffdd6e);
+    expect(TRACER_FLASH_INTENSITY).toBe(2.76);
+    expect(TRACER_FLASH_DISTANCE).toBe(3.68);
+    expect(TRACER_FLASH_DECAY).toBe(1.74);
+    expect(TRACER_FLASH_Y_OFFSET).toBe(0.1725);
+    expect(TRACER_COLOR).toBe(0xffffb8);
+    expect(IMPACT_SPARK_LIGHT_COLOR).toBe(0xffef93);
+    expect(IMPACT_SPARK_COLOR).toBe(0xffef93);
+    expect(IMPACT_SPARK_LIGHT_DECAY).toBe(1.74);
+    expect(MUZZLE_LIGHT_COLOR).toBe(0xffffb8);
+    expect(MUZZLE_LIGHT_DECAY).toBe(1.74);
+    expect(MUZZLE_FLASH_COLOR).toBe(0xffffdd);
+    expect(WARM_LIGHT_COLOR).toBe(0xffca81);
+    expect(WARM_LIGHT_DECAY).toBe(1.74);
+    expect(WARM_LIGHT_VISIBLE_EPS).toBe(0.0174);
+    expect(WARM_LIGHT_AMBER_B_GAIN).toBe(0.115);
+    expect(WARM_LIGHT_AMBER_B).toBe(0.437);
+    expect(WARM_LIGHT_AMBER_G_GAIN).toBe(0.092);
+    expect(WARM_LIGHT_AMBER_G).toBe(0.759);
+    expect(WARM_LIGHT_DISTANCE_GAIN).toBe(2.875);
+    expect(WARM_LIGHT_DISTANCE_BASE).toBe(7.475);
+    expect(WARM_LIGHT_Y).toBe(1.7825);
+    expect(WARM_LIGHT_INTENSITY_MUL).toBe(1.7825);
+    expect(POSSESSED_HEAD_EMISSIVE).toBe(0x30124a);
+    expect(POSSESSED_HEAD_COLOR).toBe(0x8c469f);
+    expect(POSSESSED_COLOR).toBe(0x68347b);
+    expect(HOSTILE_COLOR).toBe(0x7b1e1e);
+    expect(PLAYER_COLOR).toBe(0x55a4f4);
+    expect(PLAYER_HEAD_COLOR).toBe(0x91d1ff);
+    expect(PLAYER_HEAD_EMISSIVE).toBe(0x122537);
+    expect(MARKER_PALETTE.possessed.emissive).toBe(0x30124a);
+    expect(MARKER_PALETTE.player.badge).toBe(0x91d1ff);
+    expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
+    expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
+    expect(MARKER_RING_OPACITY).toBe(0.6877);
+    expect(muteBadgeY).toBe(2.3);
+    expect(possessedBadgeY).toBe(2.3);
+  });
+});
+
+describe("worldView marker ring Y", () => {
+  test("marker ring Y 0.04 × 1.15 → 0.046; noise-ring-y/chevron-tilt/chevron-y/muzzle-forward/spot-target-y/y-offset/distance/intensity/decay/impact-spark-decay/muzzle-decay/spot-decay/fill-decay/warm-decay/visible-eps/amber-B-gain/amber-B/amber-G-gain/amber-G/gain/base/Y/intensity/color/spot-gain/extra/spot-Y/fill-Y/gain/base/flash/mesh/color/possessed/hostile/player/palette/badge-Y iguales", () => {
+    expect(MARKER_RING_Y).toBe(0.046);
+    expect(MARKER_RING_Y).toBeCloseTo(0.04 * 1.15, 10);
+    expect(NOISE_RING_Y).toBe(0.0575);
+    expect(NOISE_RING_Y).toBeCloseTo(0.05 * 1.15, 10);
+    expect(CHEVRON_TILT).toBe(-0.4025);
+    expect(CHEVRON_Y).toBe(0.138);
+    expect(MUZZLE_FORWARD).toBe(0.552);
+    expect(FLASHLIGHT_SPOT_TARGET_Y).toBe(0.138);
+    expect(TRACER_FLASH_Y_OFFSET).toBe(0.1725);
+    expect(TRACER_FLASH_DISTANCE).toBe(3.68);
+    expect(TRACER_FLASH_INTENSITY).toBe(2.76);
+    expect(TRACER_FLASH_DECAY).toBe(1.74);
+    expect(IMPACT_SPARK_LIGHT_DECAY).toBe(1.74);
+    expect(MUZZLE_LIGHT_DECAY).toBe(1.74);
+    expect(FLASHLIGHT_SPOT_DECAY).toBe(1.74);
+    expect(FLASHLIGHT_FILL_DECAY).toBe(1.74);
+    expect(WARM_LIGHT_DECAY).toBe(1.74);
+    expect(WARM_LIGHT_VISIBLE_EPS).toBe(0.0174);
+    expect(WARM_LIGHT_AMBER_B_GAIN).toBe(0.115);
+    expect(WARM_LIGHT_AMBER_B).toBe(0.437);
+    expect(WARM_LIGHT_AMBER_G_GAIN).toBe(0.092);
+    expect(WARM_LIGHT_AMBER_G).toBe(0.759);
+    expect(WARM_LIGHT_DISTANCE_GAIN).toBe(2.875);
+    expect(WARM_LIGHT_DISTANCE_BASE).toBe(7.475);
+    expect(WARM_LIGHT_Y).toBe(1.7825);
+    expect(WARM_LIGHT_INTENSITY_MUL).toBe(1.7825);
+    expect(FLASHLIGHT_SPOT_DISTANCE_GAIN).toBe(2.3);
+    expect(FLASHLIGHT_SPOT_DISTANCE_EXTRA).toBe(1.84);
+    expect(FLASHLIGHT_SPOT_Y).toBe(1.7825);
+    expect(FLASHLIGHT_FILL_Y).toBe(1.5525);
+    expect(FLASHLIGHT_FILL_DISTANCE_GAIN).toBe(4.025);
+    expect(FLASHLIGHT_FILL_DISTANCE_BASE).toBe(8.05);
+    expect(FLASHLIGHT_FILL_COLOR).toBe(0xcaefff);
+    expect(MUZZLE_LIGHT_COLOR).toBe(0xffffb8);
+    expect(IMPACT_SPARK_LIGHT_COLOR).toBe(0xffef93);
+    expect(TRACER_FLASH_COLOR).toBe(0xffdd6e);
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toContain("export const MARKER_RING_Y = 0.046");
+    expect(src).toContain("ring.position.y = MARKER_RING_Y");
+    expect(src).not.toMatch(/ring\.position\.y = 0\.04/);
+    expect(src).not.toMatch(/const MARKER_RING_Y = 0\.04;/);
+    expect(src).not.toMatch(/export const MARKER_RING_Y = 0\.04;/);
     expect(src).toContain("export const NOISE_RING_Y = 0.0575");
     expect(src).toContain("mesh.position.y = NOISE_RING_Y");
     expect(src).toContain("slot.mesh.position.set(state.x, NOISE_RING_Y, state.y)");

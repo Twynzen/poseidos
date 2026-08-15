@@ -296,6 +296,8 @@ export const CHEVRON_Y = 0.138;
 export const CHEVRON_TILT = -0.4025;
 /** Altura Y del anillo de ruido. 0.05 × 1.15 para sentarse un poco más alto de noche. */
 export const NOISE_RING_Y = 0.0575;
+/** Altura Y del anillo de suelo de marcador. 0.04 × 1.15 para sentarse un poco más alto de noche. */
+export const MARKER_RING_Y = 0.046;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -2050,7 +2052,7 @@ function attachRoleMarkers(
   const ring = new THREE.Mesh(ringGeo, ringMat);
   ring.name = "groundRing";
   ring.rotation.x = -Math.PI / 2;
-  ring.position.y = 0.04;
+  ring.position.y = MARKER_RING_Y;
   root.add(ring);
 
   // Loot/mute/possessed: sin disc/glyph (queda nameplate o look+aro). Player ya return arriba.
