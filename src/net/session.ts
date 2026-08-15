@@ -7,6 +7,7 @@ import type { HostileSim } from "../ai/hostile";
 import type { GateTag } from "../possession/gates";
 import type { PossessionTone } from "../possession/lineBank";
 import type { LineSource } from "../possession/llmBridge";
+import type { SpeechTrigger } from "../possession/speech";
 
 /** Input de cliente → host (stub: solo move). */
 export interface NetInput {
@@ -103,6 +104,12 @@ export interface NetPossessionSnap {
    * omitido si vacío / sin utterance. Distinto de moodBias, toneBias y line.
    */
   tone?: PossessionTone;
+  /**
+   * Trigger de la utterance actual ya validado (`speech.getActive.trigger`);
+   * omitido si vacío / sin utterance. Distinto de tone, line y lineSource.
+   * Wire: `periodic` | `see_player` | `dialogue`.
+   */
+  trigger?: SpeechTrigger;
 }
 
 /**
@@ -127,7 +134,7 @@ export interface NetSnapshot {
   doors: NetDoorSnap[];
   barricades: NetBarricadeSnap[];
   containers: NetContainerSnap[];
-  /** Poseídos: trust + TTLs gated + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary / lineSource / line / tone (default []). */
+  /** Poseídos: trust + TTLs gated + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary / lineSource / line / tone / trigger (default []). */
   possession: NetPossessionSnap[];
 }
 
