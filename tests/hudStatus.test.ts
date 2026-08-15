@@ -6,6 +6,7 @@ import {
   formatPacifyHud,
   formatSpeedBumpHud,
   formatMoodBiasHud,
+  formatMemoryToneHud,
   type HudStatusInput,
 } from "../src/ui/hudStatus";
 
@@ -245,6 +246,57 @@ describe("formatHudStatus compact", () => {
     );
     expect(formatHudStatus(base({ pacifyLeft: 8 }))).toBe(
       "día (21%) · mudos 3 · poseídos 2 · CALMA 8 · inv food×1 (0.5kg) · F1 ayuda",
+    );
+  });
+
+  test("memoryTone null / ausente no pinta MEMORIA; lucidez → MEMORIA LUCIDEZ", () => {
+    expect(formatMemoryToneHud(undefined)).toBeNull();
+    expect(formatMemoryToneHud(null)).toBeNull();
+    expect(formatMemoryToneHud("lucidez")).toBe("MEMORIA LUCIDEZ");
+    expect(formatMemoryToneHud("demonio")).toBe("MEMORIA DEMONIO");
+    expect(formatMemoryToneHud("ruega")).toBe("MEMORIA RUEGA");
+
+    const bare = formatHudStatus(base());
+    expect(bare).not.toContain("MEMORIA");
+    expect(formatHudStatus(base({ memoryTone: null }))).not.toContain("MEMORIA");
+    expect(formatHudStatus(base({ memoryTone: "lucidez" }))).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · MEMORIA LUCIDEZ · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(formatHudStatus(base({ memoryTone: "demonio" }))).toContain(
+      "MEMORIA DEMONIO",
+    );
+    expect(formatHudStatus(base({ memoryTone: "ruega" }))).toContain(
+      "MEMORIA RUEGA",
+    );
+    expect(
+      formatHudStatus(base({ gameOver: true, memoryTone: "lucidez" })),
+    ).not.toContain("MEMORIA");
+  });
+
+  test("MEMORIA no choca con LUCIDEZ; CALMA / FURIA / mood iguales", () => {
+    expect(formatMoodBiasHud("lucidez")).toBe("LUCIDEZ");
+    expect(formatMemoryToneHud("lucidez")).toBe("MEMORIA LUCIDEZ");
+    expect(
+      formatHudStatus(
+        base({
+          pacifyLeft: 8,
+          speedBumpLeft: 3.5,
+          moodBias: "lucidez",
+          memoryTone: "demonio",
+        }),
+      ),
+    ).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CALMA 8 · FURIA 4 · LUCIDEZ · MEMORIA DEMONIO · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(
+      formatHudStatus(
+        base({ pacifyLeft: 8, speedBumpLeft: 3.5, moodBias: "lucidez" }),
+      ),
+    ).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CALMA 8 · FURIA 4 · LUCIDEZ · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(formatHudStatus(base({ moodBias: "lucidez" }))).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · LUCIDEZ · inv food×1 (0.5kg) · F1 ayuda",
     );
   });
 });
