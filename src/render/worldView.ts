@@ -228,6 +228,8 @@ export const WARM_LIGHT_COLOR = 0xffca81;
 export const MUZZLE_FLASH_COLOR = 0xffffdd;
 /** Color del PointLight de hocico. 0xffe8a0 × 1.15/canal (r/g clamp) para leerse de noche. */
 export const MUZZLE_LIGHT_COLOR = 0xffffb8;
+/** Color de la esfera aditiva de impacto. 0xffd080 × 1.15/canal (r clamp) para leerse de noche. */
+export const IMPACT_SPARK_COLOR = 0xffef93;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -871,7 +873,7 @@ export function createWorldView(
   const IMPACT_SPARK_LIGHT_DISTANCE = 1.8;
   const impactGeo = new THREE.SphereGeometry(IMPACT_SPARK_RADIUS, 10, 8);
   const impactMat = new THREE.MeshBasicMaterial({
-    color: 0xffd080,
+    color: IMPACT_SPARK_COLOR,
     transparent: true,
     opacity: 1,
     depthWrite: false,
