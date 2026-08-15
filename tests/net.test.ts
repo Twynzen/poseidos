@@ -2581,8 +2581,8 @@ describe("collectPossessionFrom + snapshot possession", () => {
     gates.restoreLastRejected("p1", ["offer_food"]);
     gates.restoreGateLine("p1", "código: aplicado (pacify_ttl)");
     const speech = new SpeechDirector({}, () => 0.5);
-    speech.setMoodBias("p1", "lucidez");
     speech.forceSpeak("p1", "demonio", "host línea", "dialogue", "llm");
+    speech.setMoodBias("p1", "lucidez");
     const mem = new ShortMemory();
     mem.remember("p1", {
       who: "player",
