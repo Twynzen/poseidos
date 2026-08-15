@@ -236,6 +236,8 @@ export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93;
 export const TRACER_COLOR = 0xffffb8;
 /** Color del PointLight del flash del tracer. 0xffc060 × 1.15/canal (r clamp) para leerse de noche. */
 export const TRACER_FLASH_COLOR = 0xffdd6e;
+/** Color del PointLight fill de la linterna. 0xb0d0ff × 1.15/canal (b clamp) para leerse de noche. */
+export const FLASHLIGHT_FILL_COLOR = 0xcaefff;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -435,7 +437,7 @@ export function createWorldView(
   scene.add(warmLight);
 
   // Linterna: PointLight fill + SpotLight al facing (separada de warm / muzzle).
-  const torchLight = new THREE.PointLight(0xb0d0ff, 0, 10, 2);
+  const torchLight = new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, 2);
   torchLight.position.set(0, 1.35, 0);
   torchLight.visible = false;
   scene.add(torchLight);
@@ -1699,7 +1701,7 @@ export function createWorldView(
       torchLight.distance = 7 + i * 3.5;
       torchLight.position.set(wx, 1.35, wy);
       torchLight.visible = on;
-      torchLight.color.setHex(0xb0d0ff);
+      torchLight.color.setHex(FLASHLIGHT_FILL_COLOR);
 
       const tip = flashlightConeTip(playerGltfYaw);
       torchSpot.intensity = i * FLASHLIGHT_SPOT_INTENSITY_MUL;
