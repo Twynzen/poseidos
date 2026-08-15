@@ -1,11 +1,16 @@
 /**
  * Snapshot/restore headless del runtime possession (F5/F9).
- * Solo consecuencias ya validadas: trust, TTLs de gates, lastApplied, lastRejected, mood bias, memoria corta.
+ * Solo consecuencias ya validadas: trust, TTLs de gates, lastApplied, lastRejected,
+ * última línea de gate, mood bias, memoria corta.
  * No burbujas, timers de display ni LLM.
  */
 
 import { clampTrust, type TrustLedger } from "./trust";
-import type { DialogueBehaviorGates, GateTag } from "./gates";
+import {
+  GATE_LINE_MAX_LEN,
+  type DialogueBehaviorGates,
+  type GateTag,
+} from "./gates";
 import type { SpeechDirector } from "./speech";
 import { POSSESSION_TONES, type PossessionTone } from "./lineBank";
 import { DIALOGUE_OPTIONS, type DialogueIntent } from "./dialogue";
@@ -37,6 +42,12 @@ export interface SavePossession {
    * Solo ids con tags conocidos nonempty. Puede existir tras TTL 0.
    */
   lastRejected: Record<string, GateTag[]>;
+  /**
+   * Última línea formateada de gate por id (`formatGateLine`).
+   * Hermano de lastApplied / lastRejected; no se reconstruye desde tags.
+   * Solo ids con string nonempty (cap GATE_LINE_MAX_LEN).
+   */
+  gateLine: Record<string, string>;
 }
 
 const TONE_SET = new Set<string>(POSSESSION_TONES);
@@ -78,6 +89,7 @@ export function emptyPossession(): SavePossession {
     memory: {},
     lastApplied: {},
     lastRejected: {},
+    gateLine: {},
   };
 }
 
@@ -132,6 +144,13 @@ export function capturePossession(
     lastRejected[id] = [...tags];
   }
 
+  const gateLine: Record<string, string> = {};
+  for (const id of gates.gateLineIds()) {
+    const line = normalizeGateLine(gates.gateLine(id));
+    if (!line) continue;
+    gateLine[id] = line;
+  }
+
   return {
     trust,
     gates: gateOut,
@@ -139,6 +158,7 @@ export function capturePossession(
     memory: memoryOut,
     lastApplied,
     lastRejected,
+    gateLine,
   };
 }
 
@@ -149,6 +169,7 @@ export function capturePossession(
  * Memory: intents/tonos desconocidos, who vacío y trustDelta no finito se descartan;
  * listas vacías se omiten; cada lista se recorta a MEMORY_CAPACITY (más recientes).
  * lastApplied / lastRejected: tags desconocidos se descartan; listas vacías se omiten.
+ * gateLine: no-string / vacío se omite; se recorta a GATE_LINE_MAX_LEN.
  */
 export function normalizePossession(raw: unknown): SavePossession {
   const out = emptyPossession();
@@ -248,10 +269,30 @@ export function normalizePossession(raw: unknown): SavePossession {
     }
   }
 
+  if (o.gateLine && typeof o.gateLine === "object" && !Array.isArray(o.gateLine)) {
+    for (const [id, rawLine] of Object.entries(
+      o.gateLine as Record<string, unknown>,
+    )) {
+      if (!id) continue;
+      const line = normalizeGateLine(rawLine);
+      if (!line) continue;
+      out.gateLine[id] = line;
+    }
+  }
+
   return out;
 }
 
-/** Reemplaza trust + gates + lastApplied + lastRejected + memory; aplica mood bias (no toca burbujas ajenas al snap). */
+function normalizeGateLine(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  return trimmed.length > GATE_LINE_MAX_LEN
+    ? trimmed.slice(0, GATE_LINE_MAX_LEN)
+    : trimmed;
+}
+
+/** Reemplaza trust + gates + lastApplied + lastRejected + gateLine + memory; aplica mood bias (no toca burbujas ajenas al snap). */
 export function applyPossession(
   ledger: TrustLedger,
   gates: DialogueBehaviorGates,
@@ -274,6 +315,9 @@ export function applyPossession(
   }
   for (const [id, tags] of Object.entries(parsed.lastRejected)) {
     gates.restoreLastRejected(id, tags);
+  }
+  for (const [id, line] of Object.entries(parsed.gateLine)) {
+    gates.restoreGateLine(id, line);
   }
   for (const [id, tone] of Object.entries(parsed.moodBias)) {
     speech.setMoodBias(id, tone);

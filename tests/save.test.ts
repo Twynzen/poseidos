@@ -61,6 +61,7 @@ describe("save/load", () => {
       memory: {},
       lastApplied: {},
       lastRejected: {},
+      gateLine: {},
     });
   });
 
@@ -203,6 +204,7 @@ describe("save/load", () => {
       memory: {},
       lastApplied: {},
       lastRejected: {},
+      gateLine: {},
     });
     applySave(world, loaded);
     expect(world.player.x).toBeCloseTo(save.player.x);
@@ -217,6 +219,7 @@ describe("save/load", () => {
     gates.apply("poss-a", proposeDialogueGates("calmar", 72));
     gates.apply("poss-a", proposeDialogueGates("amenazar", 20));
     gates.apply("poss-a", proposeDialogueGates("calmar", GATE_CALM_MIN_TRUST - 1));
+    gates.restoreGateLine("poss-a", "código: rechazado (trust)");
     speech.setMoodBias("poss-a", "lucidez");
     memory.remember("poss-a", {
       who: "player",
@@ -252,6 +255,7 @@ describe("save/load", () => {
       "threat_speed",
     ]);
     expect(loaded.possession.lastRejected["poss-a"]).toEqual(["pacify_ttl"]);
+    expect(loaded.possession.gateLine["poss-a"]).toBe("código: rechazado (trust)");
 
     const trust2 = new TrustLedger();
     const gates2 = new DialogueBehaviorGates();
@@ -260,7 +264,9 @@ describe("save/load", () => {
     trust2.set("leftover", 11);
     gates2.apply("leftover", proposeDialogueGates("calmar", 80));
     gates2.apply("leftover", proposeDialogueGates("calmar", GATE_CALM_MIN_TRUST - 1));
+    gates2.restoreGateLine("leftover", "código: aplicado (pacify_ttl)");
     expect(gates2.lastRejected("leftover")).toEqual(["pacify_ttl"]);
+    expect(gates2.gateLine("leftover")).toBe("código: aplicado (pacify_ttl)");
     memory2.remember("leftover", {
       who: "player",
       intent: "preguntar",
@@ -291,6 +297,8 @@ describe("save/load", () => {
     expect(gates2.lastRejected("poss-a")).toEqual(["pacify_ttl"]);
     expect(gates2.lastApplied("leftover")).toEqual([]);
     expect(gates2.lastRejected("leftover")).toEqual([]);
+    expect(gates2.gateLine("poss-a")).toBe("código: rechazado (trust)");
+    expect(gates2.gateLine("leftover")).toBeNull();
   });
 
   test("possession viejo sin memory sigue cargando (vacío)", () => {
@@ -309,5 +317,6 @@ describe("save/load", () => {
     expect(loaded.possession.memory).toEqual({});
     expect(loaded.possession.lastApplied).toEqual({});
     expect(loaded.possession.lastRejected).toEqual({});
+    expect(loaded.possession.gateLine).toEqual({});
   });
 });
