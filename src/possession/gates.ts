@@ -194,13 +194,17 @@ interface GateEntityState {
  */
 export class DialogueBehaviorGates {
   private readonly states = new Map<string, GateEntityState>();
+  /** Últimos tags aplicados por id. Runtime only — no es TTL ni persist. */
+  private readonly lastAppliedTags = new Map<string, GateTag[]>();
 
   clear(): void {
     this.states.clear();
+    this.lastAppliedTags.clear();
   }
 
   unregister(id: string): void {
     this.states.delete(id);
+    this.lastAppliedTags.delete(id);
   }
 
   /** Ids con TTL activo. */
@@ -248,6 +252,12 @@ export class DialogueBehaviorGates {
     return this.pacifiedLeft(id) > 0;
   }
 
+  /** Últimos tags validados (`proposal.applied`); vacío si nunca aplicó. */
+  lastApplied(id: string): readonly GateTag[] {
+    const tags = this.lastAppliedTags.get(id);
+    return tags ? [...tags] : [];
+  }
+
   /** Aplica propuesta validada (refuerza TTL si ya había). */
   apply(entityId: string, proposal: GateProposal): void {
     let st = this.states.get(entityId);
@@ -261,6 +271,9 @@ export class DialogueBehaviorGates {
     if (proposal.speedBumpTtl > 0) {
       st.speedBumpLeft = Math.max(st.speedBumpLeft, proposal.speedBumpTtl);
       st.speedBumpMul = Math.max(st.speedBumpMul, proposal.speedBumpMul);
+    }
+    if (proposal.applied.length > 0) {
+      this.lastAppliedTags.set(entityId, [...proposal.applied]);
     }
   }
 

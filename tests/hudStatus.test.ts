@@ -7,6 +7,7 @@ import {
   formatSpeedBumpHud,
   formatMoodBiasHud,
   formatMemoryToneHud,
+  formatLastGateHud,
   type HudStatusInput,
 } from "../src/ui/hudStatus";
 
@@ -297,6 +298,66 @@ describe("formatHudStatus compact", () => {
     );
     expect(formatHudStatus(base({ moodBias: "lucidez" }))).toBe(
       "día (21%) · mudos 3 · poseídos 2 · LUCIDEZ · inv food×1 (0.5kg) · F1 ayuda",
+    );
+  });
+
+  test("lastApplied vacío / ausente no pinta CÓDIGO; tags → CÓDIGO tag", () => {
+    expect(formatLastGateHud(undefined)).toBeNull();
+    expect(formatLastGateHud(null)).toBeNull();
+    expect(formatLastGateHud([])).toBeNull();
+    expect(formatLastGateHud(["pacify_ttl"])).toBe("CÓDIGO pacify_ttl");
+    expect(formatLastGateHud(["offer_food", "offer_pacify"])).toBe(
+      "CÓDIGO offer_food,offer_pacify",
+    );
+    expect(
+      formatLastGateHud(["threat_noise", "threat_chase", "threat_speed"]),
+    ).toBe("CÓDIGO threat_noise,threat_chase,threat_speed");
+
+    const bare = formatHudStatus(base());
+    expect(bare).not.toContain("CÓDIGO");
+    expect(formatHudStatus(base({ lastApplied: null }))).not.toContain("CÓDIGO");
+    expect(formatHudStatus(base({ lastApplied: [] }))).not.toContain("CÓDIGO");
+    expect(formatHudStatus(base({ lastApplied: ["pacify_ttl"] }))).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CÓDIGO pacify_ttl · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(
+      formatHudStatus(base({ lastApplied: ["offer_food", "offer_pacify"] })),
+    ).toContain("CÓDIGO offer_food,offer_pacify");
+    expect(
+      formatHudStatus(base({ gameOver: true, lastApplied: ["pacify_ttl"] })),
+    ).not.toContain("CÓDIGO");
+  });
+
+  test("CÓDIGO no choca con CALMA / FURIA / LUCIDEZ / MEMORIA", () => {
+    expect(formatLastGateHud(["pacify_ttl"])).toBe("CÓDIGO pacify_ttl");
+    expect(formatMemoryToneHud("lucidez")).toBe("MEMORIA LUCIDEZ");
+    expect(
+      formatHudStatus(
+        base({
+          pacifyLeft: 8,
+          speedBumpLeft: 3.5,
+          moodBias: "lucidez",
+          memoryTone: "demonio",
+          lastApplied: ["pacify_ttl"],
+        }),
+      ),
+    ).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CALMA 8 · FURIA 4 · LUCIDEZ · MEMORIA DEMONIO · CÓDIGO pacify_ttl · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(
+      formatHudStatus(
+        base({
+          pacifyLeft: 8,
+          speedBumpLeft: 3.5,
+          moodBias: "lucidez",
+          memoryTone: "demonio",
+        }),
+      ),
+    ).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CALMA 8 · FURIA 4 · LUCIDEZ · MEMORIA DEMONIO · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(formatHudStatus(base({ memoryTone: "lucidez" }))).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · MEMORIA LUCIDEZ · inv food×1 (0.5kg) · F1 ayuda",
     );
   });
 });

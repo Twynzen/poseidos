@@ -3,7 +3,7 @@
  * F1 (showHelp) revela CONTROLS_HELP y tokens de debug (tile / chunks / fov).
  */
 
-import type { PossessionTone } from "../possession";
+import type { GateTag, PossessionTone } from "../possession";
 
 export const CONTROLS_HELP = [
   "Mover: WASD · Shift correr · +/- zoom",
@@ -45,6 +45,8 @@ export type HudStatusInput = {
   moodBias?: PossessionTone | null;
   /** Tono recordado del poseído relevante (`memory.toneBias`). Null/omitido = no pintar. */
   memoryTone?: PossessionTone | null;
+  /** Últimos tags aplicados del poseído relevante (`gates.lastApplied`). Vacío/omitido = no pintar. */
+  lastApplied?: readonly GateTag[] | null;
   tileX: number;
   tileY: number;
   chunksLoaded: number;
@@ -122,6 +124,18 @@ export function formatMemoryToneHud(
 }
 
 /**
+ * Últimos tags de gate aplicados. Prefijo CÓDIGO para no chocar con
+ * CALMA / FURIA / LUCIDEZ / MEMORIA. Oculto si no hay tags.
+ * Reusa los strings de `GateTag` (no inventa nombres).
+ */
+export function formatLastGateHud(
+  tags: readonly GateTag[] | null | undefined,
+): string | null {
+  if (tags == null || tags.length === 0) return null;
+  return `CÓDIGO ${tags.join(",")}`;
+}
+
+/**
  * Formato compacto por defecto (sin muro WASD ni dump tile/chunks/fov).
  * Con showHelp: CONTROLS_HELP + línea de estado (debug tokens) + F1 cerrar.
  * Con gameOver: mensaje de muerte.
@@ -146,6 +160,7 @@ export function formatHudStatus(input: HudStatusInput): string {
     formatSpeedBumpHud(input.speedBumpLeft),
     formatMoodBiasHud(input.moodBias),
     formatMemoryToneHud(input.memoryTone),
+    formatLastGateHud(input.lastApplied),
     input.noiseHint?.trim() || null,
     input.invLine?.trim() || null,
     input.nearHint?.trim() || null,

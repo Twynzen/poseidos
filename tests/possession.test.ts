@@ -988,6 +988,44 @@ describe("dialogue → behavior gates", () => {
       true,
     );
   });
+
+  test("apply records lastApplied; rejected no pisa; clear/unregister limpian", () => {
+    const gates = new DialogueBehaviorGates();
+    expect(gates.lastApplied("p")).toEqual([]);
+
+    const calm = proposeDialogueGates("calmar", GATE_CALM_MIN_TRUST);
+    gates.apply("p", calm);
+    expect(gates.lastApplied("p")).toEqual(["pacify_ttl"]);
+    expect(gates.pacifiedLeft("p")).toBe(GATE_CALM_PACIFY_TTL);
+
+    const offer = proposeDialogueGates("ofrecer", GATE_OFFER_MIN_TRUST, {
+      hasOfferFood: true,
+    });
+    gates.apply("p", offer);
+    expect(gates.lastApplied("p")).toEqual(["offer_food", "offer_pacify"]);
+
+    const rejected = proposeDialogueGates("calmar", GATE_CALM_MIN_TRUST - 1);
+    expect(rejected.applied).toEqual([]);
+    gates.apply("p", rejected);
+    expect(gates.lastApplied("p")).toEqual(["offer_food", "offer_pacify"]);
+    expect(gates.pacifiedLeft("p")).toBe(GATE_OFFER_PACIFY_TTL);
+
+    const ask = proposeDialogueGates("preguntar", GATE_ASK_MIN_TRUST);
+    gates.apply("q", ask);
+    expect(gates.lastApplied("q")).toEqual(["ask_heal", "ask_lucidity"]);
+
+    gates.tick(GATE_CALM_PACIFY_TTL + GATE_OFFER_PACIFY_TTL + 1);
+    expect(gates.pacifiedLeft("p")).toBe(0);
+    expect(gates.lastApplied("p")).toEqual(["offer_food", "offer_pacify"]);
+    expect(gates.lastApplied("q")).toEqual(["ask_heal", "ask_lucidity"]);
+
+    gates.unregister("p");
+    expect(gates.lastApplied("p")).toEqual([]);
+    expect(gates.lastApplied("q")).toEqual(["ask_heal", "ask_lucidity"]);
+
+    gates.clear();
+    expect(gates.lastApplied("q")).toEqual([]);
+  });
 });
 
 describe("possession persist (F5/F9)", () => {
@@ -1027,6 +1065,8 @@ describe("possession persist (F5/F9)", () => {
       { who: "player", intent: "amenazar", trustDelta: -20, tone: "demonio" },
     ]);
     expect(JSON.stringify(snap)).not.toContain("línea que no se guarda");
+    expect(JSON.stringify(snap)).not.toContain("lastApplied");
+    expect(JSON.stringify(snap)).not.toContain("pacify_ttl");
 
     const ledger2 = new TrustLedger();
     const gates2 = new DialogueBehaviorGates();
@@ -1052,6 +1092,8 @@ describe("possession persist (F5/F9)", () => {
     expect(speech2.getActive("poss-a")).toBeNull();
     expect(memory2.recent("poss-a")).toEqual(snap.memory["poss-a"]);
     expect(memory2.toneBias("poss-a")).toBe("demonio");
+    expect(gates2.lastApplied("poss-a")).toEqual([]);
+    expect(gates2.lastApplied("stale")).toEqual([]);
   });
 
   test("blob viejo sin memory carga vacío; leftover ids se reemplazan", () => {
