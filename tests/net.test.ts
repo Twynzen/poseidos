@@ -6,6 +6,7 @@ import {
   collectBarricadesFromMap,
   collectContainersFromRegistry,
   collectDoorsFromMap,
+  collectHostPossessionFrom,
   collectPossessionFrom,
   LocalLoopbackSession,
   type NetSnapshot,
@@ -2569,6 +2570,88 @@ describe("collectPossessionFrom + snapshot possession", () => {
     expect(afterTtl[0]!.pacifiedLeft).toBe(0);
     expect(afterTtl[0]!.speedBumpLeft).toBe(0);
     expect(afterTtl[0]!.speedBumpMul).toBe(1);
+  });
+
+  test("host hook: speech+memory pintan moodBias/toneBias/memorySummary/lineSource/line/tone/trigger; 3-arg los omite; trust/TTL/tags/gateLine sin cambio", () => {
+    const ledger = new TrustLedger();
+    ledger.register("p1", 65);
+    const gates = new DialogueBehaviorGates();
+    const proposal = proposeDialogueGates("calmar", ledger.get("p1"));
+    gates.apply("p1", proposal);
+    gates.restoreLastRejected("p1", ["offer_food"]);
+    gates.restoreGateLine("p1", "código: aplicado (pacify_ttl)");
+    const speech = new SpeechDirector({}, () => 0.5);
+    speech.setMoodBias("p1", "lucidez");
+    speech.forceSpeak("p1", "demonio", "host línea", "dialogue", "llm");
+    const mem = new ShortMemory();
+    mem.remember("p1", {
+      who: "player",
+      intent: "preguntar",
+      trustDelta: 6,
+      tone: "lucidez",
+    });
+    const expectedMem = formatMemorySummary(mem.recent("p1"));
+    expect(expectedMem).toBe("preguntar/lucidez/+6");
+
+    const threeArg = collectPossessionFrom(ledger, gates, ["p1"]);
+    expect(threeArg[0]!.moodBias).toBeUndefined();
+    expect("moodBias" in threeArg[0]!).toBe(false);
+    expect(threeArg[0]!.toneBias).toBeUndefined();
+    expect("toneBias" in threeArg[0]!).toBe(false);
+    expect(threeArg[0]!.memorySummary).toBeUndefined();
+    expect("memorySummary" in threeArg[0]!).toBe(false);
+    expect(threeArg[0]!.lineSource).toBeUndefined();
+    expect("lineSource" in threeArg[0]!).toBe(false);
+    expect(threeArg[0]!.line).toBeUndefined();
+    expect("line" in threeArg[0]!).toBe(false);
+    expect(threeArg[0]!.tone).toBeUndefined();
+    expect("tone" in threeArg[0]!).toBe(false);
+    expect(threeArg[0]!.trigger).toBeUndefined();
+    expect("trigger" in threeArg[0]!).toBe(false);
+    expect(threeArg[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(threeArg[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(threeArg[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(threeArg[0]!.trust).toBe(65);
+    expect(threeArg[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(threeArg[0]!.speedBumpLeft).toBe(0);
+    expect(threeArg[0]!.speedBumpMul).toBe(1);
+    expect(threeArg[0]!.pacified).toBe(true);
+
+    const host = collectHostPossessionFrom(ledger, gates, ["p1"], speech, mem);
+    expect(host[0]!.moodBias).toBe("lucidez");
+    expect(host[0]!.toneBias).toBe("lucidez");
+    expect(host[0]!.memorySummary).toBe(expectedMem);
+    expect(host[0]!.lineSource).toBe("llm");
+    expect(host[0]!.line).toBe("host línea");
+    expect(host[0]!.tone).toBe("demonio");
+    expect(host[0]!.trigger).toBe("dialogue");
+    expect(host[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(host[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(host[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(host[0]!.trust).toBe(65);
+    expect(host[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(host[0]!.speedBumpLeft).toBe(0);
+    expect(host[0]!.speedBumpMul).toBe(1);
+    expect(host[0]!.pacified).toBe(true);
+
+    const session = new LocalLoopbackSession({ playerX: 0, playerY: 0 });
+    session.setPossession(host);
+    const snap = session.getSnapshot();
+    expect(snap.possession[0]!.moodBias).toBe("lucidez");
+    expect(snap.possession[0]!.toneBias).toBe("lucidez");
+    expect(snap.possession[0]!.memorySummary).toBe(expectedMem);
+    expect(snap.possession[0]!.lineSource).toBe("llm");
+    expect(snap.possession[0]!.line).toBe("host línea");
+    expect(snap.possession[0]!.tone).toBe("demonio");
+    expect(snap.possession[0]!.trigger).toBe("dialogue");
+    expect(snap.possession[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(snap.possession[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(snap.possession[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(snap.possession[0]!.trust).toBe(65);
+    expect(snap.possession[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(snap.possession[0]!.speedBumpLeft).toBe(0);
+    expect(snap.possession[0]!.speedBumpMul).toBe(1);
+    expect(snap.possession[0]!.pacified).toBe(true);
   });
 
   test("buildNetSnapshot incluye possession; default vacío", () => {
