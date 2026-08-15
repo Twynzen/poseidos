@@ -3,6 +3,8 @@
  * F1 (showHelp) revela CONTROLS_HELP y tokens de debug (tile / chunks / fov).
  */
 
+import type { PossessionTone } from "../possession";
+
 export const CONTROLS_HELP = [
   "Mover: WASD · Shift correr · +/- zoom",
   "Combate: Espacio/V melee · X disparar",
@@ -39,6 +41,8 @@ export type HudStatusInput = {
   pacifyLeft?: number;
   /** Segundos de speed-bump del poseído relevante (`gates.speedBumpLeft`). 0/omitido = no pintar. */
   speedBumpLeft?: number;
+  /** Sesgo de tono del poseído relevante (`speech.getMoodBias`). Null/omitido = no pintar. */
+  moodBias?: PossessionTone | null;
   tileX: number;
   tileY: number;
   chunksLoaded: number;
@@ -86,6 +90,23 @@ export function formatSpeedBumpHud(
   return `FURIA ${Math.ceil(speedBumpLeft)}`;
 }
 
+const MOOD_BIAS_HUD: Record<PossessionTone, string> = {
+  lucidez: "LUCIDEZ",
+  demonio: "DEMONIO",
+  ruega: "RUEGA",
+};
+
+/**
+ * Sesgo de tono en HUD. Token corto ES; oculto si no hay bias.
+ * No es un TTL: es el bias vivo de `speech.getMoodBias`.
+ */
+export function formatMoodBiasHud(
+  bias: PossessionTone | null | undefined,
+): string | null {
+  if (bias == null) return null;
+  return MOOD_BIAS_HUD[bias] ?? null;
+}
+
 /**
  * Formato compacto por defecto (sin muro WASD ni dump tile/chunks/fov).
  * Con showHelp: CONTROLS_HELP + línea de estado (debug tokens) + F1 cerrar.
@@ -109,6 +130,7 @@ export function formatHudStatus(input: HudStatusInput): string {
     `poseídos ${input.possN}`,
     formatPacifyHud(input.pacifyLeft),
     formatSpeedBumpHud(input.speedBumpLeft),
+    formatMoodBiasHud(input.moodBias),
     input.noiseHint?.trim() || null,
     input.invLine?.trim() || null,
     input.nearHint?.trim() || null,

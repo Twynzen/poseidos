@@ -5,6 +5,7 @@ import {
   formatHudStatus,
   formatPacifyHud,
   formatSpeedBumpHud,
+  formatMoodBiasHud,
   type HudStatusInput,
 } from "../src/ui/hudStatus";
 
@@ -206,6 +207,44 @@ describe("formatHudStatus compact", () => {
     );
     expect(formatHudStatus(base({ pacifyLeft: 8, speedBumpLeft: 0 }))).not.toContain(
       "FURIA",
+    );
+  });
+
+  test("moodBias null / ausente no pinta token; lucidez → LUCIDEZ", () => {
+    expect(formatMoodBiasHud(undefined)).toBeNull();
+    expect(formatMoodBiasHud(null)).toBeNull();
+    expect(formatMoodBiasHud("lucidez")).toBe("LUCIDEZ");
+    expect(formatMoodBiasHud("demonio")).toBe("DEMONIO");
+    expect(formatMoodBiasHud("ruega")).toBe("RUEGA");
+
+    const bare = formatHudStatus(base());
+    expect(bare).not.toContain("LUCIDEZ");
+    expect(bare).not.toContain("DEMONIO");
+    expect(bare).not.toContain("RUEGA");
+    expect(formatHudStatus(base({ moodBias: null }))).not.toContain("LUCIDEZ");
+    expect(formatHudStatus(base({ moodBias: "lucidez" }))).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · LUCIDEZ · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(formatHudStatus(base({ moodBias: "demonio" }))).toContain("DEMONIO");
+    expect(formatHudStatus(base({ moodBias: "ruega" }))).toContain("RUEGA");
+    expect(
+      formatHudStatus(base({ gameOver: true, moodBias: "lucidez" })),
+    ).not.toContain("LUCIDEZ");
+  });
+
+  test("CALMA / FURIA siguen iguales con LUCIDEZ", () => {
+    expect(
+      formatHudStatus(
+        base({ pacifyLeft: 8, speedBumpLeft: 3.5, moodBias: "lucidez" }),
+      ),
+    ).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CALMA 8 · FURIA 4 · LUCIDEZ · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(formatHudStatus(base({ pacifyLeft: 8, speedBumpLeft: 3.5 }))).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CALMA 8 · FURIA 4 · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(formatHudStatus(base({ pacifyLeft: 8 }))).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CALMA 8 · inv food×1 (0.5kg) · F1 ayuda",
     );
   });
 });
