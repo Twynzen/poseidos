@@ -354,6 +354,8 @@ export const FURNITURE_HEIGHT = 0.9775;
 export const FURNITURE_XZ = 0.805;
 /** Altura Y de la caja/furniture genérico. 0.425 × 1.15 para sentarse un poco más alto de noche. */
 export const FURNITURE_BASE_Y = 0.48875;
+/** Alto de la barricada. 1.35 × 1.15 para leerse un poco más alta de noche. */
+export const BARRICADE_HEIGHT = 1.5525;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -580,7 +582,7 @@ export function createWorldView(
   const doorGeo = new THREE.BoxGeometry(1, DOOR_HEIGHT, DOOR_DEPTH);
   const furnitureGeo = new THREE.BoxGeometry(FURNITURE_XZ, FURNITURE_HEIGHT, FURNITURE_XZ);
   /** Planchas apiladas: más bajas y estrechas que un muro. */
-  const barricadeGeo = new THREE.BoxGeometry(0.92, 1.35, 0.55);
+  const barricadeGeo = new THREE.BoxGeometry(0.92, BARRICADE_HEIGHT, 0.55);
   /** Último daylight visto en syncDayNight; mats nuevos nacen ya lifted. */
   let lastDaylight = 1;
   const furnitureMat = new THREE.MeshStandardMaterial({
