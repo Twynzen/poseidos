@@ -207,7 +207,8 @@ import {
   type ContainerRegistry,
 } from "../items";
 
-const PLAYER_COLOR = 0x4a8fd4;
+/** Color de la silueta fallback (cuerpo). 0x4a8fd4 × 1.15/canal para leerse de noche. */
+export const PLAYER_COLOR = 0x55a4f4;
 /** Color de la silueta fallback (cabeza). 0x7eb6ef × 1.15/canal (b clamp) para leerse de noche. */
 export const PLAYER_HEAD_COLOR = 0x91d1ff;
 /** Emisivo de la silueta fallback (cabeza). 0x102030 × 1.15/canal para leerse de noche. */
