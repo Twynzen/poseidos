@@ -266,6 +266,8 @@ export const TRACER_FLASH_INTENSITY = 2.76;
 export const TRACER_FLASH_DISTANCE = 3.68;
 /** Decay del PointLight del flash del tracer. 2 × 0.87 para caer un poco más lento de noche. */
 export const TRACER_FLASH_DECAY = 1.74;
+/** Offset Y del PointLight del flash del tracer sobre TRACER_HEIGHT. 0.15 × 1.15 para sentarse un poco más alto de noche. */
+export const TRACER_FLASH_Y_OFFSET = 0.1725;
 /** Color del PointLight fill de la linterna. 0xb0d0ff × 1.15/canal (b clamp) para leerse de noche. */
 export const FLASHLIGHT_FILL_COLOR = 0xcaefff;
 /** Distancia base del PointLight fill de la linterna. 7 × 1.15 para alcanzar un poco más de noche. */
@@ -1043,7 +1045,7 @@ export function createWorldView(
     scene.add(mesh);
 
     const flash = new THREE.PointLight(TRACER_FLASH_COLOR, TRACER_FLASH_INTENSITY, TRACER_FLASH_DISTANCE, TRACER_FLASH_DECAY);
-    flash.position.set(from.x, TRACER_HEIGHT + 0.15, from.y);
+    flash.position.set(from.x, TRACER_HEIGHT + TRACER_FLASH_Y_OFFSET, from.y);
     scene.add(flash);
 
     liveTracers.push({ mesh, mat, flash, age: 0, ttl: life });
