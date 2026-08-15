@@ -25,6 +25,8 @@ export interface LlmAskSnapshot {
   lastRejected?: GateTag[];
   /** Sesgo de habla ya validado (`speech.getMoodBias`); omitido si vacío. */
   moodBias?: PossessionTone;
+  /** Sesgo de tono derivado de ShortMemory (`memory.toneBias`); omitido si vacío. */
+  toneBias?: PossessionTone;
 }
 
 /** Interfaz mínima del bridge (stub hoy; API real después). */
@@ -136,6 +138,7 @@ export class StubLlmBridge implements LlmBridge {
       lastApplied: snapshot.lastApplied ?? null,
       lastRejected: snapshot.lastRejected ?? null,
       moodBias: snapshot.moodBias ?? null,
+      toneBias: snapshot.toneBias ?? null,
     });
     await files.writeRequest(requestId, body);
 
@@ -197,6 +200,7 @@ export function formatLlmPrompt(
     | "lastApplied"
     | "lastRejected"
     | "moodBias"
+    | "toneBias"
   >,
 ): string {
   const bits = [`Tono: ${fields.tone}`];
@@ -212,6 +216,8 @@ export function formatLlmPrompt(
   if (rejected.length > 0) bits.push(`Rechazado: ${rejected.join(", ")}`);
   const bias = compactMoodBias(fields.moodBias);
   if (bias) bits.push(`Sesgo: ${bias}`);
+  const memTone = compactMoodBias(fields.toneBias);
+  if (memTone) bits.push(`MemoriaTono: ${memTone}`);
   return bits.join(". ") + ".";
 }
 
