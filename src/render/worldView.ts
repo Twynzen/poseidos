@@ -298,6 +298,8 @@ export const CHEVRON_TILT = -0.4025;
 export const NOISE_RING_Y = 0.0575;
 /** Altura Y del anillo de suelo de marcador. 0.04 × 1.15 para sentarse un poco más alto de noche. */
 export const MARKER_RING_Y = 0.046;
+/** Altura Y del icono del badge de marcador. 0.02 × 1.15 para sentarse un poco más alto de noche. */
+export const MARKER_ICON_Y = 0.023;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -2090,7 +2092,7 @@ function attachRoleMarkers(
   disc.rotation.x = -Math.PI / 2.6;
   const icon = new THREE.Mesh(shared.iconGeo, iconMat);
   icon.rotation.x = -Math.PI / 2.6;
-  icon.position.y = 0.02;
+  icon.position.y = MARKER_ICON_Y;
   // Escala distinta por glifo visual (mute más angular vía scale)
   if (role === "mute") icon.scale.set(0.7, 0.7, 1);
   else if (role === "possessed") icon.scale.set(0.85, 0.85, 1);
