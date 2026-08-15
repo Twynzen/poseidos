@@ -32,7 +32,7 @@ export const MARKER_PALETTE: Readonly<Record<MarkerRole, MarkerPalette>> = {
   },
   possessed: {
     ring: 0xa046d4,
-    badge: 0xc77dff,
+    badge: 0xe590ff,
     emissive: 0x2a1040,
     glyph: "◆",
   },
