@@ -230,6 +230,8 @@ export const MUZZLE_FLASH_COLOR = 0xffffdd;
 export const MUZZLE_LIGHT_COLOR = 0xffffb8;
 /** Color de la esfera aditiva de impacto. 0xffd080 × 1.15/canal (r clamp) para leerse de noche. */
 export const IMPACT_SPARK_COLOR = 0xffef93;
+/** Color del PointLight de impacto. 0xffd080 × 1.15/canal (r clamp) para leerse de noche. */
+export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -882,7 +884,7 @@ export function createWorldView(
   const impactMesh = new THREE.Mesh(impactGeo, impactMat);
   impactMesh.visible = false;
   const impactLight = new THREE.PointLight(
-    0xffd080,
+    IMPACT_SPARK_LIGHT_COLOR,
     0,
     IMPACT_SPARK_LIGHT_DISTANCE,
     2,
