@@ -80,6 +80,11 @@ export interface NetPossessionSnap {
    * Distinto de speech moodBias.
    */
   toneBias?: PossessionTone;
+  /**
+   * Resumen compacto ya validado (`formatMemorySummary` / `memory.recent`);
+   * omitido si vacío. Distinto de toneBias. Cap MEMORY_SUMMARY_MAX_LEN.
+   */
+  memorySummary?: string;
 }
 
 /**
@@ -104,7 +109,7 @@ export interface NetSnapshot {
   doors: NetDoorSnap[];
   barricades: NetBarricadeSnap[];
   containers: NetContainerSnap[];
-  /** Poseídos: trust + TTLs gated + lastApplied / lastRejected / gateLine / moodBias / toneBias (default []). */
+  /** Poseídos: trust + TTLs gated + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary (default []). */
   possession: NetPossessionSnap[];
 }
 

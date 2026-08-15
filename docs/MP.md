@@ -20,7 +20,7 @@ Esta corrida solo deja el **contrato headless** (`src/net/session.ts`) sin socke
 | Hostiles | sí | id, xy, mode (wander/chase/investigate); count derivado |
 | Doors | sí (F7) | open/close + barricadas |
 | Containers | sí (F7) | contenido / locks al interactuar |
-| Possession trust / gates | sí | trust + TTLs + lastApplied / lastRejected / gateLine / moodBias / toneBias (ya validados); clientes no ven intents |
+| Possession trust / gates | sí | trust + TTLs + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary (ya validados); clientes no ven intents |
 
 ## Qué NO se replica (local)
 
@@ -38,7 +38,7 @@ Principio Vivant/Dystopia se mantiene en MP:
 3. El snapshot solo refleja el **efecto ya gated** (pacify, chase, noise, etc.).
 4. Ningún cliente puede forzar calm/aggro bypassing gates.
 
-Wire `possession: NetPossessionSnap[]` — por poseído: `id`, `trust`, `pacifiedLeft`, `speedBumpLeft`, `speedBumpMul` (1 si inactivo), `pacified` (trust OR TTL), `lastApplied?` / `lastRejected?` (`GateTag[]` ya validados; omitidos si vacíos), `gateLine?` (última línea ya validada `gates.gateLine`; omitida si vacía; cap `GATE_LINE_MAX_LEN`; no se reformatea), `moodBias?` (`PossessionTone` ya validado `speech.getMoodBias`; omitido si vacío / null / desconocido; distinto de `ShortMemory.toneBias`), `toneBias?` (`PossessionTone` ya validado `memory.toneBias`; omitido si vacío / null / desconocido; distinto de speech `moodBias`). Collector: `collectPossessionFrom(ledger, gates, ids?, moodBiasOf?, toneBiasOf?)`.
+Wire `possession: NetPossessionSnap[]` — por poseído: `id`, `trust`, `pacifiedLeft`, `speedBumpLeft`, `speedBumpMul` (1 si inactivo), `pacified` (trust OR TTL), `lastApplied?` / `lastRejected?` (`GateTag[]` ya validados; omitidos si vacíos), `gateLine?` (última línea ya validada `gates.gateLine`; omitida si vacía; cap `GATE_LINE_MAX_LEN`; no se reformatea), `moodBias?` (`PossessionTone` ya validado `speech.getMoodBias`; omitido si vacío / null / desconocido; distinto de `ShortMemory.toneBias`), `toneBias?` (`PossessionTone` ya validado `memory.toneBias`; omitido si vacío / null / desconocido; distinto de speech `moodBias`), `memorySummary?` (resumen compacto ya validado `formatMemorySummary(memory.recent)`; omitido si vacío / null / whitespace; cap `MEMORY_SUMMARY_MAX_LEN`; distinto de `toneBias`). Collector: `collectPossessionFrom(ledger, gates, ids?, moodBiasOf?, toneBiasOf?, memoryOf?)`.
 
 ## Inputs ack / client predict (stub)
 
