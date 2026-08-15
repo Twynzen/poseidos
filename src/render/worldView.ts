@@ -238,6 +238,10 @@ export const TRACER_COLOR = 0xffffb8;
 export const TRACER_FLASH_COLOR = 0xffdd6e;
 /** Color del PointLight fill de la linterna. 0xb0d0ff × 1.15/canal (b clamp) para leerse de noche. */
 export const FLASHLIGHT_FILL_COLOR = 0xcaefff;
+/** Distancia base del PointLight fill de la linterna. 7 × 1.15 para alcanzar un poco más de noche. */
+export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05;
+/** Ganancia de distancia del PointLight fill × intensidad. */
+export const FLASHLIGHT_FILL_DISTANCE_GAIN = 3.5;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -1698,7 +1702,7 @@ export function createWorldView(
       const i = Math.max(0, intensity);
       const on = flashlightConeVisible(i);
       torchLight.intensity = i * FLASHLIGHT_FILL_INTENSITY_MUL;
-      torchLight.distance = 7 + i * 3.5;
+      torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN;
       torchLight.position.set(wx, 1.35, wy);
       torchLight.visible = on;
       torchLight.color.setHex(FLASHLIGHT_FILL_COLOR);
