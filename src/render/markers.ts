@@ -44,7 +44,7 @@ export const MARKER_PALETTE: Readonly<Record<MarkerRole, MarkerPalette>> = {
   },
   door: {
     ring: 0x6a849c,
-    badge: 0x8aa4b8,
+    badge: 0x9fbdd4,
     emissive: 0x182028,
     glyph: "⊓",
   },
