@@ -5,6 +5,7 @@
 import type { TileMap } from "../world/tilemap";
 import type { ContainerRegistry } from "../items";
 import type {
+  LocalLoopbackSession,
   NetBarricadeSnap,
   NetContainerSnap,
   NetDoorSnap,
@@ -19,6 +20,17 @@ export function collectDoorsFromMap(map: TileMap): NetDoorSnap[] {
     }
   });
   return doors;
+}
+
+/**
+ * Game/host: un tick → collector existente → loopback.
+ * No inventa campos (solo x / y / open). Bulk replace: upsert dejaría stale.
+ */
+export function publishHostDoors(
+  session: LocalLoopbackSession,
+  map: TileMap,
+): void {
+  session.setDoors(collectDoorsFromMap(map));
 }
 
 /** Itera tiles barricade → { x, y }. */

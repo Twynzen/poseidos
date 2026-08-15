@@ -309,6 +309,11 @@ export class LocalLoopbackSession {
     else this.doors.push({ x, y, open });
   }
 
+  /** Stub: reemplaza lista de puertas del snapshot (solo x / y / open). */
+  setDoors(doors: ReadonlyArray<NetDoorSnap>): void {
+    this.doors = doors.map((d) => ({ x: d.x, y: d.y, open: d.open }));
+  }
+
   /** Stub: reemplaza lista de contenedores del snapshot. */
   setContainers(containers: ReadonlyArray<NetContainerSnap>): void {
     this.containers = containers.map((c) => ({
