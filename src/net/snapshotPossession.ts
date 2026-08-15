@@ -1,6 +1,6 @@
 /**
  * Collector possession gated → snapshot wire F7.
- * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary / lineSource / line); no intents crudos.
+ * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary / lineSource / line / tone); no intents crudos.
  */
 import {
   isPacified,
@@ -51,6 +51,13 @@ export type LineLookup =
   | ((id: string) => string | null | undefined)
   | {
       getActive(id: string): { line?: string | null } | null | undefined;
+    };
+
+/** Fuente opcional de tono de utterance ya validado (`speech.getActive.tone`). */
+export type ToneLookup =
+  | ((id: string) => string | null | undefined)
+  | {
+      getActive(id: string): { tone?: string | null } | null | undefined;
     };
 
 function readMoodBias(
@@ -112,6 +119,17 @@ function readLine(source: LineLookup | undefined, id: string): string {
   return compactLlmLine(raw) ?? "";
 }
 
+/** Tono de utterance ya validado; vacío / desconocido / sin utterance se omite. */
+function readTone(
+  source: ToneLookup | undefined,
+  id: string,
+): ReturnType<typeof compactMoodBias> {
+  if (!source) return "";
+  const raw =
+    typeof source === "function" ? source(id) : source.getActive(id)?.tone;
+  return compactMoodBias(raw);
+}
+
 /**
  * Serializa estado gated de poseídos.
  * `hostileIds` = ids a incluir; si se omite, todos los del ledger.
@@ -120,6 +138,7 @@ function readLine(source: LineLookup | undefined, id: string): string {
  * `memoryOf` = getter o ShortMemory; si se omite, no se pinta memorySummary.
  * `lineSourceOf` = getter o SpeechDirector; si se omite, no se pinta lineSource.
  * `lineOf` = getter o SpeechDirector; si se omite, no se pinta line.
+ * `toneOf` = getter o SpeechDirector; si se omite, no se pinta tone.
  */
 export function collectPossessionFrom(
   ledger: TrustLedger,
@@ -130,6 +149,7 @@ export function collectPossessionFrom(
   memoryOf?: MemorySummaryLookup,
   lineSourceOf?: LineSourceLookup,
   lineOf?: LineLookup,
+  toneOf?: ToneLookup,
 ): NetPossessionSnap[] {
   const ids = hostileIds ?? ledger.ids();
   const out: NetPossessionSnap[] = [];
@@ -147,6 +167,7 @@ export function collectPossessionFrom(
     const memorySummary = readMemorySummary(memoryOf, id);
     const lineSource = readLineSource(lineSourceOf, id);
     const line = readLine(lineOf, id);
+    const tone = readTone(toneOf, id);
     out.push({
       id,
       trust,
@@ -162,6 +183,7 @@ export function collectPossessionFrom(
       ...(memorySummary ? { memorySummary } : {}),
       ...(lineSource ? { lineSource } : {}),
       ...(line ? { line } : {}),
+      ...(tone ? { tone } : {}),
     });
   }
   return out;
