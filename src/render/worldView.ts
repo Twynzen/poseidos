@@ -324,6 +324,8 @@ export const HOSTILE_BODY_HEIGHT = 1.288;
 export const HOSTILE_BODY_DEPTH = 0.552;
 /** Tamaño del cubo de cabeza fallback poseído. 0.34 × 1.15 para leerse un poco más grande de noche. */
 export const HOSTILE_HEAD_SIZE = 0.391;
+/** Tamaño del cubo de cabeza fallback del player. 0.36 × 1.15 para leerse un poco más grande de noche. */
+export const PLAYER_HEAD_SIZE = 0.414;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -627,7 +629,7 @@ export function createWorldView(
 
   // Silueta legible a cámara iso: torso + cabeza (create-game-vfx / character silhouette).
   const playerBodyGeo = new THREE.BoxGeometry(0.55, 1.12, 0.48);
-  const playerHeadGeo = new THREE.BoxGeometry(0.36, 0.36, 0.36);
+  const playerHeadGeo = new THREE.BoxGeometry(PLAYER_HEAD_SIZE, PLAYER_HEAD_SIZE, PLAYER_HEAD_SIZE);
   const playerBodyMat = new THREE.MeshStandardMaterial({
     color: PLAYER_COLOR,
     roughness: 0.45,
