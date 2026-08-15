@@ -74,6 +74,7 @@ import {
   StubLlmBridge,
   type DialogueIntent,
   type LlmBridge,
+  type PossessionTone,
 } from "../possession";
 import { DEFAULT_CONFIG, DEFAULT_DAY_LENGTH_SEC, type GameConfig } from "./config";
 import {
@@ -1604,6 +1605,7 @@ export class Game {
       : undefined;
     const pacifyLeft = this.hudPacifyLeft();
     const speedBumpLeft = this.hudSpeedBumpLeft();
+    const moodBias = this.hudMoodBias();
     this.moodlesHud.sync(this.buildPlayerHudMoodles());
     this.hotbarHud.sync(hotbarSlots(this.player.inventory), this.hotbarSelected);
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
@@ -1631,6 +1633,7 @@ export class Game {
       dlgHint,
       pacifyLeft,
       speedBumpLeft,
+      moodBias,
       indoor,
       safeHint,
       raining,
@@ -1685,6 +1688,24 @@ export class Game {
       DIALOGUE_REACH,
     );
     return nearBump ? this.gates.speedBumpLeft(nearBump.id) : 0;
+  }
+
+  /**
+   * Sesgo de tono para el HUD: target del panel si está abierto,
+   * si no el poseído más cercano con `speech.getMoodBias` (DIALOGUE_REACH).
+   * Un solo store: `SpeechDirector.getMoodBias` — no es un TTL.
+   */
+  private hudMoodBias(): PossessionTone | null {
+    if (this.dialogue.open && this.dialogue.target) {
+      return this.speech.getMoodBias(this.dialogue.target);
+    }
+    const nearBiased = nearestPossessed(
+      this.hostiles.hostiles.filter((h) => this.speech.getMoodBias(h.id) != null),
+      this.player.x,
+      this.player.y,
+      DIALOGUE_REACH,
+    );
+    return nearBiased ? this.speech.getMoodBias(nearBiased.id) : null;
   }
 
   /** +/- zoom iso: ajusta frustum y reaplica proyección. */

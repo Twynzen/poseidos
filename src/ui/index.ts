@@ -62,6 +62,7 @@ export {
   formatHudStatus,
   formatPacifyHud,
   formatSpeedBumpHud,
+  formatMoodBiasHud,
   type HudDebugInput,
   type HudStatusInput,
 } from "./hudStatus";
