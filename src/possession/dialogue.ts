@@ -166,6 +166,7 @@ export async function applyDialogueChoiceAsync(
   llm?: DialogueLlmOpts,
   gateLine?: string | null,
   lastApplied?: readonly string[] | null,
+  lastRejected?: readonly string[] | null,
 ): Promise<DialogueResult> {
   ledger.register(entityId);
   const opt = optionFor(intent);
@@ -174,6 +175,7 @@ export async function applyDialogueChoiceAsync(
   const memorySummary = formatMemorySummary(memory?.recent(entityId) ?? []);
   const compactGate = compactGateLine(gateLine);
   const compactApplied = compactKnownGateTags(lastApplied);
+  const compactRejected = compactKnownGateTags(lastRejected);
   const snapshot = {
     entityId,
     tone: opt.tone,
@@ -183,6 +185,7 @@ export async function applyDialogueChoiceAsync(
     ...(memorySummary ? { memorySummary } : {}),
     ...(compactGate ? { gateLine: compactGate } : {}),
     ...(compactApplied.length > 0 ? { lastApplied: compactApplied } : {}),
+    ...(compactRejected.length > 0 ? { lastRejected: compactRejected } : {}),
     prompt: formatLlmPrompt({
       tone: opt.tone,
       intent,
@@ -190,6 +193,7 @@ export async function applyDialogueChoiceAsync(
       ...(memorySummary ? { memorySummary } : {}),
       ...(compactGate ? { gateLine: compactGate } : {}),
       ...(compactApplied.length > 0 ? { lastApplied: compactApplied } : {}),
+      ...(compactRejected.length > 0 ? { lastRejected: compactRejected } : {}),
     }),
   };
   const resolved = await resolveLineWithBridge({

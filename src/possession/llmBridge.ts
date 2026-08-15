@@ -21,6 +21,8 @@ export interface LlmAskSnapshot {
   gateLine?: string;
   /** Últimos tags aplicados (`gates.lastApplied`); omitido si vacío. */
   lastApplied?: GateTag[];
+  /** Últimos tags rechazados (`gates.lastRejected`); omitido si vacío. */
+  lastRejected?: GateTag[];
 }
 
 /** Interfaz mínima del bridge (stub hoy; API real después). */
@@ -130,6 +132,7 @@ export class StubLlmBridge implements LlmBridge {
       memorySummary: snapshot.memorySummary ?? null,
       gateLine: snapshot.gateLine ?? null,
       lastApplied: snapshot.lastApplied ?? null,
+      lastRejected: snapshot.lastRejected ?? null,
     });
     await files.writeRequest(requestId, body);
 
@@ -183,7 +186,13 @@ function sleep(ms: number): Promise<void> {
 export function formatLlmPrompt(
   fields: Pick<
     LlmAskSnapshot,
-    "tone" | "intent" | "trust" | "memorySummary" | "gateLine" | "lastApplied"
+    | "tone"
+    | "intent"
+    | "trust"
+    | "memorySummary"
+    | "gateLine"
+    | "lastApplied"
+    | "lastRejected"
   >,
 ): string {
   const bits = [`Tono: ${fields.tone}`];
@@ -195,6 +204,8 @@ export function formatLlmPrompt(
   if (gate) bits.push(`Gate: ${gate}`);
   const applied = compactKnownGateTags(fields.lastApplied);
   if (applied.length > 0) bits.push(`Aplicado: ${applied.join(", ")}`);
+  const rejected = compactKnownGateTags(fields.lastRejected);
+  if (rejected.length > 0) bits.push(`Rechazado: ${rejected.join(", ")}`);
   return bits.join(". ") + ".";
 }
 

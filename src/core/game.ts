@@ -586,6 +586,7 @@ export class Game {
     // Línea / tags ya validados *antes* de este turno (el apply posterior escribe lo nuevo).
     const lastGateLine = this.gates.gateLine(id);
     const lastApplied = this.gates.lastApplied(id);
+    const lastRejected = this.gates.lastRejected(id);
     const result = await applyDialogueChoiceAsync(
       this.trust,
       id,
@@ -595,6 +596,7 @@ export class Game {
       { enabled: this.config.llm.enabled, bridge: this.llmBridge },
       lastGateLine,
       lastApplied,
+      lastRejected,
     );
     // Ofrecer: detectar comida antes de validar gates (diálogo propone; código valida)
     const inv = this.player.inventory;
