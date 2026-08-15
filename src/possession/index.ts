@@ -58,6 +58,7 @@ export {
   MemoryLlmFileIo,
   formatLlmPrompt,
   compactMoodBias,
+  compactTtl,
   resolveLineWithBridge,
   type LlmAskSnapshot,
   type LlmBridge,
