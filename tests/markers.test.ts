@@ -177,7 +177,7 @@ describe("markers (badges + ground rings)", () => {
     expect(player.ring).toBe(0x4392f4);
     expect(player.badge).toBe(0x91d1ff);
     expect(player.glyph).toBe("●");
-    expect(MARKER_PALETTE.mute.emissive).toBe(0x401010);
+    expect(MARKER_PALETTE.mute.emissive).toBe(0x4a1212);
     expect(MARKER_PALETTE.possessed.emissive).toBe(0x2a1040);
     expect(MARKER_PALETTE.loot.emissive).toBe(0x403010);
     expect(MARKER_PALETTE.door.emissive).toBe(0x182028);
@@ -200,7 +200,7 @@ describe("markers (badges + ground rings)", () => {
     expect(Math.round((0x3c * 115) / 100)).toBe(g);
     expect(Math.round((0x3c * 115) / 100)).toBe(b);
     expect(mute.badge).toBe(0xff7b7b);
-    expect(mute.emissive).toBe(0x401010);
+    expect(mute.emissive).toBe(0x4a1212);
     expect(mute.glyph).toBe("✕");
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_PALETTE.possessed.ring).toBe(0x8b3db8);
@@ -224,13 +224,38 @@ describe("markers (badges + ground rings)", () => {
     expect(Math.round((0x6b * 115) / 100)).toBe(g);
     expect(Math.round((0x6b * 115) / 100)).toBe(b);
     expect(mute.ring).toBe(0xe14545);
-    expect(mute.emissive).toBe(0x401010);
+    expect(mute.emissive).toBe(0x4a1212);
     expect(mute.glyph).toBe("✕");
     expect(MARKER_PALETTE.player.badge).toBe(0x91d1ff);
     expect(MARKER_PALETTE.possessed.badge).toBe(0xc77dff);
     expect(MARKER_PALETTE.loot.badge).toBe(0xf0c060);
     expect(MARKER_PALETTE.door.badge).toBe(0x8aa4b8);
     expect(MARKER_PALETTE.bed.badge).toBe(0xa890b8);
+    expect(PLAYER_BADGE_OPACITY).toBe(0);
+    expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
+    expect(MARKER_RING_OPACITY).toBe(0.6877);
+  });
+
+  test("mute emissive 0x401010 × 1.15/canal → 0x4a1212; ring/badge/glyph/other-roles/opacities iguales", () => {
+    const mute = paletteFor("mute");
+    expect(mute.emissive).toBe(0x4a1212);
+    const r = (mute.emissive >> 16) & 0xff;
+    const g = (mute.emissive >> 8) & 0xff;
+    const b = mute.emissive & 0xff;
+    expect(r).toBe(0x4a);
+    expect(g).toBe(0x12);
+    expect(b).toBe(0x12);
+    expect(Math.round((0x40 * 115) / 100)).toBe(r);
+    expect(Math.round((0x10 * 115) / 100)).toBe(g);
+    expect(Math.round((0x10 * 115) / 100)).toBe(b);
+    expect(mute.ring).toBe(0xe14545);
+    expect(mute.badge).toBe(0xff7b7b);
+    expect(mute.glyph).toBe("✕");
+    expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
+    expect(MARKER_PALETTE.possessed.emissive).toBe(0x2a1040);
+    expect(MARKER_PALETTE.loot.emissive).toBe(0x403010);
+    expect(MARKER_PALETTE.door.emissive).toBe(0x182028);
+    expect(MARKER_PALETTE.bed.emissive).toBe(0x201828);
     expect(PLAYER_BADGE_OPACITY).toBe(0);
     expect(PLAYER_FOOT_RING_OPACITY).toBe(0);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
