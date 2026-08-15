@@ -304,6 +304,8 @@ export const MARKER_ICON_Y = 0.023;
 export const MARKER_ICON_SIZE = 0.207;
 /** Radio del disco del badge de marcador. 0.16 × 1.15 para leerse un poco más grande de noche. */
 export const MARKER_BADGE_RADIUS = 0.184;
+/** Pitch iso del disco/icono del badge de marcador (divisor de -π). 2.6 × 1.15 para mirar un poco más de frente a cámara de noche. */
+export const MARKER_BADGE_TILT = 2.99;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -2093,9 +2095,9 @@ function attachRoleMarkers(
   badge.name = "floatBadge";
   const disc = new THREE.Mesh(shared.badgeGeo, badgeMat);
   // Mirar hacia arriba un poco legible en iso
-  disc.rotation.x = -Math.PI / 2.6;
+  disc.rotation.x = -Math.PI / MARKER_BADGE_TILT;
   const icon = new THREE.Mesh(shared.iconGeo, iconMat);
-  icon.rotation.x = -Math.PI / 2.6;
+  icon.rotation.x = -Math.PI / MARKER_BADGE_TILT;
   icon.position.y = MARKER_ICON_Y;
   // Escala distinta por glifo visual (mute más angular vía scale)
   if (role === "mute") icon.scale.set(0.7, 0.7, 1);
