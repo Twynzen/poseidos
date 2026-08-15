@@ -49,7 +49,7 @@ export const MARKER_PALETTE: Readonly<Record<MarkerRole, MarkerPalette>> = {
     glyph: "⊓",
   },
   bed: {
-    ring: 0x7a6490,
+    ring: 0x8c73a6,
     badge: 0xa890b8,
     emissive: 0x201828,
     glyph: "▭",
