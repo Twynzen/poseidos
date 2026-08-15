@@ -548,6 +548,11 @@ export class Game {
   }
 
 
+  private playerHasOfferFood(): boolean {
+    const inv = this.player.inventory;
+    return findSlot(inv, "hot_meal") >= 0 || findSlot(inv, "canned_food") >= 0;
+  }
+
   private syncDialoguePanel(): void {
     const open = this.dialogue.open;
     const id = this.dialogue.target;
@@ -558,6 +563,7 @@ export class Game {
       lastLine: open ? this.dialogueLastLine : null,
       lastTone: open ? this.dialogueLastTone : null,
       gateLine: open ? this.dialogueGateLine : null,
+      hasOfferFood: this.playerHasOfferFood(),
     });
   }
 
@@ -574,8 +580,7 @@ export class Game {
     );
     // Ofrecer: detectar comida antes de validar gates (diálogo propone; código valida)
     const inv = this.player.inventory;
-    const hasOfferFood =
-      findSlot(inv, "hot_meal") >= 0 || findSlot(inv, "canned_food") >= 0;
+    const hasOfferFood = this.playerHasOfferFood();
     const proposal = proposeDialogueGates(result.intent, result.trustAfter, {
       hasOfferFood,
     });
