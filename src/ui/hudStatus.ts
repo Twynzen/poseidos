@@ -43,6 +43,8 @@ export type HudStatusInput = {
   speedBumpLeft?: number;
   /** Sesgo de tono del poseído relevante (`speech.getMoodBias`). Null/omitido = no pintar. */
   moodBias?: PossessionTone | null;
+  /** Tono recordado del poseído relevante (`memory.toneBias`). Null/omitido = no pintar. */
+  memoryTone?: PossessionTone | null;
   tileX: number;
   tileY: number;
   chunksLoaded: number;
@@ -108,6 +110,18 @@ export function formatMoodBiasHud(
 }
 
 /**
+ * Tono de ShortMemory en HUD. Prefijo MEMORIA para no chocar con
+ * `formatMoodBiasHud` (speech mood). Oculto si no hay bias.
+ */
+export function formatMemoryToneHud(
+  bias: PossessionTone | null | undefined,
+): string | null {
+  if (bias == null) return null;
+  const token = MOOD_BIAS_HUD[bias];
+  return token ? `MEMORIA ${token}` : null;
+}
+
+/**
  * Formato compacto por defecto (sin muro WASD ni dump tile/chunks/fov).
  * Con showHelp: CONTROLS_HELP + línea de estado (debug tokens) + F1 cerrar.
  * Con gameOver: mensaje de muerte.
@@ -131,6 +145,7 @@ export function formatHudStatus(input: HudStatusInput): string {
     formatPacifyHud(input.pacifyLeft),
     formatSpeedBumpHud(input.speedBumpLeft),
     formatMoodBiasHud(input.moodBias),
+    formatMemoryToneHud(input.memoryTone),
     input.noiseHint?.trim() || null,
     input.invLine?.trim() || null,
     input.nearHint?.trim() || null,

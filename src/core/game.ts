@@ -1612,6 +1612,7 @@ export class Game {
     const pacifyLeft = this.hudPacifyLeft();
     const speedBumpLeft = this.hudSpeedBumpLeft();
     const moodBias = this.hudMoodBias();
+    const memoryTone = this.hudMemoryTone();
     this.moodlesHud.sync(this.buildPlayerHudMoodles());
     this.hotbarHud.sync(hotbarSlots(this.player.inventory), this.hotbarSelected);
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
@@ -1640,6 +1641,7 @@ export class Game {
       pacifyLeft,
       speedBumpLeft,
       moodBias,
+      memoryTone,
       indoor,
       safeHint,
       raining,
@@ -1712,6 +1714,26 @@ export class Game {
       DIALOGUE_REACH,
     );
     return nearBiased ? this.speech.getMoodBias(nearBiased.id) : null;
+  }
+
+  /**
+   * Tono de ShortMemory para el HUD: target del panel si está abierto,
+   * si no el poseído más cercano con `memory.toneBias` (DIALOGUE_REACH).
+   * Un solo store: `ShortMemory.toneBias` — no es speech mood.
+   */
+  private hudMemoryTone(): PossessionTone | null {
+    if (this.dialogue.open && this.dialogue.target) {
+      return this.memory.toneBias(this.dialogue.target) ?? null;
+    }
+    const nearRemembered = nearestPossessed(
+      this.hostiles.hostiles.filter((h) => this.memory.toneBias(h.id) != null),
+      this.player.x,
+      this.player.y,
+      DIALOGUE_REACH,
+    );
+    return nearRemembered
+      ? this.memory.toneBias(nearRemembered.id) ?? null
+      : null;
   }
 
   /** +/- zoom iso: ajusta frustum y reaplica proyección. */
