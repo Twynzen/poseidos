@@ -329,3 +329,14 @@ export class LocalLoopbackSession {
     this.possession = list.map((p) => ({ ...p }));
   }
 }
+
+/**
+ * Game/host: un tick → HostileSim existente → loopback.
+ * No inventa campos (solo id / x / y / mode).
+ */
+export function publishHostHostiles(
+  session: LocalLoopbackSession,
+  sim: HostileSim,
+): void {
+  session.setHostilesFromSim(sim);
+}
