@@ -242,6 +242,8 @@ export const FLASHLIGHT_FILL_COLOR = 0xcaefff;
 export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05;
 /** Ganancia de distancia del PointLight fill × intensidad. 3.5 × 1.15 para estirar un poco más de noche. */
 export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025;
+/** Altura Y del PointLight fill de la linterna. 1.35 × 1.15 para sentarse un poco más alto de noche. */
+export const FLASHLIGHT_FILL_Y = 1.5525;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -442,7 +444,7 @@ export function createWorldView(
 
   // Linterna: PointLight fill + SpotLight al facing (separada de warm / muzzle).
   const torchLight = new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, 2);
-  torchLight.position.set(0, 1.35, 0);
+  torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0);
   torchLight.visible = false;
   scene.add(torchLight);
   const torchSpot = new THREE.SpotLight(
@@ -1703,7 +1705,7 @@ export function createWorldView(
       const on = flashlightConeVisible(i);
       torchLight.intensity = i * FLASHLIGHT_FILL_INTENSITY_MUL;
       torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN;
-      torchLight.position.set(wx, 1.35, wy);
+      torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy);
       torchLight.visible = on;
       torchLight.color.setHex(FLASHLIGHT_FILL_COLOR);
 
