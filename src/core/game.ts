@@ -1603,6 +1603,7 @@ export class Game {
       ? `diálogo ${this.dialogue.target}`
       : undefined;
     const pacifyLeft = this.hudPacifyLeft();
+    const speedBumpLeft = this.hudSpeedBumpLeft();
     this.moodlesHud.sync(this.buildPlayerHudMoodles());
     this.hotbarHud.sync(hotbarSlots(this.player.inventory), this.hotbarSelected);
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
@@ -1629,6 +1630,7 @@ export class Game {
       talkHint,
       dlgHint,
       pacifyLeft,
+      speedBumpLeft,
       indoor,
       safeHint,
       raining,
@@ -1665,6 +1667,24 @@ export class Game {
       DIALOGUE_REACH,
     );
     return nearPacified ? this.gates.pacifiedLeft(nearPacified.id) : 0;
+  }
+
+  /**
+   * TTL de speed-bump para el HUD: target del panel si está abierto,
+   * si no el poseído más cercano con `gates.speedBumpLeft > 0`.
+   * Un solo reloj: `DialogueBehaviorGates.speedBumpLeft`.
+   */
+  private hudSpeedBumpLeft(): number {
+    if (this.dialogue.open && this.dialogue.target) {
+      return this.gates.speedBumpLeft(this.dialogue.target);
+    }
+    const nearBump = nearestPossessed(
+      this.hostiles.hostiles.filter((h) => this.gates.speedBumpLeft(h.id) > 0),
+      this.player.x,
+      this.player.y,
+      DIALOGUE_REACH,
+    );
+    return nearBump ? this.gates.speedBumpLeft(nearBump.id) : 0;
   }
 
   /** +/- zoom iso: ajusta frustum y reaplica proyección. */

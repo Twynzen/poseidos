@@ -4,6 +4,7 @@ import {
   formatHudDebugTokens,
   formatHudStatus,
   formatPacifyHud,
+  formatSpeedBumpHud,
   type HudStatusInput,
 } from "../src/ui/hudStatus";
 
@@ -172,5 +173,39 @@ describe("formatHudStatus compact", () => {
     expect(
       formatHudStatus(base({ gameOver: true, pacifyLeft: 8 })),
     ).not.toContain("CALMA");
+  });
+
+  test("speedBumpLeft 0 / ausente no pinta FURIA; > 0 sí", () => {
+    expect(formatSpeedBumpHud(undefined)).toBeNull();
+    expect(formatSpeedBumpHud(0)).toBeNull();
+    expect(formatSpeedBumpHud(-1)).toBeNull();
+    expect(formatSpeedBumpHud(3.5)).toBe("FURIA 4");
+    expect(formatSpeedBumpHud(2.1)).toBe("FURIA 3");
+    expect(formatSpeedBumpHud(0.4)).toBe("FURIA 1");
+
+    const bare = formatHudStatus(base());
+    expect(bare).not.toContain("FURIA");
+    expect(formatHudStatus(base({ speedBumpLeft: 0 }))).not.toContain("FURIA");
+    expect(formatHudStatus(base({ speedBumpLeft: 3.5 }))).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · FURIA 4 · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(formatHudStatus(base({ speedBumpLeft: 2.1 }))).toContain("FURIA 3");
+    expect(
+      formatHudStatus(base({ gameOver: true, speedBumpLeft: 3.5 })),
+    ).not.toContain("FURIA");
+  });
+
+  test("CALMA y FURIA conviven; CALMA no cambia", () => {
+    expect(
+      formatHudStatus(base({ pacifyLeft: 8, speedBumpLeft: 3.5 })),
+    ).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CALMA 8 · FURIA 4 · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(formatHudStatus(base({ pacifyLeft: 8 }))).toBe(
+      "día (21%) · mudos 3 · poseídos 2 · CALMA 8 · inv food×1 (0.5kg) · F1 ayuda",
+    );
+    expect(formatHudStatus(base({ pacifyLeft: 8, speedBumpLeft: 0 }))).not.toContain(
+      "FURIA",
+    );
   });
 });

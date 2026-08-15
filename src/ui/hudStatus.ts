@@ -37,6 +37,8 @@ export type HudStatusInput = {
   invDetailHint?: string;
   /** Segundos de pacify del poseído relevante (`gates.pacifiedLeft`). 0/omitido = no pintar. */
   pacifyLeft?: number;
+  /** Segundos de speed-bump del poseído relevante (`gates.speedBumpLeft`). 0/omitido = no pintar. */
+  speedBumpLeft?: number;
   tileX: number;
   tileY: number;
   chunksLoaded: number;
@@ -74,6 +76,17 @@ export function formatPacifyHud(pacifyLeft: number | undefined): string | null {
 }
 
 /**
+ * TTL de speed-bump en HUD. Entero corto ES; oculto si ≤ 0 / ausente.
+ * Countdown: 3.5s → `FURIA 4` (ceil para que el último segundo no desaparezca).
+ */
+export function formatSpeedBumpHud(
+  speedBumpLeft: number | undefined,
+): string | null {
+  if (speedBumpLeft == null || speedBumpLeft <= 0) return null;
+  return `FURIA ${Math.ceil(speedBumpLeft)}`;
+}
+
+/**
  * Formato compacto por defecto (sin muro WASD ni dump tile/chunks/fov).
  * Con showHelp: CONTROLS_HELP + línea de estado (debug tokens) + F1 cerrar.
  * Con gameOver: mensaje de muerte.
@@ -95,6 +108,7 @@ export function formatHudStatus(input: HudStatusInput): string {
     `mudos ${input.muteN}`,
     `poseídos ${input.possN}`,
     formatPacifyHud(input.pacifyLeft),
+    formatSpeedBumpHud(input.speedBumpLeft),
     input.noiseHint?.trim() || null,
     input.invLine?.trim() || null,
     input.nearHint?.trim() || null,
