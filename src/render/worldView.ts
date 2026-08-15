@@ -336,6 +336,8 @@ export const PLAYER_BODY_DEPTH = 0.552;
 export const WALL_HEIGHT = 2.53;
 /** Altura Y del muro. 1.1 × 1.15 para sentarse un poco más alto de noche. */
 export const WALL_BASE_Y = 1.265;
+/** Alto de la puerta. 2.0 × 1.15 para leerse un poco más alta de noche. */
+export const DOOR_HEIGHT = 2.3;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -559,7 +561,7 @@ export function createWorldView(
 
   const floorGeo = new THREE.PlaneGeometry(1, 1);
   const wallGeo = new THREE.BoxGeometry(1, WALL_HEIGHT, 1);
-  const doorGeo = new THREE.BoxGeometry(1, 2.0, 0.18);
+  const doorGeo = new THREE.BoxGeometry(1, DOOR_HEIGHT, 0.18);
   const furnitureGeo = new THREE.BoxGeometry(0.7, 0.85, 0.7);
   /** Planchas apiladas: más bajas y estrechas que un muro. */
   const barricadeGeo = new THREE.BoxGeometry(0.92, 1.35, 0.55);
