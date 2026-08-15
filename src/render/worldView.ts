@@ -374,6 +374,8 @@ export const BARRICADE_CROSS_SCALE_X = 1.0925;
 export const BARRICADE_CROSS_SCALE_Z = 1.035;
 /** Yaw de las tablas de barricada. (Math.PI / 8) × 1.15 para leerse un poco más rotadas de noche. */
 export const BARRICADE_PLANK_ROT_Y = (Math.PI / 8) * 1.15;
+/** Yaw de las cruces de barricada. (-Math.PI / 5) × 1.15 para leerse un poco más rotadas de noche. */
+export const BARRICADE_CROSS_ROT_Y = (-Math.PI / 5) * 1.15;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -2266,7 +2268,7 @@ function fillTileContent(
     content.add(plank);
     const cross = new THREE.Mesh(barricadeGeo, barricadeEdgeMat);
     cross.position.set(x + 0.5, BARRICADE_CROSS_Y, y + 0.5);
-    cross.rotation.y = -Math.PI / 5;
+    cross.rotation.y = BARRICADE_CROSS_ROT_Y;
     cross.scale.set(BARRICADE_CROSS_SCALE_X, BARRICADE_CROSS_SCALE_Y, BARRICADE_CROSS_SCALE_Z);
     content.add(cross);
   }
