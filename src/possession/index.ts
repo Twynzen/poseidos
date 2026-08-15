@@ -76,6 +76,7 @@ export {
   GATE_DISTRACT_MIN_TRUST,
   GATE_DISTRACT_NOISE,
   GATE_DISTRACT_DEFAULT_OFFSET,
+  GATE_LINE_MAX_LEN,
   GATE_THRESHOLDS,
   proposeDialogueGates,
   DialogueBehaviorGates,

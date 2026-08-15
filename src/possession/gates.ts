@@ -12,6 +12,9 @@ import {
 } from "./trust";
 import type { HostileAttitudeMod } from "../ai/hostile";
 
+/** Cap de la última línea de gate persistida (`formatGateLine` cabe holgado). */
+export const GATE_LINE_MAX_LEN = 120;
+
 /** Tras calmar: trust mínimo (post-delta) para TTL de alivio. */
 export const GATE_CALM_MIN_TRUST = 60;
 /** Segundos sin chase/ataque aunque vea al player. */
@@ -198,17 +201,24 @@ export class DialogueBehaviorGates {
   private readonly lastAppliedTags = new Map<string, GateTag[]>();
   /** Últimos tags rechazados por id. No es TTL — sobrevive tick(); F5/F9 vía persist. */
   private readonly lastRejectedTags = new Map<string, GateTag[]>();
+  /**
+   * Última línea formateada de gate por id (`formatGateLine`).
+   * No es TTL — sobrevive tick(); F5/F9 vía persist. No reconstruye desde tags.
+   */
+  private readonly lastGateLines = new Map<string, string>();
 
   clear(): void {
     this.states.clear();
     this.lastAppliedTags.clear();
     this.lastRejectedTags.clear();
+    this.lastGateLines.clear();
   }
 
   unregister(id: string): void {
     this.states.delete(id);
     this.lastAppliedTags.delete(id);
     this.lastRejectedTags.delete(id);
+    this.lastGateLines.delete(id);
   }
 
   /** Ids con TTL activo. */
@@ -230,6 +240,15 @@ export class DialogueBehaviorGates {
     const out: string[] = [];
     for (const [id, tags] of this.lastRejectedTags) {
       if (tags.length > 0) out.push(id);
+    }
+    return out;
+  }
+
+  /** Ids con última línea de gate nonempty (puede existir tras TTL 0). */
+  gateLineIds(): readonly string[] {
+    const out: string[] = [];
+    for (const [id, line] of this.lastGateLines) {
+      if (line) out.push(id);
     }
     return out;
   }
@@ -302,6 +321,27 @@ export class DialogueBehaviorGates {
   restoreLastRejected(id: string, tags: readonly GateTag[]): void {
     if (!id || tags.length === 0) return;
     this.lastRejectedTags.set(id, [...tags]);
+  }
+
+  /** Última línea formateada (`formatGateLine`); null si nunca se guardó. */
+  gateLine(id: string): string | null {
+    return this.lastGateLines.get(id) ?? null;
+  }
+
+  /**
+   * Restaura la última línea de gate (F5/F9 / tras formatGateLine).
+   * Reemplaza el id; omite vacío. No toca TTLs ni lastApplied/lastRejected.
+   */
+  restoreGateLine(id: string, line: string): void {
+    if (!id || typeof line !== "string") return;
+    const trimmed = line.trim();
+    if (!trimmed) return;
+    this.lastGateLines.set(
+      id,
+      trimmed.length > GATE_LINE_MAX_LEN
+        ? trimmed.slice(0, GATE_LINE_MAX_LEN)
+        : trimmed,
+    );
   }
 
   /** Aplica propuesta validada (refuerza TTL si ya había). */

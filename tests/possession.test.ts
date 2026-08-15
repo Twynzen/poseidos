@@ -38,11 +38,13 @@ import {
   GATE_OFFER_PACIFY_TTL,
   GATE_DISTRACT_MIN_TRUST,
   GATE_DISTRACT_DEFAULT_OFFSET,
+  GATE_LINE_MAX_LEN,
   capturePossession,
   normalizePossession,
   applyPossession,
   type LlmBridge,
 } from "../src/possession";
+import { formatGateLine } from "../src/ui/dialoguePanel";
 import { NoiseBus } from "../src/world/noise";
 import { DEFAULT_CONFIG, mergeConfig } from "../src/core/config";
 import {
@@ -1089,6 +1091,29 @@ describe("dialogue → behavior gates", () => {
     expect(gates.lastRejected("q")).toEqual([]);
     expect(gates.lastApplied("q")).toEqual([]);
   });
+
+  test("restoreGateLine; tick no borra; clear/unregister limpian", () => {
+    const gates = new DialogueBehaviorGates();
+    expect(gates.gateLine("p")).toBeNull();
+    const applied = formatGateLine(proposeDialogueGates("calmar", GATE_CALM_MIN_TRUST));
+    expect(applied).toBe("código: aplicado (pacify_ttl)");
+    gates.apply("p", proposeDialogueGates("calmar", GATE_CALM_MIN_TRUST));
+    gates.restoreGateLine("p", applied!);
+    expect(gates.gateLine("p")).toBe(applied);
+    expect(gates.lastApplied("p")).toEqual(["pacify_ttl"]);
+
+    gates.tick(GATE_CALM_PACIFY_TTL + 1);
+    expect(gates.pacifiedLeft("p")).toBe(0);
+    expect(gates.gateLine("p")).toBe(applied);
+
+    gates.restoreGateLine("q", "código: rechazado (trust)");
+    gates.unregister("p");
+    expect(gates.gateLine("p")).toBeNull();
+    expect(gates.gateLine("q")).toBe("código: rechazado (trust)");
+
+    gates.clear();
+    expect(gates.gateLine("q")).toBeNull();
+  });
 });
 
 describe("possession persist (F5/F9)", () => {
@@ -1134,6 +1159,7 @@ describe("possession persist (F5/F9)", () => {
       "threat_speed",
     ]);
     expect(snap.lastRejected).toEqual({});
+    expect(snap.gateLine).toEqual({});
 
     const ledger2 = new TrustLedger();
     const gates2 = new DialogueBehaviorGates();
@@ -1168,6 +1194,8 @@ describe("possession persist (F5/F9)", () => {
     expect(gates2.lastRejected("poss-a")).toEqual([]);
     expect(gates2.lastApplied("stale")).toEqual([]);
     expect(gates2.lastRejected("stale")).toEqual([]);
+    expect(gates2.gateLine("poss-a")).toBeNull();
+    expect(gates2.gateLine("stale")).toBeNull();
   });
 
   test("roundtrip lastApplied tras TTL 0; leftover lastApplied se reemplaza", () => {
@@ -1204,7 +1232,7 @@ describe("possession persist (F5/F9)", () => {
     expect(gates2.lastApplied("stale")).toEqual([]);
   });
 
-  test("blob viejo sin memory / lastApplied / lastRejected carga vacío; leftover ids se reemplazan", () => {
+  test("blob viejo sin memory / lastApplied / lastRejected / gateLine carga vacío; leftover ids se reemplazan", () => {
     const n = normalizePossession({
       trust: { a: 50 },
       gates: {},
@@ -1213,6 +1241,7 @@ describe("possession persist (F5/F9)", () => {
     expect(n.memory).toEqual({});
     expect(n.lastApplied).toEqual({});
     expect(n.lastRejected).toEqual({});
+    expect(n.gateLine).toEqual({});
 
     const memory = new ShortMemory();
     memory.remember("leftover", {
@@ -1227,7 +1256,9 @@ describe("possession persist (F5/F9)", () => {
       "leftover",
       proposeDialogueGates("calmar", GATE_CALM_MIN_TRUST - 1),
     );
+    leftoverGates.restoreGateLine("leftover", "código: rechazado (trust)");
     expect(leftoverGates.lastRejected("leftover")).toEqual(["pacify_ttl"]);
+    expect(leftoverGates.gateLine("leftover")).toBe("código: rechazado (trust)");
     applyPossession(
       new TrustLedger(),
       leftoverGates,
@@ -1240,6 +1271,7 @@ describe("possession persist (F5/F9)", () => {
     expect(memory.toneBias("a")).toBeUndefined();
     expect(leftoverGates.lastApplied("leftover")).toEqual([]);
     expect(leftoverGates.lastRejected("leftover")).toEqual([]);
+    expect(leftoverGates.gateLine("leftover")).toBeNull();
   });
 
   test("normalize: clamp trust, descarta tono desconocido, omite TTL ≤ 0", () => {
@@ -1268,6 +1300,7 @@ describe("possession persist (F5/F9)", () => {
     expect(n.memory).toEqual({});
     expect(n.lastApplied).toEqual({});
     expect(n.lastRejected).toEqual({});
+    expect(n.gateLine).toEqual({});
   });
 
   test("normalize lastApplied: descarta tags desconocidos; omite listas vacías", () => {
@@ -1356,9 +1389,69 @@ describe("possession persist (F5/F9)", () => {
       "memory",
       "lastApplied",
       "lastRejected",
+      "gateLine",
     ]);
     expect(snap.lastApplied).toEqual({});
     expect(snap.lastRejected["p"]).toEqual(["pacify_ttl"]);
+    expect(snap.gateLine).toEqual({});
+  });
+
+  test("roundtrip gateLine; leftover se reemplaza; blob viejo vacío", () => {
+    const ledger = new TrustLedger();
+    const gates = new DialogueBehaviorGates();
+    const speech = new SpeechDirector({}, () => 0.2);
+    const memory = new ShortMemory();
+    const applied = proposeDialogueGates("calmar", GATE_CALM_MIN_TRUST);
+    const line = formatGateLine(applied);
+    expect(line).toBe("código: aplicado (pacify_ttl)");
+    gates.apply("p", applied);
+    gates.restoreGateLine("p", line!);
+    gates.tick(GATE_CALM_PACIFY_TTL + 1);
+    expect(gates.pacifiedLeft("p")).toBe(0);
+    expect(gates.lastApplied("p")).toEqual(["pacify_ttl"]);
+    expect(gates.gateLine("p")).toBe(line);
+
+    const snap = capturePossession(ledger, gates, speech, memory);
+    expect(snap.gates["p"]).toBeUndefined();
+    expect(snap.lastApplied["p"]).toEqual(["pacify_ttl"]);
+    expect(snap.gateLine["p"]).toBe(line);
+
+    const gates2 = new DialogueBehaviorGates();
+    gates2.apply("stale", proposeDialogueGates("ofrecer", GATE_OFFER_MIN_TRUST));
+    gates2.restoreGateLine("stale", "código: rechazado (trust)");
+    expect(gates2.gateLine("stale")).toBe("código: rechazado (trust)");
+    applyPossession(
+      new TrustLedger(),
+      gates2,
+      new SpeechDirector({}, () => 0.1),
+      new ShortMemory(),
+      snap,
+    );
+    expect(gates2.gateLine("p")).toBe(line);
+    expect(gates2.lastApplied("p")).toEqual(["pacify_ttl"]);
+    expect(gates2.gateLine("stale")).toBeNull();
+    expect(gates2.lastRejected("stale")).toEqual([]);
+  });
+
+  test("normalize gateLine: drop empty / non-string; cap length", () => {
+    const n = normalizePossession({
+      gateLine: {
+        "": "código: aplicado (pacify_ttl)",
+        keep: "  código: rechazado (trust)  ",
+        empty: "",
+        spaces: "   ",
+        junk: 12,
+        long: "x".repeat(GATE_LINE_MAX_LEN + 8),
+      },
+    });
+    expect(n.gateLine[""]).toBeUndefined();
+    expect(n.gateLine.empty).toBeUndefined();
+    expect(n.gateLine.spaces).toBeUndefined();
+    expect(n.gateLine.junk).toBeUndefined();
+    expect(n.gateLine.keep).toBe("código: rechazado (trust)");
+    expect(n.gateLine.long).toBe("x".repeat(GATE_LINE_MAX_LEN));
+    expect(n.lastApplied).toEqual({});
+    expect(n.lastRejected).toEqual({});
   });
 
   test("normalize memory: descarta intent/tono/who/delta inválidos; recorta capacity", () => {

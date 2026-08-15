@@ -383,6 +383,10 @@ export class Game {
       return false;
     }
     applySave(this.saveWorld(), save);
+    const loadedTarget = this.dialogue.target;
+    this.dialogueGateLine = loadedTarget
+      ? this.gates.gateLine(loadedTarget)
+      : null;
     this.gameOver = !this.player.alive;
     if (this.player.alive) {
       this.view.clearPlayerAction();
@@ -449,6 +453,7 @@ export class Game {
     this.view.syncPlayer(this.player.x, this.player.y);
     this.syncHostileView();
     this.syncSpeechOverlay();
+    this.syncDialoguePanel();
     this.syncLighting();
     this.view.followCamera(this.player.x, this.player.y);
   }
@@ -570,7 +575,7 @@ export class Game {
       trust: id ? this.trust.get(id) : 50,
       lastLine: open ? this.dialogueLastLine : null,
       lastTone: open ? this.dialogueLastTone : null,
-      gateLine: open ? this.dialogueGateLine : null,
+      gateLine: open && id ? this.gates.gateLine(id) : null,
       hasOfferFood: this.playerHasOfferFood(),
     });
   }
@@ -663,6 +668,9 @@ export class Game {
     this.dialogueLastLine = result.line;
     this.dialogueLastTone = result.tone;
     this.dialogueGateLine = formatGateLine(proposal);
+    if (this.dialogueGateLine) {
+      this.gates.restoreGateLine(id, this.dialogueGateLine);
+    }
     const sign = result.trustDelta >= 0 ? "+" : "";
     let gateHint =
       proposal.applied.length > 0
@@ -705,7 +713,7 @@ export class Game {
     this.dialogue.begin(near.id);
     this.dialogueLastLine = null;
     this.dialogueLastTone = null;
-    this.dialogueGateLine = null;
+    this.dialogueGateLine = this.gates.gateLine(near.id);
     this.lastLootMsg = `diálogo ${near.id}`;
     this.hudAcc = 1;
     this.syncDialoguePanel();
