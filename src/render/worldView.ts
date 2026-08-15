@@ -302,6 +302,8 @@ export const MARKER_RING_Y = 0.046;
 export const MARKER_ICON_Y = 0.023;
 /** Tamaño del icono del badge de marcador. 0.18 × 1.15 para leerse un poco más grande de noche. */
 export const MARKER_ICON_SIZE = 0.207;
+/** Radio del disco del badge de marcador. 0.16 × 1.15 para leerse un poco más grande de noche. */
+export const MARKER_BADGE_RADIUS = 0.184;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -1995,7 +1997,7 @@ function createMarkerSharedResources(): MarkerSharedResources {
     interact.outer,
     28,
   );
-  const badgeGeo = new THREE.CircleGeometry(0.16, 20);
+  const badgeGeo = new THREE.CircleGeometry(MARKER_BADGE_RADIUS, 20);
   const iconGeo = new THREE.PlaneGeometry(MARKER_ICON_SIZE, MARKER_ICON_SIZE);
   const doorLetterMap = makeBadgeLetterTexture(doorBadgeLabel, doorBadgeFontPx);
   const bedLetterMap = makeBadgeLetterTexture(bedBadgeLabel, bedBadgeFontPx);
