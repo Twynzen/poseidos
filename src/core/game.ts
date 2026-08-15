@@ -1602,6 +1602,7 @@ export class Game {
     const dlgHint = this.dialogue.open
       ? `diálogo ${this.dialogue.target}`
       : undefined;
+    const pacifyLeft = this.hudPacifyLeft();
     this.moodlesHud.sync(this.buildPlayerHudMoodles());
     this.hotbarHud.sync(hotbarSlots(this.player.inventory), this.hotbarSelected);
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
@@ -1627,6 +1628,7 @@ export class Game {
       noiseHint,
       talkHint,
       dlgHint,
+      pacifyLeft,
       indoor,
       safeHint,
       raining,
@@ -1645,6 +1647,24 @@ export class Game {
       showHelp: this.showHelp,
     });
     this.hud.classList.toggle("hud-help", this.showHelp);
+  }
+
+  /**
+   * TTL de pacify para el HUD: target del panel si está abierto,
+   * si no el poseído más cercano con `gates.pacifiedLeft > 0`.
+   * Un solo reloj: `DialogueBehaviorGates.pacifiedLeft`.
+   */
+  private hudPacifyLeft(): number {
+    if (this.dialogue.open && this.dialogue.target) {
+      return this.gates.pacifiedLeft(this.dialogue.target);
+    }
+    const nearPacified = nearestPossessed(
+      this.hostiles.hostiles.filter((h) => this.gates.pacifiedLeft(h.id) > 0),
+      this.player.x,
+      this.player.y,
+      DIALOGUE_REACH,
+    );
+    return nearPacified ? this.gates.pacifiedLeft(nearPacified.id) : 0;
   }
 
   /** +/- zoom iso: ajusta frustum y reaplica proyección. */

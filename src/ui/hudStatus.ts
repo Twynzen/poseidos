@@ -35,6 +35,8 @@ export type HudStatusInput = {
   msg?: string;
   /** "I cerrar inv" cuando el panel está abierto */
   invDetailHint?: string;
+  /** Segundos de pacify del poseído relevante (`gates.pacifiedLeft`). 0/omitido = no pintar. */
+  pacifyLeft?: number;
   tileX: number;
   tileY: number;
   chunksLoaded: number;
@@ -63,6 +65,15 @@ export function formatHudDebugTokens(input: HudDebugInput): string {
 }
 
 /**
+ * TTL de pacify en HUD. Entero corto ES; oculto si ≤ 0 / ausente.
+ * Countdown: 7.2s → `CALMA 8` (ceil para que el último segundo no desaparezca).
+ */
+export function formatPacifyHud(pacifyLeft: number | undefined): string | null {
+  if (pacifyLeft == null || pacifyLeft <= 0) return null;
+  return `CALMA ${Math.ceil(pacifyLeft)}`;
+}
+
+/**
  * Formato compacto por defecto (sin muro WASD ni dump tile/chunks/fov).
  * Con showHelp: CONTROLS_HELP + línea de estado (debug tokens) + F1 cerrar.
  * Con gameOver: mensaje de muerte.
@@ -83,6 +94,7 @@ export function formatHudStatus(input: HudStatusInput): string {
     input.audioHint?.trim() || null,
     `mudos ${input.muteN}`,
     `poseídos ${input.possN}`,
+    formatPacifyHud(input.pacifyLeft),
     input.noiseHint?.trim() || null,
     input.invLine?.trim() || null,
     input.nearHint?.trim() || null,
