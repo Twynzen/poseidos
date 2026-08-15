@@ -21,7 +21,7 @@ import {
   type MemoryEntry,
 } from "../possession/memory";
 import type { SpeechTrigger } from "../possession/speech";
-import type { NetPossessionSnap } from "./session";
+import { LocalLoopbackSession, type NetPossessionSnap } from "./session";
 
 /** Fuente opcional de sesgo ya validado (`speech.getMoodBias`). */
 export type MoodBiasLookup =
@@ -248,5 +248,26 @@ export function collectHostPossessionFrom(
     speech,
     speech,
     speech,
+  );
+}
+
+/**
+ * Game/host: un tick → collector existente → loopback.
+ * No inventa lookups ni campos. Path 3-arg sigue omitiendo speech/memory.
+ */
+export function publishHostPossession(
+  session: LocalLoopbackSession,
+  ledger: TrustLedger,
+  gates: DialogueBehaviorGates,
+  hostileIds: readonly string[] | undefined,
+  speech: MoodBiasLookup &
+    LineSourceLookup &
+    LineLookup &
+    ToneLookup &
+    TriggerLookup,
+  memory: ToneBiasLookup & MemorySummaryLookup,
+): void {
+  session.setPossession(
+    collectHostPossessionFrom(ledger, gates, hostileIds, speech, memory),
   );
 }

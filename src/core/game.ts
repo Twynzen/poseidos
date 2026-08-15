@@ -157,6 +157,10 @@ import {
   warmLightIntensity,
 } from "../world/indoor";
 import { WeatherSystem, rainNeedsMult } from "../world/weather";
+import {
+  LocalLoopbackSession,
+  publishHostPossession,
+} from "../net";
 
 const RAIN_FILL_MSG = "recogiste agua de lluvia";
 
@@ -229,6 +233,8 @@ export class Game {
   private lastInvIndex: number | null = null;
   /** Edad (s) del último anillo visual de sprint; null = nunca. */
   private lastRunRingAgeSec: number | null = null;
+  /** Stub F7 1P: possession gated → loopback (sin sockets). */
+  private session: LocalLoopbackSession;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -288,6 +294,10 @@ export class Game {
     this.footsteps = createFootstepsBus();
     this.footstepPlayer = createFootstepPlayer();
     this.storage = browserStorage();
+    this.session = new LocalLoopbackSession({
+      playerX: this.player.x,
+      playerY: this.player.y,
+    });
     this.loop = new GameLoop((dt) => this.tick(dt));
 
     this.onResize = () => this.resize();
@@ -426,6 +436,10 @@ export class Game {
     this.lastInvUseAt = Number.NEGATIVE_INFINITY;
     this.lastInvIndex = null;
     this.flashlightOn = false;
+    this.session = new LocalLoopbackSession({
+      playerX: this.player.x,
+      playerY: this.player.y,
+    });
     this.needsDamageMsgCd = 0;
     this.hitFlash.intensity = 0;
     this.syncHitFlashOverlay();
@@ -731,6 +745,18 @@ export class Game {
     this.lastLootMsg = `diálogo ${near.id}`;
     this.hudAcc = 1;
     this.syncDialoguePanel();
+  }
+
+  /** Possession gated → loopback (speech+memory ya actualizados). */
+  private publishPossessionSnap(): void {
+    publishHostPossession(
+      this.session,
+      this.trust,
+      this.gates,
+      this.trust.ids(),
+      this.speech,
+      this.memory,
+    );
   }
 
   /** Habla de poseídos: al ver player o periódico. */
@@ -1067,6 +1093,7 @@ export class Game {
     }
     this.spawnGrace = tickSpawnGrace(this.spawnGrace, dt);
     this.tickSpeech(dt);
+    this.publishPossessionSnap();
     if (!this.player.alive) {
       this.enterGameOver();
       this.input.endFrame();

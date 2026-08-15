@@ -9,6 +9,7 @@ import {
   collectHostPossessionFrom,
   collectPossessionFrom,
   LocalLoopbackSession,
+  publishHostPossession,
   type NetSnapshot,
 } from "../src/net";
 import {
@@ -2636,6 +2637,72 @@ describe("collectPossessionFrom + snapshot possession", () => {
 
     const session = new LocalLoopbackSession({ playerX: 0, playerY: 0 });
     session.setPossession(host);
+    const snap = session.getSnapshot();
+    expect(snap.possession[0]!.moodBias).toBe("lucidez");
+    expect(snap.possession[0]!.toneBias).toBe("lucidez");
+    expect(snap.possession[0]!.memorySummary).toBe(expectedMem);
+    expect(snap.possession[0]!.lineSource).toBe("llm");
+    expect(snap.possession[0]!.line).toBe("host línea");
+    expect(snap.possession[0]!.tone).toBe("demonio");
+    expect(snap.possession[0]!.trigger).toBe("dialogue");
+    expect(snap.possession[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(snap.possession[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(snap.possession[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(snap.possession[0]!.trust).toBe(65);
+    expect(snap.possession[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(snap.possession[0]!.speedBumpLeft).toBe(0);
+    expect(snap.possession[0]!.speedBumpMul).toBe(1);
+    expect(snap.possession[0]!.pacified).toBe(true);
+  });
+
+  test("Game/host publish: SpeechDirector+ShortMemory → loopback; 3-arg omite; trust/TTL/tags/gateLine sin cambio", () => {
+    const ledger = new TrustLedger();
+    ledger.register("p1", 65);
+    const gates = new DialogueBehaviorGates();
+    const proposal = proposeDialogueGates("calmar", ledger.get("p1"));
+    gates.apply("p1", proposal);
+    gates.restoreLastRejected("p1", ["offer_food"]);
+    gates.restoreGateLine("p1", "código: aplicado (pacify_ttl)");
+    const speech = new SpeechDirector({}, () => 0.5);
+    speech.forceSpeak("p1", "demonio", "host línea", "dialogue", "llm");
+    speech.setMoodBias("p1", "lucidez");
+    const mem = new ShortMemory();
+    mem.remember("p1", {
+      who: "player",
+      intent: "preguntar",
+      trustDelta: 6,
+      tone: "lucidez",
+    });
+    const expectedMem = formatMemorySummary(mem.recent("p1"));
+    expect(expectedMem).toBe("preguntar/lucidez/+6");
+
+    const threeArg = collectPossessionFrom(ledger, gates, ledger.ids());
+    expect(threeArg[0]!.moodBias).toBeUndefined();
+    expect("moodBias" in threeArg[0]!).toBe(false);
+    expect(threeArg[0]!.toneBias).toBeUndefined();
+    expect("toneBias" in threeArg[0]!).toBe(false);
+    expect(threeArg[0]!.memorySummary).toBeUndefined();
+    expect("memorySummary" in threeArg[0]!).toBe(false);
+    expect(threeArg[0]!.lineSource).toBeUndefined();
+    expect("lineSource" in threeArg[0]!).toBe(false);
+    expect(threeArg[0]!.line).toBeUndefined();
+    expect("line" in threeArg[0]!).toBe(false);
+    expect(threeArg[0]!.tone).toBeUndefined();
+    expect("tone" in threeArg[0]!).toBe(false);
+    expect(threeArg[0]!.trigger).toBeUndefined();
+    expect("trigger" in threeArg[0]!).toBe(false);
+    expect(threeArg[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(threeArg[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(threeArg[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(threeArg[0]!.trust).toBe(65);
+    expect(threeArg[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(threeArg[0]!.speedBumpLeft).toBe(0);
+    expect(threeArg[0]!.speedBumpMul).toBe(1);
+    expect(threeArg[0]!.pacified).toBe(true);
+
+    const session = new LocalLoopbackSession({ playerX: 0, playerY: 0 });
+    expect(session.getSnapshot().possession).toEqual([]);
+    publishHostPossession(session, ledger, gates, ledger.ids(), speech, mem);
     const snap = session.getSnapshot();
     expect(snap.possession[0]!.moodBias).toBe("lucidez");
     expect(snap.possession[0]!.toneBias).toBe("lucidez");
