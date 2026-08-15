@@ -306,6 +306,8 @@ export const MARKER_ICON_SIZE = 0.207;
 export const MARKER_BADGE_RADIUS = 0.184;
 /** Pitch iso del disco/icono del badge de marcador (divisor de -π). 2.6 × 1.15 para mirar un poco más de frente a cámara de noche. */
 export const MARKER_BADGE_TILT = 2.99;
+/** Altura Y del torso fallback del player. 0.56 × 1.15 para sentarse un poco más alto de noche. */
+export const PLAYER_BODY_BASE_Y = 0.644;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -620,7 +622,6 @@ export function createWorldView(
     emissive: PLAYER_HEAD_EMISSIVE,
     emissiveIntensity: 0.22,
   });
-  const PLAYER_BODY_BASE_Y = 0.56;
   const PLAYER_HEAD_BASE_Y = 1.32;
   const playerMesh = new THREE.Group();
   /** Hijo de silueta: bobY + lean/sway; root queda en suelo (x,0,y). */
