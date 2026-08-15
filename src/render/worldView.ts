@@ -358,6 +358,8 @@ export const FURNITURE_BASE_Y = 0.48875;
 export const BARRICADE_HEIGHT = 1.5525;
 /** Ancho de la barricada. 0.92 × 1.15 para leerse un poco más ancha de noche. */
 export const BARRICADE_WIDTH = 1.058;
+/** Profundidad de la barricada. 0.55 × 1.15 para leerse un poco más gruesa de noche. */
+export const BARRICADE_DEPTH = 0.6325;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -584,7 +586,7 @@ export function createWorldView(
   const doorGeo = new THREE.BoxGeometry(1, DOOR_HEIGHT, DOOR_DEPTH);
   const furnitureGeo = new THREE.BoxGeometry(FURNITURE_XZ, FURNITURE_HEIGHT, FURNITURE_XZ);
   /** Planchas apiladas: más bajas y estrechas que un muro. */
-  const barricadeGeo = new THREE.BoxGeometry(BARRICADE_WIDTH, BARRICADE_HEIGHT, 0.55);
+  const barricadeGeo = new THREE.BoxGeometry(BARRICADE_WIDTH, BARRICADE_HEIGHT, BARRICADE_DEPTH);
   /** Último daylight visto en syncDayNight; mats nuevos nacen ya lifted. */
   let lastDaylight = 1;
   const furnitureMat = new THREE.MeshStandardMaterial({
