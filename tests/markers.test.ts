@@ -621,14 +621,15 @@ describe("markers (badges + ground rings)", () => {
     }
   });
 
-  test("door/bed floatBadge Y 2.645/2.645; mute 2.3; possessed 2.0; loot 1.12", () => {
+  test("door/bed floatBadge Y 2.645/2.645; mute/possessed 2.3; loot 1.12", () => {
     expect(doorBadgeY).toBe(2.645);
     expect(doorBadgeY).toBeCloseTo(2.3 * 1.15, 10);
     expect(bedBadgeY).toBe(2.645);
     expect(bedBadgeY).toBeCloseTo(2.3 * 1.15, 10);
     expect(muteBadgeY).toBe(2.3);
     expect(muteBadgeY).toBeCloseTo(2.0 * 1.15, 10);
-    expect(possessedBadgeY).toBe(2.0);
+    expect(possessedBadgeY).toBe(2.3);
+    expect(possessedBadgeY).toBeCloseTo(2.0 * 1.15, 10);
     const src = readFileSync(resolve(process.cwd(), "src/render/worldView.ts"), "utf8");
     expect(src).toContain("badge.position.y = doorBadgeY");
     expect(src).toContain("badge.position.y = bedBadgeY");

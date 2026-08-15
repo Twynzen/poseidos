@@ -112,7 +112,7 @@ export function markerRingRadii(role: MarkerRole): MarkerRingRadii {
 export const muteBadgeY = 2.3;
 
 /** Altura world del floatBadge poseído (queda por encima del Soldier 1.5). */
-export const possessedBadgeY = 2.0;
+export const possessedBadgeY = 2.3;
 
 /** Opacidad del badge flotante para door/bed (E/Z). */
 export const MARKER_BADGE_OPACITY = 1;
