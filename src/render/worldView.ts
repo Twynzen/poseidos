@@ -208,6 +208,8 @@ import {
 } from "../items";
 
 const PLAYER_COLOR = 0x4a8fd4;
+/** Emisivo de la silueta fallback (cabeza). 0x102030 × 1.15/canal para leerse de noche. */
+export const PLAYER_HEAD_EMISSIVE = 0x122537;
 /** Amenaza muda: rojo oscuro. */
 const HOSTILE_COLOR = 0x6b1a1a;
 /** Poseído: púrpura enfermo. */
@@ -524,7 +526,7 @@ export function createWorldView(
   const playerHeadMat = new THREE.MeshStandardMaterial({
     color: 0x7eb6ef,
     roughness: 0.4,
-    emissive: 0x102030,
+    emissive: PLAYER_HEAD_EMISSIVE,
     emissiveIntensity: 0.22,
   });
   const PLAYER_BODY_BASE_Y = 0.56;
