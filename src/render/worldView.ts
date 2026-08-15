@@ -224,6 +224,8 @@ export const POSSESSED_HEAD_COLOR = 0x8c469f;
 export const POSSESSED_HEAD_EMISSIVE = 0x30124a;
 /** Color del pool cálido indoor de noche. 0xffb070 × 1.15/canal (r clamp) para leerse de noche. */
 export const WARM_LIGHT_COLOR = 0xffca81;
+/** Color de la esfera aditiva de hocico. 0xfff2c0 × 1.15/canal (r/g clamp) para leerse de noche. */
+export const MUZZLE_FLASH_COLOR = 0xffffdd;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -762,7 +764,7 @@ export function createWorldView(
   const MUZZLE_LIGHT_DISTANCE = 2.6;
   const muzzleGeo = new THREE.SphereGeometry(MUZZLE_FLASH_RADIUS, 10, 8);
   const muzzleMat = new THREE.MeshBasicMaterial({
-    color: 0xfff2c0,
+    color: MUZZLE_FLASH_COLOR,
     transparent: true,
     opacity: 1,
     depthWrite: false,

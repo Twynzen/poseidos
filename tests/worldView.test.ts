@@ -16,6 +16,7 @@ import {
   POSSESSED_HEAD_COLOR,
   POSSESSED_HEAD_EMISSIVE,
   WARM_LIGHT_COLOR,
+  MUZZLE_FLASH_COLOR,
 } from "../src/render/worldView";
 
 describe("worldView player head mesh", () => {
@@ -333,6 +334,8 @@ describe("worldView indoor night warm light", () => {
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
     expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, 0, 7.5, 2)");
     expect(src).not.toMatch(/PointLight\(0xffb070/);
+    expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
+    expect(src).toContain("color: MUZZLE_FLASH_COLOR");
     expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
     expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
     expect(src).toContain("color: POSSESSED_HEAD_COLOR");
@@ -345,6 +348,57 @@ describe("worldView indoor night warm light", () => {
     expect(src).toContain("color: PLAYER_COLOR");
     expect(src).toContain("color: PLAYER_HEAD_COLOR");
     expect(src).toContain("emissive: PLAYER_HEAD_EMISSIVE");
+    expect(POSSESSED_HEAD_EMISSIVE).toBe(0x30124a);
+    expect(POSSESSED_HEAD_COLOR).toBe(0x8c469f);
+    expect(POSSESSED_COLOR).toBe(0x68347b);
+    expect(HOSTILE_COLOR).toBe(0x7b1e1e);
+    expect(PLAYER_COLOR).toBe(0x55a4f4);
+    expect(PLAYER_HEAD_COLOR).toBe(0x91d1ff);
+    expect(PLAYER_HEAD_EMISSIVE).toBe(0x122537);
+    expect(MARKER_PALETTE.possessed.emissive).toBe(0x30124a);
+    expect(MARKER_PALETTE.player.badge).toBe(0x91d1ff);
+    expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
+    expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
+    expect(MARKER_RING_OPACITY).toBe(0.6877);
+    expect(muteBadgeY).toBe(2.3);
+    expect(possessedBadgeY).toBe(2.3);
+  });
+});
+
+describe("worldView muzzle flash mesh", () => {
+  test("muzzle flash mesh 0xfff2c0 × 1.15/canal (r/g clamp) → 0xffffdd; warmLight/possessed/hostile/player/intensity/palette/badge-Y iguales", () => {
+    expect(MUZZLE_FLASH_COLOR).toBe(0xffffdd);
+    const r = (MUZZLE_FLASH_COLOR >> 16) & 0xff;
+    const g = (MUZZLE_FLASH_COLOR >> 8) & 0xff;
+    const b = MUZZLE_FLASH_COLOR & 0xff;
+    expect(r).toBe(0xff);
+    expect(g).toBe(0xff);
+    expect(b).toBe(0xdd);
+    expect(Math.min(0xff, Math.round((0xff * 115) / 100))).toBe(r);
+    expect(Math.min(0xff, Math.round((0xf2 * 115) / 100))).toBe(g);
+    expect(Math.round((0xc0 * 115) / 100)).toBe(b);
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
+    expect(src).toContain("color: MUZZLE_FLASH_COLOR");
+    expect(src).not.toMatch(/color:\s*0xfff2c0/);
+    expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, 0, 7.5, 2)");
+    expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
+    expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
+    expect(src).toContain("color: POSSESSED_HEAD_COLOR");
+    expect(src).toContain("export const POSSESSED_HEAD_COLOR = 0x8c469f");
+    expect(src).toContain("emissive: POSSESSED_EMISSIVE");
+    expect(src).toContain("color: POSSESSED_COLOR");
+    expect(src).toContain("const POSSESSED_EMISSIVE = 0x1e0925");
+    expect(src).toContain("emissiveIntensity: 0.22");
+    expect(src).toContain("color: HOSTILE_COLOR");
+    expect(src).toContain("color: PLAYER_COLOR");
+    expect(src).toContain("color: PLAYER_HEAD_COLOR");
+    expect(src).toContain("emissive: PLAYER_HEAD_EMISSIVE");
+    expect(WARM_LIGHT_COLOR).toBe(0xffca81);
     expect(POSSESSED_HEAD_EMISSIVE).toBe(0x30124a);
     expect(POSSESSED_HEAD_COLOR).toBe(0x8c469f);
     expect(POSSESSED_COLOR).toBe(0x68347b);
