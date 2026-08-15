@@ -161,6 +161,33 @@ export class StubLlmBridge implements LlmBridge {
   }
 }
 
+/**
+ * Cap de la línea hablada propuesta por el stub.
+ * No hay cap de speech previo; 160 cabe una frase ES sin inventar persist.
+ */
+export const LLM_LINE_MAX_LEN = 160;
+
+const LLM_LINE_WS_CTRL = /[\t\n\r\v\f]/g;
+const LLM_LINE_OTHER_CTRL = /[\u0000-\u0008\u000E-\u001F\u007F-\u009F]/g;
+
+/**
+ * Gate de contenido: el stub propone; el código acepta o rechaza.
+ * Null / no-string / solo whitespace → null. Trim. Controles C0/C1:
+ * tab/newline/CR/VT/FF → espacio; resto se strip. Puntuación ES y
+ * espacios normales se conservan. Over-cap se trunca (no se rechaza).
+ */
+export function compactLlmLine(line?: unknown): string | null {
+  if (typeof line !== "string") return null;
+  const cleaned = line
+    .replace(LLM_LINE_WS_CTRL, " ")
+    .replace(LLM_LINE_OTHER_CTRL, "");
+  const trimmed = cleaned.trim();
+  if (!trimmed) return null;
+  return trimmed.length > LLM_LINE_MAX_LEN
+    ? trimmed.slice(0, LLM_LINE_MAX_LEN)
+    : trimmed;
+}
+
 function normalizeLine(line: string | null): string | null {
   if (line === null) return null;
   const t = line.trim();
@@ -260,8 +287,8 @@ export interface ResolveLineOptions {
 export type LineSource = "llm" | "bank";
 
 /**
- * Si bridge habilitado y responde string → esa línea; si no / null / error → fallback.
- * Nunca lanza; nunca deja al caller sin línea.
+ * Si bridge habilitado y compactLlmLine acepta → esa línea; si no / null / error → fallback.
+ * Nunca lanza; nunca deja al caller sin línea. El stub propone; este gate valida.
  */
 export async function resolveLineWithBridge(
   opts: ResolveLineOptions,
@@ -270,9 +297,9 @@ export async function resolveLineWithBridge(
     return { line: opts.fallback(), source: "bank" };
   }
   try {
-    const line = await opts.bridge.ask(opts.snapshot);
-    if (typeof line === "string" && line.trim().length > 0) {
-      return { line: line.trim(), source: "llm" };
+    const line = compactLlmLine(await opts.bridge.ask(opts.snapshot));
+    if (line) {
+      return { line, source: "llm" };
     }
   } catch {
     // fallback

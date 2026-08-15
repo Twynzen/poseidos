@@ -59,6 +59,8 @@ export {
   formatLlmPrompt,
   compactMoodBias,
   compactTtl,
+  compactLlmLine,
+  LLM_LINE_MAX_LEN,
   resolveLineWithBridge,
   type LlmAskSnapshot,
   type LlmBridge,
