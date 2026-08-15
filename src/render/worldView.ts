@@ -217,7 +217,7 @@ export const PLAYER_HEAD_EMISSIVE = 0x122537;
 export const HOSTILE_COLOR = 0x7b1e1e;
 /** Poseído: púrpura enfermo. 0x5a2d6b × 1.15/canal para leerse de noche. */
 export const POSSESSED_COLOR = 0x68347b;
-const POSSESSED_EMISSIVE = 0x1a0820;
+const POSSESSED_EMISSIVE = 0x1e0925;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
