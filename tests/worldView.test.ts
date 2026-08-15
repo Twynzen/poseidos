@@ -34,6 +34,7 @@ import {
   IMPACT_SPARK_LIGHT_DECAY,
   TRACER_COLOR,
   TRACER_FLASH_COLOR,
+  TRACER_FLASH_DECAY,
   FLASHLIGHT_FILL_COLOR,
   FLASHLIGHT_FILL_DECAY,
   FLASHLIGHT_FILL_DISTANCE_BASE,
@@ -602,7 +603,7 @@ describe("worldView impact spark PointLight", () => {
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(TRACER_COLOR).toBe(0xffffb8);
     expect(TRACER_FLASH_COLOR).toBe(0xffdd6e);
     expect(IMPACT_SPARK_COLOR).toBe(0xffef93);
@@ -646,7 +647,7 @@ describe("worldView tracer mesh", () => {
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).not.toMatch(/color:\s*0xffe8a0/);
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(TRACER_FLASH_COLOR).toBe(0xffdd6e);
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
     expect(src).toContain("new THREE.PointLight(\n    IMPACT_SPARK_LIGHT_COLOR,");
@@ -709,7 +710,7 @@ describe("worldView tracer flash", () => {
       "utf8",
     );
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(0xffc060/);
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
@@ -783,7 +784,7 @@ describe("worldView flashlight fill", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(0xb0d0ff/);
     expect(src).not.toMatch(/torchLight\.color\.setHex\(0xb0d0ff\)/);
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -855,7 +856,7 @@ describe("worldView flashlight fill distance", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -927,7 +928,7 @@ describe("worldView flashlight fill distance gain", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -1005,7 +1006,7 @@ describe("worldView flashlight fill Y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -1095,7 +1096,7 @@ describe("worldView flashlight spot Y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -1197,7 +1198,7 @@ describe("worldView flashlight spot distance extra", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -1296,7 +1297,7 @@ describe("worldView flashlight spot distance gain", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -1394,7 +1395,7 @@ describe("worldView warm light intensity mul", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -1504,7 +1505,7 @@ describe("worldView warm light Y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -1615,7 +1616,7 @@ describe("worldView warm light distance base", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -1727,7 +1728,7 @@ describe("worldView warm light distance gain", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -1863,7 +1864,7 @@ describe("worldView warm light amber G gain", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -2001,7 +2002,7 @@ describe("worldView warm light amber B", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -2137,7 +2138,7 @@ describe("worldView warm light amber B gain", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -2277,7 +2278,7 @@ describe("worldView warm light amber G", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -2412,7 +2413,7 @@ describe("worldView warm light visible eps", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -2552,7 +2553,7 @@ describe("worldView warm light decay", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -2697,7 +2698,7 @@ describe("worldView flashlight fill decay", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -2849,7 +2850,7 @@ describe("worldView flashlight spot decay", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -3006,7 +3007,7 @@ describe("worldView muzzle light decay", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
@@ -3094,6 +3095,7 @@ describe("worldView impact spark light decay", () => {
     expect(FLASHLIGHT_FILL_COLOR).toBe(0xcaefff);
     expect(MUZZLE_LIGHT_COLOR).toBe(0xffffb8);
     expect(IMPACT_SPARK_LIGHT_COLOR).toBe(0xffef93);
+    expect(TRACER_FLASH_DECAY).toBe(1.74);
     const src = readFileSync(
       resolve(process.cwd(), "src/render/worldView.ts"),
       "utf8",
@@ -3174,7 +3176,178 @@ describe("worldView impact spark light decay", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
-    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
+    expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
+    expect(src).not.toMatch(/new THREE\.PointLight\(TRACER_FLASH_COLOR, 2\.4, 3\.2, 2\)/);
+    expect(src).not.toMatch(/export const TRACER_FLASH_DECAY = 2/);
+    expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
+    expect(src).toContain("color: TRACER_COLOR");
+    expect(src).toContain("export const IMPACT_SPARK_COLOR = 0xffef93");
+    expect(src).toContain("color: IMPACT_SPARK_COLOR");
+    expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
+    expect(src).toContain("color: MUZZLE_FLASH_COLOR");
+    expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
+    expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
+    expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
+    expect(src).toContain("color: POSSESSED_HEAD_COLOR");
+    expect(src).toContain("export const POSSESSED_HEAD_COLOR = 0x8c469f");
+    expect(src).toContain("emissive: POSSESSED_EMISSIVE");
+    expect(src).toContain("color: POSSESSED_COLOR");
+    expect(src).toContain("const POSSESSED_EMISSIVE = 0x1e0925");
+    expect(src).toContain("emissiveIntensity: 0.22");
+    expect(src).toContain("color: HOSTILE_COLOR");
+    expect(src).toContain("color: PLAYER_COLOR");
+    expect(src).toContain("color: PLAYER_HEAD_COLOR");
+    expect(src).toContain("emissive: PLAYER_HEAD_EMISSIVE");
+    expect(TRACER_FLASH_COLOR).toBe(0xffdd6e);
+    expect(TRACER_FLASH_DECAY).toBe(1.74);
+    expect(TRACER_COLOR).toBe(0xffffb8);
+    expect(IMPACT_SPARK_LIGHT_COLOR).toBe(0xffef93);
+    expect(IMPACT_SPARK_COLOR).toBe(0xffef93);
+    expect(MUZZLE_LIGHT_COLOR).toBe(0xffffb8);
+    expect(MUZZLE_LIGHT_DECAY).toBe(1.74);
+    expect(MUZZLE_FLASH_COLOR).toBe(0xffffdd);
+    expect(WARM_LIGHT_COLOR).toBe(0xffca81);
+    expect(WARM_LIGHT_DECAY).toBe(1.74);
+    expect(WARM_LIGHT_VISIBLE_EPS).toBe(0.0174);
+    expect(WARM_LIGHT_AMBER_B_GAIN).toBe(0.115);
+    expect(WARM_LIGHT_AMBER_B).toBe(0.437);
+    expect(WARM_LIGHT_AMBER_G_GAIN).toBe(0.092);
+    expect(WARM_LIGHT_AMBER_G).toBe(0.759);
+    expect(WARM_LIGHT_DISTANCE_GAIN).toBe(2.875);
+    expect(WARM_LIGHT_DISTANCE_BASE).toBe(7.475);
+    expect(WARM_LIGHT_Y).toBe(1.7825);
+    expect(WARM_LIGHT_INTENSITY_MUL).toBe(1.7825);
+    expect(POSSESSED_HEAD_EMISSIVE).toBe(0x30124a);
+    expect(POSSESSED_HEAD_COLOR).toBe(0x8c469f);
+    expect(POSSESSED_COLOR).toBe(0x68347b);
+    expect(HOSTILE_COLOR).toBe(0x7b1e1e);
+    expect(PLAYER_COLOR).toBe(0x55a4f4);
+    expect(PLAYER_HEAD_COLOR).toBe(0x91d1ff);
+    expect(PLAYER_HEAD_EMISSIVE).toBe(0x122537);
+    expect(MARKER_PALETTE.possessed.emissive).toBe(0x30124a);
+    expect(MARKER_PALETTE.player.badge).toBe(0x91d1ff);
+    expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
+    expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
+    expect(MARKER_RING_OPACITY).toBe(0.6877);
+    expect(muteBadgeY).toBe(2.3);
+    expect(possessedBadgeY).toBe(2.3);
+  });
+});
+
+describe("worldView tracer flash decay", () => {
+  test("tracer flash decay 2 × 0.87 → 1.74; impact-spark-decay/muzzle-decay/spot-decay/fill-decay/warm-decay/visible-eps/amber-B-gain/amber-B/amber-G-gain/amber-G/gain/base/Y/intensity/color/spot-gain/extra/spot-Y/fill-Y/gain/base/flash/mesh/color/distance/possessed/hostile/player/palette/badge-Y iguales", () => {
+    expect(TRACER_FLASH_DECAY).toBe(1.74);
+    expect(TRACER_FLASH_DECAY).toBeCloseTo(2 * 0.87, 10);
+    expect(IMPACT_SPARK_LIGHT_DECAY).toBe(1.74);
+    expect(MUZZLE_LIGHT_DECAY).toBe(1.74);
+    expect(FLASHLIGHT_SPOT_DECAY).toBe(1.74);
+    expect(FLASHLIGHT_FILL_DECAY).toBe(1.74);
+    expect(WARM_LIGHT_DECAY).toBe(1.74);
+    expect(WARM_LIGHT_VISIBLE_EPS).toBe(0.0174);
+    expect(WARM_LIGHT_AMBER_B_GAIN).toBe(0.115);
+    expect(WARM_LIGHT_AMBER_B).toBe(0.437);
+    expect(WARM_LIGHT_AMBER_G_GAIN).toBe(0.092);
+    expect(WARM_LIGHT_AMBER_G).toBe(0.759);
+    expect(WARM_LIGHT_DISTANCE_GAIN).toBe(2.875);
+    expect(WARM_LIGHT_DISTANCE_BASE).toBe(7.475);
+    expect(WARM_LIGHT_Y).toBe(1.7825);
+    expect(WARM_LIGHT_INTENSITY_MUL).toBe(1.7825);
+    expect(FLASHLIGHT_SPOT_DISTANCE_GAIN).toBe(2.3);
+    expect(FLASHLIGHT_SPOT_DISTANCE_EXTRA).toBe(1.84);
+    expect(FLASHLIGHT_SPOT_Y).toBe(1.7825);
+    expect(FLASHLIGHT_FILL_Y).toBe(1.5525);
+    expect(FLASHLIGHT_FILL_DISTANCE_GAIN).toBe(4.025);
+    expect(FLASHLIGHT_FILL_DISTANCE_BASE).toBe(8.05);
+    expect(FLASHLIGHT_FILL_COLOR).toBe(0xcaefff);
+    expect(MUZZLE_LIGHT_COLOR).toBe(0xffffb8);
+    expect(IMPACT_SPARK_LIGHT_COLOR).toBe(0xffef93);
+    expect(TRACER_FLASH_COLOR).toBe(0xffdd6e);
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, TRACER_FLASH_DECAY)");
+    expect(src).not.toMatch(/new THREE\.PointLight\(TRACER_FLASH_COLOR, 2\.4, 3\.2, 2\)/);
+    expect(src).not.toMatch(/export const TRACER_FLASH_DECAY = 2/);
+    expect(src).toContain("t.flash.intensity = 2.4 * op");
+    expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
+    expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
+    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    IMPACT_SPARK_LIGHT_DECAY,");
+    expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
+    expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
+    expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
+    expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
+    expect(src).toContain("new THREE.PointLight(\n    IMPACT_SPARK_LIGHT_COLOR,");
+    expect(src).toContain("export const MUZZLE_LIGHT_DECAY = 1.74");
+    expect(src).toContain("MUZZLE_LIGHT_DISTANCE,\n    MUZZLE_LIGHT_DECAY,");
+    expect(src).not.toMatch(/MUZZLE_LIGHT_DISTANCE,\s*\n\s*2,/);
+    expect(src).not.toMatch(/export const MUZZLE_LIGHT_DECAY = 2/);
+    expect(src).toContain("const MUZZLE_LIGHT_DISTANCE = 2.6");
+    expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
+    expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
+    expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
+    expect(src).toContain("FLASHLIGHT_SPOT_PENUMBRA,\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
+    expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
+    expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
+    expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
+    expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
+    expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, 0, 7.5, WARM_LIGHT_DECAY)");
+    expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
+    expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
+    expect(src).toContain("warmLight.visible = i > WARM_LIGHT_VISIBLE_EPS");
+    expect(src).not.toMatch(/warmLight\.visible = i > 0\.02/);
+    expect(src).not.toMatch(/export const WARM_LIGHT_VISIBLE_EPS = 0\.02/);
+    expect(src).toContain("export const WARM_LIGHT_AMBER_B_GAIN = 0.115");
+    expect(src).toContain("export const WARM_LIGHT_AMBER_B = 0.437");
+    expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
+    expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
+    expect(src).toContain(
+      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+    );
+    expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
+    expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
+    expect(src).toContain("export const WARM_LIGHT_DISTANCE_BASE = 7.475");
+    expect(src).toContain(
+      "warmLight.distance = WARM_LIGHT_DISTANCE_BASE + i * WARM_LIGHT_DISTANCE_GAIN",
+    );
+    expect(src).not.toMatch(/export const WARM_LIGHT_DISTANCE_GAIN = 2\.5/);
+    expect(src).not.toMatch(
+      /warmLight\.distance = WARM_LIGHT_DISTANCE_BASE \+ i \* 2\.5/,
+    );
+    expect(src).not.toMatch(/warmLight\.distance = 6\.5 \+ i \* 2\.5/);
+    expect(src).toContain("export const WARM_LIGHT_Y = 1.7825");
+    expect(src).toContain("warmLight.position.set(wx, WARM_LIGHT_Y, wy)");
+    expect(src).not.toMatch(/export const WARM_LIGHT_Y = 1\.55/);
+    expect(src).not.toMatch(/warmLight\.position\.set\(wx, 1\.55, wy\)/);
+    expect(src).toContain("warmLight.position.set(0, 1.6, 0)");
+    expect(src).toContain("export const WARM_LIGHT_INTENSITY_MUL = 1.7825");
+    expect(src).toContain("warmLight.intensity = i * WARM_LIGHT_INTENSITY_MUL");
+    expect(src).not.toMatch(/export const WARM_LIGHT_INTENSITY_MUL = 1\.55/);
+    expect(src).not.toMatch(/warmLight\.intensity = i \* 1\.55/);
+    expect(src).toContain("export const FLASHLIGHT_SPOT_DISTANCE_GAIN = 2.3");
+    expect(src).toContain("export const FLASHLIGHT_SPOT_DISTANCE_EXTRA = 1.84");
+    expect(src).toContain(
+      "torchSpot.distance = FLASHLIGHT_CONE_LENGTH + FLASHLIGHT_SPOT_DISTANCE_EXTRA + i * FLASHLIGHT_SPOT_DISTANCE_GAIN",
+    );
+    expect(src).toContain("export const FLASHLIGHT_SPOT_Y = 1.7825");
+    expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
+    expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
+    expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
+    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
+    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
+    expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
+    expect(src).toContain(
+      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+    );
+    expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
+    expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
     expect(src).toContain("color: TRACER_COLOR");
     expect(src).toContain("export const IMPACT_SPARK_COLOR = 0xffef93");
@@ -3198,6 +3371,7 @@ describe("worldView impact spark light decay", () => {
     expect(TRACER_COLOR).toBe(0xffffb8);
     expect(IMPACT_SPARK_LIGHT_COLOR).toBe(0xffef93);
     expect(IMPACT_SPARK_COLOR).toBe(0xffef93);
+    expect(IMPACT_SPARK_LIGHT_DECAY).toBe(1.74);
     expect(MUZZLE_LIGHT_COLOR).toBe(0xffffb8);
     expect(MUZZLE_LIGHT_DECAY).toBe(1.74);
     expect(MUZZLE_FLASH_COLOR).toBe(0xffffdd);
