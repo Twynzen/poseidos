@@ -215,8 +215,8 @@ export const PLAYER_HEAD_COLOR = 0x91d1ff;
 export const PLAYER_HEAD_EMISSIVE = 0x122537;
 /** Amenaza muda: rojo oscuro. 0x6b1a1a × 1.15/canal para leerse de noche. */
 export const HOSTILE_COLOR = 0x7b1e1e;
-/** Poseído: púrpura enfermo. */
-const POSSESSED_COLOR = 0x5a2d6b;
+/** Poseído: púrpura enfermo. 0x5a2d6b × 1.15/canal para leerse de noche. */
+export const POSSESSED_COLOR = 0x68347b;
 const POSSESSED_EMISSIVE = 0x1a0820;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;

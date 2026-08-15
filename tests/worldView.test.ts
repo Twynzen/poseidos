@@ -12,6 +12,7 @@ import {
   PLAYER_COLOR,
   PLAYER_HEAD_COLOR,
   PLAYER_HEAD_EMISSIVE,
+  POSSESSED_COLOR,
 } from "../src/render/worldView";
 
 describe("worldView player head mesh", () => {
@@ -125,7 +126,45 @@ describe("worldView mute/hostile fallback body mesh", () => {
     expect(src).toContain("emissive: PLAYER_HEAD_EMISSIVE");
     expect(src).toContain("emissiveIntensity: 0.22");
     expect(src).not.toMatch(/color:\s*0x6b1a1a/);
-    expect(src).toContain("const POSSESSED_COLOR = 0x5a2d6b");
+    expect(src).toContain("const POSSESSED_COLOR = 0x68347b");
+    expect(PLAYER_COLOR).toBe(0x55a4f4);
+    expect(PLAYER_HEAD_COLOR).toBe(0x91d1ff);
+    expect(PLAYER_HEAD_EMISSIVE).toBe(0x122537);
+    expect(MARKER_PALETTE.player.badge).toBe(0x91d1ff);
+    expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
+    expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
+    expect(MARKER_RING_OPACITY).toBe(0.6877);
+    expect(muteBadgeY).toBe(2.3);
+    expect(possessedBadgeY).toBe(2.3);
+  });
+});
+
+describe("worldView possessed fallback body mesh", () => {
+  test("possessed body color 0x5a2d6b × 1.15/canal → 0x68347b; hostile/player/head/emissive/intensity/palette/badge-Y iguales", () => {
+    expect(POSSESSED_COLOR).toBe(0x68347b);
+    const r = (POSSESSED_COLOR >> 16) & 0xff;
+    const g = (POSSESSED_COLOR >> 8) & 0xff;
+    const b = POSSESSED_COLOR & 0xff;
+    expect(r).toBe(0x68);
+    expect(g).toBe(0x34);
+    expect(b).toBe(0x7b);
+    expect(Math.round((0x5a * 115) / 100)).toBe(r);
+    expect(Math.round((0x2d * 115) / 100)).toBe(g);
+    expect(Math.round((0x6b * 115) / 100)).toBe(b);
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toContain("color: POSSESSED_COLOR");
+    expect(src).toContain("emissive: POSSESSED_EMISSIVE");
+    expect(src).toContain("color: HOSTILE_COLOR");
+    expect(src).toContain("color: PLAYER_COLOR");
+    expect(src).toContain("color: PLAYER_HEAD_COLOR");
+    expect(src).toContain("emissive: PLAYER_HEAD_EMISSIVE");
+    expect(src).toContain("emissiveIntensity: 0.22");
+    expect(src).not.toMatch(/color:\s*0x5a2d6b/);
+    expect(src).toContain("const POSSESSED_EMISSIVE = 0x1a0820");
+    expect(HOSTILE_COLOR).toBe(0x7b1e1e);
     expect(PLAYER_COLOR).toBe(0x55a4f4);
     expect(PLAYER_HEAD_COLOR).toBe(0x91d1ff);
     expect(PLAYER_HEAD_EMISSIVE).toBe(0x122537);
