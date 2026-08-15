@@ -27,6 +27,8 @@ import {
   StubLlmBridge,
   MemoryLlmFileIo,
   formatLlmPrompt,
+  compactLlmLine,
+  LLM_LINE_MAX_LEN,
   resolveLineWithBridge,
   proposeDialogueGates,
   DialogueBehaviorGates,
@@ -573,6 +575,76 @@ describe("llm bridge stub", () => {
     expect(r.tone).toBe("demonio");
     // Trust sigue siendo del gate de código, no del LLM
     expect(r.trustAfter).toBe(30);
+  });
+
+  test("compactLlmLine: null / no-string / whitespace se rechaza; ES se acepta; over-cap se trunca", () => {
+    expect(compactLlmLine(null)).toBeNull();
+    expect(compactLlmLine(undefined)).toBeNull();
+    expect(compactLlmLine(12)).toBeNull();
+    expect(compactLlmLine("")).toBeNull();
+    expect(compactLlmLine("   \n\t  ")).toBeNull();
+    expect(compactLlmLine("\u0000\u0001")).toBeNull();
+    const es = "¿Sé quién soy… todavía? ¡Ayúdame!";
+    expect(compactLlmLine(`  ${es}  `)).toBe(es);
+    expect(compactLlmLine("Hola\n\nmundo")).toBe("Hola  mundo");
+    expect(compactLlmLine("Hola\u0000 mundo")).toBe("Hola mundo");
+    const long = "x".repeat(LLM_LINE_MAX_LEN + 8);
+    expect(compactLlmLine(long)).toBe("x".repeat(LLM_LINE_MAX_LEN));
+    expect(compactLlmLine(long)!.length).toBe(LLM_LINE_MAX_LEN);
+  });
+
+  test("línea vacía / whitespace / null del stub cae al banco", async () => {
+    const ledger = new TrustLedger();
+    ledger.register("poss-empty", 50);
+    for (const response of [null, "", "   ", "\n\t"] as const) {
+      const r = await applyDialogueChoiceAsync(
+        ledger,
+        "poss-empty",
+        "calmar",
+        seqRng([0]),
+        undefined,
+        { enabled: true, bridge: new StubLlmBridge({ response }) },
+      );
+      expect(r.lineSource).toBe("bank");
+      expect(r.line).toBe(LINE_BANK.ruega[0]);
+    }
+    const raw: LlmBridge = { ask: async () => "\u0000\u0007" };
+    const fromCtrl = await resolveLineWithBridge({
+      enabled: true,
+      bridge: raw,
+      snapshot: { entityId: "poss-empty", tone: "ruega" },
+      fallback: () => LINE_BANK.ruega[0],
+    });
+    expect(fromCtrl).toEqual({ line: LINE_BANK.ruega[0], source: "bank" });
+  });
+
+  test("línea ES normal del stub pasa como llm; over-cap se trunca", async () => {
+    const es = "¿Sé quién soy… todavía? ¡Ayúdame!";
+    const ledger = new TrustLedger();
+    ledger.register("poss-gate-line", 50);
+    const ok = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-gate-line",
+      "preguntar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge: new StubLlmBridge({ response: `  ${es}  ` }) },
+    );
+    expect(ok.lineSource).toBe("llm");
+    expect(ok.line).toBe(es);
+    expect(ok.trustAfter).toBe(56);
+
+    const long = "á".repeat(LLM_LINE_MAX_LEN + 12);
+    const raw: LlmBridge = { ask: async () => long };
+    const capped = await resolveLineWithBridge({
+      enabled: true,
+      bridge: raw,
+      snapshot: { entityId: "poss-gate-line", tone: "lucidez" },
+      fallback: () => "banco",
+    });
+    expect(capped.source).toBe("llm");
+    expect(capped.line).toBe("á".repeat(LLM_LINE_MAX_LEN));
+    expect(capped.line.length).toBe(LLM_LINE_MAX_LEN);
   });
 
   test("llm.enabled false no llama al bridge", async () => {

@@ -10,6 +10,7 @@ import {
   type PossessionTone,
 } from "./lineBank";
 import {
+  compactLlmLine,
   resolveLineWithBridge,
   type LlmBridge,
   type LineSource,
@@ -286,11 +287,13 @@ export class SpeechDirector {
     const bridge = this.bridge;
     void (async () => {
       try {
-        const line = await bridge.ask({ entityId: id, tone, trigger });
-        if (typeof line !== "string" || !line.trim()) return;
+        const line = compactLlmLine(
+          await bridge.ask({ entityId: id, tone, trigger }),
+        );
+        if (!line) return;
         const st = this.states.get(id);
         if (!st || st.speakGen !== gen || !st.current) return;
-        st.current = { ...st.current, line: line.trim() };
+        st.current = { ...st.current, line };
       } catch {
         // ignore — bubble ya tiene banco
       }
