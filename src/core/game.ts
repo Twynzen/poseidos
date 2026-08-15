@@ -159,6 +159,7 @@ import {
 import { WeatherSystem, rainNeedsMult } from "../world/weather";
 import {
   LocalLoopbackSession,
+  publishHostBarricades,
   publishHostContainers,
   publishHostDoors,
   publishHostHostiles,
@@ -1099,6 +1100,7 @@ export class Game {
     publishHostHostiles(this.session, this.hostiles);
     publishHostDoors(this.session, this.map);
     publishHostContainers(this.session, this.containers);
+    publishHostBarricades(this.session, this.map);
     this.publishPossessionSnap();
     if (!this.player.alive) {
       this.enterGameOver();
