@@ -27,6 +27,7 @@ import {
   FLASHLIGHT_FILL_DISTANCE_GAIN,
   FLASHLIGHT_FILL_Y,
   FLASHLIGHT_SPOT_Y,
+  FLASHLIGHT_SPOT_DISTANCE_EXTRA,
 } from "../src/render/worldView";
 
 describe("worldView player head mesh", () => {
@@ -1044,6 +1045,94 @@ describe("worldView flashlight spot Y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_Y = 1\.55/);
     expect(src).not.toMatch(/torchSpot\.position\.set\(0, 1\.55, 0\)/);
     expect(src).not.toMatch(/torchSpot\.position\.set\(wx, 1\.55, wy\)/);
+    expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
+    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
+    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("warmLight.position.set(wx, 1.55, wy)");
+    expect(src).toContain("warmLight.intensity = i * 1.55");
+    expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
+    expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
+    expect(src).toContain(
+      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+    );
+    expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, 2)");
+    expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
+    expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
+    expect(src).toContain("new THREE.PointLight(TRACER_FLASH_COLOR, 2.4, 3.2, 2)");
+    expect(src).toContain("export const TRACER_COLOR = 0xffffb8");
+    expect(src).toContain("color: TRACER_COLOR");
+    expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
+    expect(src).toContain("new THREE.PointLight(\n    IMPACT_SPARK_LIGHT_COLOR,");
+    expect(src).toContain("export const IMPACT_SPARK_COLOR = 0xffef93");
+    expect(src).toContain("color: IMPACT_SPARK_COLOR");
+    expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
+    expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
+    expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
+    expect(src).toContain("color: MUZZLE_FLASH_COLOR");
+    expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, 0, 7.5, 2)");
+    expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
+    expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
+    expect(src).toContain("color: POSSESSED_HEAD_COLOR");
+    expect(src).toContain("export const POSSESSED_HEAD_COLOR = 0x8c469f");
+    expect(src).toContain("emissive: POSSESSED_EMISSIVE");
+    expect(src).toContain("color: POSSESSED_COLOR");
+    expect(src).toContain("const POSSESSED_EMISSIVE = 0x1e0925");
+    expect(src).toContain("emissiveIntensity: 0.22");
+    expect(src).toContain("color: HOSTILE_COLOR");
+    expect(src).toContain("color: PLAYER_COLOR");
+    expect(src).toContain("color: PLAYER_HEAD_COLOR");
+    expect(src).toContain("emissive: PLAYER_HEAD_EMISSIVE");
+    expect(TRACER_FLASH_COLOR).toBe(0xffdd6e);
+    expect(TRACER_COLOR).toBe(0xffffb8);
+    expect(IMPACT_SPARK_LIGHT_COLOR).toBe(0xffef93);
+    expect(IMPACT_SPARK_COLOR).toBe(0xffef93);
+    expect(MUZZLE_LIGHT_COLOR).toBe(0xffffb8);
+    expect(MUZZLE_FLASH_COLOR).toBe(0xffffdd);
+    expect(WARM_LIGHT_COLOR).toBe(0xffca81);
+    expect(POSSESSED_HEAD_EMISSIVE).toBe(0x30124a);
+    expect(POSSESSED_HEAD_COLOR).toBe(0x8c469f);
+    expect(POSSESSED_COLOR).toBe(0x68347b);
+    expect(HOSTILE_COLOR).toBe(0x7b1e1e);
+    expect(PLAYER_COLOR).toBe(0x55a4f4);
+    expect(PLAYER_HEAD_COLOR).toBe(0x91d1ff);
+    expect(PLAYER_HEAD_EMISSIVE).toBe(0x122537);
+    expect(MARKER_PALETTE.possessed.emissive).toBe(0x30124a);
+    expect(MARKER_PALETTE.player.badge).toBe(0x91d1ff);
+    expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
+    expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
+    expect(MARKER_RING_OPACITY).toBe(0.6877);
+    expect(muteBadgeY).toBe(2.3);
+    expect(possessedBadgeY).toBe(2.3);
+  });
+});
+
+describe("worldView flashlight spot distance extra", () => {
+  test("flashlight spot distance extra 1.6 × 1.15 → 1.84; spot-Y/fill-Y/gain/base/color/flash/mesh/impact/muzzle/warmLight/possessed/hostile/player/intensity/palette/badge-Y iguales", () => {
+    expect(FLASHLIGHT_SPOT_DISTANCE_EXTRA).toBe(1.84);
+    expect(FLASHLIGHT_SPOT_DISTANCE_EXTRA).toBeCloseTo(1.6 * 1.15, 10);
+    expect(FLASHLIGHT_SPOT_Y).toBe(1.7825);
+    expect(FLASHLIGHT_FILL_Y).toBe(1.5525);
+    expect(FLASHLIGHT_FILL_DISTANCE_GAIN).toBe(4.025);
+    expect(FLASHLIGHT_FILL_DISTANCE_BASE).toBe(8.05);
+    expect(FLASHLIGHT_FILL_COLOR).toBe(0xcaefff);
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toContain("export const FLASHLIGHT_SPOT_DISTANCE_EXTRA = 1.84");
+    expect(src).toContain(
+      "torchSpot.distance = FLASHLIGHT_CONE_LENGTH + FLASHLIGHT_SPOT_DISTANCE_EXTRA + i * 2",
+    );
+    expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
+    expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DISTANCE_EXTRA = 1\.6/);
+    expect(src).not.toMatch(
+      /torchSpot\.distance = FLASHLIGHT_CONE_LENGTH \+ 1\.6 \+ i \* 2/,
+    );
+    expect(src).toContain("export const FLASHLIGHT_SPOT_Y = 1.7825");
+    expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
+    expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
     expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
     expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");

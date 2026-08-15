@@ -246,6 +246,8 @@ export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025;
 export const FLASHLIGHT_FILL_Y = 1.5525;
 /** Altura Y del SpotLight de la linterna. 1.55 × 1.15 para sentarse un poco más alto de noche. */
 export const FLASHLIGHT_SPOT_Y = 1.7825;
+/** Extra de distancia del SpotLight de la linterna. 1.6 × 1.15 para alcanzar un poco más de noche. */
+export const FLASHLIGHT_SPOT_DISTANCE_EXTRA = 1.84;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -1713,7 +1715,7 @@ export function createWorldView(
 
       const tip = flashlightConeTip(playerGltfYaw);
       torchSpot.intensity = i * FLASHLIGHT_SPOT_INTENSITY_MUL;
-      torchSpot.distance = FLASHLIGHT_CONE_LENGTH + 1.6 + i * 2;
+      torchSpot.distance = FLASHLIGHT_CONE_LENGTH + FLASHLIGHT_SPOT_DISTANCE_EXTRA + i * 2;
       torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy);
       torchSpot.target.position.set(wx + tip.x, 0.12, wy + tip.z);
       torchSpot.target.updateMatrixWorld();
