@@ -88,6 +88,7 @@ export {
   GATE_TAGS,
   isGateTag,
   compactKnownGateTags,
+  compactGateLine,
   proposeDialogueGates,
   DialogueBehaviorGates,
   type GateTag,

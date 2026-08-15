@@ -1,12 +1,13 @@
 /**
  * Collector possession gated → snapshot wire F7.
- * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected); no intents crudos.
+ * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected / gateLine); no intents crudos.
  */
 import {
   isPacified,
   type TrustLedger,
 } from "../possession/trust";
 import {
+  compactGateLine,
   compactKnownGateTags,
   type DialogueBehaviorGates,
 } from "../possession/gates";
@@ -31,6 +32,7 @@ export function collectPossessionFrom(
     const pacified = isPacified(trust) || gates.isPacifiedByGate(id);
     const lastApplied = compactKnownGateTags(gates.lastApplied(id));
     const lastRejected = compactKnownGateTags(gates.lastRejected(id));
+    const gateLine = compactGateLine(gates.gateLine(id));
     out.push({
       id,
       trust,
@@ -40,6 +42,7 @@ export function collectPossessionFrom(
       pacified,
       ...(lastApplied.length > 0 ? { lastApplied } : {}),
       ...(lastRejected.length > 0 ? { lastRejected } : {}),
+      ...(gateLine ? { gateLine } : {}),
     });
   }
   return out;

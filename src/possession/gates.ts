@@ -86,6 +86,16 @@ export function compactKnownGateTags(
   return out;
 }
 
+/** Última línea de gate ya validada; vacío / no-string se omite. Cap GATE_LINE_MAX_LEN. */
+export function compactGateLine(line?: string | null): string {
+  if (typeof line !== "string") return "";
+  const trimmed = line.trim();
+  if (!trimmed) return "";
+  return trimmed.length > GATE_LINE_MAX_LEN
+    ? trimmed.slice(0, GATE_LINE_MAX_LEN)
+    : trimmed;
+}
+
 /**
  * Propuesta de efectos (aún no aplicada).
  * `applied` = gates que pasan umbral; `rejected` = intent sin umbral.

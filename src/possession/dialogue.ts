@@ -6,7 +6,7 @@
 import { pickLine, type PossessionTone } from "./lineBank";
 import { TrustLedger } from "./trust";
 import { formatMemorySummary, type ShortMemory } from "./memory";
-import { GATE_LINE_MAX_LEN, compactKnownGateTags } from "./gates";
+import { compactGateLine, compactKnownGateTags } from "./gates";
 import {
   compactMoodBias,
   compactTtl,
@@ -276,15 +276,5 @@ export class DialogueSession {
     }
     return true;
   }
-}
-
-/** Última línea de gate ya validada; vacío / no-string se omite. Cap GATE_LINE_MAX_LEN. */
-function compactGateLine(line?: string | null): string {
-  if (typeof line !== "string") return "";
-  const trimmed = line.trim();
-  if (!trimmed) return "";
-  return trimmed.length > GATE_LINE_MAX_LEN
-    ? trimmed.slice(0, GATE_LINE_MAX_LEN)
-    : trimmed;
 }
 
