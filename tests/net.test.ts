@@ -9,6 +9,7 @@ import {
   collectHostPossessionFrom,
   collectPossessionFrom,
   LocalLoopbackSession,
+  publishHostHostiles,
   publishHostPossession,
   type NetSnapshot,
 } from "../src/net";
@@ -196,6 +197,86 @@ describe("LocalLoopbackSession", () => {
     const snap = session.getSnapshot();
     expect(snap.hostileCount).toBe(1);
     expect(snap.hostiles[0]).toMatchObject({ id: "a", x: 1, y: 2 });
+  });
+
+  test("Game/host publish: HostileSim vivo → loopback id/x/y/mode; vacío → []; possession sin cambio", () => {
+    const session = new LocalLoopbackSession({ playerX: 0, playerY: 0 });
+    expect(session.getSnapshot().hostiles).toEqual([]);
+    expect(session.getSnapshot().hostileCount).toBe(0);
+
+    const sim = new HostileSim();
+    const a = sim.add("a", 1, 2);
+    a.mode = "chase";
+    a.x = 12.5;
+    a.y = 8.25;
+    const b = sim.add("b", 3, 4);
+    b.mode = "investigate";
+
+    const ledger = new TrustLedger();
+    ledger.register("p1", 65);
+    const gates = new DialogueBehaviorGates();
+    const proposal = proposeDialogueGates("calmar", ledger.get("p1"));
+    gates.apply("p1", proposal);
+    gates.restoreLastRejected("p1", ["offer_food"]);
+    gates.restoreGateLine("p1", "código: aplicado (pacify_ttl)");
+    const speech = new SpeechDirector({}, () => 0.5);
+    speech.forceSpeak("p1", "demonio", "host línea", "dialogue", "llm");
+    speech.setMoodBias("p1", "lucidez");
+    const mem = new ShortMemory();
+    mem.remember("p1", {
+      who: "player",
+      intent: "preguntar",
+      trustDelta: 6,
+      tone: "lucidez",
+    });
+    const expectedMem = formatMemorySummary(mem.recent("p1"));
+
+    publishHostPossession(session, ledger, gates, ledger.ids(), speech, mem);
+    publishHostHostiles(session, sim);
+
+    const snap = session.getSnapshot();
+    expect(snap.hostileCount).toBe(2);
+    expect(snap.hostiles).toEqual([
+      { id: "a", x: 12.5, y: 8.25, mode: "chase" },
+      { id: "b", x: 3, y: 4, mode: "investigate" },
+    ]);
+    expect(Object.keys(snap.hostiles[0]!).sort()).toEqual(["id", "mode", "x", "y"]);
+    expect(snap.hostiles[0]).not.toHaveProperty("kind");
+    expect(snap.hostiles[0]).not.toHaveProperty("health");
+    expect(snap.hostiles[0]).not.toHaveProperty("facing");
+
+    expect(snap.possession[0]!.moodBias).toBe("lucidez");
+    expect(snap.possession[0]!.toneBias).toBe("lucidez");
+    expect(snap.possession[0]!.memorySummary).toBe(expectedMem);
+    expect(snap.possession[0]!.lineSource).toBe("llm");
+    expect(snap.possession[0]!.line).toBe("host línea");
+    expect(snap.possession[0]!.tone).toBe("demonio");
+    expect(snap.possession[0]!.trigger).toBe("dialogue");
+    expect(snap.possession[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(snap.possession[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(snap.possession[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(snap.possession[0]!.trust).toBe(65);
+    expect(snap.possession[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(snap.possession[0]!.speedBumpLeft).toBe(0);
+    expect(snap.possession[0]!.speedBumpMul).toBe(1);
+    expect(snap.possession[0]!.pacified).toBe(true);
+
+    publishHostHostiles(session, new HostileSim());
+    const empty = session.getSnapshot();
+    expect(empty.hostiles).toEqual([]);
+    expect(empty.hostileCount).toBe(0);
+    expect(empty.possession[0]!.trust).toBe(65);
+    expect(empty.possession[0]!.moodBias).toBe("lucidez");
+    expect(empty.possession[0]!.toneBias).toBe("lucidez");
+    expect(empty.possession[0]!.memorySummary).toBe(expectedMem);
+    expect(empty.possession[0]!.lineSource).toBe("llm");
+    expect(empty.possession[0]!.line).toBe("host línea");
+    expect(empty.possession[0]!.tone).toBe("demonio");
+    expect(empty.possession[0]!.trigger).toBe("dialogue");
+    expect(empty.possession[0]!.lastApplied).toEqual(["pacify_ttl"]);
+    expect(empty.possession[0]!.lastRejected).toEqual(["offer_food"]);
+    expect(empty.possession[0]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(empty.possession[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
   });
 
   test("roundtrip doors/containers vía constructor + stubs", () => {

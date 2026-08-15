@@ -1,6 +1,7 @@
 export {
   buildNetSnapshot,
   LocalLoopbackSession,
+  publishHostHostiles,
   type NetInput,
   type NetHostileSnap,
   type NetDoorSnap,
