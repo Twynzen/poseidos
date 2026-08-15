@@ -240,8 +240,8 @@ export const TRACER_FLASH_COLOR = 0xffdd6e;
 export const FLASHLIGHT_FILL_COLOR = 0xcaefff;
 /** Distancia base del PointLight fill de la linterna. 7 × 1.15 para alcanzar un poco más de noche. */
 export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05;
-/** Ganancia de distancia del PointLight fill × intensidad. */
-export const FLASHLIGHT_FILL_DISTANCE_GAIN = 3.5;
+/** Ganancia de distancia del PointLight fill × intensidad. 3.5 × 1.15 para estirar un poco más de noche. */
+export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
