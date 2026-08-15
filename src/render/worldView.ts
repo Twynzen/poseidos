@@ -352,6 +352,8 @@ export const BED_DEPTH = 0.805;
 export const FURNITURE_HEIGHT = 0.9775;
 /** Ancho/profundidad XZ de la caja/furniture genérico. 0.7 × 1.15 para leerse un poco más ancha de noche. */
 export const FURNITURE_XZ = 0.805;
+/** Altura Y de la caja/furniture genérico. 0.425 × 1.15 para sentarse un poco más alto de noche. */
+export const FURNITURE_BASE_Y = 0.48875;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -2231,7 +2233,7 @@ function fillTileContent(
       content.add(bed);
     } else {
       const furn = new THREE.Mesh(furnitureGeo, furnitureMat);
-      furn.position.set(x + 0.5, 0.425, y + 0.5);
+      furn.position.set(x + 0.5, FURNITURE_BASE_Y, y + 0.5);
       content.add(furn);
     }
   }
