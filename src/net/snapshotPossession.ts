@@ -1,6 +1,6 @@
 /**
  * Collector possession gated → snapshot wire F7.
- * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected / gateLine / moodBias); no intents crudos.
+ * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected / gateLine / moodBias / toneBias); no intents crudos.
  */
 import {
   isPacified,
@@ -19,6 +19,11 @@ export type MoodBiasLookup =
   | ((id: string) => string | null | undefined)
   | { getMoodBias(id: string): string | null | undefined };
 
+/** Fuente opcional de sesgo de memoria ya validado (`memory.toneBias`). */
+export type ToneBiasLookup =
+  | ((id: string) => string | null | undefined)
+  | { toneBias(id: string): string | null | undefined };
+
 function readMoodBias(
   source: MoodBiasLookup | undefined,
   id: string,
@@ -28,16 +33,27 @@ function readMoodBias(
   return compactMoodBias(raw);
 }
 
+function readToneBias(
+  source: ToneBiasLookup | undefined,
+  id: string,
+): ReturnType<typeof compactMoodBias> {
+  if (!source) return "";
+  const raw = typeof source === "function" ? source(id) : source.toneBias(id);
+  return compactMoodBias(raw);
+}
+
 /**
  * Serializa estado gated de poseídos.
  * `hostileIds` = ids a incluir; si se omite, todos los del ledger.
  * `moodBiasOf` = getter o SpeechDirector; si se omite, no se pinta moodBias.
+ * `toneBiasOf` = getter o ShortMemory; si se omite, no se pinta toneBias.
  */
 export function collectPossessionFrom(
   ledger: TrustLedger,
   gates: DialogueBehaviorGates,
   hostileIds?: readonly string[],
   moodBiasOf?: MoodBiasLookup,
+  toneBiasOf?: ToneBiasLookup,
 ): NetPossessionSnap[] {
   const ids = hostileIds ?? ledger.ids();
   const out: NetPossessionSnap[] = [];
@@ -51,6 +67,7 @@ export function collectPossessionFrom(
     const lastRejected = compactKnownGateTags(gates.lastRejected(id));
     const gateLine = compactGateLine(gates.gateLine(id));
     const moodBias = readMoodBias(moodBiasOf, id);
+    const toneBias = readToneBias(toneBiasOf, id);
     out.push({
       id,
       trust,
@@ -62,6 +79,7 @@ export function collectPossessionFrom(
       ...(lastRejected.length > 0 ? { lastRejected } : {}),
       ...(gateLine ? { gateLine } : {}),
       ...(moodBias ? { moodBias } : {}),
+      ...(toneBias ? { toneBias } : {}),
     });
   }
   return out;

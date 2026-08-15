@@ -75,6 +75,11 @@ export interface NetPossessionSnap {
    * Distinto de ShortMemory.toneBias.
    */
   moodBias?: PossessionTone;
+  /**
+   * Sesgo de tono ya validado (`memory.toneBias`); omitido si vacío.
+   * Distinto de speech moodBias.
+   */
+  toneBias?: PossessionTone;
 }
 
 /**
@@ -99,7 +104,7 @@ export interface NetSnapshot {
   doors: NetDoorSnap[];
   barricades: NetBarricadeSnap[];
   containers: NetContainerSnap[];
-  /** Poseídos: trust + TTLs gated + lastApplied / lastRejected / gateLine / moodBias (default []). */
+  /** Poseídos: trust + TTLs gated + lastApplied / lastRejected / gateLine / moodBias / toneBias (default []). */
   possession: NetPossessionSnap[];
 }
 
