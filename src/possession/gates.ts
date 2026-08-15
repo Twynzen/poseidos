@@ -194,7 +194,7 @@ interface GateEntityState {
  */
 export class DialogueBehaviorGates {
   private readonly states = new Map<string, GateEntityState>();
-  /** Últimos tags aplicados por id. Runtime only — no es TTL ni persist. */
+  /** Últimos tags aplicados por id. No es TTL — sobrevive tick(); F5/F9 vía persist. */
   private readonly lastAppliedTags = new Map<string, GateTag[]>();
 
   clear(): void {
@@ -210,6 +210,15 @@ export class DialogueBehaviorGates {
   /** Ids con TTL activo. */
   ids(): readonly string[] {
     return [...this.states.keys()];
+  }
+
+  /** Ids con lastApplied nonempty (puede existir tras TTL 0). */
+  lastAppliedIds(): readonly string[] {
+    const out: string[] = [];
+    for (const [id, tags] of this.lastAppliedTags) {
+      if (tags.length > 0) out.push(id);
+    }
+    return out;
   }
 
   /**
@@ -256,6 +265,15 @@ export class DialogueBehaviorGates {
   lastApplied(id: string): readonly GateTag[] {
     const tags = this.lastAppliedTags.get(id);
     return tags ? [...tags] : [];
+  }
+
+  /**
+   * Restaura lastApplied (F5/F9). Reemplaza el id; omite lista vacía.
+   * No toca TTLs.
+   */
+  restoreLastApplied(id: string, tags: readonly GateTag[]): void {
+    if (!id || tags.length === 0) return;
+    this.lastAppliedTags.set(id, [...tags]);
   }
 
   /** Aplica propuesta validada (refuerza TTL si ya había). */

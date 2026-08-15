@@ -1,6 +1,6 @@
 /**
  * Save/load mínimo (F2): player, needs, inventario, puertas, barricadas, contenedores, clock.
- * F5: possession runtime (trust / TTLs de gates / mood bias / ShortMemory) — campo opcional.
+ * F5: possession runtime (trust / TTLs de gates / lastApplied / mood bias / ShortMemory) — campo opcional.
  * Headless (JSON string / storage abstracto) + localStorage en browser.
  */
 
