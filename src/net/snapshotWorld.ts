@@ -60,3 +60,14 @@ export function collectContainersFromRegistry(
       .map((s) => ({ id: s.id as string, qty: s.qty })),
   }));
 }
+
+/**
+ * Game/host: un tick → collector existente → loopback.
+ * No inventa campos (solo id / x / y / slots qty>0). Bulk replace.
+ */
+export function publishHostContainers(
+  session: LocalLoopbackSession,
+  reg: ContainerRegistry,
+): void {
+  session.setContainers(collectContainersFromRegistry(reg));
+}

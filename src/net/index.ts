@@ -17,6 +17,7 @@ export {
   collectBarricadesFromMap,
   collectContainersFromRegistry,
   publishHostDoors,
+  publishHostContainers,
 } from "./snapshotWorld";
 
 export {

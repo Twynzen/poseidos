@@ -9,6 +9,7 @@ import {
   collectHostPossessionFrom,
   collectPossessionFrom,
   LocalLoopbackSession,
+  publishHostContainers,
   publishHostDoors,
   publishHostHostiles,
   publishHostPossession,
@@ -343,6 +344,102 @@ describe("LocalLoopbackSession", () => {
     const empty = session.getSnapshot();
     expect(empty.doors).toEqual([]);
     expect(empty.hostiles).toEqual([{ id: "a", x: 1, y: 2, mode: "chase" }]);
+    expect(empty.possession[0]!.trust).toBe(65);
+    expect(empty.possession[0]!.moodBias).toBe("lucidez");
+    expect(empty.possession[0]!.line).toBe("host línea");
+    expect(empty.possession[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+  });
+
+  test("Game/host publish: ContainerRegistry → loopback id/x/y/slots qty>0; vacío → []; hostiles+doors+possession sin cambio", () => {
+    const session = new LocalLoopbackSession({ playerX: 0, playerY: 0 });
+    expect(session.getSnapshot().containers).toEqual([]);
+
+    const reg = new ContainerRegistry([
+      createWorldContainer("c1", 3, 5, "caja", [
+        { id: "wood", qty: 2 },
+        { id: "scrap", qty: 0 },
+      ]),
+      createWorldContainer("c2", 0, 0, "vacío", []),
+    ]);
+    reg.list[0]!.inv.slots.push({ id: "cloth", qty: 0 });
+
+    const map = new TileMap(6, 6, makeFloor);
+    map.set(1, 1, makeDoor(false));
+    map.set(2, 3, makeDoor(true));
+
+    const sim = new HostileSim();
+    const a = sim.add("a", 1, 2);
+    a.mode = "chase";
+
+    const ledger = new TrustLedger();
+    ledger.register("p1", 65);
+    const gates = new DialogueBehaviorGates();
+    const proposal = proposeDialogueGates("calmar", ledger.get("p1"));
+    gates.apply("p1", proposal);
+    const speech = new SpeechDirector({}, () => 0.5);
+    speech.forceSpeak("p1", "demonio", "host línea", "dialogue", "llm");
+    speech.setMoodBias("p1", "lucidez");
+    const mem = new ShortMemory();
+    mem.remember("p1", {
+      who: "player",
+      intent: "preguntar",
+      trustDelta: 6,
+      tone: "lucidez",
+    });
+
+    publishHostPossession(session, ledger, gates, ledger.ids(), speech, mem);
+    publishHostHostiles(session, sim);
+    publishHostDoors(session, map);
+    publishHostContainers(session, reg);
+
+    const snap = session.getSnapshot();
+    expect(snap.containers).toHaveLength(2);
+    expect(snap.containers[0]).toEqual({
+      id: "c1",
+      x: 3,
+      y: 5,
+      slots: [{ id: "wood", qty: 2 }],
+    });
+    expect(snap.containers[1]).toEqual({ id: "c2", x: 0, y: 0, slots: [] });
+    expect(Object.keys(snap.containers[0]!).sort()).toEqual([
+      "id",
+      "slots",
+      "x",
+      "y",
+    ]);
+    expect(snap.containers[0]).not.toHaveProperty("kind");
+    expect(snap.containers[0]).not.toHaveProperty("locks");
+    expect(snap.containers[0]).not.toHaveProperty("capacity");
+    expect(snap.containers[0]!.slots.every((s) => s.qty > 0)).toBe(true);
+    expect(snap.hostiles).toEqual([{ id: "a", x: 1, y: 2, mode: "chase" }]);
+    expect(snap.doors).toContainEqual({ x: 1, y: 1, open: false });
+    expect(snap.doors).toContainEqual({ x: 2, y: 3, open: true });
+    expect(snap.doors).toHaveLength(2);
+    expect(snap.possession[0]!.trust).toBe(65);
+    expect(snap.possession[0]!.moodBias).toBe("lucidez");
+    expect(snap.possession[0]!.line).toBe("host línea");
+    expect(snap.possession[0]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+
+    session.setContainers([
+      { id: "stale", x: 9, y: 9, slots: [{ id: "wood", qty: 1 }] },
+    ]);
+    expect(session.getSnapshot().containers).toEqual([
+      { id: "stale", x: 9, y: 9, slots: [{ id: "wood", qty: 1 }] },
+    ]);
+    publishHostContainers(session, reg);
+    expect(session.getSnapshot().containers).not.toContainEqual({
+      id: "stale",
+      x: 9,
+      y: 9,
+      slots: [{ id: "wood", qty: 1 }],
+    });
+    expect(session.getSnapshot().containers).toHaveLength(2);
+
+    publishHostContainers(session, new ContainerRegistry());
+    const empty = session.getSnapshot();
+    expect(empty.containers).toEqual([]);
+    expect(empty.hostiles).toEqual([{ id: "a", x: 1, y: 2, mode: "chase" }]);
+    expect(empty.doors).toHaveLength(2);
     expect(empty.possession[0]!.trust).toBe(65);
     expect(empty.possession[0]!.moodBias).toBe("lucidez");
     expect(empty.possession[0]!.line).toBe("host línea");
