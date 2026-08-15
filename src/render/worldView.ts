@@ -264,6 +264,8 @@ export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05;
 export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025;
 /** Altura Y del PointLight fill de la linterna. 1.35 × 1.15 para sentarse un poco más alto de noche. */
 export const FLASHLIGHT_FILL_Y = 1.5525;
+/** Decay del PointLight fill de la linterna. 2 × 0.87 para caer un poco más lento de noche. */
+export const FLASHLIGHT_FILL_DECAY = 1.74;
 /** Altura Y del SpotLight de la linterna. 1.55 × 1.15 para sentarse un poco más alto de noche. */
 export const FLASHLIGHT_SPOT_Y = 1.7825;
 /** Extra de distancia del SpotLight de la linterna. 1.6 × 1.15 para alcanzar un poco más de noche. */
@@ -469,7 +471,7 @@ export function createWorldView(
   scene.add(warmLight);
 
   // Linterna: PointLight fill + SpotLight al facing (separada de warm / muzzle).
-  const torchLight = new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, 2);
+  const torchLight = new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY);
   torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0);
   torchLight.visible = false;
   scene.add(torchLight);
