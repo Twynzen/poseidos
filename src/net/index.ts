@@ -17,7 +17,10 @@ export {
   collectContainersFromRegistry,
 } from "./snapshotWorld";
 
-export { collectPossessionFrom } from "./snapshotPossession";
+export {
+  collectPossessionFrom,
+  type MoodBiasLookup,
+} from "./snapshotPossession";
 
 export {
   LOBBY_MIN_SLOTS,
