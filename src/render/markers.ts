@@ -25,7 +25,7 @@ export const MARKER_PALETTE: Readonly<Record<MarkerRole, MarkerPalette>> = {
     glyph: "●",
   },
   mute: {
-    ring: 0xc43c3c,
+    ring: 0xe14545,
     badge: 0xff6b6b,
     emissive: 0x401010,
     glyph: "✕",
