@@ -179,6 +179,7 @@ export async function applyDialogueChoiceAsync(
   const compactApplied = compactKnownGateTags(lastApplied);
   const compactRejected = compactKnownGateTags(lastRejected);
   const compactBias = compactMoodBias(moodBias);
+  const compactTone = compactMoodBias(memory?.toneBias(entityId));
   const snapshot = {
     entityId,
     tone: opt.tone,
@@ -190,6 +191,7 @@ export async function applyDialogueChoiceAsync(
     ...(compactApplied.length > 0 ? { lastApplied: compactApplied } : {}),
     ...(compactRejected.length > 0 ? { lastRejected: compactRejected } : {}),
     ...(compactBias ? { moodBias: compactBias } : {}),
+    ...(compactTone ? { toneBias: compactTone } : {}),
     prompt: formatLlmPrompt({
       tone: opt.tone,
       intent,
@@ -199,6 +201,7 @@ export async function applyDialogueChoiceAsync(
       ...(compactApplied.length > 0 ? { lastApplied: compactApplied } : {}),
       ...(compactRejected.length > 0 ? { lastRejected: compactRejected } : {}),
       ...(compactBias ? { moodBias: compactBias } : {}),
+      ...(compactTone ? { toneBias: compactTone } : {}),
     }),
   };
   const resolved = await resolveLineWithBridge({
