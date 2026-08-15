@@ -583,8 +583,9 @@ export class Game {
   private async handleDialogueChoice(intent: DialogueIntent): Promise<void> {
     const id = this.dialogue.target;
     if (!id || this.gameOver) return;
-    // Línea ya validada *antes* de este turno (el apply posterior escribe la nueva).
+    // Línea / tags ya validados *antes* de este turno (el apply posterior escribe lo nuevo).
     const lastGateLine = this.gates.gateLine(id);
+    const lastApplied = this.gates.lastApplied(id);
     const result = await applyDialogueChoiceAsync(
       this.trust,
       id,
@@ -593,6 +594,7 @@ export class Game {
       this.memory,
       { enabled: this.config.llm.enabled, bridge: this.llmBridge },
       lastGateLine,
+      lastApplied,
     );
     // Ofrecer: detectar comida antes de validar gates (diálogo propone; código valida)
     const inv = this.player.inventory;
