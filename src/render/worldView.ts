@@ -332,6 +332,8 @@ export const PLAYER_BODY_WIDTH = 0.6325;
 export const PLAYER_BODY_HEIGHT = 1.288;
 /** Profundidad del torso fallback del player. 0.48 × 1.15 para leerse un poco más grueso de noche. */
 export const PLAYER_BODY_DEPTH = 0.552;
+/** Alto del muro. 2.2 × 1.15 para leerse un poco más alto de noche. */
+export const WALL_HEIGHT = 2.53;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -554,7 +556,7 @@ export function createWorldView(
   const sunColor = new THREE.Color(0xe8e0d0);
 
   const floorGeo = new THREE.PlaneGeometry(1, 1);
-  const wallGeo = new THREE.BoxGeometry(1, 2.2, 1);
+  const wallGeo = new THREE.BoxGeometry(1, WALL_HEIGHT, 1);
   const doorGeo = new THREE.BoxGeometry(1, 2.0, 0.18);
   const furnitureGeo = new THREE.BoxGeometry(0.7, 0.85, 0.7);
   /** Planchas apiladas: más bajas y estrechas que un muro. */
