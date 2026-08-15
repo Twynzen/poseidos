@@ -27,6 +27,10 @@ export interface LlmAskSnapshot {
   moodBias?: PossessionTone;
   /** Sesgo de tono derivado de ShortMemory (`memory.toneBias`); omitido si vacío. */
   toneBias?: PossessionTone;
+  /** Segundos de CALMA ya validados (`gates.pacifiedLeft`); omitido si ≤ 0. */
+  pacifiedLeft?: number;
+  /** Segundos de FURIA ya validados (`gates.speedBumpLeft`); omitido si ≤ 0. */
+  speedBumpLeft?: number;
 }
 
 /** Interfaz mínima del bridge (stub hoy; API real después). */
@@ -139,6 +143,8 @@ export class StubLlmBridge implements LlmBridge {
       lastRejected: snapshot.lastRejected ?? null,
       moodBias: snapshot.moodBias ?? null,
       toneBias: snapshot.toneBias ?? null,
+      pacifiedLeft: snapshot.pacifiedLeft ?? null,
+      speedBumpLeft: snapshot.speedBumpLeft ?? null,
     });
     await files.writeRequest(requestId, body);
 
@@ -201,6 +207,8 @@ export function formatLlmPrompt(
     | "lastRejected"
     | "moodBias"
     | "toneBias"
+    | "pacifiedLeft"
+    | "speedBumpLeft"
   >,
 ): string {
   const bits = [`Tono: ${fields.tone}`];
@@ -218,6 +226,10 @@ export function formatLlmPrompt(
   if (bias) bits.push(`Sesgo: ${bias}`);
   const memTone = compactMoodBias(fields.toneBias);
   if (memTone) bits.push(`MemoriaTono: ${memTone}`);
+  const calma = compactTtl(fields.pacifiedLeft);
+  if (calma !== undefined) bits.push(`Calma: ${calma}`);
+  const furia = compactTtl(fields.speedBumpLeft);
+  if (furia !== undefined) bits.push(`Furia: ${furia}`);
   return bits.join(". ") + ".";
 }
 
@@ -228,6 +240,14 @@ export function compactMoodBias(bias?: string | null): PossessionTone | "" {
   return (POSSESSION_TONES as readonly string[]).includes(t)
     ? (t as PossessionTone)
     : "";
+}
+
+/** TTL de gate ya validado; 0 / no-finito / ausente se omite. */
+export function compactTtl(left?: number | null): number | undefined {
+  if (typeof left !== "number" || !Number.isFinite(left) || left <= 0) {
+    return undefined;
+  }
+  return left;
 }
 
 export interface ResolveLineOptions {

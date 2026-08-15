@@ -685,6 +685,8 @@ describe("llm bridge stub", () => {
     expect(bare.toLowerCase()).not.toContain("rechazado:");
     expect(bare.toLowerCase()).not.toContain("sesgo:");
     expect(bare.toLowerCase()).not.toContain("memoriatono:");
+    expect(bare.toLowerCase()).not.toContain("calma:");
+    expect(bare.toLowerCase()).not.toContain("furia:");
 
     const withMem = formatLlmPrompt({
       tone: "ruega",
@@ -700,6 +702,8 @@ describe("llm bridge stub", () => {
     expect(withMem.toLowerCase()).not.toContain("rechazado:");
     expect(withMem.toLowerCase()).not.toContain("sesgo:");
     expect(withMem.toLowerCase()).not.toContain("memoriatono:");
+    expect(withMem.toLowerCase()).not.toContain("calma:");
+    expect(withMem.toLowerCase()).not.toContain("furia:");
   });
 
   test("formatLlmPrompt incluye Gate si hay; vacío se omite", () => {
@@ -724,6 +728,8 @@ describe("llm bridge stub", () => {
     expect(emptyGate.toLowerCase()).not.toContain("rechazado:");
     expect(emptyGate.toLowerCase()).not.toContain("sesgo:");
     expect(emptyGate.toLowerCase()).not.toContain("memoriatono:");
+    expect(emptyGate.toLowerCase()).not.toContain("calma:");
+    expect(emptyGate.toLowerCase()).not.toContain("furia:");
   });
 
   test("formatLlmPrompt incluye Aplicado si hay lastApplied; vacío se omite", () => {
@@ -747,6 +753,8 @@ describe("llm bridge stub", () => {
     expect(emptyApplied.toLowerCase()).not.toContain("rechazado:");
     expect(emptyApplied.toLowerCase()).not.toContain("sesgo:");
     expect(emptyApplied.toLowerCase()).not.toContain("memoriatono:");
+    expect(emptyApplied.toLowerCase()).not.toContain("calma:");
+    expect(emptyApplied.toLowerCase()).not.toContain("furia:");
 
     const unknownOnly = formatLlmPrompt({
       tone: "demonio",
@@ -758,6 +766,8 @@ describe("llm bridge stub", () => {
     expect(unknownOnly.toLowerCase()).not.toContain("rechazado:");
     expect(unknownOnly.toLowerCase()).not.toContain("sesgo:");
     expect(unknownOnly.toLowerCase()).not.toContain("memoriatono:");
+    expect(unknownOnly.toLowerCase()).not.toContain("calma:");
+    expect(unknownOnly.toLowerCase()).not.toContain("furia:");
   });
 
   test("formatLlmPrompt incluye Rechazado si hay lastRejected; vacío se omite", () => {
@@ -781,6 +791,8 @@ describe("llm bridge stub", () => {
     expect(emptyRejected.toLowerCase()).not.toContain("rechazado:");
     expect(emptyRejected.toLowerCase()).not.toContain("sesgo:");
     expect(emptyRejected.toLowerCase()).not.toContain("memoriatono:");
+    expect(emptyRejected.toLowerCase()).not.toContain("calma:");
+    expect(emptyRejected.toLowerCase()).not.toContain("furia:");
 
     const unknownOnly = formatLlmPrompt({
       tone: "demonio",
@@ -791,6 +803,8 @@ describe("llm bridge stub", () => {
     expect(unknownOnly.toLowerCase()).not.toContain("rechazado:");
     expect(unknownOnly.toLowerCase()).not.toContain("sesgo:");
     expect(unknownOnly.toLowerCase()).not.toContain("memoriatono:");
+    expect(unknownOnly.toLowerCase()).not.toContain("calma:");
+    expect(unknownOnly.toLowerCase()).not.toContain("furia:");
   });
 
   test("formatLlmPrompt incluye Sesgo si hay moodBias; vacío se omite", () => {
@@ -814,6 +828,8 @@ describe("llm bridge stub", () => {
     });
     expect(emptyBias.toLowerCase()).not.toContain("sesgo:");
     expect(emptyBias.toLowerCase()).not.toContain("memoriatono:");
+    expect(emptyBias.toLowerCase()).not.toContain("calma:");
+    expect(emptyBias.toLowerCase()).not.toContain("furia:");
 
     const unknownOnly = formatLlmPrompt({
       tone: "demonio",
@@ -823,6 +839,8 @@ describe("llm bridge stub", () => {
     });
     expect(unknownOnly.toLowerCase()).not.toContain("sesgo:");
     expect(unknownOnly.toLowerCase()).not.toContain("memoriatono:");
+    expect(unknownOnly.toLowerCase()).not.toContain("calma:");
+    expect(unknownOnly.toLowerCase()).not.toContain("furia:");
   });
 
   test("formatLlmPrompt incluye MemoriaTono si hay toneBias; vacío se omite", () => {
@@ -845,6 +863,8 @@ describe("llm bridge stub", () => {
       trust: 56,
     });
     expect(emptyTone.toLowerCase()).not.toContain("memoriatono:");
+    expect(emptyTone.toLowerCase()).not.toContain("calma:");
+    expect(emptyTone.toLowerCase()).not.toContain("furia:");
 
     const unknownOnly = formatLlmPrompt({
       tone: "demonio",
@@ -853,6 +873,52 @@ describe("llm bridge stub", () => {
       toneBias: "scream" as unknown as "lucidez",
     });
     expect(unknownOnly.toLowerCase()).not.toContain("memoriatono:");
+    expect(unknownOnly.toLowerCase()).not.toContain("calma:");
+    expect(unknownOnly.toLowerCase()).not.toContain("furia:");
+  });
+
+  test("formatLlmPrompt incluye Calma/Furia si hay TTL; 0 se omite", () => {
+    const withBoth = formatLlmPrompt({
+      tone: "ruega",
+      intent: "calmar",
+      trust: 64,
+      pacifiedLeft: GATE_CALM_PACIFY_TTL,
+      speedBumpLeft: GATE_THREAT_SPEED_TTL,
+    });
+    expect(withBoth).toContain(`Calma: ${GATE_CALM_PACIFY_TTL}`);
+    expect(withBoth).toContain(`Furia: ${GATE_THREAT_SPEED_TTL}`);
+    expect(withBoth).toContain("calmar");
+    expect(withBoth).toContain("64");
+    expect(withBoth.toLowerCase()).not.toContain("sesgo:");
+    expect(withBoth.toLowerCase()).not.toContain("memoriatono:");
+
+    const onlyCalma = formatLlmPrompt({
+      tone: "ruega",
+      intent: "calmar",
+      trust: 64,
+      pacifiedLeft: GATE_CALM_PACIFY_TTL,
+    });
+    expect(onlyCalma).toContain(`Calma: ${GATE_CALM_PACIFY_TTL}`);
+    expect(onlyCalma.toLowerCase()).not.toContain("furia:");
+
+    const onlyFuria = formatLlmPrompt({
+      tone: "demonio",
+      intent: "amenazar",
+      trust: 30,
+      speedBumpLeft: GATE_THREAT_SPEED_TTL,
+    });
+    expect(onlyFuria).toContain(`Furia: ${GATE_THREAT_SPEED_TTL}`);
+    expect(onlyFuria.toLowerCase()).not.toContain("calma:");
+
+    const emptyTtl = formatLlmPrompt({
+      tone: "lucidez",
+      intent: "preguntar",
+      trust: 56,
+      pacifiedLeft: 0,
+      speedBumpLeft: 0,
+    });
+    expect(emptyTtl.toLowerCase()).not.toContain("calma:");
+    expect(emptyTtl.toLowerCase()).not.toContain("furia:");
   });
 
   test("applyDialogueChoiceAsync rellena memorySummary tras remember(); vacío se omite", async () => {
@@ -882,6 +948,8 @@ describe("llm bridge stub", () => {
     expect(snaps[0]!.lastRejected ?? []).toEqual([]);
     expect(snaps[0]!.moodBias ?? "").toBe("");
     expect(snaps[0]!.toneBias ?? "").toBe("");
+    expect(snaps[0]!.pacifiedLeft ?? 0).toBe(0);
+    expect(snaps[0]!.speedBumpLeft ?? 0).toBe(0);
     expect(snaps[0]!.prompt).toContain("calmar");
     expect(snaps[0]!.prompt).toContain("64");
     expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("gate:");
@@ -889,6 +957,8 @@ describe("llm bridge stub", () => {
     expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("rechazado:");
     expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("sesgo:");
     expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("memoriatono:");
+    expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("calma:");
+    expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("furia:");
 
     mem.remember("poss-sum", {
       who: "player",
@@ -939,6 +1009,8 @@ describe("llm bridge stub", () => {
     expect(seen!.lastRejected ?? []).toEqual([]);
     expect(seen!.moodBias ?? "").toBe("");
     expect(seen!.toneBias ?? "").toBe("");
+    expect(seen!.pacifiedLeft ?? 0).toBe(0);
+    expect(seen!.speedBumpLeft ?? 0).toBe(0);
     expect(seen!.prompt).toContain("ofrecer");
     expect(seen!.prompt).toContain(String(seen!.trust));
     expect(seen!.intent).toBe("ofrecer");
@@ -947,6 +1019,8 @@ describe("llm bridge stub", () => {
     expect(seen!.prompt!.toLowerCase()).not.toContain("rechazado:");
     expect(seen!.prompt!.toLowerCase()).not.toContain("sesgo:");
     expect(seen!.prompt!.toLowerCase()).not.toContain("memoriatono:");
+    expect(seen!.prompt!.toLowerCase()).not.toContain("calma:");
+    expect(seen!.prompt!.toLowerCase()).not.toContain("furia:");
   });
 
   test("applyDialogueChoiceAsync rellena gateLine si se pasa; vacío se omite", async () => {
@@ -1028,6 +1102,8 @@ describe("llm bridge stub", () => {
     expect(snaps[4]!.lastRejected ?? []).toEqual([]);
     expect(snaps[4]!.moodBias ?? "").toBe("");
     expect(snaps[4]!.toneBias ?? "").toBe("");
+    expect(snaps[4]!.pacifiedLeft ?? 0).toBe(0);
+    expect(snaps[4]!.speedBumpLeft ?? 0).toBe(0);
   });
 
   test("applyDialogueChoiceAsync rellena lastApplied si se pasa; vacío/null se omite", async () => {
@@ -1116,10 +1192,14 @@ describe("llm bridge stub", () => {
     expect(snaps[4]!.lastRejected ?? []).toEqual([]);
     expect(snaps[4]!.moodBias ?? "").toBe("");
     expect(snaps[4]!.toneBias ?? "").toBe("");
+    expect(snaps[4]!.pacifiedLeft ?? 0).toBe(0);
+    expect(snaps[4]!.speedBumpLeft ?? 0).toBe(0);
     expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("aplicado:");
     expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("rechazado:");
     expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("sesgo:");
     expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("memoriatono:");
+    expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("calma:");
+    expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("furia:");
   });
 
   test("applyDialogueChoiceAsync rellena lastRejected si se pasa; vacío/null se omite", async () => {
@@ -1211,9 +1291,13 @@ describe("llm bridge stub", () => {
     expect(snaps[4]!.lastRejected ?? []).toEqual([]);
     expect(snaps[4]!.moodBias ?? "").toBe("");
     expect(snaps[4]!.toneBias ?? "").toBe("");
+    expect(snaps[4]!.pacifiedLeft ?? 0).toBe(0);
+    expect(snaps[4]!.speedBumpLeft ?? 0).toBe(0);
     expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("rechazado:");
     expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("sesgo:");
     expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("memoriatono:");
+    expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("calma:");
+    expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("furia:");
   });
 
   test("applyDialogueChoiceAsync rellena moodBias si se pasa; vacío/null se omite", async () => {
@@ -1310,8 +1394,12 @@ describe("llm bridge stub", () => {
     expect(unknownOnly.lineSource).toBe("bank");
     expect(snaps[4]!.moodBias ?? "").toBe("");
     expect(snaps[4]!.toneBias ?? "").toBe("");
+    expect(snaps[4]!.pacifiedLeft ?? 0).toBe(0);
+    expect(snaps[4]!.speedBumpLeft ?? 0).toBe(0);
     expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("sesgo:");
     expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("memoriatono:");
+    expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("calma:");
+    expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("furia:");
   });
 
   test("applyDialogueChoiceAsync rellena toneBias desde memory; vacío/undefined se omite", async () => {
@@ -1375,7 +1463,140 @@ describe("llm bridge stub", () => {
     expect(snaps[2]!.prompt).toContain("preguntar");
     expect(snaps[2]!.prompt).toContain(String(snaps[2]!.trust));
     expect(snaps[2]!.moodBias ?? "").toBe("");
+    expect(snaps[2]!.pacifiedLeft ?? 0).toBe(0);
+    expect(snaps[2]!.speedBumpLeft ?? 0).toBe(0);
     expect(snaps[2]!.prompt!.toLowerCase()).not.toContain("sesgo:");
+    expect(snaps[2]!.prompt!.toLowerCase()).not.toContain("calma:");
+    expect(snaps[2]!.prompt!.toLowerCase()).not.toContain("furia:");
+  });
+
+  test("applyDialogueChoiceAsync rellena TTLs si se pasan > 0; 0/null/undefined se omite", async () => {
+    const snaps: LlmAskSnapshot[] = [];
+    const bridge = new StubLlmBridge({
+      responder: (s) => {
+        snaps.push(s);
+        return null;
+      },
+    });
+    const ledger = new TrustLedger();
+    ledger.register("poss-ttl", 50);
+
+    const omitted = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-ttl",
+      "calmar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+    );
+    expect(omitted.lineSource).toBe("bank");
+    expect(snaps[0]!.pacifiedLeft ?? 0).toBe(0);
+    expect(snaps[0]!.speedBumpLeft ?? 0).toBe(0);
+    expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("calma:");
+    expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("furia:");
+
+    const fromZero = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-ttl",
+      "preguntar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      0,
+      0,
+    );
+    expect(snaps[1]!.pacifiedLeft ?? 0).toBe(0);
+    expect(snaps[1]!.speedBumpLeft ?? 0).toBe(0);
+    expect(snaps[1]!.prompt!.toLowerCase()).not.toContain("calma:");
+    expect(snaps[1]!.prompt!.toLowerCase()).not.toContain("furia:");
+
+    const fromNull = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-ttl",
+      "distraer",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      null,
+      null,
+    );
+    expect(snaps[2]!.pacifiedLeft ?? 0).toBe(0);
+    expect(snaps[2]!.speedBumpLeft ?? 0).toBe(0);
+    expect(snaps[2]!.prompt!.toLowerCase()).not.toContain("calma:");
+    expect(snaps[2]!.prompt!.toLowerCase()).not.toContain("furia:");
+
+    const filled = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-ttl",
+      "amenazar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      GATE_CALM_PACIFY_TTL,
+      GATE_THREAT_SPEED_TTL,
+    );
+    expect(filled.tone).toBe("demonio");
+    expect(snaps[3]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(snaps[3]!.speedBumpLeft).toBe(GATE_THREAT_SPEED_TTL);
+    expect(snaps[3]!.prompt).toContain(`Calma: ${GATE_CALM_PACIFY_TTL}`);
+    expect(snaps[3]!.prompt).toContain(`Furia: ${GATE_THREAT_SPEED_TTL}`);
+    expect(snaps[3]!.prompt).toContain("amenazar");
+    expect(snaps[3]!.prompt).toContain(String(snaps[3]!.trust));
+    expect(snaps[3]!.moodBias ?? "").toBe("");
+    expect(snaps[3]!.toneBias ?? "").toBe("");
+    expect(snaps[3]!.lastApplied ?? []).toEqual([]);
+    expect(snaps[3]!.lastRejected ?? []).toEqual([]);
+
+    const onlyCalma = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-ttl",
+      "calmar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      GATE_CALM_PACIFY_TTL,
+      0,
+    );
+    expect(onlyCalma.lineSource).toBe("bank");
+    expect(snaps[4]!.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(snaps[4]!.speedBumpLeft ?? 0).toBe(0);
+    expect(snaps[4]!.prompt).toContain(`Calma: ${GATE_CALM_PACIFY_TTL}`);
+    expect(snaps[4]!.prompt!.toLowerCase()).not.toContain("furia:");
+
+    const onlyFuria = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-ttl",
+      "amenazar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      GATE_THREAT_SPEED_TTL,
+    );
+    expect(snaps[5]!.pacifiedLeft ?? 0).toBe(0);
+    expect(snaps[5]!.speedBumpLeft).toBe(GATE_THREAT_SPEED_TTL);
+    expect(snaps[5]!.prompt).toContain(`Furia: ${GATE_THREAT_SPEED_TTL}`);
+    expect(snaps[5]!.prompt!.toLowerCase()).not.toContain("calma:");
   });
 
   test("StubLlmBridge file IO: body incluye memorySummary y prompt", async () => {
@@ -1412,6 +1633,8 @@ describe("llm bridge stub", () => {
       lastRejected: string[] | null;
       moodBias: string | null;
       toneBias: string | null;
+      pacifiedLeft: number | null;
+      speedBumpLeft: number | null;
     };
     expect(parsed.memorySummary).toContain("calmar");
     expect(parsed.memorySummary).toContain("ruega");
@@ -1424,7 +1647,11 @@ describe("llm bridge stub", () => {
     expect(parsed.lastRejected).toBeNull();
     expect(parsed.moodBias).toBeNull();
     expect(parsed.toneBias).toBe("ruega");
+    expect(parsed.pacifiedLeft).toBeNull();
+    expect(parsed.speedBumpLeft).toBeNull();
     expect(parsed.prompt).toContain("MemoriaTono: ruega");
+    expect(parsed.prompt!.toLowerCase()).not.toContain("calma:");
+    expect(parsed.prompt!.toLowerCase()).not.toContain("furia:");
     files.seedResponse(reqId, JSON.stringify({ line: "Desde el archivo con memoria." }));
     const r = await askP;
     expect(r.line).toBe("Desde el archivo con memoria.");
@@ -1616,6 +1843,54 @@ describe("llm bridge stub", () => {
     files.seedResponse(reqId, JSON.stringify({ line: "Desde el archivo con memoria tono." }));
     const r = await askP;
     expect(r.line).toBe("Desde el archivo con memoria tono.");
+    expect(r.lineSource).toBe("llm");
+  });
+
+  test("StubLlmBridge file IO: body incluye pacifiedLeft y speedBumpLeft", async () => {
+    const files = new MemoryLlmFileIo();
+    const bridge = new StubLlmBridge({ files, timeoutMs: 80, pollMs: 5 });
+    const ledger = new TrustLedger();
+    ledger.register("poss-fio-ttl", 50);
+    const askP = applyDialogueChoiceAsync(
+      ledger,
+      "poss-fio-ttl",
+      "calmar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      GATE_CALM_PACIFY_TTL,
+      GATE_THREAT_SPEED_TTL,
+    );
+    await new Promise((r) => setTimeout(r, 15));
+    expect(files.requests.size).toBe(1);
+    const reqId = [...files.requests.keys()][0]!;
+    const body = files.requests.get(reqId)!;
+    const parsed = JSON.parse(body) as {
+      pacifiedLeft: number | null;
+      speedBumpLeft: number | null;
+      moodBias: string | null;
+      toneBias: string | null;
+      lastApplied: string[] | null;
+      lastRejected: string[] | null;
+      prompt: string | null;
+      intent: string | null;
+    };
+    expect(parsed.pacifiedLeft).toBe(GATE_CALM_PACIFY_TTL);
+    expect(parsed.speedBumpLeft).toBe(GATE_THREAT_SPEED_TTL);
+    expect(parsed.moodBias).toBeNull();
+    expect(parsed.toneBias).toBeNull();
+    expect(parsed.lastApplied).toBeNull();
+    expect(parsed.lastRejected).toBeNull();
+    expect(parsed.prompt).toContain(`Calma: ${GATE_CALM_PACIFY_TTL}`);
+    expect(parsed.prompt).toContain(`Furia: ${GATE_THREAT_SPEED_TTL}`);
+    expect(parsed.intent).toBe("calmar");
+    files.seedResponse(reqId, JSON.stringify({ line: "Desde el archivo con ttl." }));
+    const r = await askP;
+    expect(r.line).toBe("Desde el archivo con ttl.");
     expect(r.lineSource).toBe("llm");
   });
 

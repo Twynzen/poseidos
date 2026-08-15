@@ -583,11 +583,13 @@ export class Game {
   private async handleDialogueChoice(intent: DialogueIntent): Promise<void> {
     const id = this.dialogue.target;
     if (!id || this.gameOver) return;
-    // Línea / tags ya validados *antes* de este turno (el apply posterior escribe lo nuevo).
+    // Línea / tags / TTLs ya validados *antes* de este turno (el apply posterior escribe lo nuevo).
     const lastGateLine = this.gates.gateLine(id);
     const lastApplied = this.gates.lastApplied(id);
     const lastRejected = this.gates.lastRejected(id);
     const lastMoodBias = this.speech.getMoodBias(id);
+    const lastPacifiedLeft = this.gates.pacifiedLeft(id);
+    const lastSpeedBumpLeft = this.gates.speedBumpLeft(id);
     const result = await applyDialogueChoiceAsync(
       this.trust,
       id,
@@ -599,6 +601,8 @@ export class Game {
       lastApplied,
       lastRejected,
       lastMoodBias,
+      lastPacifiedLeft,
+      lastSpeedBumpLeft,
     );
     // Ofrecer: detectar comida antes de validar gates (diálogo propone; código valida)
     const inv = this.player.inventory;
