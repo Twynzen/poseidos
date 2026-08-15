@@ -715,6 +715,72 @@ describe("llm bridge stub", () => {
     expect(files.requests.size).toBe(1);
   });
 
+  test("file-io: solo line|say string; JSON inválido / sin clave / no-JSON / vacío → banco", async () => {
+    const fallback = LINE_BANK.ruega[0];
+    const snap = { entityId: "poss-parse", tone: "ruega" as const };
+    const via = (body: string) =>
+      resolveLineWithBridge({
+        enabled: true,
+        bridge: new StubLlmBridge({
+          files: {
+            writeRequest: async () => {},
+            readResponse: async () => body,
+          },
+          timeoutMs: 25,
+          pollMs: 5,
+        }),
+        snapshot: snap,
+        fallback: () => fallback,
+      });
+
+    const fromLine = await via(JSON.stringify({ line: "  Desde line.  " }));
+    expect(fromLine).toEqual({ line: "Desde line.", source: "llm" });
+
+    const fromSay = await via(JSON.stringify({ say: "Desde say." }));
+    expect(fromSay).toEqual({ line: "Desde say.", source: "llm" });
+
+    const rejected = [
+      JSON.stringify({ ok: true }),
+      JSON.stringify({ line: 12 }),
+      '{ "line": ',
+      "texto plano",
+      JSON.stringify({ line: "" }),
+      JSON.stringify({ line: "   " }),
+      JSON.stringify({ say: null }),
+    ];
+    for (const body of rejected) {
+      const r = await via(body);
+      expect(r).toEqual({ line: fallback, source: "bank" });
+      expect(r.line).not.toBe(body);
+      expect(r.line).not.toContain("{");
+    }
+
+    const ledger = new TrustLedger();
+    ledger.register("poss-parse-ok", 50);
+    const rawJson = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-parse-ok",
+      "calmar",
+      seqRng([0]),
+      undefined,
+      {
+        enabled: true,
+        bridge: new StubLlmBridge({
+          files: {
+            writeRequest: async () => {},
+            readResponse: async () => JSON.stringify({ ok: true }),
+          },
+          timeoutMs: 25,
+          pollMs: 5,
+        }),
+      },
+    );
+    expect(rawJson.lineSource).toBe("bank");
+    expect(rawJson.line).toBe(LINE_BANK.ruega[0]);
+    expect(rawJson.line).not.toContain("ok");
+    expect(rawJson.trustAfter).toBe(64);
+  });
+
   test("SpeechDirector.speakWithBridge usa LLM o banco", async () => {
     const bridge = new StubLlmBridge({ response: "Hablo por el puente." });
     const dirOn = new SpeechDirector(

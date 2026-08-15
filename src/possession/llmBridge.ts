@@ -194,23 +194,26 @@ function normalizeLine(line: string | null): string | null {
   return t.length > 0 ? t : null;
 }
 
-/** Acepta texto plano o JSON `{ "line": "..." }` / `{ "say": "..." }`. */
+/**
+ * Solo JSON `{ "line": "..." }` / `{ "say": "..." }` (string).
+ * Inválido / sin clave string / no-JSON → null (el caller cae al banco).
+ * No se habla el body crudo. compactLlmLine aplica el gate de contenido.
+ */
 function parseRespBody(raw: string | null): string | null {
   if (raw === null) return null;
   const trimmed = raw.trim();
   if (!trimmed) return null;
-  if (trimmed.startsWith("{")) {
-    try {
-      const obj = JSON.parse(trimmed) as { line?: unknown; say?: unknown };
-      const v = obj.line ?? obj.say;
-      if (typeof v === "string") return normalizeLine(v);
-    } catch {
-      // cae a texto plano
+  try {
+    const obj = JSON.parse(trimmed) as { line?: unknown; say?: unknown };
+    if (obj === null || typeof obj !== "object" || Array.isArray(obj)) {
+      return null;
     }
+    const v = obj.line ?? obj.say;
+    if (typeof v !== "string") return null;
+    return compactLlmLine(v);
+  } catch {
+    return null;
   }
-  // Primera línea no vacía
-  const first = trimmed.split(/\r?\n/).find((l) => l.trim().length > 0);
-  return normalizeLine(first ?? null);
 }
 
 function sleep(ms: number): Promise<void> {
