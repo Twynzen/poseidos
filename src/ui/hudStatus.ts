@@ -47,6 +47,8 @@ export type HudStatusInput = {
   memoryTone?: PossessionTone | null;
   /** Últimos tags aplicados del poseído relevante (`gates.lastApplied`). Vacío/omitido = no pintar. */
   lastApplied?: readonly GateTag[] | null;
+  /** Últimos tags rechazados del poseído relevante (`gates.lastRejected`). Vacío/omitido = no pintar. */
+  lastRejected?: readonly GateTag[] | null;
   tileX: number;
   tileY: number;
   chunksLoaded: number;
@@ -136,6 +138,18 @@ export function formatLastGateHud(
 }
 
 /**
+ * Últimos tags de gate rechazados. Prefijo RECHAZO para no chocar con
+ * CÓDIGO / CALMA / FURIA / LUCIDEZ / MEMORIA. Oculto si no hay tags.
+ * Reusa los strings de `GateTag` (no inventa nombres).
+ */
+export function formatLastRejectedHud(
+  tags: readonly GateTag[] | null | undefined,
+): string | null {
+  if (tags == null || tags.length === 0) return null;
+  return `RECHAZO ${tags.join(",")}`;
+}
+
+/**
  * Formato compacto por defecto (sin muro WASD ni dump tile/chunks/fov).
  * Con showHelp: CONTROLS_HELP + línea de estado (debug tokens) + F1 cerrar.
  * Con gameOver: mensaje de muerte.
@@ -161,6 +175,7 @@ export function formatHudStatus(input: HudStatusInput): string {
     formatMoodBiasHud(input.moodBias),
     formatMemoryToneHud(input.memoryTone),
     formatLastGateHud(input.lastApplied),
+    formatLastRejectedHud(input.lastRejected),
     input.noiseHint?.trim() || null,
     input.invLine?.trim() || null,
     input.nearHint?.trim() || null,
