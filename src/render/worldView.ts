@@ -314,6 +314,8 @@ export const PLAYER_HEAD_BASE_Y = 1.518;
 export const HOSTILE_BODY_BASE_Y = 0.644;
 /** Altura Y de la cabeza fallback poseído. 1.3 × 1.15 para sentarse un poco más alto de noche. */
 export const HOSTILE_HEAD_BASE_Y = 1.495;
+/** Escala XZ de la silueta fallback mute. 1.05 × 1.15 para leerse un poco más ancha de noche. */
+export const HOSTILE_MUTE_XZ_SCALE = 1.2075;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -1906,7 +1908,7 @@ function makeHostileFigure(
     const mesh = new THREE.Mesh(bodyGeo, muteMat);
     mesh.position.y = HOSTILE_BODY_BASE_Y;
     // Un poco más bajo/ancho que el player para silueta distinta.
-    mesh.scale.set(1.05, 1, 1.05);
+    mesh.scale.set(HOSTILE_MUTE_XZ_SCALE, 1, HOSTILE_MUTE_XZ_SCALE);
     root.add(mesh);
   } else {
     const body = new THREE.Mesh(bodyGeo, possessedBodyMat);
