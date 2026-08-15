@@ -20,7 +20,7 @@ Esta corrida solo deja el **contrato headless** (`src/net/session.ts`) sin socke
 | Hostiles | sí | id, xy, mode (wander/chase/investigate); count derivado |
 | Doors | sí (F7) | open/close + barricadas |
 | Containers | sí (F7) | contenido / locks al interactuar |
-| Possession trust / gates | sí | trust + TTLs + lastApplied (tags ya validados); clientes no ven intents |
+| Possession trust / gates | sí | trust + TTLs + lastApplied / lastRejected (tags ya validados); clientes no ven intents |
 
 ## Qué NO se replica (local)
 
@@ -38,7 +38,7 @@ Principio Vivant/Dystopia se mantiene en MP:
 3. El snapshot solo refleja el **efecto ya gated** (pacify, chase, noise, etc.).
 4. Ningún cliente puede forzar calm/aggro bypassing gates.
 
-Wire `possession: NetPossessionSnap[]` — por poseído: `id`, `trust`, `pacifiedLeft`, `speedBumpLeft`, `speedBumpMul` (1 si inactivo), `pacified` (trust OR TTL), `lastApplied?` (`GateTag[]` ya validados; omitido si vacío). Collector: `collectPossessionFrom(ledger, gates, ids?)`.
+Wire `possession: NetPossessionSnap[]` — por poseído: `id`, `trust`, `pacifiedLeft`, `speedBumpLeft`, `speedBumpMul` (1 si inactivo), `pacified` (trust OR TTL), `lastApplied?` / `lastRejected?` (`GateTag[]` ya validados; omitidos si vacíos). Collector: `collectPossessionFrom(ledger, gates, ids?)`.
 
 ## Inputs ack / client predict (stub)
 

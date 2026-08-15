@@ -62,6 +62,8 @@ export interface NetPossessionSnap {
   pacified: boolean;
   /** Últimos tags aplicados (`gates.lastApplied`); omitido si vacío. */
   lastApplied?: GateTag[];
+  /** Últimos tags rechazados (`gates.lastRejected`); omitido si vacío. */
+  lastRejected?: GateTag[];
 }
 
 /**
@@ -86,7 +88,7 @@ export interface NetSnapshot {
   doors: NetDoorSnap[];
   barricades: NetBarricadeSnap[];
   containers: NetContainerSnap[];
-  /** Poseídos: trust + TTLs gated + lastApplied (default []). */
+  /** Poseídos: trust + TTLs gated + lastApplied / lastRejected (default []). */
   possession: NetPossessionSnap[];
 }
 

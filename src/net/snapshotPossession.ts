@@ -1,6 +1,6 @@
 /**
  * Collector possession gated → snapshot wire F7.
- * Solo efectos ya validados (trust + TTLs + lastApplied); no intents crudos.
+ * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected); no intents crudos.
  */
 import {
   isPacified,
@@ -30,6 +30,7 @@ export function collectPossessionFrom(
     const speedBumpMul = gates.speedBumpMul(id);
     const pacified = isPacified(trust) || gates.isPacifiedByGate(id);
     const lastApplied = compactKnownGateTags(gates.lastApplied(id));
+    const lastRejected = compactKnownGateTags(gates.lastRejected(id));
     out.push({
       id,
       trust,
@@ -38,6 +39,7 @@ export function collectPossessionFrom(
       speedBumpMul,
       pacified,
       ...(lastApplied.length > 0 ? { lastApplied } : {}),
+      ...(lastRejected.length > 0 ? { lastRejected } : {}),
     });
   }
   return out;
