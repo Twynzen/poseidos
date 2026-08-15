@@ -310,6 +310,8 @@ export const MARKER_BADGE_TILT = 2.99;
 export const PLAYER_BODY_BASE_Y = 0.644;
 /** Altura Y de la cabeza fallback del player. 1.32 × 1.15 para sentarse un poco más alto de noche. */
 export const PLAYER_HEAD_BASE_Y = 1.518;
+/** Altura Y del torso fallback mute/poseído. 0.56 × 1.15 para sentarse un poco más alto de noche. */
+export const HOSTILE_BODY_BASE_Y = 0.644;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -1900,13 +1902,13 @@ function makeHostileFigure(
   const root = new THREE.Group();
   if (kind === "mute") {
     const mesh = new THREE.Mesh(bodyGeo, muteMat);
-    mesh.position.y = 0.56;
+    mesh.position.y = HOSTILE_BODY_BASE_Y;
     // Un poco más bajo/ancho que el player para silueta distinta.
     mesh.scale.set(1.05, 1, 1.05);
     root.add(mesh);
   } else {
     const body = new THREE.Mesh(bodyGeo, possessedBodyMat);
-    body.position.y = 0.56;
+    body.position.y = HOSTILE_BODY_BASE_Y;
     const head = new THREE.Mesh(headGeo, possessedHeadMat);
     head.position.y = 1.3;
     root.add(body, head);
