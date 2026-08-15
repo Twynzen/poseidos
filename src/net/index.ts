@@ -20,6 +20,7 @@ export {
 export {
   collectPossessionFrom,
   type MoodBiasLookup,
+  type ToneBiasLookup,
 } from "./snapshotPossession";
 
 export {
