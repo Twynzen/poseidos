@@ -92,6 +92,39 @@ export class ShortMemory {
     return (this.byId.get(entityId)?.length ?? 0) > 0;
   }
 
+  /** Ids con al menos una entrada. */
+  ids(): readonly string[] {
+    const out: string[] = [];
+    for (const [id, list] of this.byId) {
+      if (list.length > 0) out.push(id);
+    }
+    return out;
+  }
+
+  /**
+   * Restaura entradas (F5/F9). Reemplaza el buffer de ese id.
+   * Omite who vacío; recorta a capacity (más recientes).
+   */
+  restore(entityId: string, entries: readonly MemoryEntry[]): void {
+    if (!entityId) return;
+    const list: MemoryEntry[] = [];
+    for (const e of entries) {
+      if (!e || typeof e.who !== "string" || !e.who) continue;
+      list.push({
+        who: e.who,
+        intent: e.intent,
+        trustDelta: e.trustDelta,
+        tone: e.tone,
+      });
+    }
+    while (list.length > this.capacity) list.shift();
+    if (list.length === 0) {
+      this.byId.delete(entityId);
+      return;
+    }
+    this.byId.set(entityId, list);
+  }
+
   unregister(entityId: string): void {
     this.byId.delete(entityId);
   }

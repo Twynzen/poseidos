@@ -19,6 +19,7 @@ import { addItem, inventorySummary, totalQty, tryBuildBarricade } from "../src/i
 import {
   DialogueBehaviorGates,
   SpeechDirector,
+  ShortMemory,
   TrustLedger,
   proposeDialogueGates,
   GATE_CALM_PACIFY_TTL,
@@ -52,7 +53,12 @@ describe("save/load", () => {
     expect(save.containers.length).toBe(world.containers.list.length);
     expect(save.containers.some((c) => c.id === "cocina-spawn")).toBe(true);
     expect(save.containers.some((c) => c.id === "madera-spawn")).toBe(true);
-    expect(save.possession).toEqual({ trust: {}, gates: {}, moodBias: {} });
+    expect(save.possession).toEqual({
+      trust: {},
+      gates: {},
+      moodBias: {},
+      memory: {},
+    });
   });
 
   test("roundtrip JSON string restaura estado mutado", () => {
@@ -187,21 +193,39 @@ describe("save/load", () => {
     expect("possession" in legacy).toBe(false);
     const loaded = loadFromString(JSON.stringify(legacy));
     expect(loaded.v).toBe(SAVE_VERSION);
-    expect(loaded.possession).toEqual({ trust: {}, gates: {}, moodBias: {} });
+    expect(loaded.possession).toEqual({
+      trust: {},
+      gates: {},
+      moodBias: {},
+      memory: {},
+    });
     applySave(world, loaded);
     expect(world.player.x).toBeCloseTo(save.player.x);
   });
 
-  test("roundtrip possession: trust + ambos TTLs + lucidez", () => {
+  test("roundtrip possession: trust + ambos TTLs + lucidez + memory", () => {
     const trust = new TrustLedger();
     const gates = new DialogueBehaviorGates();
     const speech = new SpeechDirector({}, () => 0.1);
+    const memory = new ShortMemory();
     trust.set("poss-a", 72);
     gates.apply("poss-a", proposeDialogueGates("calmar", 72));
     gates.apply("poss-a", proposeDialogueGates("amenazar", 20));
     speech.setMoodBias("poss-a", "lucidez");
+    memory.remember("poss-a", {
+      who: "player",
+      intent: "calmar",
+      trustDelta: 14,
+      tone: "ruega",
+    });
+    memory.remember("poss-a", {
+      who: "player",
+      intent: "amenazar",
+      trustDelta: -20,
+      tone: "demonio",
+    });
 
-    const world = { ...makeWorld(), possession: { trust, gates, speech } };
+    const world = { ...makeWorld(), possession: { trust, gates, speech, memory } };
     const json = saveToString(world);
     const loaded = loadFromString(json);
     expect(loaded.v).toBe(SAVE_VERSION);
@@ -212,20 +236,53 @@ describe("save/load", () => {
       speedBumpMul: GATE_THREAT_SPEED_MUL,
     });
     expect(loaded.possession.moodBias["poss-a"]).toBe("lucidez");
+    expect(loaded.possession.memory["poss-a"]).toEqual([
+      { who: "player", intent: "calmar", trustDelta: 14, tone: "ruega" },
+      { who: "player", intent: "amenazar", trustDelta: -20, tone: "demonio" },
+    ]);
 
     const trust2 = new TrustLedger();
     const gates2 = new DialogueBehaviorGates();
     const speech2 = new SpeechDirector({}, () => 0.9);
+    const memory2 = new ShortMemory();
     trust2.set("leftover", 11);
+    memory2.remember("leftover", {
+      who: "player",
+      intent: "preguntar",
+      trustDelta: 6,
+      tone: "lucidez",
+    });
     applySave(
-      { ...makeWorld(), possession: { trust: trust2, gates: gates2, speech: speech2 } },
+      {
+        ...makeWorld(),
+        possession: { trust: trust2, gates: gates2, speech: speech2, memory: memory2 },
+      },
       loaded,
     );
     expect(trust2.has("leftover")).toBe(false);
+    expect(memory2.has("leftover")).toBe(false);
     expect(trust2.get("poss-a")).toBe(72);
     expect(gates2.pacifiedLeft("poss-a")).toBe(GATE_CALM_PACIFY_TTL);
     expect(gates2.speedBumpLeft("poss-a")).toBe(GATE_THREAT_SPEED_TTL);
     expect(gates2.speedBumpMul("poss-a")).toBe(GATE_THREAT_SPEED_MUL);
     expect(speech2.getMoodBias("poss-a")).toBe("lucidez");
+    expect(memory2.recent("poss-a")).toEqual(loaded.possession.memory["poss-a"]);
+    expect(memory2.toneBias("poss-a")).toBe("demonio");
+  });
+
+  test("possession viejo sin memory sigue cargando (vacío)", () => {
+    const world = makeWorld();
+    const save = captureSave(world);
+    const legacyPossession = {
+      trust: { "poss-a": 64 },
+      gates: {},
+      moodBias: { "poss-a": "ruega" as const },
+    };
+    const loaded = loadFromString(
+      JSON.stringify({ ...save, possession: legacyPossession }),
+    );
+    expect(loaded.possession.trust["poss-a"]).toBe(64);
+    expect(loaded.possession.moodBias["poss-a"]).toBe("ruega");
+    expect(loaded.possession.memory).toEqual({});
   });
 });

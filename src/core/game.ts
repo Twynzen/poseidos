@@ -350,6 +350,7 @@ export class Game {
         trust: this.trust,
         gates: this.gates,
         speech: this.speech,
+        memory: this.memory,
       },
     };
   }
