@@ -288,6 +288,8 @@ export const FLASHLIGHT_SPOT_DISTANCE_GAIN = 2.3;
 export const FLASHLIGHT_SPOT_DECAY = 1.74;
 /** Altura Y del target del SpotLight de la linterna. 0.12 × 1.15 para apuntar un poco más alto de noche. */
 export const FLASHLIGHT_SPOT_TARGET_Y = 0.138;
+/** Offset XZ del flash de hocico (mesh + PointLight) según facing. 0.48 × 1.15 para sentarse un poco más adelante de noche. */
+export const MUZZLE_FORWARD = 0.552;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -822,7 +824,6 @@ export function createWorldView(
   });
 
   // Muzzle flash: esfera aditiva (radio MUZZLE_FLASH_RADIUS) + PointLight (reutilizable).
-  const MUZZLE_FORWARD = 0.48;
   const MUZZLE_LIGHT_DISTANCE = 2.6;
   const muzzleGeo = new THREE.SphereGeometry(MUZZLE_FLASH_RADIUS, 10, 8);
   const muzzleMat = new THREE.MeshBasicMaterial({
