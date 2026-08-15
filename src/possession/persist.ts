@@ -1,6 +1,6 @@
 /**
  * Snapshot/restore headless del runtime possession (F5/F9).
- * Solo consecuencias ya validadas: trust, TTLs de gates, lastApplied, mood bias, memoria corta.
+ * Solo consecuencias ya validadas: trust, TTLs de gates, lastApplied, lastRejected, mood bias, memoria corta.
  * No burbujas, timers de display ni LLM.
  */
 
@@ -32,6 +32,11 @@ export interface SavePossession {
    * Solo ids con tags conocidos nonempty. Puede existir tras TTL 0.
    */
   lastApplied: Record<string, GateTag[]>;
+  /**
+   * Últimos tags rechazados por id (hermano de `gates` / `lastApplied`, no TTL).
+   * Solo ids con tags conocidos nonempty. Puede existir tras TTL 0.
+   */
+  lastRejected: Record<string, GateTag[]>;
 }
 
 const TONE_SET = new Set<string>(POSSESSION_TONES);
@@ -66,7 +71,14 @@ function finiteNumber(value: unknown): number | null {
 }
 
 export function emptyPossession(): SavePossession {
-  return { trust: {}, gates: {}, moodBias: {}, memory: {}, lastApplied: {} };
+  return {
+    trust: {},
+    gates: {},
+    moodBias: {},
+    memory: {},
+    lastApplied: {},
+    lastRejected: {},
+  };
 }
 
 /** Serializa solo ids con estado. */
@@ -113,7 +125,21 @@ export function capturePossession(
     lastApplied[id] = [...tags];
   }
 
-  return { trust, gates: gateOut, moodBias, memory: memoryOut, lastApplied };
+  const lastRejected: Record<string, GateTag[]> = {};
+  for (const id of gates.lastRejectedIds()) {
+    const tags = gates.lastRejected(id);
+    if (tags.length === 0) continue;
+    lastRejected[id] = [...tags];
+  }
+
+  return {
+    trust,
+    gates: gateOut,
+    moodBias,
+    memory: memoryOut,
+    lastApplied,
+    lastRejected,
+  };
 }
 
 /**
@@ -122,7 +148,7 @@ export function capturePossession(
  * TTL ≤ 0 se omite (id entero si ambos ≤ 0).
  * Memory: intents/tonos desconocidos, who vacío y trustDelta no finito se descartan;
  * listas vacías se omiten; cada lista se recorta a MEMORY_CAPACITY (más recientes).
- * lastApplied: tags desconocidos se descartan; listas vacías se omiten.
+ * lastApplied / lastRejected: tags desconocidos se descartan; listas vacías se omiten.
  */
 export function normalizePossession(raw: unknown): SavePossession {
   const out = emptyPossession();
@@ -204,10 +230,28 @@ export function normalizePossession(raw: unknown): SavePossession {
     }
   }
 
+  if (
+    o.lastRejected &&
+    typeof o.lastRejected === "object" &&
+    !Array.isArray(o.lastRejected)
+  ) {
+    for (const [id, rawTags] of Object.entries(
+      o.lastRejected as Record<string, unknown>,
+    )) {
+      if (!id || !Array.isArray(rawTags)) continue;
+      const tags: GateTag[] = [];
+      for (const rawTag of rawTags) {
+        if (isGateTag(rawTag)) tags.push(rawTag);
+      }
+      if (tags.length === 0) continue;
+      out.lastRejected[id] = tags;
+    }
+  }
+
   return out;
 }
 
-/** Reemplaza trust + gates + lastApplied + memory; aplica mood bias (no toca burbujas ajenas al snap). */
+/** Reemplaza trust + gates + lastApplied + lastRejected + memory; aplica mood bias (no toca burbujas ajenas al snap). */
 export function applyPossession(
   ledger: TrustLedger,
   gates: DialogueBehaviorGates,
@@ -227,6 +271,9 @@ export function applyPossession(
   }
   for (const [id, tags] of Object.entries(parsed.lastApplied)) {
     gates.restoreLastApplied(id, tags);
+  }
+  for (const [id, tags] of Object.entries(parsed.lastRejected)) {
+    gates.restoreLastRejected(id, tags);
   }
   for (const [id, tone] of Object.entries(parsed.moodBias)) {
     speech.setMoodBias(id, tone);
