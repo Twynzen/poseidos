@@ -22,6 +22,7 @@ import {
   ShortMemory,
   TrustLedger,
   proposeDialogueGates,
+  GATE_CALM_MIN_TRUST,
   GATE_CALM_PACIFY_TTL,
   GATE_THREAT_SPEED_TTL,
   GATE_THREAT_SPEED_MUL,
@@ -59,6 +60,7 @@ describe("save/load", () => {
       moodBias: {},
       memory: {},
       lastApplied: {},
+      lastRejected: {},
     });
   });
 
@@ -200,6 +202,7 @@ describe("save/load", () => {
       moodBias: {},
       memory: {},
       lastApplied: {},
+      lastRejected: {},
     });
     applySave(world, loaded);
     expect(world.player.x).toBeCloseTo(save.player.x);
@@ -213,6 +216,7 @@ describe("save/load", () => {
     trust.set("poss-a", 72);
     gates.apply("poss-a", proposeDialogueGates("calmar", 72));
     gates.apply("poss-a", proposeDialogueGates("amenazar", 20));
+    gates.apply("poss-a", proposeDialogueGates("calmar", GATE_CALM_MIN_TRUST - 1));
     speech.setMoodBias("poss-a", "lucidez");
     memory.remember("poss-a", {
       who: "player",
@@ -247,6 +251,7 @@ describe("save/load", () => {
       "threat_chase",
       "threat_speed",
     ]);
+    expect(loaded.possession.lastRejected["poss-a"]).toEqual(["pacify_ttl"]);
 
     const trust2 = new TrustLedger();
     const gates2 = new DialogueBehaviorGates();
@@ -254,6 +259,8 @@ describe("save/load", () => {
     const memory2 = new ShortMemory();
     trust2.set("leftover", 11);
     gates2.apply("leftover", proposeDialogueGates("calmar", 80));
+    gates2.apply("leftover", proposeDialogueGates("calmar", GATE_CALM_MIN_TRUST - 1));
+    expect(gates2.lastRejected("leftover")).toEqual(["pacify_ttl"]);
     memory2.remember("leftover", {
       who: "player",
       intent: "preguntar",
@@ -281,7 +288,9 @@ describe("save/load", () => {
       "threat_chase",
       "threat_speed",
     ]);
+    expect(gates2.lastRejected("poss-a")).toEqual(["pacify_ttl"]);
     expect(gates2.lastApplied("leftover")).toEqual([]);
+    expect(gates2.lastRejected("leftover")).toEqual([]);
   });
 
   test("possession viejo sin memory sigue cargando (vacío)", () => {
@@ -299,5 +308,6 @@ describe("save/load", () => {
     expect(loaded.possession.moodBias["poss-a"]).toBe("ruega");
     expect(loaded.possession.memory).toEqual({});
     expect(loaded.possession.lastApplied).toEqual({});
+    expect(loaded.possession.lastRejected).toEqual({});
   });
 });

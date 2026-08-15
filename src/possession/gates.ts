@@ -196,7 +196,7 @@ export class DialogueBehaviorGates {
   private readonly states = new Map<string, GateEntityState>();
   /** Últimos tags aplicados por id. No es TTL — sobrevive tick(); F5/F9 vía persist. */
   private readonly lastAppliedTags = new Map<string, GateTag[]>();
-  /** Últimos tags rechazados por id. No es TTL — sobrevive tick(); runtime only. */
+  /** Últimos tags rechazados por id. No es TTL — sobrevive tick(); F5/F9 vía persist. */
   private readonly lastRejectedTags = new Map<string, GateTag[]>();
 
   clear(): void {
@@ -220,6 +220,15 @@ export class DialogueBehaviorGates {
   lastAppliedIds(): readonly string[] {
     const out: string[] = [];
     for (const [id, tags] of this.lastAppliedTags) {
+      if (tags.length > 0) out.push(id);
+    }
+    return out;
+  }
+
+  /** Ids con lastRejected nonempty (puede existir tras TTL 0). */
+  lastRejectedIds(): readonly string[] {
+    const out: string[] = [];
+    for (const [id, tags] of this.lastRejectedTags) {
       if (tags.length > 0) out.push(id);
     }
     return out;
@@ -279,11 +288,20 @@ export class DialogueBehaviorGates {
 
   /**
    * Restaura lastApplied (F5/F9). Reemplaza el id; omite lista vacía.
-   * No toca TTLs.
+   * No toca TTLs ni lastRejected.
    */
   restoreLastApplied(id: string, tags: readonly GateTag[]): void {
     if (!id || tags.length === 0) return;
     this.lastAppliedTags.set(id, [...tags]);
+  }
+
+  /**
+   * Restaura lastRejected (F5/F9). Reemplaza el id; omite lista vacía.
+   * No toca TTLs ni lastApplied.
+   */
+  restoreLastRejected(id: string, tags: readonly GateTag[]): void {
+    if (!id || tags.length === 0) return;
+    this.lastRejectedTags.set(id, [...tags]);
   }
 
   /** Aplica propuesta validada (refuerza TTL si ya había). */
