@@ -294,6 +294,8 @@ export const MUZZLE_FORWARD = 0.552;
 export const CHEVRON_Y = 0.138;
 /** Pitch iso del chevron de facing (rad). -0.35 × 1.15 para inclinarse un poco más de noche. */
 export const CHEVRON_TILT = -0.4025;
+/** Altura Y del anillo de ruido. 0.05 × 1.15 para sentarse un poco más alto de noche. */
+export const NOISE_RING_Y = 0.0575;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -1084,7 +1086,6 @@ export function createWorldView(
 
   // Noise rings: pool pequeño de anillos en el suelo (feedback de ruido).
   const NOISE_RING_POOL = 8;
-  const NOISE_RING_Y = 0.05;
   // RingGeometry unitario (outer=1); scale = radius * ringScale.
   const noiseRingGeo = new THREE.RingGeometry(NOISE_RING_INNER, 1, 48);
   noiseRingGeo.rotateX(-Math.PI / 2); // plano XZ
