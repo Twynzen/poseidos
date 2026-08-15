@@ -6,6 +6,7 @@
 import { pickLine, type PossessionTone } from "./lineBank";
 import { TrustLedger } from "./trust";
 import { formatMemorySummary, type ShortMemory } from "./memory";
+import { GATE_LINE_MAX_LEN } from "./gates";
 import {
   formatLlmPrompt,
   resolveLineWithBridge,
@@ -163,12 +164,14 @@ export async function applyDialogueChoiceAsync(
   rng: () => number = Math.random,
   memory?: ShortMemory,
   llm?: DialogueLlmOpts,
+  gateLine?: string | null,
 ): Promise<DialogueResult> {
   ledger.register(entityId);
   const opt = optionFor(intent);
   const trustBefore = ledger.get(entityId);
   const trustAfter = ledger.adjust(entityId, opt.trustDelta);
   const memorySummary = formatMemorySummary(memory?.recent(entityId) ?? []);
+  const compactGate = compactGateLine(gateLine);
   const snapshot = {
     entityId,
     tone: opt.tone,
@@ -176,11 +179,13 @@ export async function applyDialogueChoiceAsync(
     intent,
     trust: trustAfter,
     ...(memorySummary ? { memorySummary } : {}),
+    ...(compactGate ? { gateLine: compactGate } : {}),
     prompt: formatLlmPrompt({
       tone: opt.tone,
       intent,
       trust: trustAfter,
       ...(memorySummary ? { memorySummary } : {}),
+      ...(compactGate ? { gateLine: compactGate } : {}),
     }),
   };
   const resolved = await resolveLineWithBridge({
@@ -246,4 +251,14 @@ export class DialogueSession {
     }
     return true;
   }
+}
+
+/** Última línea de gate ya validada; vacío / no-string se omite. Cap GATE_LINE_MAX_LEN. */
+function compactGateLine(line?: string | null): string {
+  if (typeof line !== "string") return "";
+  const trimmed = line.trim();
+  if (!trimmed) return "";
+  return trimmed.length > GATE_LINE_MAX_LEN
+    ? trimmed.slice(0, GATE_LINE_MAX_LEN)
+    : trimmed;
 }
