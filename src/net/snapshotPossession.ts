@@ -219,3 +219,34 @@ export function collectPossessionFrom(
   }
   return out;
 }
+
+/**
+ * Host/game: un call site que pasa SpeechDirector + ShortMemory existentes.
+ * speech → moodBiasOf / lineSourceOf / lineOf / toneOf / triggerOf;
+ * memory → toneBiasOf / memoryOf. No inventa lookups ni campos.
+ * Path 3-arg (`collectPossessionFrom`) sigue omitiendo esos campos.
+ */
+export function collectHostPossessionFrom(
+  ledger: TrustLedger,
+  gates: DialogueBehaviorGates,
+  hostileIds: readonly string[] | undefined,
+  speech: MoodBiasLookup &
+    LineSourceLookup &
+    LineLookup &
+    ToneLookup &
+    TriggerLookup,
+  memory: ToneBiasLookup & MemorySummaryLookup,
+): NetPossessionSnap[] {
+  return collectPossessionFrom(
+    ledger,
+    gates,
+    hostileIds,
+    speech,
+    memory,
+    memory,
+    speech,
+    speech,
+    speech,
+    speech,
+  );
+}

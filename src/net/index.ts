@@ -19,6 +19,7 @@ export {
 
 export {
   collectPossessionFrom,
+  collectHostPossessionFrom,
   type MoodBiasLookup,
   type ToneBiasLookup,
   type MemorySummaryLookup,
