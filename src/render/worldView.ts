@@ -248,6 +248,8 @@ export const WARM_LIGHT_DECAY = 1.74;
 export const MUZZLE_FLASH_COLOR = 0xffffdd;
 /** Color del PointLight de hocico. 0xffe8a0 × 1.15/canal (r/g clamp) para leerse de noche. */
 export const MUZZLE_LIGHT_COLOR = 0xffffb8;
+/** Decay del PointLight de hocico. 2 × 0.87 para caer un poco más lento de noche. */
+export const MUZZLE_LIGHT_DECAY = 1.74;
 /** Color de la esfera aditiva de impacto. 0xffd080 × 1.15/canal (r clamp) para leerse de noche. */
 export const IMPACT_SPARK_COLOR = 0xffef93;
 /** Color del PointLight de impacto. 0xffd080 × 1.15/canal (r clamp) para leerse de noche. */
@@ -824,7 +826,7 @@ export function createWorldView(
     MUZZLE_LIGHT_COLOR,
     0,
     MUZZLE_LIGHT_DISTANCE,
-    2,
+    MUZZLE_LIGHT_DECAY,
   );
   muzzleLight.visible = false;
   playerMesh.add(muzzleMesh, muzzleLight);
