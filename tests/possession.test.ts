@@ -680,6 +680,7 @@ describe("llm bridge stub", () => {
     expect(bare).toContain("preguntar");
     expect(bare).toContain("56");
     expect(bare.toLowerCase()).not.toContain("memoria:");
+    expect(bare.toLowerCase()).not.toContain("gate:");
 
     const withMem = formatLlmPrompt({
       tone: "ruega",
@@ -690,6 +691,27 @@ describe("llm bridge stub", () => {
     expect(withMem).toContain("calmar");
     expect(withMem).toContain("64");
     expect(withMem).toContain("calmar/ruega/+14");
+    expect(withMem.toLowerCase()).not.toContain("gate:");
+  });
+
+  test("formatLlmPrompt incluye Gate si hay; vacío se omite", () => {
+    const withGate = formatLlmPrompt({
+      tone: "ruega",
+      intent: "calmar",
+      trust: 64,
+      gateLine: "código: aplicado (pacify_ttl)",
+    });
+    expect(withGate).toContain("Gate: código: aplicado (pacify_ttl)");
+    expect(withGate).toContain("calmar");
+    expect(withGate).toContain("64");
+
+    const emptyGate = formatLlmPrompt({
+      tone: "lucidez",
+      intent: "preguntar",
+      trust: 56,
+      gateLine: "   ",
+    });
+    expect(emptyGate.toLowerCase()).not.toContain("gate:");
   });
 
   test("applyDialogueChoiceAsync rellena memorySummary tras remember(); vacío se omite", async () => {
@@ -714,8 +736,10 @@ describe("llm bridge stub", () => {
     );
     expect(empty.lineSource).toBe("bank");
     expect(snaps[0]!.memorySummary ?? "").toBe("");
+    expect(snaps[0]!.gateLine ?? "").toBe("");
     expect(snaps[0]!.prompt).toContain("calmar");
     expect(snaps[0]!.prompt).toContain("64");
+    expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("gate:");
 
     mem.remember("poss-sum", {
       who: "player",
@@ -761,9 +785,88 @@ describe("llm bridge stub", () => {
     );
     expect(r.lineSource).toBe("llm");
     expect(seen!.memorySummary ?? "").toBe("");
+    expect(seen!.gateLine ?? "").toBe("");
     expect(seen!.prompt).toContain("ofrecer");
     expect(seen!.prompt).toContain(String(seen!.trust));
     expect(seen!.intent).toBe("ofrecer");
+    expect(seen!.prompt!.toLowerCase()).not.toContain("gate:");
+  });
+
+  test("applyDialogueChoiceAsync rellena gateLine si se pasa; vacío se omite", async () => {
+    const snaps: LlmAskSnapshot[] = [];
+    const bridge = new StubLlmBridge({
+      responder: (s) => {
+        snaps.push(s);
+        return null;
+      },
+    });
+    const ledger = new TrustLedger();
+    ledger.register("poss-gate", 50);
+
+    const omitted = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-gate",
+      "calmar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+    );
+    expect(omitted.lineSource).toBe("bank");
+    expect(snaps[0]!.gateLine ?? "").toBe("");
+    expect(snaps[0]!.prompt!.toLowerCase()).not.toContain("gate:");
+
+    const empty = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-gate",
+      "preguntar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      "",
+    );
+    expect(empty.trustAfter).toBe(ledger.get("poss-gate"));
+    expect(snaps[1]!.gateLine ?? "").toBe("");
+    expect(snaps[1]!.prompt!.toLowerCase()).not.toContain("gate:");
+
+    const fromNull = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-gate",
+      "distraer",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      null,
+    );
+    expect(snaps[2]!.gateLine ?? "").toBe("");
+    expect(snaps[2]!.prompt!.toLowerCase()).not.toContain("gate:");
+
+    const filled = await applyDialogueChoiceAsync(
+      ledger,
+      "poss-gate",
+      "amenazar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      "código: aplicado (pacify_ttl)",
+    );
+    expect(filled.tone).toBe("demonio");
+    expect(snaps[3]!.gateLine).toBe("código: aplicado (pacify_ttl)");
+    expect(snaps[3]!.prompt).toContain("Gate: código: aplicado (pacify_ttl)");
+    expect(snaps[3]!.prompt).toContain("amenazar");
+    expect(snaps[3]!.prompt).toContain(String(snaps[3]!.trust));
+
+    const long = "x".repeat(GATE_LINE_MAX_LEN + 8);
+    await applyDialogueChoiceAsync(
+      ledger,
+      "poss-gate",
+      "ofrecer",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      long,
+    );
+    expect(snaps[4]!.gateLine).toBe("x".repeat(GATE_LINE_MAX_LEN));
+    expect(snaps[4]!.gateLine!.length).toBe(GATE_LINE_MAX_LEN);
   });
 
   test("StubLlmBridge file IO: body incluye memorySummary y prompt", async () => {
@@ -795,6 +898,7 @@ describe("llm bridge stub", () => {
       prompt: string | null;
       intent: string | null;
       trust: number | null;
+      gateLine: string | null;
     };
     expect(parsed.memorySummary).toContain("calmar");
     expect(parsed.memorySummary).toContain("ruega");
@@ -802,9 +906,42 @@ describe("llm bridge stub", () => {
     expect(parsed.prompt).toContain("preguntar");
     expect(parsed.prompt).toContain(String(parsed.trust));
     expect(parsed.intent).toBe("preguntar");
+    expect(parsed.gateLine).toBeNull();
     files.seedResponse(reqId, JSON.stringify({ line: "Desde el archivo con memoria." }));
     const r = await askP;
     expect(r.line).toBe("Desde el archivo con memoria.");
+    expect(r.lineSource).toBe("llm");
+  });
+
+  test("StubLlmBridge file IO: body incluye gateLine", async () => {
+    const files = new MemoryLlmFileIo();
+    const bridge = new StubLlmBridge({ files, timeoutMs: 80, pollMs: 5 });
+    const ledger = new TrustLedger();
+    ledger.register("poss-fio-gate", 50);
+    const askP = applyDialogueChoiceAsync(
+      ledger,
+      "poss-fio-gate",
+      "calmar",
+      seqRng([0]),
+      undefined,
+      { enabled: true, bridge },
+      "código: rechazado (trust)",
+    );
+    await new Promise((r) => setTimeout(r, 15));
+    expect(files.requests.size).toBe(1);
+    const reqId = [...files.requests.keys()][0]!;
+    const body = files.requests.get(reqId)!;
+    const parsed = JSON.parse(body) as {
+      gateLine: string | null;
+      prompt: string | null;
+      intent: string | null;
+    };
+    expect(parsed.gateLine).toBe("código: rechazado (trust)");
+    expect(parsed.prompt).toContain("Gate: código: rechazado (trust)");
+    expect(parsed.intent).toBe("calmar");
+    files.seedResponse(reqId, JSON.stringify({ line: "Desde el archivo con gate." }));
+    const r = await askP;
+    expect(r.line).toBe("Desde el archivo con gate.");
     expect(r.lineSource).toBe("llm");
   });
 

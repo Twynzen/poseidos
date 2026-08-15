@@ -16,6 +16,8 @@ export interface LlmAskSnapshot {
   trust?: number;
   prompt?: string;
   memorySummary?: string;
+  /** Última línea ya validada (`formatGateLine`); omitida si vacía. */
+  gateLine?: string;
 }
 
 /** Interfaz mínima del bridge (stub hoy; API real después). */
@@ -123,6 +125,7 @@ export class StubLlmBridge implements LlmBridge {
       trust: snapshot.trust ?? null,
       prompt: snapshot.prompt ?? null,
       memorySummary: snapshot.memorySummary ?? null,
+      gateLine: snapshot.gateLine ?? null,
     });
     await files.writeRequest(requestId, body);
 
@@ -174,13 +177,18 @@ function sleep(ms: number): Promise<void> {
  * No inventa un segundo tipo: Pick de LlmAskSnapshot.
  */
 export function formatLlmPrompt(
-  fields: Pick<LlmAskSnapshot, "tone" | "intent" | "trust" | "memorySummary">,
+  fields: Pick<
+    LlmAskSnapshot,
+    "tone" | "intent" | "trust" | "memorySummary" | "gateLine"
+  >,
 ): string {
   const bits = [`Tono: ${fields.tone}`];
   if (fields.intent) bits.push(`Intent: ${fields.intent}`);
   if (fields.trust !== undefined) bits.push(`Trust: ${fields.trust}`);
   const mem = fields.memorySummary?.trim();
   if (mem) bits.push(`Memoria: ${mem}`);
+  const gate = fields.gateLine?.trim();
+  if (gate) bits.push(`Gate: ${gate}`);
   return bits.join(". ") + ".";
 }
 
