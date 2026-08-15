@@ -292,6 +292,8 @@ export const FLASHLIGHT_SPOT_TARGET_Y = 0.138;
 export const MUZZLE_FORWARD = 0.552;
 /** Altura Y del chevron de facing. 0.12 × 1.15 para sentarse un poco más alto de noche. */
 export const CHEVRON_Y = 0.138;
+/** Pitch iso del chevron de facing (rad). -0.35 × 1.15 para inclinarse un poco más de noche. */
+export const CHEVRON_TILT = -0.4025;
 /** Color del fog de tiles fuera de LOS. */
 const FOG_COLOR = 0x050508;
 
@@ -876,7 +878,7 @@ export function createWorldView(
     const { x, z } = facingChevronOffset(playerGltfYaw);
     chevronMesh.position.set(x, CHEVRON_Y, z);
     chevronMesh.rotation.y = playerGltfYaw;
-    chevronMesh.rotation.x = -0.35;
+    chevronMesh.rotation.x = CHEVRON_TILT;
     chevronMesh.visible = true;
   }
   placeFacingChevron();
