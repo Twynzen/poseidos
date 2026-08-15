@@ -23,6 +23,7 @@ export {
   type ToneBiasLookup,
   type MemorySummaryLookup,
   type LineSourceLookup,
+  type LineLookup,
 } from "./snapshotPossession";
 
 export {

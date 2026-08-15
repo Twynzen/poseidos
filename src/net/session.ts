@@ -92,6 +92,12 @@ export interface NetPossessionSnap {
    * Wire: `llm` | `bank` — no se mapea a STUB/BANCO.
    */
   lineSource?: LineSource;
+  /**
+   * Última línea hablada ya validada (`speech.getActive.line`);
+   * omitido si vacío / sin utterance. Distinto de lineSource y de gateLine.
+   * Cap LLM_LINE_MAX_LEN via compactLlmLine.
+   */
+  line?: string;
 }
 
 /**
@@ -116,7 +122,7 @@ export interface NetSnapshot {
   doors: NetDoorSnap[];
   barricades: NetBarricadeSnap[];
   containers: NetContainerSnap[];
-  /** Poseídos: trust + TTLs gated + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary / lineSource (default []). */
+  /** Poseídos: trust + TTLs gated + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary / lineSource / line (default []). */
   possession: NetPossessionSnap[];
 }
 

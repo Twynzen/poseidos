@@ -1,6 +1,6 @@
 /**
  * Collector possession gated → snapshot wire F7.
- * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary / lineSource); no intents crudos.
+ * Solo efectos ya validados (trust + TTLs + lastApplied / lastRejected / gateLine / moodBias / toneBias / memorySummary / lineSource / line); no intents crudos.
  */
 import {
   isPacified,
@@ -11,7 +11,11 @@ import {
   compactKnownGateTags,
   type DialogueBehaviorGates,
 } from "../possession/gates";
-import { compactMoodBias, type LineSource } from "../possession/llmBridge";
+import {
+  compactLlmLine,
+  compactMoodBias,
+  type LineSource,
+} from "../possession/llmBridge";
 import {
   formatMemorySummary,
   type MemoryEntry,
@@ -40,6 +44,13 @@ export type LineSourceLookup =
       getActive(
         id: string,
       ): { lineSource?: LineSource | string | null } | null | undefined;
+    };
+
+/** Fuente opcional de línea hablada ya validada (`speech.getActive.line`). */
+export type LineLookup =
+  | ((id: string) => string | null | undefined)
+  | {
+      getActive(id: string): { line?: string | null } | null | undefined;
     };
 
 function readMoodBias(
@@ -93,6 +104,14 @@ function readLineSource(
   return compactLineSource(raw);
 }
 
+/** Línea ya validada; vacío / whitespace / sin utterance / compactLlmLine reject se omite. */
+function readLine(source: LineLookup | undefined, id: string): string {
+  if (!source) return "";
+  const raw =
+    typeof source === "function" ? source(id) : source.getActive(id)?.line;
+  return compactLlmLine(raw) ?? "";
+}
+
 /**
  * Serializa estado gated de poseídos.
  * `hostileIds` = ids a incluir; si se omite, todos los del ledger.
@@ -100,6 +119,7 @@ function readLineSource(
  * `toneBiasOf` = getter o ShortMemory; si se omite, no se pinta toneBias.
  * `memoryOf` = getter o ShortMemory; si se omite, no se pinta memorySummary.
  * `lineSourceOf` = getter o SpeechDirector; si se omite, no se pinta lineSource.
+ * `lineOf` = getter o SpeechDirector; si se omite, no se pinta line.
  */
 export function collectPossessionFrom(
   ledger: TrustLedger,
@@ -109,6 +129,7 @@ export function collectPossessionFrom(
   toneBiasOf?: ToneBiasLookup,
   memoryOf?: MemorySummaryLookup,
   lineSourceOf?: LineSourceLookup,
+  lineOf?: LineLookup,
 ): NetPossessionSnap[] {
   const ids = hostileIds ?? ledger.ids();
   const out: NetPossessionSnap[] = [];
@@ -125,6 +146,7 @@ export function collectPossessionFrom(
     const toneBias = readToneBias(toneBiasOf, id);
     const memorySummary = readMemorySummary(memoryOf, id);
     const lineSource = readLineSource(lineSourceOf, id);
+    const line = readLine(lineOf, id);
     out.push({
       id,
       trust,
@@ -139,6 +161,7 @@ export function collectPossessionFrom(
       ...(toneBias ? { toneBias } : {}),
       ...(memorySummary ? { memorySummary } : {}),
       ...(lineSource ? { lineSource } : {}),
+      ...(line ? { line } : {}),
     });
   }
   return out;
