@@ -23,6 +23,9 @@ export const LOOT_FOCUS_PULSE_SPEED = 6.9;
 /** Altura world del floatBadge loot (2.3 × 1.15, misma banda door/bed; queda por encima del Soldier 1.5). */
 export const lootBadgeY = 2.645;
 
+/** Escala world del glifo loot (0.8 × 1.15, misma convención door/bed letter/disc). */
+export const lootBadgeIconScale = 0.92;
+
 /** True si dist está en reach (incl. el borde). */
 export function lootFocusInReach(dist: number): boolean {
   return Number.isFinite(dist) && dist <= LOOT_FOCUS_REACH;

@@ -8,6 +8,7 @@ import {
   LOOT_FOCUS_REACH,
   LOOT_FOCUS_SCALE_FAR,
   LOOT_FOCUS_SCALE_NEAR,
+  lootBadgeIconScale,
   lootBadgeY,
   lootFocusInReach,
   lootFocusMul,
@@ -43,6 +44,19 @@ describe("constantes", () => {
     expect(src).toContain("badge.position.y = lootBadgeY");
     expect(src).toContain('badge.name = "floatBadge"');
     expect(src).not.toMatch(/role === "loot"\) badge\.position\.y = 1\.12/);
+  });
+
+  test("lootBadgeIconScale 0.92 (0.8 × 1.15; worldView usa el knob, no 0.8 inline)", () => {
+    expect(lootBadgeIconScale).toBe(0.92);
+    expect(lootBadgeIconScale).toBeCloseTo(0.8 * 1.15, 10);
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toContain(
+      "icon.scale.set(lootBadgeIconScale, lootBadgeIconScale, 1)",
+    );
+    expect(src).not.toMatch(/icon\.scale\.set\(0\.8,\s*0\.8,\s*1\)/);
   });
 });
 

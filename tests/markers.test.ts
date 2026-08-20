@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { doorBadgeY } from "../src/render/doorFocus";
 import { bedBadgeY } from "../src/render/bedFocus";
-import { lootBadgeY } from "../src/render/lootFocus";
+import { lootBadgeIconScale, lootBadgeY } from "../src/render/lootFocus";
 import {
   INTERACT_RING_INNER,
   INTERACT_RING_OUTER,
@@ -673,8 +673,39 @@ describe("markers (badges + ground rings)", () => {
     expect(src).toContain(
       "disc.scale.set(bedBadgeDiscScale, bedBadgeDiscScale, 1)",
     );
-    expect(src).toContain("icon.scale.set(0.8, 0.8, 1)");
+    expect(src).toContain(
+      "icon.scale.set(lootBadgeIconScale, lootBadgeIconScale, 1)",
+    );
+    expect(src).not.toMatch(/icon\.scale\.set\(0\.8,\s*0\.8,\s*1\)/);
     expect(src).not.toMatch(/icon\.scale\.set\(0\.7,\s*0\.7,\s*1\)/);
     expect(src).not.toMatch(/icon\.scale\.set\(0\.85,\s*0\.85,\s*1\)/);
+  });
+
+  test("loot icon scale 0.92; mute/possessed/door/bed/Y iguales", () => {
+    expect(lootBadgeIconScale).toBe(0.92);
+    expect(lootBadgeIconScale).toBeCloseTo(0.8 * 1.15, 10);
+    expect(muteBadgeIconScale).toBe(0.805);
+    expect(possessedBadgeIconScale).toBe(0.9775);
+    expect(lootBadgeY).toBe(2.645);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
+    expect(LOOT_BADGE_OPACITY).toBe(0);
+    const src = readFileSync(resolve(process.cwd(), "src/render/worldView.ts"), "utf8");
+    expect(src).toContain(
+      "icon.scale.set(lootBadgeIconScale, lootBadgeIconScale, 1)",
+    );
+    expect(src).toContain(
+      "icon.scale.set(muteBadgeIconScale, muteBadgeIconScale, 1)",
+    );
+    expect(src).toContain(
+      "icon.scale.set(possessedBadgeIconScale, possessedBadgeIconScale, 1)",
+    );
+    expect(src).toContain(
+      "icon.scale.set(doorBadgeLetterScale, doorBadgeLetterScale, 1)",
+    );
+    expect(src).toContain(
+      "icon.scale.set(bedBadgeLetterScale, bedBadgeLetterScale, 1)",
+    );
+    expect(src).not.toMatch(/icon\.scale\.set\(0\.8,\s*0\.8,\s*1\)/);
   });
 });
