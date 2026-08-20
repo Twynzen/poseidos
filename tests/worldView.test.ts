@@ -118,8 +118,8 @@ describe("worldView player head mesh", () => {
     expect(MARKER_PALETTE.player.badge).toBe(0x91d1ff);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 
   test("player head color 0x7eb6ef × 1.15/canal (b clamp) → 0x91d1ff; emissive/intensity/palette/badge-Y iguales", () => {
@@ -146,8 +146,8 @@ describe("worldView player head mesh", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -178,8 +178,8 @@ describe("worldView player body mesh", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -213,8 +213,8 @@ describe("worldView mute/hostile fallback body mesh", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -255,8 +255,8 @@ describe("worldView possessed fallback body mesh", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -294,8 +294,8 @@ describe("worldView possessed fallback body emissive", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -338,8 +338,8 @@ describe("worldView possessed fallback head mesh", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -385,8 +385,8 @@ describe("worldView possessed fallback head emissive", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -437,8 +437,8 @@ describe("worldView indoor night warm light", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -490,8 +490,8 @@ describe("worldView muzzle flash mesh", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -544,8 +544,8 @@ describe("worldView muzzle PointLight", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -604,8 +604,8 @@ describe("worldView impact spark mesh", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -670,8 +670,8 @@ describe("worldView impact spark PointLight", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -736,8 +736,8 @@ describe("worldView tracer mesh", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -802,8 +802,8 @@ describe("worldView tracer flash", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -876,8 +876,8 @@ describe("worldView flashlight fill", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -948,8 +948,8 @@ describe("worldView flashlight fill distance", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -1020,8 +1020,8 @@ describe("worldView flashlight fill distance gain", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -1098,8 +1098,8 @@ describe("worldView flashlight fill Y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -1188,8 +1188,8 @@ describe("worldView flashlight spot Y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -1290,8 +1290,8 @@ describe("worldView flashlight spot distance extra", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -1389,8 +1389,8 @@ describe("worldView flashlight spot distance gain", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -1487,8 +1487,8 @@ describe("worldView warm light intensity mul", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -1597,8 +1597,8 @@ describe("worldView warm light Y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -1709,8 +1709,8 @@ describe("worldView warm light distance base", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -1822,8 +1822,8 @@ describe("worldView warm light distance gain", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -1960,8 +1960,8 @@ describe("worldView warm light amber G gain", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -2099,8 +2099,8 @@ describe("worldView warm light amber B", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -2236,8 +2236,8 @@ describe("worldView warm light amber B gain", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -2373,8 +2373,8 @@ describe("worldView warm light amber G", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -2513,8 +2513,8 @@ describe("worldView warm light visible eps", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -2653,8 +2653,8 @@ describe("worldView warm light decay", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -2799,8 +2799,8 @@ describe("worldView flashlight fill decay", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -2952,8 +2952,8 @@ describe("worldView flashlight spot decay", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -3112,8 +3112,8 @@ describe("worldView muzzle light decay", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -3288,8 +3288,8 @@ describe("worldView impact spark light decay", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -3467,8 +3467,8 @@ describe("worldView tracer flash decay", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -3646,8 +3646,8 @@ describe("worldView tracer flash intensity", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -3829,8 +3829,8 @@ describe("worldView tracer flash distance", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -4017,8 +4017,8 @@ describe("worldView tracer flash Y offset", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -4213,8 +4213,8 @@ describe("worldView flashlight spot target Y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -4416,8 +4416,8 @@ describe("worldView muzzle forward", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -4624,8 +4624,8 @@ describe("worldView facing chevron Y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -4967,8 +4967,8 @@ describe("worldView facing chevron tilt", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -5308,8 +5308,8 @@ describe("worldView noise ring Y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -5649,8 +5649,8 @@ describe("worldView marker ring Y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -5990,8 +5990,8 @@ describe("worldView marker icon Y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -6331,8 +6331,8 @@ describe("worldView marker icon size", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -6672,8 +6672,8 @@ describe("worldView marker badge radius", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -7013,8 +7013,8 @@ describe("worldView marker badge tilt", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -7354,8 +7354,8 @@ describe("worldView player body base Y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -7695,8 +7695,8 @@ describe("worldView player head base Y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -8036,8 +8036,8 @@ describe("worldView hostile body base Y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -8377,8 +8377,8 @@ describe("worldView hostile head base Y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -8718,8 +8718,8 @@ describe("worldView hostile mute XZ scale", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -9059,8 +9059,8 @@ describe("worldView hostile body width", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -9420,8 +9420,8 @@ describe("worldView hostile body height", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -9781,8 +9781,8 @@ describe("worldView hostile body depth", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -10137,8 +10137,8 @@ describe("worldView hostile head size", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -10499,8 +10499,8 @@ describe("worldView player head size", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -10855,8 +10855,8 @@ describe("worldView player body width", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -11211,8 +11211,8 @@ describe("worldView player body height", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -11567,8 +11567,8 @@ describe("worldView player body depth", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -11934,8 +11934,8 @@ describe("worldView wall height", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -12307,8 +12307,8 @@ describe("worldView wall base Y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -12695,8 +12695,8 @@ describe("worldView door height", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -13095,8 +13095,8 @@ describe("worldView door base Y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -13502,8 +13502,8 @@ describe("worldView door depth", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -13919,8 +13919,8 @@ describe("worldView bed height", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -14342,8 +14342,8 @@ describe("worldView bed base Y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -14772,8 +14772,8 @@ describe("worldView bed depth", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -15212,8 +15212,8 @@ describe("worldView furniture height", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -15658,8 +15658,8 @@ describe("worldView furniture xz", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -16110,8 +16110,8 @@ describe("worldView furniture base y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -16581,8 +16581,8 @@ describe("worldView barricade height", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -17054,8 +17054,8 @@ describe("worldView barricade width", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -17562,8 +17562,8 @@ describe("worldView barricade depth", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -18072,8 +18072,8 @@ describe("worldView barricade plank y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -18584,8 +18584,8 @@ describe("worldView barricade cross y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -19098,8 +19098,8 @@ describe("worldView barricade cross scale y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -19614,8 +19614,8 @@ describe("worldView barricade cross scale x", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -20132,8 +20132,8 @@ describe("worldView barricade cross scale z", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -20652,8 +20652,8 @@ describe("worldView door open x", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -21174,8 +21174,8 @@ describe("worldView barricade plank rot y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
 
@@ -21698,7 +21698,7 @@ describe("worldView barricade cross rot y", () => {
     expect(MARKER_PALETTE.player.emissive).toBe(0x1e4a6e);
     expect(MARKER_PALETTE.player.ring).toBe(0x4392f4);
     expect(MARKER_RING_OPACITY).toBe(0.6877);
-    expect(muteBadgeY).toBe(2.3);
-    expect(possessedBadgeY).toBe(2.3);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
   });
 });
