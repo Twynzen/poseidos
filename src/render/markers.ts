@@ -114,6 +114,12 @@ export const muteBadgeY = 2.645;
 /** Altura world del floatBadge poseído (2.3 × 1.15, misma banda door/bed/loot; queda por encima del Soldier 1.5). */
 export const possessedBadgeY = 2.645;
 
+/** Escala world del glifo mute (0.7 × 1.15, misma convención door/bed letter/disc; mute más angular). */
+export const muteBadgeIconScale = 0.805;
+
+/** Escala world del glifo poseído (0.85 × 1.15, misma convención door/bed letter/disc). */
+export const possessedBadgeIconScale = 0.9775;
+
 /** Opacidad del badge flotante para door/bed (E/Z). */
 export const MARKER_BADGE_OPACITY = 1;
 
