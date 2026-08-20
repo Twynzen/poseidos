@@ -94,6 +94,7 @@ import {
   stepHotbarIndex,
   swapHotbarStacks,
   formatHudStatus,
+  isKeepableDeathCause,
   formatGateLine,
   HIT_FLASH_PEAK,
   createHitFlash,
@@ -782,7 +783,10 @@ export class Game {
   private enterGameOver(): void {
     if (this.gameOver) return;
     this.gameOver = true;
-    this.lastLootMsg = "HAS MUERTO";
+    // formatHudStatus already paints HAS MUERTO. Keep combate/hambre-sed; drop leftover.
+    if (!isKeepableDeathCause(this.lastLootMsg)) {
+      this.lastLootMsg = "";
+    }
     this.hudAcc = 1;
     this.view.triggerPlayerAction("death");
   }
