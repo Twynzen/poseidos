@@ -23,8 +23,10 @@ import {
   markerRingRadii,
   markerUsesInteractRing,
   markerVisibleInFov,
+  muteBadgeIconScale,
   muteBadgeY,
   paletteFor,
+  possessedBadgeIconScale,
   possessedBadgeY,
   roleFromHostileKind,
 } from "../src/render/markers";
@@ -641,5 +643,38 @@ describe("markers (badges + ground rings)", () => {
     expect(src).toContain("badge.position.y = possessedBadgeY");
     expect(src).not.toMatch(/badge\.position\.y = 1\.12/);
     expect(src).not.toMatch(/badge\.position\.y = 1\.68/);
+  });
+
+  test("mute/possessed icon scale 0.805 / 0.9775; door/bed letter/disc/Y iguales", () => {
+    expect(muteBadgeIconScale).toBe(0.805);
+    expect(muteBadgeIconScale).toBeCloseTo(0.7 * 1.15, 10);
+    expect(possessedBadgeIconScale).toBe(0.9775);
+    expect(possessedBadgeIconScale).toBeCloseTo(0.85 * 1.15, 10);
+    expect(muteBadgeY).toBe(2.645);
+    expect(possessedBadgeY).toBe(2.645);
+    expect(MUTE_BADGE_OPACITY).toBe(0);
+    expect(POSSESSED_BADGE_OPACITY).toBe(0);
+    const src = readFileSync(resolve(process.cwd(), "src/render/worldView.ts"), "utf8");
+    expect(src).toContain(
+      "icon.scale.set(muteBadgeIconScale, muteBadgeIconScale, 1)",
+    );
+    expect(src).toContain(
+      "icon.scale.set(possessedBadgeIconScale, possessedBadgeIconScale, 1)",
+    );
+    expect(src).toContain(
+      "icon.scale.set(doorBadgeLetterScale, doorBadgeLetterScale, 1)",
+    );
+    expect(src).toContain(
+      "icon.scale.set(bedBadgeLetterScale, bedBadgeLetterScale, 1)",
+    );
+    expect(src).toContain(
+      "disc.scale.set(doorBadgeDiscScale, doorBadgeDiscScale, 1)",
+    );
+    expect(src).toContain(
+      "disc.scale.set(bedBadgeDiscScale, bedBadgeDiscScale, 1)",
+    );
+    expect(src).toContain("icon.scale.set(0.8, 0.8, 1)");
+    expect(src).not.toMatch(/icon\.scale\.set\(0\.7,\s*0\.7,\s*1\)/);
+    expect(src).not.toMatch(/icon\.scale\.set\(0\.85,\s*0\.85,\s*1\)/);
   });
 });

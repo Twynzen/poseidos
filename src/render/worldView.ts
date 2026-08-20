@@ -4,8 +4,10 @@ import {
   markerRingOpacity,
   markerRingRadii,
   markerUsesInteractRing,
+  muteBadgeIconScale,
   muteBadgeY,
   paletteFor,
+  possessedBadgeIconScale,
   possessedBadgeY,
   type MarkerRole,
 } from "./markers";
@@ -2168,8 +2170,9 @@ function attachRoleMarkers(
   icon.rotation.x = -Math.PI / MARKER_BADGE_TILT;
   icon.position.y = MARKER_ICON_Y;
   // Escala distinta por glifo visual (mute más angular vía scale)
-  if (role === "mute") icon.scale.set(0.7, 0.7, 1);
-  else if (role === "possessed") icon.scale.set(0.85, 0.85, 1);
+  if (role === "mute") icon.scale.set(muteBadgeIconScale, muteBadgeIconScale, 1);
+  else if (role === "possessed")
+    icon.scale.set(possessedBadgeIconScale, possessedBadgeIconScale, 1);
   else if (role === "loot") icon.scale.set(0.8, 0.8, 1);
   else if (role === "door") {
     disc.scale.set(doorBadgeDiscScale, doorBadgeDiscScale, 1);
