@@ -167,16 +167,45 @@ export function formatLineSourceHud(
   return LINE_SOURCE_HUD[source] ?? null;
 }
 
+/** Línea de muerte. Una sola vez; no se re-estampa lastLootMsg = "HAS MUERTO". */
+export const GAME_OVER_LINE = "HAS MUERTO — R reiniciar · F9 cargar";
+
+const STARVE_DEATH_CAUSES = new Set([
+  "hambre te debilita",
+  "sed te debilita",
+  "hambre y sed te debilitan",
+]);
+
+/**
+ * Causa extra en game-over. Vacío / "HAS MUERTO" no se pinta (evita duplicar).
+ * Combate / hambre-sed y otros avisos (p.ej. F5) sí.
+ */
+export function resolveGameOverCause(
+  msg: string | undefined | null,
+): string | null {
+  const t = msg?.trim();
+  if (!t) return null;
+  if (t.includes("HAS MUERTO")) return null;
+  return t;
+}
+
+/** lastLootMsg que vale la pena conservar al morir (no loot leftover). */
+export function isKeepableDeathCause(msg: string | undefined | null): boolean {
+  const t = msg?.trim() ?? "";
+  if (!t || t.includes("HAS MUERTO")) return false;
+  if (STARVE_DEATH_CAUSES.has(t)) return true;
+  return /^golpe -[\d.]+ HP$/.test(t);
+}
+
 /**
  * Formato compacto por defecto (sin muro WASD ni dump tile/chunks/fov).
  * Con showHelp: CONTROLS_HELP + línea de estado (debug tokens) + F1 cerrar.
- * Con gameOver: mensaje de muerte.
+ * Con gameOver: mensaje de muerte (HAS MUERTO una sola vez).
  */
 export function formatHudStatus(input: HudStatusInput): string {
   if (input.gameOver) {
-    const base = "HAS MUERTO — R reiniciar · F9 cargar";
-    const msg = input.msg?.trim();
-    return msg ? `${base} · ${msg}` : base;
+    const cause = resolveGameOverCause(input.msg);
+    return cause ? `${GAME_OVER_LINE} · ${cause}` : GAME_OVER_LINE;
   }
 
   const status = joinParts([

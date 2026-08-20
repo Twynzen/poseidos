@@ -58,8 +58,11 @@ export {
 
 export {
   CONTROLS_HELP,
+  GAME_OVER_LINE,
   formatHudDebugTokens,
   formatHudStatus,
+  resolveGameOverCause,
+  isKeepableDeathCause,
   formatPacifyHud,
   formatSpeedBumpHud,
   formatMoodBiasHud,

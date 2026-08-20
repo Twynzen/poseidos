@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import {
   CONTROLS_HELP,
+  GAME_OVER_LINE,
   formatHudDebugTokens,
   formatHudStatus,
   formatPacifyHud,
@@ -10,6 +11,8 @@ import {
   formatLastGateHud,
   formatLastRejectedHud,
   formatLineSourceHud,
+  resolveGameOverCause,
+  isKeepableDeathCause,
   type HudStatusInput,
 } from "../src/ui/hudStatus";
 
@@ -103,13 +106,46 @@ describe("formatHudStatus compact", () => {
     );
   });
 
-  test("gameOver formato", () => {
-    expect(formatHudStatus(base({ gameOver: true }))).toBe(
-      "HAS MUERTO — R reiniciar · F9 cargar",
+  test("gameOver formato: HAS MUERTO una sola vez", () => {
+    const bare = formatHudStatus(base({ gameOver: true }));
+    expect(bare).toBe(GAME_OVER_LINE);
+    expect(bare).toBe("HAS MUERTO — R reiniciar · F9 cargar");
+    expect(bare.match(/HAS MUERTO/g)).toEqual(["HAS MUERTO"]);
+
+    const stamped = formatHudStatus(base({ gameOver: true, msg: "HAS MUERTO" }));
+    expect(stamped).toBe(GAME_OVER_LINE);
+    expect(stamped.match(/HAS MUERTO/g)).toEqual(["HAS MUERTO"]);
+
+    const padded = formatHudStatus(
+      base({ gameOver: true, msg: "  HAS MUERTO  " }),
     );
-    expect(
-      formatHudStatus(base({ gameOver: true, msg: "HAS MUERTO" })),
-    ).toBe("HAS MUERTO — R reiniciar · F9 cargar · HAS MUERTO");
+    expect(padded).toBe(GAME_OVER_LINE);
+    expect(padded.match(/HAS MUERTO/g)).toHaveLength(1);
+  });
+
+  test("gameOver conserva causa combate/hambre-sed sin duplicar HAS MUERTO", () => {
+    const starve = formatHudStatus(
+      base({ gameOver: true, msg: "hambre te debilita" }),
+    );
+    expect(starve).toBe(`${GAME_OVER_LINE} · hambre te debilita`);
+    expect(starve.match(/HAS MUERTO/g)).toHaveLength(1);
+
+    const combat = formatHudStatus(
+      base({ gameOver: true, msg: "golpe -12 HP" }),
+    );
+    expect(combat).toBe(`${GAME_OVER_LINE} · golpe -12 HP`);
+    expect(combat.match(/HAS MUERTO/g)).toHaveLength(1);
+
+    expect(resolveGameOverCause("HAS MUERTO")).toBeNull();
+    expect(resolveGameOverCause("")).toBeNull();
+    expect(resolveGameOverCause("hambre te debilita")).toBe(
+      "hambre te debilita",
+    );
+    expect(isKeepableDeathCause("HAS MUERTO")).toBe(false);
+    expect(isKeepableDeathCause("cocinaste un plato caliente")).toBe(false);
+    expect(isKeepableDeathCause("golpe -5 HP")).toBe(true);
+    expect(isKeepableDeathCause("sed te debilita")).toBe(true);
+    expect(isKeepableDeathCause("hambre y sed te debilitan")).toBe(true);
   });
 
   test("rain / noise solo cuando flags / hints aplican", () => {
