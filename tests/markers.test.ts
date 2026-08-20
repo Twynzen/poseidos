@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { doorBadgeY } from "../src/render/doorFocus";
 import { bedBadgeY } from "../src/render/bedFocus";
+import { lootBadgeY } from "../src/render/lootFocus";
 import {
   INTERACT_RING_INNER,
   INTERACT_RING_OUTER,
@@ -621,11 +622,13 @@ describe("markers (badges + ground rings)", () => {
     }
   });
 
-  test("door/bed floatBadge Y 2.645/2.645; mute/possessed 2.3; loot 1.12", () => {
+  test("door/bed/loot floatBadge Y 2.645/2.645/2.645; mute/possessed 2.3", () => {
     expect(doorBadgeY).toBe(2.645);
     expect(doorBadgeY).toBeCloseTo(2.3 * 1.15, 10);
     expect(bedBadgeY).toBe(2.645);
     expect(bedBadgeY).toBeCloseTo(2.3 * 1.15, 10);
+    expect(lootBadgeY).toBe(2.645);
+    expect(lootBadgeY).toBeCloseTo(2.3 * 1.15, 10);
     expect(muteBadgeY).toBe(2.3);
     expect(muteBadgeY).toBeCloseTo(2.0 * 1.15, 10);
     expect(possessedBadgeY).toBe(2.3);
@@ -633,9 +636,10 @@ describe("markers (badges + ground rings)", () => {
     const src = readFileSync(resolve(process.cwd(), "src/render/worldView.ts"), "utf8");
     expect(src).toContain("badge.position.y = doorBadgeY");
     expect(src).toContain("badge.position.y = bedBadgeY");
+    expect(src).toContain("badge.position.y = lootBadgeY");
     expect(src).toContain("badge.position.y = muteBadgeY");
     expect(src).toContain("badge.position.y = possessedBadgeY");
-    expect(src).toMatch(/role === "loot"\) badge\.position\.y = 1\.12/);
+    expect(src).not.toMatch(/badge\.position\.y = 1\.12/);
     expect(src).not.toMatch(/badge\.position\.y = 1\.68/);
   });
 });

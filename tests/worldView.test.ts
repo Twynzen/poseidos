@@ -9170,7 +9170,7 @@ describe("worldView hostile body height", () => {
     expect(src).toContain("hostileGeo,");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).toContain("new THREE.BoxGeometry(PLAYER_BODY_WIDTH, PLAYER_BODY_HEIGHT, PLAYER_BODY_DEPTH)");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, PLAYER_BODY_HEIGHT, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_DEPTH = 0\.48/);
@@ -9530,7 +9530,7 @@ describe("worldView hostile body depth", () => {
     expect(src).toContain("hostileGeo,");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).toContain("new THREE.BoxGeometry(PLAYER_BODY_WIDTH, PLAYER_BODY_HEIGHT, PLAYER_BODY_DEPTH)");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, PLAYER_BODY_HEIGHT, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_DEPTH = 0\.48/);
@@ -9871,7 +9871,7 @@ describe("worldView hostile head size", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).toContain("new THREE.BoxGeometry(PLAYER_BODY_WIDTH, PLAYER_BODY_HEIGHT, PLAYER_BODY_DEPTH)");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, PLAYER_BODY_HEIGHT, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_DEPTH = 0\.48/);
@@ -10261,7 +10261,7 @@ describe("worldView player head size", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -10617,7 +10617,7 @@ describe("worldView player body width", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -10973,7 +10973,7 @@ describe("worldView player body height", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -11329,7 +11329,7 @@ describe("worldView player body depth", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -11696,7 +11696,7 @@ describe("worldView wall height", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -12069,7 +12069,7 @@ describe("worldView wall base Y", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -12457,7 +12457,7 @@ describe("worldView door height", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -12857,7 +12857,7 @@ describe("worldView door base Y", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -13264,7 +13264,7 @@ describe("worldView door depth", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -13681,7 +13681,7 @@ describe("worldView bed height", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -14104,7 +14104,7 @@ describe("worldView bed base Y", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -14534,7 +14534,7 @@ describe("worldView bed depth", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -14974,7 +14974,7 @@ describe("worldView furniture height", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -15420,7 +15420,7 @@ describe("worldView furniture xz", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -15872,7 +15872,7 @@ describe("worldView furniture base y", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -16343,7 +16343,7 @@ describe("worldView barricade height", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -16816,7 +16816,7 @@ describe("worldView barricade width", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -17324,7 +17324,7 @@ describe("worldView barricade depth", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -17834,7 +17834,7 @@ describe("worldView barricade plank y", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -18346,7 +18346,7 @@ describe("worldView barricade cross y", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -18860,7 +18860,7 @@ describe("worldView barricade cross scale y", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -19376,7 +19376,7 @@ describe("worldView barricade cross scale x", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -19894,7 +19894,7 @@ describe("worldView barricade cross scale z", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -20414,7 +20414,7 @@ describe("worldView door open x", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -20936,7 +20936,7 @@ describe("worldView barricade plank rot y", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);
@@ -21460,7 +21460,7 @@ describe("worldView barricade cross rot y", () => {
     expect(src).toContain("head.position.y = HOSTILE_HEAD_BASE_Y");
     expect(src).toContain("mesh.position.set(e.x, 0, e.y)");
     expect(src).toContain("mesh.visible = e.visible");
-    expect(src).toContain('else if (role === "loot") badge.position.y = 1.12');
+    expect(src).toContain('else if (role === "loot") badge.position.y = lootBadgeY');
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.34, 0\.34, 0\.34\)/);
     expect(src).not.toMatch(/const HOSTILE_HEAD_SIZE = 0\.34/);
     expect(src).not.toMatch(/export const HOSTILE_HEAD_SIZE = 0\.34/);

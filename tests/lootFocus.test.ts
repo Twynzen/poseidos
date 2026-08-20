@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { CONTAINER_REACH } from "../src/items";
 import {
@@ -6,6 +8,7 @@ import {
   LOOT_FOCUS_REACH,
   LOOT_FOCUS_SCALE_FAR,
   LOOT_FOCUS_SCALE_NEAR,
+  lootBadgeY,
   lootFocusInReach,
   lootFocusMul,
   lootFocusPulse,
@@ -25,6 +28,21 @@ describe("constantes", () => {
     expect(LOOT_FOCUS_PULSE_AMP).toBeCloseTo(0.0575 * 1.15, 10);
     expect(LOOT_FOCUS_PULSE_SPEED).toBe(6.9);
     expect(LOOT_FOCUS_PULSE_SPEED).toBeCloseTo(6 * 1.15, 10);
+  });
+
+  test("lootBadgeY 2.645 (misma banda door/bed; 2.3 × 1.15)", () => {
+    expect(lootBadgeY).toBe(2.645);
+    expect(lootBadgeY).toBeCloseTo(2.3 * 1.15, 10);
+  });
+
+  test("worldView aplica lootBadgeY al disc del floatBadge loot existente", () => {
+    const src = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(src).toContain("badge.position.y = lootBadgeY");
+    expect(src).toContain('badge.name = "floatBadge"');
+    expect(src).not.toMatch(/role === "loot"\) badge\.position\.y = 1\.12/);
   });
 });
 

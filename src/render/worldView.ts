@@ -155,7 +155,7 @@ import {
   rainStreakScaleY,
   rainStreaksHidden,
 } from "./rainStreaks";
-import { lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
+import { lootBadgeY, lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
 import {
   LOOT_NAMEPLATE_FILL,
   LOOT_NAMEPLATE_FONT_PX,
@@ -2181,7 +2181,7 @@ function attachRoleMarkers(
   badge.add(disc, icon);
   if (role === "door") badge.position.y = doorBadgeY;
   else if (role === "bed") badge.position.y = bedBadgeY;
-  else if (role === "loot") badge.position.y = 1.12;
+  else if (role === "loot") badge.position.y = lootBadgeY;
   else if (role === "mute") badge.position.y = muteBadgeY;
   else if (role === "possessed") badge.position.y = possessedBadgeY;
   root.add(badge);
