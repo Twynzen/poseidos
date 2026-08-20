@@ -157,7 +157,7 @@ import {
   rainStreakScaleY,
   rainStreaksHidden,
 } from "./rainStreaks";
-import { lootBadgeY, lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
+import { lootBadgeIconScale, lootBadgeY, lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
 import {
   LOOT_NAMEPLATE_FILL,
   LOOT_NAMEPLATE_FONT_PX,
@@ -2173,7 +2173,8 @@ function attachRoleMarkers(
   if (role === "mute") icon.scale.set(muteBadgeIconScale, muteBadgeIconScale, 1);
   else if (role === "possessed")
     icon.scale.set(possessedBadgeIconScale, possessedBadgeIconScale, 1);
-  else if (role === "loot") icon.scale.set(0.8, 0.8, 1);
+  else if (role === "loot")
+    icon.scale.set(lootBadgeIconScale, lootBadgeIconScale, 1);
   else if (role === "door") {
     disc.scale.set(doorBadgeDiscScale, doorBadgeDiscScale, 1);
     icon.scale.set(doorBadgeLetterScale, doorBadgeLetterScale, 1);
