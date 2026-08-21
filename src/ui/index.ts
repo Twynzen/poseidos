@@ -92,6 +92,7 @@ export {
   LOOT_FLOATER_HUD_ID,
   createLootFloaterHud,
   showLootFloaterHud,
+  lootFloaterVisible,
   type LootFloaterHud,
   type LootFloaterHudEl,
   type LootFloaterHudBag,
