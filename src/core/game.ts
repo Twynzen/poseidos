@@ -547,10 +547,12 @@ export class Game {
   private applyFov(): void {
     const has = hasFlashlight(this.player.inventory);
     if (!has) this.flashlightOn = false;
+    // gameOver: radio base (no mutate flashlightOn — R / load-vivo sin restore).
     const radius = fovRadiusWithFlashlight(
       DEFAULT_FOV_RADIUS,
       this.flashlightOn,
       has,
+      this.gameOver,
     );
     const visible = computeVisibleTiles(
       this.map,
@@ -845,6 +847,7 @@ export class Game {
     this.syncInventoryPanel();
     this.syncMoodlesHud();
     this.syncInteractFocus();
+    this.applyFov();
     this.syncLighting();
   }
 
@@ -1138,6 +1141,7 @@ export class Game {
       this.syncAmbient(dt);
       this.syncHeartbeat(dt);
       this.syncFootsteps(dt, 0, false);
+      this.applyFov();
       this.syncLighting();
       this.syncRainVisual(dt);
     this.syncGrassVisual(dt);

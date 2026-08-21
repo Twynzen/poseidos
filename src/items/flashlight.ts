@@ -16,25 +16,28 @@ export function hasFlashlight(inv: Inventory): boolean {
 }
 
 /**
- * Radio FOV efectivo: base+bonus si on && hasItem; si no, base.
- */
-export function fovRadiusWithFlashlight(
-  base: number,
-  on: boolean,
-  hasItem: boolean,
-): number {
-  if (on && hasItem) return base + FLASHLIGHT_FOV_BONUS;
-  return base;
-}
-
-/**
- * HAS MUERTO / F9 load-muerto: no cono/luz de linterna sobre el cadáver.
+ * HAS MUERTO / F9 load-muerto: no cono/luz ni bonus FOV de linterna sobre el cadáver.
  * Vivo (incl. F9 load-vivo): on && hasItem igual que hoy.
  * Ya apagado = no-op; gameOver no inventa restore del flag.
  */
 export function torchLightApplies(gameOver: boolean): boolean {
   if (gameOver) return false;
   return true;
+}
+
+/**
+ * Radio FOV efectivo: base+bonus si on && hasItem; si no, base.
+ * gameOver → base (HAS MUERTO / F9 load-muerto; no extra tiles al cadáver).
+ */
+export function fovRadiusWithFlashlight(
+  base: number,
+  on: boolean,
+  hasItem: boolean,
+  gameOver = false,
+): number {
+  if (!torchLightApplies(gameOver)) return base;
+  if (on && hasItem) return base + FLASHLIGHT_FOV_BONUS;
+  return base;
 }
 
 /**
