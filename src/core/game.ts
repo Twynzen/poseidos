@@ -85,6 +85,7 @@ import {
 import { DEFAULT_CONFIG, DEFAULT_DAY_LENGTH_SEC, type GameConfig } from "./config";
 import {
   createSpeechOverlay,
+  speechBubbleVisible,
   createDialoguePanel,
   createMoodlesHud,
   createHotbarHud,
@@ -590,7 +591,7 @@ export class Game {
             y: h.y,
             line: active?.line ?? null,
             tone: active?.tone ?? null,
-            visible: inFov && !!active,
+            visible: speechBubbleVisible(this.gameOver, inFov, !!active),
           };
         }),
       this.view.camera,

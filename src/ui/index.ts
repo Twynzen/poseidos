@@ -1,5 +1,6 @@
 export {
   createSpeechOverlay,
+  speechBubbleVisible,
   type SpeechBubbleView,
   type SpeechOverlay,
 } from "./speechOverlay";

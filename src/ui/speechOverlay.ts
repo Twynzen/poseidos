@@ -17,6 +17,20 @@ export interface SpeechBubbleView {
   visible: boolean;
 }
 
+/**
+ * HAS MUERTO / F9 load-muerto: no pintar utterance encima.
+ * Vivo (incl. F9 load-vivo): FOV + línea activa, igual que hoy.
+ * Ya vacío (sin activa) = hidden; gameOver no inventa burbuja.
+ */
+export function speechBubbleVisible(
+  gameOver: boolean,
+  inFov: boolean,
+  hasActive: boolean,
+): boolean {
+  if (gameOver) return false;
+  return inFov && hasActive;
+}
+
 const TONE_CLASS: Record<PossessionTone, string> = {
   lucidez: "tone-lucidez",
   demonio: "tone-demonio",
