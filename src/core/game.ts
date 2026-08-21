@@ -88,6 +88,7 @@ import {
   speechBubbleVisible,
   createDialoguePanel,
   createMoodlesHud,
+  moodlesHudVisible,
   createHotbarHud,
   createLootFloaterHud,
   lootFloaterVisible,
@@ -500,6 +501,7 @@ export class Game {
     this.syncHitFlashOverlay();
     this.syncLootFloaterOverlay();
     this.syncInventoryPanel();
+    this.syncMoodlesHud();
     this.syncLighting();
     this.view.followCamera(this.player.x, this.player.y);
   }
@@ -839,6 +841,7 @@ export class Game {
     this.syncDialoguePanel();
     this.syncLootFloaterOverlay();
     this.syncInventoryPanel();
+    this.syncMoodlesHud();
   }
 
 
@@ -1716,6 +1719,15 @@ export class Game {
     });
   }
 
+  /** Overlay `#moodles`: hide si gameOver (no tapa HAS MUERTO). */
+  private syncMoodlesHud(): void {
+    if (!moodlesHudVisible(this.gameOver, true)) {
+      this.moodlesHud.hide();
+      return;
+    }
+    this.moodlesHud.sync(this.buildPlayerHudMoodles());
+  }
+
 
   /** Low-HP heartbeat: tick headless + beep si `{beat}` y no mute. */
   private syncHeartbeat(dt: number): void {
@@ -1797,7 +1809,7 @@ export class Game {
         showHelp: this.showHelp,
       });
       this.hud.classList.toggle("hud-help", this.showHelp);
-      this.moodlesHud.sync(this.buildPlayerHudMoodles());
+      this.syncMoodlesHud();
       this.hotbarHud.sync(hotbarSlots(this.player.inventory), this.hotbarSelected);
       this.syncInventoryPanel();
       return;
@@ -1847,7 +1859,7 @@ export class Game {
     const lastApplied = this.hudLastApplied();
     const lastRejected = this.hudLastRejected();
     const lineSource = this.hudLineSource();
-    this.moodlesHud.sync(this.buildPlayerHudMoodles());
+    this.syncMoodlesHud();
     this.hotbarHud.sync(hotbarSlots(this.player.inventory), this.hotbarSelected);
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
     const safe =

@@ -5,9 +5,10 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import { buildHudMoodles, clockMoodle } from "../src/actors/moodles";
 import { createNeeds } from "../src/actors/needs";
-import { createMoodlesHud } from "../src/ui/moodles";
+import { createMoodlesHud, moodlesHudVisible } from "../src/ui/moodles";
 
 describe("createMoodlesHud", () => {
   let root: HTMLElement;
@@ -118,5 +119,98 @@ describe("HUD vs hotbar CSS", () => {
     expect(html).toMatch(/#moodles\s*\{[^}]*flex-wrap:\s*wrap/s);
     expect(html).toMatch(/#moodles\s*\{[^}]*max-width:\s*min\(720px,\s*calc\(50%\s*-\s*220px\)\)/s);
     expect(html).toMatch(/#hud\s*\{[^}]*white-space:\s*pre-wrap/s);
+  });
+});
+
+describe("moodlesHudVisible (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte con pills: overlay hidden; ya vacío no-op; load-muerto hidden; vivo/load-vivo pinta", () => {
+    expect(moodlesHudVisible(true, true)).toBe(false);
+
+    const alreadyEmpty = moodlesHudVisible(true, false);
+    expect(alreadyEmpty).toBe(false);
+    expect(moodlesHudVisible(true, false)).toBe(false);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(moodlesHudVisible(deadRt.gameOver, true)).toBe(false);
+    expect(moodlesHudVisible(deadRt.gameOver, false)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(moodlesHudVisible(liveRt.gameOver, true)).toBe(true);
+
+    expect(moodlesHudVisible(false, true)).toBe(true);
+    expect(moodlesHudVisible(false, false)).toBe(false);
+  });
+
+  test("Game enterGameOver / freeze / F9 load-muerto ocultan #moodles; vivo no hide", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("moodlesHudVisible(");
+    expect(src).toContain("this.moodlesHud.hide()");
+    expect(src).toMatch(
+      /syncMoodlesHud\(\): void \{[\s\S]{0,280}moodlesHudVisible\(\s*this\.gameOver/,
+    );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,620}this\.syncMoodlesHud\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,800}this\.syncMoodlesHud\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshHud\(force: boolean\): void \{[\s\S]{0,500}if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,800}this\.syncMoodlesHud\(\)/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,900}this\.moodlesHud\.sync\(this\.buildPlayerHudMoodles\(\)\)/,
+    );
+  });
+});
+
+describe("createMoodlesHud hide (HAS MUERTO)", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  test("hide oculta pills; ya oculto no-op; vivo vuelve a pintar", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createMoodlesHud(root);
+    const moodles = buildHudMoodles(
+      createNeeds({ hunger: 10, thirst: 50, fatigue: 80 }),
+      25,
+      true,
+      1,
+      true,
+      10,
+    );
+    hud.sync(moodles);
+    const bar = root.querySelector<HTMLElement>("#moodles");
+    expect(bar).toBeTruthy();
+    expect(bar!.hidden).toBe(false);
+    expect(root.querySelectorAll(".moodle")).toHaveLength(6);
+    expect(root.textContent).toMatch(/Hambre|Sed|Vida/);
+
+    hud.hide();
+    expect(bar!.hidden).toBe(true);
+    expect(root.querySelectorAll(".moodle")).toHaveLength(0);
+    expect(root.textContent).not.toMatch(/Hambre|Sed|Vida/);
+
+    hud.hide();
+    expect(bar!.hidden).toBe(true);
+    expect(root.querySelectorAll(".moodle")).toHaveLength(0);
+
+    hud.sync(moodles);
+    expect(bar!.hidden).toBe(false);
+    expect(root.querySelectorAll(".moodle")).toHaveLength(6);
+    expect(root.querySelector(".moodle-label")?.textContent).toBe("Hambre");
+    hud.dispose();
   });
 });

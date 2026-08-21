@@ -9,7 +9,22 @@ import { moodleIconSvg } from "./moodleIcons";
 
 export interface MoodlesHud {
   sync(moodles: ReadonlyArray<MoodleView>): void;
+  /** HAS MUERTO / F9 load-muerto: quita las pills. Ya oculto = no-op. */
+  hide(): void;
   dispose(): void;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no pintar #moodles junto a HAS MUERTO.
+ * Vivo (incl. F9 load-vivo): showing igual que hoy.
+ * Ya vacío (showing false) = hidden; gameOver no inventa pills.
+ */
+export function moodlesHudVisible(
+  gameOver: boolean,
+  showing: boolean,
+): boolean {
+  if (gameOver) return false;
+  return showing;
 }
 
 export function createMoodlesHud(root: HTMLElement): MoodlesHud {
@@ -38,8 +53,14 @@ export function createMoodlesHud(root: HTMLElement): MoodlesHud {
     return el;
   }
 
+  function clearPills(): void {
+    for (const [, el] of pills) el.remove();
+    pills.clear();
+  }
+
   return {
     sync(moodles) {
+      bar.hidden = false;
       const keep = new Set<string>(moodles.map((m) => m.id));
       for (const [id, el] of [...pills]) {
         if (keep.has(id)) continue;
@@ -61,6 +82,11 @@ export function createMoodlesHud(root: HTMLElement): MoodlesHud {
         if (val) val.textContent = String(m.value);
         el.title = `${m.label} ${m.value} (${m.level})`;
       }
+    },
+    hide() {
+      if (bar.hidden && pills.size === 0) return;
+      clearPills();
+      bar.hidden = true;
     },
     dispose() {
       bar.remove();
