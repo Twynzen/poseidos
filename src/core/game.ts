@@ -797,15 +797,33 @@ export class Game {
     }
   }
 
+  /**
+   * Muerte: cierra el panel igual que T/Esc/validate para que no tape HAS MUERTO.
+   * Ya cerrado = no-op (lastLootMsg intacto). Keepable causa la filtra enterGameOver.
+   */
+  private closeDialogueOnGameOver(): void {
+    if (!this.dialogue.open) return;
+    const next = nextDialogueCloseHud(true, this.lastLootMsg);
+    this.dialogue.close();
+    this.dialogueLastLine = null;
+    this.dialogueLastTone = null;
+    this.dialogueGateLine = null;
+    this.lastLootMsg = next.lastLootMsg;
+    this.hudAcc = 1;
+    this.syncDialoguePanel();
+  }
+
   private enterGameOver(): void {
     if (this.gameOver) return;
     this.gameOver = true;
+    this.closeDialogueOnGameOver();
     // formatHudStatus already paints HAS MUERTO. Keep combate/hambre-sed; drop leftover.
     if (!isKeepableDeathCause(this.lastLootMsg)) {
       this.lastLootMsg = "";
     }
     this.hudAcc = 1;
     this.view.triggerPlayerAction("death");
+    this.syncDialoguePanel();
   }
 
 
@@ -1056,6 +1074,7 @@ export class Game {
     // Game-over: solo R reinicia / F9 carga (F5 no aplica)
     if (this.gameOver || !this.player.alive) {
       if (!this.gameOver) this.enterGameOver();
+      this.closeDialogueOnGameOver();
       if (this.input.consumeRestOrRestart()) {
         this.softReset();
         this.hudAcc = 1;
@@ -1097,6 +1116,7 @@ export class Game {
       this.view.tickPlayerLoco(dt, false, false);
       this.renderer.render(this.view.scene, this.view.camera);
       this.syncSpeechOverlay();
+      this.syncDialoguePanel();
       this.hudAcc += dt;
       if (this.hudAcc >= 0.25) {
         this.hudAcc = 0;

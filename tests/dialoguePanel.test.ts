@@ -18,6 +18,52 @@ describe("dialogue panel CSS", () => {
   });
 });
 
+describe("dialogue panel close (muerte / T / Esc)", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  test("sync open false oculta el panel; ya cerrado sigue oculto", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createDialoguePanel(root);
+    const el = root.querySelector<HTMLElement>("#dialogue-panel");
+    expect(el).toBeTruthy();
+    expect(el!.hidden).toBe(true);
+
+    panel.sync({
+      open: true,
+      targetId: "poss-a",
+      trust: 50,
+      lastLine: null,
+      lastTone: null,
+    });
+    expect(el!.hidden).toBe(false);
+    expect(el!.textContent).toContain("Hablar · poss-a");
+
+    panel.sync({
+      open: false,
+      targetId: null,
+      trust: 50,
+      lastLine: null,
+      lastTone: null,
+    });
+    expect(el!.hidden).toBe(true);
+
+    panel.sync({
+      open: false,
+      targetId: null,
+      trust: 50,
+      lastLine: null,
+      lastTone: null,
+    });
+    expect(el!.hidden).toBe(true);
+    panel.dispose();
+  });
+});
+
 describe("formatGateLine", () => {
   test("applied nonempty → código: aplicado (tags)", () => {
     expect(
