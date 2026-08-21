@@ -105,6 +105,7 @@ export {
   FLASHLIGHT_FOV_BONUS,
   hasFlashlight,
   fovRadiusWithFlashlight,
+  torchLightApplies,
   torchLightIntensity,
 } from "./flashlight";
 

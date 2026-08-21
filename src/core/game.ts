@@ -32,6 +32,7 @@ import {
   refillFullMessage,
   hasFlashlight,
   fovRadiusWithFlashlight,
+  torchLightApplies,
   torchLightIntensity,
   getItemDef,
   splitStack,
@@ -517,11 +518,10 @@ export class Game {
     this.view.syncWarmLight(anchor.x, anchor.y, inten);
     const has = hasFlashlight(this.player.inventory);
     if (!has) this.flashlightOn = false;
-    const torch = torchLightIntensity(
-      this.flashlightOn,
-      has,
-      this.clock.daylight,
-    );
+    // gameOver: cono/torch off (no mutate flashlightOn — R / load-vivo sin restore).
+    const torch = torchLightApplies(this.gameOver)
+      ? torchLightIntensity(this.flashlightOn, has, this.clock.daylight)
+      : 0;
     this.view.syncTorchLight(this.player.x, this.player.y, torch);
   }
 
@@ -845,6 +845,7 @@ export class Game {
     this.syncInventoryPanel();
     this.syncMoodlesHud();
     this.syncInteractFocus();
+    this.syncLighting();
   }
 
 
