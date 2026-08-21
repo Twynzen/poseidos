@@ -46,6 +46,8 @@ import {
   dropSourceIndex,
   dropToastLabel,
   dropTargetTile,
+  craftFullMessage,
+  hasBandageMaterials,
   type ContainerRegistry,
   type ItemId,
 } from "../items";
@@ -948,6 +950,15 @@ export class Game {
     this.hudAcc = 1;
   }
 
+  /** C: dest inv no acepta el vendaje → toast existente. */
+  private toastCraftFull(added: number): void {
+    const msg = craftFullMessage(added);
+    if (!msg) return;
+    this.lastLootMsg = msg;
+    this.lootToast.show(msg);
+    this.hudAcc = 1;
+  }
+
   /** G / Shift+G / E-fallback: dest lleno + loot cerca → toast existente. */
   private toastLootFull(): void {
     const msg = lootFullMessage(
@@ -1441,9 +1452,14 @@ export class Game {
       }
     }
     if (this.input.consumeCraft()) {
-      if (this.player.tryCraftBandage()) {
+      const had =
+        this.player.alive && hasBandageMaterials(this.player.inventory);
+      const { added } = this.player.tryCraftBandage();
+      if (added > 0) {
         this.lastLootMsg = "vendaje craftado";
         this.hudAcc = 1;
+      } else if (had) {
+        this.toastCraftFull(added);
       } else {
         this.lastLootMsg = "falta tela/chatarra";
         this.hudAcc = 1;

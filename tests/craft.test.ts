@@ -15,6 +15,8 @@ import {
   hasBarricadeMaterials,
   tryBuildBarricade,
   tryCraftBandage,
+  craftFullMessage,
+  refillFailMessage,
 } from "../src/items";
 import {
   blocksSight,
@@ -152,21 +154,73 @@ describe("tryCraftBandage", () => {
     addItem(inv, "cloth", 2);
     addItem(inv, "scrap", 2);
     expect(hasBandageMaterials(inv)).toBe(true);
-    expect(tryCraftBandage(inv)).toBe(true);
+    expect(tryCraftBandage(inv)).toEqual({ added: 1 });
     expect(inv.slots.find((s) => s.id === "bandage")?.qty).toBe(1);
     expect(inv.slots.find((s) => s.id === "cloth")?.qty).toBe(1);
     expect(inv.slots.find((s) => s.id === "scrap")?.qty).toBe(1);
+    expect(craftFullMessage(1)).toBeNull();
   });
 
   test("falla sin tela o sin chatarra", () => {
     const onlyCloth = createInventory();
     addItem(onlyCloth, "cloth", 2);
-    expect(tryCraftBandage(onlyCloth)).toBe(false);
-    expect(onlyCloth.slots.find((s) => s.id === "cloth")?.qty).toBe(2);
+    const clothBefore = onlyCloth.slots.map((s) => ({ ...s }));
+    expect(tryCraftBandage(onlyCloth)).toEqual({ added: 0 });
+    expect(onlyCloth.slots).toEqual(clothBefore);
 
     const onlyScrap = createInventory();
     addItem(onlyScrap, "scrap", 2);
-    expect(tryCraftBandage(onlyScrap)).toBe(false);
+    const scrapBefore = onlyScrap.slots.map((s) => ({ ...s }));
+    expect(tryCraftBandage(onlyScrap)).toEqual({ added: 0 });
+    expect(onlyScrap.slots).toEqual(scrapBefore);
+    expect(onlyScrap.slots.find((s) => s.id === "scrap")?.qty).toBe(2);
+  });
+
+  test("dest slots llenos: mats intactas, toast inventario lleno", () => {
+    const inv = createInventory(2, 20);
+    addItem(inv, "cloth", 2);
+    addItem(inv, "scrap", 2);
+    const before = inv.slots.map((s) => ({ ...s }));
+    expect(hasBandageMaterials(inv)).toBe(true);
+    const { added } = tryCraftBandage(inv);
+    expect(added).toBe(0);
+    expect(inv.slots).toEqual(before);
+    expect(inv.slots.find((s) => s.id === "cloth")?.qty).toBe(2);
+    expect(inv.slots.find((s) => s.id === "scrap")?.qty).toBe(2);
+    expect(inv.slots.find((s) => s.id === "bandage")).toBeUndefined();
+    expect(craftFullMessage(added)).toBe("inventario lleno");
+    expect(craftFullMessage(added)).toBe(refillFailMessage("inv_full"));
+  });
+
+  test("dest max stack: mats intactas, toast inventario lleno", () => {
+    const inv = createInventory(3, 20);
+    addItem(inv, "bandage", 5);
+    addItem(inv, "cloth", 2);
+    addItem(inv, "scrap", 2);
+    const before = inv.slots.map((s) => ({ ...s }));
+    const { added } = tryCraftBandage(inv);
+    expect(added).toBe(0);
+    expect(inv.slots).toEqual(before);
+    expect(inv.slots.find((s) => s.id === "bandage")?.qty).toBe(5);
+    expect(craftFullMessage(added)).toBe("inventario lleno");
+  });
+
+  test("slots llenos pero mats liberan hueco: entra el vendaje", () => {
+    const inv = createInventory(8, 20);
+    addItem(inv, "cloth", 1);
+    addItem(inv, "scrap", 1);
+    addItem(inv, "wood", 1);
+    addItem(inv, "knife", 1);
+    addItem(inv, "flashlight", 1);
+    addItem(inv, "canned_food", 1);
+    addItem(inv, "water_bottle", 1);
+    addItem(inv, "ammo", 1);
+    expect(inv.slots).toHaveLength(8);
+    expect(tryCraftBandage(inv)).toEqual({ added: 1 });
+    expect(inv.slots.find((s) => s.id === "bandage")?.qty).toBe(1);
+    expect(inv.slots.find((s) => s.id === "cloth")).toBeUndefined();
+    expect(inv.slots.find((s) => s.id === "scrap")).toBeUndefined();
+    expect(craftFullMessage(1)).toBeNull();
   });
 
   test("player craft + Q cura HP", () => {
@@ -175,7 +229,7 @@ describe("tryCraftBandage", () => {
     });
     addItem(player.inventory, "cloth", 1);
     addItem(player.inventory, "scrap", 1);
-    expect(player.tryCraftBandage()).toBe(true);
+    expect(player.tryCraftBandage()).toEqual({ added: 1 });
     expect(player.inventory.slots.some((s) => s.id === "bandage")).toBe(true);
     expect(player.tryConsume("heal")).toBe("heal");
     expect(player.health).toBe(65);
@@ -184,6 +238,27 @@ describe("tryCraftBandage", () => {
     addItem(player.inventory, "bandage", 1);
     player.tryConsume("heal");
     expect(player.health).toBeLessThanOrEqual(MAX_HEALTH);
+  });
+
+  test("player dest lleno: mats se quedan", () => {
+    const player = new PlayerSim({ x: 1, y: 1 }, undefined, createInventory(2, 20));
+    addItem(player.inventory, "cloth", 2);
+    addItem(player.inventory, "scrap", 2);
+    const before = player.inventory.slots.map((s) => ({ ...s }));
+    expect(player.tryCraftBandage()).toEqual({ added: 0 });
+    expect(player.inventory.slots).toEqual(before);
+    expect(craftFullMessage(0)).toBe("inventario lleno");
+  });
+});
+
+describe("craftFullMessage", () => {
+  test("added 0 → inventario lleno (mismo copy refill)", () => {
+    expect(craftFullMessage(0)).toBe("inventario lleno");
+    expect(craftFullMessage(0)).toBe(refillFailMessage("inv_full"));
+  });
+
+  test("added > 0 → null (éxito / leftover mats no toastea)", () => {
+    expect(craftFullMessage(1)).toBeNull();
   });
 });
 
