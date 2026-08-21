@@ -51,7 +51,22 @@ export type LootFloaterHudBag = {
 
 export interface LootFloaterHud {
   show(label: string, itemId?: string): void;
+  /** HAS MUERTO / F9 load-muerto: quita el chip. Ya oculto = no-op. */
+  hide(): void;
   dispose(): void;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no pintar toast encima.
+ * Vivo (incl. F9 load-vivo): showing igual que hoy.
+ * Ya vacío (showing false) = hidden; gameOver no inventa toast.
+ */
+export function lootFloaterVisible(
+  gameOver: boolean,
+  showing: boolean,
+): boolean {
+  if (gameOver) return false;
+  return showing;
 }
 
 function playOnEl(el: LootFloaterHudEl, label: string): void {
@@ -179,11 +194,19 @@ export function createLootFloaterHud(root: HTMLElement): LootFloaterHud {
   if (!document) {
     return {
       show() {},
+      hide() {},
       dispose() {},
     };
   }
   injectLootFloatKeyframes(document);
   const el = ensureToastEl(root, document);
+
+  function hideToast(): void {
+    if (el.style.display === "none") return;
+    el.style.display = "none";
+    el.style.animation = "none";
+    el.innerHTML = "";
+  }
 
   return {
     show(label: string, itemId?: string) {
@@ -195,6 +218,9 @@ export function createLootFloaterHud(root: HTMLElement): LootFloaterHud {
       el.style.animation = "none";
       void el.offsetWidth;
       el.style.animation = `loot-float ${LOOT_FLOATER_HUD_MS / 1000}s ease-out forwards`;
+    },
+    hide() {
+      hideToast();
     },
     dispose() {
       el.style.display = "none";

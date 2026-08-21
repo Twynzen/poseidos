@@ -90,6 +90,7 @@ import {
   createMoodlesHud,
   createHotbarHud,
   createLootFloaterHud,
+  lootFloaterVisible,
   createInventoryPanel,
   hotbarSlots,
   hotbarInspectLabel,
@@ -494,6 +495,7 @@ export class Game {
     this.syncSpeechOverlay();
     this.syncDialoguePanel();
     this.syncHitFlashOverlay();
+    this.syncLootFloaterOverlay();
     this.syncLighting();
     this.view.followCamera(this.player.x, this.player.y);
   }
@@ -831,6 +833,7 @@ export class Game {
     this.hudAcc = 1;
     this.view.triggerPlayerAction("death");
     this.syncDialoguePanel();
+    this.syncLootFloaterOverlay();
   }
 
 
@@ -1124,6 +1127,7 @@ export class Game {
       this.renderer.render(this.view.scene, this.view.camera);
       this.syncSpeechOverlay();
       this.syncDialoguePanel();
+      this.syncLootFloaterOverlay();
       this.hudAcc += dt;
       if (this.hudAcc >= 0.25) {
         this.hudAcc = 0;
@@ -1669,6 +1673,13 @@ export class Game {
     this.hitFlashEl.style.opacity = String(
       hitFlashOverlayOpacity(this.gameOver, this.hitFlash.intensity),
     );
+  }
+
+  /** Overlay `#loot-floater`: hide si gameOver (no tapa HAS MUERTO). */
+  private syncLootFloaterOverlay(): void {
+    if (!lootFloaterVisible(this.gameOver, true)) {
+      this.lootToast.hide();
+    }
   }
 
   private syncInventoryPanel(): void {

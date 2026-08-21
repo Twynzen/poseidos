@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import { itemIconSvg } from "../src/ui/itemIcons";
 import {
   LOOT_FLOATER_HUD_MS,
@@ -9,6 +10,7 @@ import {
   LOOT_FLOATER_HUD_ID,
   createLootFloaterHud,
   showLootFloaterHud,
+  lootFloaterVisible,
   type LootFloaterHudEl,
 } from "../src/ui/lootFloaterHud";
 
@@ -387,6 +389,84 @@ describe("createLootFloaterHud", () => {
     const again = doc.getElementById(LOOT_FLOATER_HUD_ID);
     expect(again).toBe(first);
     expect(again!.textContent).toBe("+b");
+  });
+});
+
+describe("lootFloaterVisible (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte con floater activo: overlay hidden; ya vacío no-op; load-muerto hidden; vivo/load-vivo pinta", () => {
+    expect(lootFloaterVisible(true, true)).toBe(false);
+
+    const alreadyEmpty = lootFloaterVisible(true, false);
+    expect(alreadyEmpty).toBe(false);
+    expect(lootFloaterVisible(true, false)).toBe(false);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(lootFloaterVisible(deadRt.gameOver, true)).toBe(false);
+    expect(lootFloaterVisible(deadRt.gameOver, false)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(lootFloaterVisible(liveRt.gameOver, true)).toBe(true);
+
+    expect(lootFloaterVisible(false, true)).toBe(true);
+    expect(lootFloaterVisible(false, false)).toBe(false);
+  });
+
+  test("Game enterGameOver / freeze / F9 load-muerto ocultan #loot-floater; vivo no hide", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("lootFloaterVisible(");
+    expect(src).toContain("this.lootToast.hide()");
+    expect(src).toMatch(
+      /syncLootFloaterOverlay\(\): void \{[\s\S]{0,280}lootFloaterVisible\(\s*this\.gameOver/,
+    );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,500}this\.syncLootFloaterOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,500}this\.syncLootFloaterOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /this\.syncSpeechOverlay\(\);\s*this\.syncDialoguePanel\(\);\s*this\.syncLootFloaterOverlay\(\);\s*this\.hudAcc \+= dt/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,900}this\.lootToast\.show/,
+    );
+  });
+});
+
+describe("createLootFloaterHud hide (HAS MUERTO)", () => {
+  afterEach(() => {
+    delete (globalThis as { document?: unknown }).document;
+  });
+
+  test("hide con toast activo: display none; ya vacío no-op; show vivo vuelve a pintar", () => {
+    const { doc, root } = installFakeDocument();
+    const hud = createLootFloaterHud(root as unknown as HTMLElement);
+    hud.show("+madera", "wood");
+    const el = doc.getElementById(LOOT_FLOATER_HUD_ID)!;
+    expect(el.style.display).toBe("inline-flex");
+    expect(el.innerHTML).toContain("+madera");
+
+    hud.hide();
+    expect(el.style.display).toBe("none");
+    expect(el.innerHTML).toBe("");
+    expect(el.style.animation).toBe("none");
+
+    hud.hide();
+    expect(el.style.display).toBe("none");
+    expect(el.innerHTML).toBe("");
+
+    hud.show("+scrap", "scrap");
+    expect(el.style.display).toBe("inline-flex");
+    expect(el.innerHTML).toContain("+scrap");
   });
 });
 
