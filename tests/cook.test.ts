@@ -126,11 +126,11 @@ describe("tryCook", () => {
     const map = room();
     const inv = createInventory(2, 20);
     addItem(inv, "hot_meal", 5);
-    addItem(inv, "canned_food", 1);
+    addItem(inv, "canned_food", 2);
     const before = inv.slots.map((s) => ({ ...s }));
     expect(tryCook(map, inv, 6.5, 7.2)).toBe(false);
     expect(inv.slots).toEqual(before);
-    expect(inv.slots.find((s) => s.id === "canned_food")?.qty).toBe(1);
+    expect(inv.slots.find((s) => s.id === "canned_food")?.qty).toBe(2);
     expect(inv.slots.find((s) => s.id === "hot_meal")?.qty).toBe(5);
     const fail = attemptCook(map, inv, 6.5, 7.2);
     expect(fail.ok).toBe(false);
