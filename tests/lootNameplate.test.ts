@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   LOOT_NAMEPLATE_FADE_DIST,
   LOOT_NAMEPLATE_FILL,
@@ -605,6 +606,71 @@ describe("lootNameplateVisible", () => {
     expect(lootNameplateVisible(lootNameplateInvEmpty(qty0), 0)).toBe(false);
     expect(lootNameplateVisible(lootNameplateInvEmpty(full), 0)).toBe(true);
     expect(lootNameplateVisible(lootNameplateInvEmpty(full), 8)).toBe(false);
+  });
+});
+
+describe("lootNameplateVisible (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte oculta nameplate; ya oculto no-op; load-muerto hidden; vivo/load-vivo pinta", () => {
+    expect(lootNameplateVisible(false, 0, true)).toBe(false);
+    expect(lootNameplateVisible(false, 2.3, true)).toBe(false);
+
+    const alreadyHidden = lootNameplateVisible(true, 0, true);
+    expect(alreadyHidden).toBe(false);
+    expect(lootNameplateVisible(false, 8, true)).toBe(false);
+    expect(lootNameplateVisible(false, Number.NaN, true)).toBe(false);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(lootNameplateVisible(false, 0, deadRt.gameOver)).toBe(false);
+    expect(lootNameplateVisible(true, 0, deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(lootNameplateVisible(false, 0, liveRt.gameOver)).toBe(true);
+    expect(lootNameplateVisible(false, 2.3, liveRt.gameOver)).toBe(true);
+    expect(lootNameplateVisible(true, 0, liveRt.gameOver)).toBe(false);
+    expect(lootNameplateVisible(false, 8, liveRt.gameOver)).toBe(false);
+
+    expect(lootNameplateVisible(false, 0)).toBe(true);
+    expect(lootNameplateVisible(false, 0, false)).toBe(true);
+    expect(lootNameplateVisible(true, 0)).toBe(false);
+  });
+
+  test("Game / worldView cablean lootNameplateVisible(gameOver); freeze y F9 load-muerto siguen sync", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toMatch(
+      /syncInteractFocus\(dt = 0\): void \{[\s\S]{0,400}this\.view\.syncLootFocus\([\s\S]{0,200}this\.gameOver/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,720}this\.syncInteractFocus\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,900}if \(this\.gameOver\) this\.syncInteractFocus\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2200}this\.syncInteractFocus\(dt\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain(
+      "e.nameplate.visible = lootNameplateVisible(empty, d, gameOver)",
+    );
+    expect(viewSrc).toMatch(
+      /syncLootFocus\(wx, wy, dt, emptyIds, gameOver = false\) \{[\s\S]{0,800}lootNameplateVisible\(empty, d, gameOver\)/,
+    );
   });
 });
 
