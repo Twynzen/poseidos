@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   LINE_BANK,
@@ -9,7 +11,10 @@ import {
   TRUST_AGGRO,
   DIALOGUE_OPTIONS,
   DIALOGUE_REACH,
+  DIALOGUE_OPEN_HUD_PREFIX,
   DialogueSession,
+  dialogueOpenHudMsg,
+  nextDialogueCloseHud,
   ShortMemory,
   formatMemorySummary,
   MEMORY_SUMMARY_MAX_LEN,
@@ -329,6 +334,58 @@ describe("dialogue choices", () => {
     );
     expect(far).toBe(false);
     expect(session.open).toBe(false);
+  });
+});
+
+describe("nextDialogueCloseHud (T / Esc HUD)", () => {
+  test("T/Esc cierran: quita leftover diálogo id y pide refresh; Esc ya cerrado no-op", () => {
+    const openMsg = dialogueOpenHudMsg("poss-a");
+    expect(DIALOGUE_OPEN_HUD_PREFIX).toBe("diálogo ");
+    expect(openMsg).toBe("diálogo poss-a");
+
+    const viaT = nextDialogueCloseHud(true, openMsg);
+    expect(viaT).toEqual({ closed: true, lastLootMsg: "" });
+
+    const viaEsc = nextDialogueCloseHud(true, openMsg);
+    expect(viaEsc).toEqual({ closed: true, lastLootMsg: "" });
+
+    const alreadyClosed = nextDialogueCloseHud(false, openMsg);
+    expect(alreadyClosed).toEqual({ closed: false, lastLootMsg: openMsg });
+
+    const trustKeep = nextDialogueCloseHud(
+      true,
+      "calmar → trust 64 (+14)",
+    );
+    expect(trustKeep).toEqual({
+      closed: true,
+      lastLootMsg: "calmar → trust 64 (+14)",
+    });
+
+    const closedTrust = nextDialogueCloseHud(
+      false,
+      "calmar → trust 64 (+14)",
+    );
+    expect(closedTrust.closed).toBe(false);
+    expect(closedTrust.lastLootMsg).toBe("calmar → trust 64 (+14)");
+  });
+
+  test("Game T close y Esc close asignan lastLootMsg/hudAcc via nextDialogueCloseHud (sin lootToast)", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("nextDialogueCloseHud(");
+    expect(src).toContain("dialogueOpenHudMsg(");
+    expect(src).toContain("this.lastLootMsg = dialogueOpenHudMsg(near.id)");
+    const closeHits = src.match(/nextDialogueCloseHud\(/g);
+    expect(closeHits?.length).toBe(2);
+    expect(src).toMatch(
+      /if \(this\.dialogue\.open\) \{[\s\S]{0,280}nextDialogueCloseHud\(true, this\.lastLootMsg\)[\s\S]{0,220}this\.hudAcc = 1/,
+    );
+    expect(src).toMatch(
+      /consumeCancel\(\)\) \{[\s\S]{0,280}nextDialogueCloseHud\(this\.dialogue\.open, this\.lastLootMsg\)[\s\S]{0,80}if \(next\.closed\) \{[\s\S]{0,280}this\.hudAcc = 1/,
+    );
+    expect((src.match(/consumeTalk\(\)/g) ?? []).length).toBe(1);
+    expect((src.match(/consumeCancel\(\)/g) ?? []).length).toBe(1);
+    expect(src).not.toMatch(/tryToggleDialogue\(\)[\s\S]{0,900}lootToast/);
+    expect(src).not.toMatch(/consumeCancel\(\)[\s\S]{0,400}lootToast/);
   });
 });
 

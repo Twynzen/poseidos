@@ -30,6 +30,34 @@ export interface DialogueOption {
 /** Alcance para abrir diálogo (tile-world). */
 export const DIALOGUE_REACH = 2.2;
 
+/** Prefijo lastLootMsg / dlgHint al abrir T (`diálogo ${id}`). */
+export const DIALOGUE_OPEN_HUD_PREFIX = "diálogo ";
+
+/** lastLootMsg / dlgHint al abrir T. */
+export function dialogueOpenHudMsg(id: string): string {
+  return `${DIALOGUE_OPEN_HUD_PREFIX}${id}`;
+}
+
+export type DialogueCloseHudNext = {
+  /** El panel estaba abierto y hay que cerrarlo. */
+  closed: boolean;
+  lastLootMsg: string;
+};
+
+/**
+ * T toggle-off o Esc: si el panel está abierto, pide refresh y quita leftover
+ * «diálogo id» de lastLootMsg. Esc ya cerrado = no-op (lastLootMsg intacto).
+ * No inventa copy: limpia el leftover de apertura. Trust/otros msgs se quedan.
+ */
+export function nextDialogueCloseHud(
+  open: boolean,
+  lastLootMsg: string,
+): DialogueCloseHudNext {
+  if (!open) return { closed: false, lastLootMsg };
+  const leftover = lastLootMsg.startsWith(DIALOGUE_OPEN_HUD_PREFIX);
+  return { closed: true, lastLootMsg: leftover ? "" : lastLootMsg };
+}
+
 /**
  * Calmar → ruega · Amenazar → demonio · Preguntar → lucidez · Ofrecer → ruega · Distraer → demonio.
  * Deltas calibrados para cruzar umbrales en ~2–3 interacciones.
