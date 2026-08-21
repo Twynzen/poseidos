@@ -845,4 +845,38 @@ describe("death → R HUD vivo (mudos/poseídos, sin HAS MUERTO)", () => {
     expect(deadStarve).toBe(`${GAME_OVER_LINE} · ${starve}`);
     expect(isKeepableDeathCause(starve)).toBe(true);
   });
+
+  test("F9 load-muerto con panel abierto: HAS MUERTO · cargado sin leftover diálogo id; ya cerrado igual; load-vivo sí pinta", () => {
+    const { muteN, possN } = countKinds(spawnDefaults());
+    const dlg = dialogueOpenHudMsg("poss-a");
+
+    const deadOpen = formatHudStatus(
+      base({ muteN, possN, gameOver: true, msg: "cargado" }),
+    );
+    expect(deadOpen).toBe(`${GAME_OVER_LINE} · cargado`);
+    expect(deadOpen).toContain("HAS MUERTO");
+    expect(deadOpen).toContain("cargado");
+    expect(deadOpen).not.toContain("diálogo");
+    expect(deadOpen).not.toContain("poss-a");
+    expect(isKeepableDeathCause(dlg)).toBe(false);
+
+    const lingerWould = formatHudStatus(
+      base({ muteN, possN, gameOver: true, msg: dlg }),
+    );
+    expect(lingerWould).toContain("diálogo poss-a");
+    expect(deadOpen).not.toBe(lingerWould);
+
+    const deadClosed = formatHudStatus(
+      base({ muteN, possN, gameOver: true, msg: "cargado" }),
+    );
+    expect(deadClosed).toBe(`${GAME_OVER_LINE} · cargado`);
+    expect(deadClosed).not.toContain("diálogo");
+
+    const liveOpen = formatHudStatus(
+      base({ muteN, possN, dlgHint: dlg, msg: "cargado" }),
+    );
+    expect(liveOpen).toContain("cargado");
+    expect(liveOpen).toContain("diálogo poss-a");
+    expect(liveOpen).not.toContain("HAS MUERTO");
+  });
 });

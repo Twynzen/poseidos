@@ -62,6 +62,8 @@ import {
   HostileSim,
   defaultHostileSpawns,
   defaultPossessedSpawns,
+  SPAWN_GRACE_SECONDS,
+  loadAliveRuntime,
 } from "../src/ai";
 import { makeFloor, makeWall } from "../src/world/tile";
 import { TileMap } from "../src/world/tilemap";
@@ -449,6 +451,44 @@ describe("nextDialogueCloseHud (T / Esc / validate HUD)", () => {
     expect(nextDialogueCloseHud(false, starve).lastLootMsg).toBe(starve);
   });
 
+  test("F9 load-muerto con panel abierto: cierra como enterGameOver; ya cerrado no-op; load-vivo no cierra", () => {
+    const session = new DialogueSession();
+    const openMsg = dialogueOpenHudMsg("poss-a");
+    const cargado = "cargado";
+
+    session.begin("poss-a");
+    expect(session.open).toBe(true);
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    // doLoad: si gameOver, closeDialogueOnGameOver (salta enterGameOver).
+    const viaDeadOpen = nextDialogueCloseHud(true, openMsg);
+    expect(viaDeadOpen).toEqual({ closed: true, lastLootMsg: "" });
+    session.close();
+    expect(session.open).toBe(false);
+    // doLoad pisa lastLootMsg con cargado (no leftover diálogo id).
+    expect(cargado).toBe("cargado");
+    expect(cargado.startsWith(DIALOGUE_OPEN_HUD_PREFIX)).toBe(false);
+
+    const alreadyClosed = nextDialogueCloseHud(false, openMsg);
+    expect(alreadyClosed).toEqual({ closed: false, lastLootMsg: openMsg });
+    const closedCargado = nextDialogueCloseHud(false, cargado);
+    expect(closedCargado).toEqual({ closed: false, lastLootMsg: cargado });
+
+    session.begin("poss-a");
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    // load-vivo no llama closeDialogueOnGameOver: panel y leftover se quedan.
+    expect(session.open).toBe(true);
+    expect(session.target).toBe("poss-a");
+    const keepOpen = nextDialogueCloseHud(false, openMsg);
+    expect(keepOpen).toEqual({ closed: false, lastLootMsg: openMsg });
+    session.close();
+  });
+
   test("Game T close y Esc close asignan lastLootMsg/hudAcc via nextDialogueCloseHud (sin lootToast)", () => {
     const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
     expect(src).toContain("nextDialogueCloseHud(");
@@ -475,15 +515,22 @@ describe("nextDialogueCloseHud (T / Esc / validate HUD)", () => {
       /closeDialogueOnGameOver\(\): void \{[\s\S]{0,120}if \(!this\.dialogue\.open\) return;[\s\S]{0,80}nextDialogueCloseHud\(true, this\.lastLootMsg\)[\s\S]{0,220}this\.hudAcc = 1[\s\S]{0,80}syncDialoguePanel/,
     );
     expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}this\.closeDialogueOnGameOver\(\);[\s\S]{0,80}if \(loaded\.gameOver\)/,
+    );
+    expect(src).toMatch(
       /this\.syncSpeechOverlay\(\);\s*this\.syncDialoguePanel\(\);[\s\S]{0,80}this\.hudAcc \+= dt/,
     );
     expect((src.match(/consumeTalk\(\)/g) ?? []).length).toBe(1);
     expect((src.match(/consumeCancel\(\)/g) ?? []).length).toBe(1);
-    expect((src.match(/closeDialogueOnGameOver\(\)/g) ?? []).length).toBe(3);
+    expect((src.match(/closeDialogueOnGameOver\(\)/g) ?? []).length).toBe(4);
     expect(src).not.toMatch(/tryToggleDialogue\(\)[\s\S]{0,900}lootToast/);
     expect(src).not.toMatch(/consumeCancel\(\)[\s\S]{0,400}lootToast/);
     expect(src).not.toMatch(/dialogue\.validate\([\s\S]{0,400}lootToast/);
     expect(src).not.toMatch(/enterGameOver\(\)[\s\S]{0,400}lootToast/);
+    expect(src).not.toMatch(/doLoad\(\)[\s\S]{0,500}lootToast/);
   });
 });
 

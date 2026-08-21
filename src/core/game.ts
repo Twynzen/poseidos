@@ -420,6 +420,10 @@ export class Game {
     } else {
       this.view.clearPlayerAction();
     }
+    // Load-muerto salta enterGameOver: cerrar panel antes de refreshViewAfterLoad.
+    if (loaded.gameOver) {
+      this.closeDialogueOnGameOver();
+    }
     if (!hasFlashlight(this.player.inventory)) this.flashlightOn = false;
     this.noise.clear();
     this.refreshViewAfterLoad();
@@ -798,8 +802,9 @@ export class Game {
   }
 
   /**
-   * Muerte: cierra el panel igual que T/Esc/validate para que no tape HAS MUERTO.
-   * Ya cerrado = no-op (lastLootMsg intacto). Keepable causa la filtra enterGameOver.
+   * Muerte / F9 load-muerto: cierra el panel igual que T/Esc/validate
+   * para que no tape HAS MUERTO. Ya cerrado = no-op (lastLootMsg intacto).
+   * Keepable causa la filtra enterGameOver; doLoad pisa lastLootMsg con cargado.
    */
   private closeDialogueOnGameOver(): void {
     if (!this.dialogue.open) return;
