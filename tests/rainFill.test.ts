@@ -3,6 +3,7 @@ import { PlayerSim } from "../src/actors/player";
 import { NEEDS_RELIEF } from "../src/actors/needs";
 import {
   addItem,
+  attemptRefill,
   canRefillFromRain,
   createInventory,
   diagnoseRefill,
@@ -10,6 +11,7 @@ import {
   getItemDef,
   inventorySummary,
   refillFailMessage,
+  refillFullMessage,
   tryRefillFromRain,
 } from "../src/items";
 import {
@@ -96,6 +98,16 @@ describe("rainFill", () => {
     expect(inv.slots[0]?.qty).toBe(1);
   });
 
+  test("leftover con hueco: vacía×2 → agua + vacía", () => {
+    const inv = createInventory(4, 20, [{ id: "empty_bottle", qty: 2 }]);
+    expect(diagnoseRefill(true, true, inv)).toBeNull();
+    const ok = attemptRefill(true, true, inv);
+    expect(ok.ok).toBe(true);
+    expect(inv.slots.find((s) => s.id === "empty_bottle")?.qty).toBe(1);
+    expect(inv.slots.find((s) => s.id === "water_bottle")?.qty).toBe(1);
+    expect(refillFullMessage(1)).toBeNull();
+  });
+
   test("tryRefill in-place: vacía→agua mismo índice; lata no se corre", () => {
     const inv = createInventory(8, 20, [
       { id: "empty_bottle", qty: 1 },
@@ -144,15 +156,107 @@ describe("rainFill", () => {
     expect(findSlot(inv, "water_bottle")).toBe(-1);
   });
 
+  test("dest slots llenos: botella intacta, toast inventario lleno", () => {
+    const inv = createInventory(1, 20, [{ id: "empty_bottle", qty: 2 }]);
+    const before = inv.slots.map((s) => ({ ...s }));
+    expect(canRefillFromRain(true, true, inv)).toBe(true);
+    expect(diagnoseRefill(true, true, inv)).toBe("inv_full");
+    expect(tryRefillFromRain(true, true, inv)).toBe(false);
+    expect(inv.slots).toEqual(before);
+    expect(inv.slots[0]?.id).toBe("empty_bottle");
+    expect(inv.slots[0]?.qty).toBe(2);
+    expect(findSlot(inv, "water_bottle")).toBe(-1);
+    const fail = attemptRefill(true, true, inv);
+    expect(fail.ok).toBe(false);
+    if (!fail.ok) {
+      expect(fail.reason).toBe("inv_full");
+      expect(fail.message).toBe("inventario lleno");
+      expect(fail.message).toBe(refillFailMessage("inv_full"));
+      expect(fail.message).not.toBe(refillFailMessage("no_rain"));
+      expect(fail.message).not.toBe(refillFailMessage("indoor"));
+      expect(fail.message).not.toBe(refillFailMessage("no_bottle"));
+    }
+    expect(inv.slots).toEqual(before);
+    expect(refillFullMessage(0)).toBe("inventario lleno");
+    expect(refillFullMessage(0)).toBe(refillFailMessage("inv_full"));
+  });
+
+  test("dest max stack: botella intacta, toast inventario lleno", () => {
+    const inv = createInventory(2, 20);
+    addItem(inv, "water_bottle", 5);
+    addItem(inv, "empty_bottle", 2);
+    const before = inv.slots.map((s) => ({ ...s }));
+    expect(diagnoseRefill(true, true, inv)).toBe("inv_full");
+    expect(tryRefillFromRain(true, true, inv)).toBe(false);
+    expect(inv.slots).toEqual(before);
+    expect(inv.slots.find((s) => s.id === "empty_bottle")?.qty).toBe(2);
+    expect(inv.slots.find((s) => s.id === "water_bottle")?.qty).toBe(5);
+    const fail = attemptRefill(true, true, inv);
+    expect(fail.ok).toBe(false);
+    if (!fail.ok) {
+      expect(fail.reason).toBe("inv_full");
+      expect(fail.message).toBe("inventario lleno");
+    }
+    expect(refillFullMessage(0)).toBe("inventario lleno");
+  });
+
+  test("dest peso lleno: botella intacta, toast inventario lleno", () => {
+    // leftover: −0.2 vacía +0.4 agua → 0.6 > maxWeight 0.5
+    const inv = createInventory(4, 0.5, [{ id: "empty_bottle", qty: 2 }]);
+    const before = inv.slots.map((s) => ({ ...s }));
+    expect(diagnoseRefill(true, true, inv)).toBe("inv_full");
+    const fail = attemptRefill(true, true, inv);
+    expect(fail.ok).toBe(false);
+    if (!fail.ok) {
+      expect(fail.reason).toBe("inv_full");
+      expect(fail.message).toBe(refillFailMessage("inv_full"));
+    }
+    expect(inv.slots).toEqual(before);
+    expect(inv.slots[0]?.qty).toBe(2);
+  });
+
+  test("última vacía (qty 1) libera hueco: entra el agua", () => {
+    const inv = createInventory(1, 20, [{ id: "empty_bottle", qty: 1 }]);
+    expect(diagnoseRefill(true, true, inv)).toBeNull();
+    const ok = attemptRefill(true, true, inv);
+    expect(ok.ok).toBe(true);
+    expect(inv.slots[0]?.id).toBe("water_bottle");
+    expect(inv.slots[0]?.qty).toBe(1);
+    expect(refillFullMessage(1)).toBeNull();
+  });
+
   test("diagnose + mensajes fail", () => {
     const inv = createInventory(4, 20);
     expect(diagnoseRefill(false, true, inv)).toBe("no_rain");
-    expect(refillFailMessage("no_rain")).toMatch(/llueve/);
+    expect(refillFailMessage("no_rain")).toBe("no llueve");
     expect(diagnoseRefill(true, false, inv)).toBe("indoor");
-    expect(refillFailMessage("indoor")).toMatch(/outdoor/);
+    expect(refillFailMessage("indoor")).toBe("necesitas estar outdoor");
     expect(diagnoseRefill(true, true, inv)).toBe("no_bottle");
-    expect(refillFailMessage("no_bottle")).toMatch(/vacía/);
-    expect(refillFailMessage("inv_full")).toMatch(/lleno/);
+    expect(refillFailMessage("no_bottle")).toBe("falta botella vacía");
+    expect(refillFailMessage("inv_full")).toBe("inventario lleno");
+    const noRain = attemptRefill(false, true, inv);
+    expect(noRain.ok).toBe(false);
+    if (!noRain.ok) {
+      expect(noRain.reason).toBe("no_rain");
+      expect(noRain.message).toBe("no llueve");
+      expect(noRain.message).not.toBe(refillFailMessage("inv_full"));
+    }
+    const indoor = attemptRefill(true, false, createInventory(4, 20, [
+      { id: "empty_bottle", qty: 1 },
+    ]));
+    expect(indoor.ok).toBe(false);
+    if (!indoor.ok) {
+      expect(indoor.reason).toBe("indoor");
+      expect(indoor.message).toBe("necesitas estar outdoor");
+      expect(indoor.message).not.toBe(refillFailMessage("inv_full"));
+    }
+    const noBottle = attemptRefill(true, true, inv);
+    expect(noBottle.ok).toBe(false);
+    if (!noBottle.ok) {
+      expect(noBottle.reason).toBe("no_bottle");
+      expect(noBottle.message).toBe("falta botella vacía");
+      expect(noBottle.message).not.toBe(refillFailMessage("inv_full"));
+    }
   });
 
   test("WeatherSystem.isRaining alinea con canRefill", () => {
@@ -164,6 +268,27 @@ describe("rainFill", () => {
     expect(canRefillFromRain(w.isRaining, true, inv)).toBe(true);
     w.setKind("drizzle");
     expect(canRefillFromRain(w.isRaining, true, inv)).toBe(true);
+  });
+});
+
+describe("refillFullMessage", () => {
+  test("added 0 → inventario lleno (mismo copy dest-full)", () => {
+    expect(refillFullMessage(0)).toBe("inventario lleno");
+    expect(refillFullMessage(0)).toBe(refillFailMessage("inv_full"));
+    expect(refillFailMessage("inv_full")).toBe("inventario lleno");
+  });
+
+  test("added > 0 → null (éxito)", () => {
+    expect(refillFullMessage(1)).toBeNull();
+  });
+
+  test("otros fails siguen su copy", () => {
+    expect(refillFailMessage("no_rain")).toBe("no llueve");
+    expect(refillFailMessage("indoor")).toBe("necesitas estar outdoor");
+    expect(refillFailMessage("no_bottle")).toBe("falta botella vacía");
+    expect(refillFailMessage("no_rain")).not.toBe(refillFailMessage("inv_full"));
+    expect(refillFailMessage("indoor")).not.toBe(refillFailMessage("inv_full"));
+    expect(refillFailMessage("no_bottle")).not.toBe(refillFailMessage("inv_full"));
   });
 });
 
