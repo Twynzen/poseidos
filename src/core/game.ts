@@ -18,11 +18,7 @@ import {
 } from "../world/los";
 import { PlayerSim } from "../actors/player";
 import { createWorldView, type WorldView } from "../render/worldView";
-import {
-  ISO_FRUSTUM,
-  zoomInFrustum,
-  zoomOutFrustum,
-} from "../render/cameraConfig";
+import { ISO_FRUSTUM, nextIsoZoom } from "../render/cameraConfig";
 import {
   CONTAINER_REACH,
   containerHasLoot,
@@ -1965,18 +1961,18 @@ export class Game {
       : null;
   }
 
-  /** +/- zoom iso: ajusta frustum y reaplica proyección. */
+  /** +/- zoom iso: frustum + resize + HUD (solo si el zoom cambió). */
   private applyIsoZoomInput(): void {
-    let changed = false;
-    if (this.input.consumeZoomIn()) {
-      this.isoFrustum = zoomInFrustum(this.isoFrustum);
-      changed = true;
-    }
-    if (this.input.consumeZoomOut()) {
-      this.isoFrustum = zoomOutFrustum(this.isoFrustum);
-      changed = true;
-    }
-    if (changed) this.resize();
+    const next = nextIsoZoom(
+      this.isoFrustum,
+      this.input.consumeZoomIn(),
+      this.input.consumeZoomOut(),
+    );
+    if (!next.changed) return;
+    this.isoFrustum = next.frustum;
+    this.resize();
+    if (next.msg) this.lastLootMsg = next.msg;
+    this.hudAcc = 1;
   }
 
   private resize(): void {
