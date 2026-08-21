@@ -107,6 +107,29 @@ export function stepHotbarIndex(current: number, delta: number): number {
 }
 
 /**
+ * HAS MUERTO / F9 load-muerto: 1–5 / rueda / clic / swap no aplican.
+ * Vivo (incl. F9 load-vivo): igual que hoy.
+ * No esconde la hotbar; solo gate de input.
+ */
+export function hotbarInputApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no cambia el índice (1–5 / rueda / clic).
+ * Vivo (incl. F9 load-vivo): `proposed` (ya clamp/step).
+ */
+export function nextHotbarSelected(
+  gameOver: boolean,
+  current: number,
+  proposed: number,
+): number {
+  if (!hotbarInputApplies(gameOver)) return current;
+  return proposed;
+}
+
+/**
  * Siempre 5 entradas desde `inv.slots[0..4]`.
  * Stack ausente o qty≤0 → empty. No muta `inv`.
  */

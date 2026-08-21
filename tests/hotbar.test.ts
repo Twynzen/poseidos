@@ -1,4 +1,7 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import { PlayerSim } from "../src/actors/player";
 import {
   createInventory,
@@ -9,6 +12,8 @@ import {
   HOTBAR_SIZE,
   clampHotbarIndex,
   stepHotbarIndex,
+  hotbarInputApplies,
+  nextHotbarSelected,
   swapHotbarStacks,
   hotbarIndexFromKey,
   hotbarKey,
@@ -242,5 +247,82 @@ describe("hotbarInspectLabel", () => {
     );
     expect(hotbarInspectLabel(healMelee[0]!)).toBe("vendaje · curar");
     expect(hotbarInspectLabel(healMelee[1]!)).toBe("cuchillo · melee");
+  });
+});
+
+describe("hotbarInputApplies (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: 1–5 / rueda / clic no cambian selección; load-muerto igual; vivo/load-vivo sí", () => {
+    expect(hotbarInputApplies(true)).toBe(false);
+    expect(nextHotbarSelected(true, 0, 3)).toBe(0);
+    expect(nextHotbarSelected(true, 2, stepHotbarIndex(2, 1))).toBe(2);
+    expect(nextHotbarSelected(true, 1, 4)).toBe(1);
+
+    const alreadyIgnored = nextHotbarSelected(true, 0, 2);
+    expect(alreadyIgnored).toBe(0);
+    expect(nextHotbarSelected(true, 0, 2)).toBe(0);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(hotbarInputApplies(deadRt.gameOver)).toBe(false);
+    expect(nextHotbarSelected(deadRt.gameOver, 0, 3)).toBe(0);
+    expect(nextHotbarSelected(deadRt.gameOver, 2, stepHotbarIndex(2, -1))).toBe(
+      2,
+    );
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(hotbarInputApplies(liveRt.gameOver)).toBe(true);
+    expect(nextHotbarSelected(liveRt.gameOver, 0, 3)).toBe(3);
+    expect(nextHotbarSelected(liveRt.gameOver, 2, stepHotbarIndex(2, 1))).toBe(
+      3,
+    );
+
+    expect(hotbarInputApplies(false)).toBe(true);
+    expect(nextHotbarSelected(false, 0, 3)).toBe(3);
+    expect(nextHotbarSelected(false, 4, stepHotbarIndex(4, 1))).toBe(0);
+    expect(nextHotbarSelected(false, 1, 4)).toBe(4);
+  });
+
+  test("muerte no swapea stacks; vivo sí", () => {
+    const deadInv = createStarterInventory();
+    const before = deadInv.slots.map((s) => ({ ...s }));
+    if (hotbarInputApplies(true)) {
+      swapHotbarStacks(deadInv, 0, 3);
+    }
+    expect(deadInv.slots).toEqual(before);
+
+    const liveInv = createStarterInventory();
+    expect(hotbarInputApplies(false)).toBe(true);
+    expect(swapHotbarStacks(liveInv, 0, 3)).toBe(true);
+    expect(liveInv.slots[0]?.id).toBe("pistol");
+    expect(liveInv.slots[3]?.id).toBe("water_bottle");
+  });
+
+  test("Game tick gatea 1–5 / rueda / clic / swap con gameOver; freeze sigue pintando hotbar", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("hotbarInputApplies(");
+    expect(src).toContain("nextHotbarSelected(");
+    expect(src).toMatch(
+      /hotbarInputApplies\(\s*this\.gameOver[\s\S]{0,900}if \(this\.gameOver \|\| !this\.player\.alive\)/,
+    );
+    expect(src).toMatch(
+      /this\.hotbarSelected = nextHotbarSelected\(\s*this\.gameOver/,
+    );
+    expect(src).toMatch(
+      /refreshHud\(force: boolean\): void \{[\s\S]{0,500}if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,800}this\.hotbarHud\.sync\(hotbarSlots\(this\.player\.inventory\),\s*this\.hotbarSelected\)/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,900}this\.hotbarSelected = slot/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,900}this\.hotbarHud\.root\.hidden/,
+    );
   });
 });
