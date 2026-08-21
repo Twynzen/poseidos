@@ -848,6 +848,8 @@ export class Game {
     this.syncMoodlesHud();
     this.syncInteractFocus();
     this.applyFov();
+    // FOV ya en radio base: ocultar mudos/poseídos del anillo +4 linterna.
+    this.syncHostileView();
     this.syncLighting();
   }
 
@@ -1142,6 +1144,7 @@ export class Game {
       this.syncHeartbeat(dt);
       this.syncFootsteps(dt, 0, false);
       this.applyFov();
+      this.syncHostileView(dt);
       this.syncLighting();
       this.syncRainVisual(dt);
     this.syncGrassVisual(dt);
