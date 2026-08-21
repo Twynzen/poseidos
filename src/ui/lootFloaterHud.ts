@@ -30,6 +30,7 @@ const ERR_LABELS = new Set([
   "no se puede partir",
   "no se puede juntar",
   "vacío",
+  "inventario lleno",
 ]);
 
 const QTY_RE = /\s*×(\d+)/;

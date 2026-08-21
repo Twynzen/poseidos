@@ -26,6 +26,7 @@ import {
 import {
   CONTAINER_REACH,
   containerHasLoot,
+  lootFullMessage,
   inventorySummary,
   buildInventoryPanelData,
   findSlot,
@@ -938,6 +939,23 @@ export class Game {
     }
   }
 
+  /** G / Shift+G / E-fallback: dest lleno + loot cerca → toast existente. */
+  private toastLootFull(): void {
+    const msg = lootFullMessage(
+      null,
+      this.containers.nearest(
+        this.player.x,
+        this.player.y,
+        CONTAINER_REACH,
+        this.lootPreferTile(),
+      ),
+    );
+    if (!msg) return;
+    this.lastLootMsg = msg;
+    this.lootToast.show(msg);
+    this.hudAcc = 1;
+  }
+
   private toastMerge(index: number): void {
     const merged = mergeStack(this.player.inventory, index);
     if (merged) {
@@ -1224,6 +1242,8 @@ export class Game {
           this.lastLootMsg = lootLabel;
           this.hudAcc = 1; // forzar refresh
           this.refreshNearestLootMarker();
+        } else {
+          this.toastLootFull();
         }
       }
     }
@@ -1243,6 +1263,8 @@ export class Game {
         this.lastLootMsg = lootLabel;
         this.hudAcc = 1;
         this.refreshNearestLootMarker();
+      } else {
+        this.toastLootFull();
       }
     }
     const drop = this.input.consumeDrop();
