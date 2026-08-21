@@ -87,7 +87,7 @@ describe("constantes", () => {
       resolve(process.cwd(), "src/render/worldView.ts"),
       "utf8",
     );
-    expect(src).toContain("bedFocusMul(bestD, bedFocusElapsed)");
+    expect(src).toContain("bedFocusMul(bestD, bedFocusElapsed, gameOver)");
     expect(src).toContain("e.group.scale.setScalar(mul)");
   });
 });
