@@ -88,10 +88,17 @@ export function lootNameplateOpacity(dist: number): number {
 
 /**
  * Visible si opacity > 0 y el contenedor no está vacío.
- * empty / dist >= 5.5 / no finito → false.
- * Firma igual que `lootRingVisible(empty, dist)`.
+ * empty / dist >= fade / no finito → false.
+ * gameOver → hidden (HAS MUERTO / F9 load-muerto; no tapa HAS MUERTO).
+ * Ya oculto = no-op; gameOver no inventa nameplate.
+ * Firma igual que `lootRingVisible(empty, dist, reach?, gameOver?)`.
  */
-export function lootNameplateVisible(empty: boolean, dist: number): boolean {
+export function lootNameplateVisible(
+  empty: boolean,
+  dist: number,
+  gameOver = false,
+): boolean {
+  if (gameOver) return false;
   if (empty) return false;
   return lootNameplateOpacity(dist) > 0;
 }

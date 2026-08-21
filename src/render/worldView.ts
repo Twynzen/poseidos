@@ -407,7 +407,7 @@ export interface WorldView {
    * Fuera de reach: scale 1; anillo/badge ocultos. Nameplate sigue (salvo empty).
    * `emptyIds`: contenedores vacíos — grupo oculto, no reciben foco.
    * Nameplate canvas: `plate.visible` + opacity + `plate.scale` (mul dist).
-   * `gameOver`: HAS MUERTO / F9 load-muerto — anillo+escala off (nameplate sigue).
+   * `gameOver`: HAS MUERTO / F9 load-muerto — anillo+escala+nameplate off.
    */
   syncLootFocus(
     wx: number,
@@ -1585,7 +1585,7 @@ export function createWorldView(
         const vis = lootRingVisible(empty, d, LOOT_FOCUS_REACH, gameOver);
         e.group.visible = !empty;
         setInteractRingVisible(e.group, vis);
-        e.nameplate.visible = lootNameplateVisible(empty, d);
+        e.nameplate.visible = lootNameplateVisible(empty, d, gameOver);
         const plateMat = e.nameplate.material as THREE.SpriteMaterial;
         plateMat.opacity = lootNameplateOpacity(d);
         const s = lootNameplateScale(d);

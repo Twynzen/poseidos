@@ -1640,7 +1640,7 @@ export class Game {
   }
 
   /**
-   * Pulso loot/puerta/cama: gameOver → anillo+escala off (no pulse sobre el cadáver).
+   * Pulso loot/puerta/cama + nameplate loot: gameOver → anillo+escala+plate off.
    * Vivo (incl. F9 load-vivo): igual que hoy. Ya apagado = no-op.
    */
   private syncInteractFocus(dt = 0): void {
