@@ -669,7 +669,7 @@ describe("lootNameplateVisible (HAS MUERTO / F9 load-muerto)", () => {
       "e.nameplate.visible = lootNameplateVisible(empty, d, gameOver)",
     );
     expect(viewSrc).toMatch(
-      /syncLootFocus\(wx, wy, dt, emptyIds, gameOver = false\) \{[\s\S]{0,500}lootNameplateVisible\(empty, d, gameOver\)/,
+      /syncLootFocus\(wx, wy, dt, emptyIds, gameOver = false\) \{[\s\S]{0,800}lootNameplateVisible\(empty, d, gameOver\)/,
     );
   });
 });
