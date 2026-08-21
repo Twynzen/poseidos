@@ -1,12 +1,14 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   BED_FOCUS_PULSE_AMP,
   BED_FOCUS_PULSE_SPEED,
   BED_FOCUS_REACH,
   BED_FOCUS_SCALE_FAR,
   BED_FOCUS_SCALE_NEAR,
+  bedFocusApplies,
   bedFocusInReach,
   bedFocusMul,
   bedBadgeDiscScale,
@@ -179,5 +181,37 @@ describe("bedRingVisible", () => {
     expect(bedRingVisible(0, 0)).toBe(false);
     expect(bedRingVisible(0, Number.NaN)).toBe(false);
     expect(bedRingVisible(0, Number.POSITIVE_INFINITY)).toBe(false);
+  });
+});
+
+describe("bedFocusApplies (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte con pulso: anillo hidden + mul 1; ya apagado no-op; load-muerto hidden; vivo/load-vivo pulsa", () => {
+    const elapsed = Math.PI / (2 * 6.9);
+    expect(bedFocusApplies(true)).toBe(false);
+    expect(bedRingVisible(0, BED_FOCUS_REACH, true)).toBe(false);
+    expect(bedFocusMul(0, elapsed, true)).toBe(1);
+
+    expect(bedRingVisible(8, BED_FOCUS_REACH, true)).toBe(false);
+    expect(bedFocusMul(8, elapsed, true)).toBe(1);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(bedFocusApplies(deadRt.gameOver)).toBe(false);
+    expect(bedRingVisible(0, BED_FOCUS_REACH, deadRt.gameOver)).toBe(false);
+    expect(bedFocusMul(0, elapsed, deadRt.gameOver)).toBe(1);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(bedFocusApplies(liveRt.gameOver)).toBe(true);
+    expect(bedRingVisible(0, BED_FOCUS_REACH, liveRt.gameOver)).toBe(true);
+    expect(bedFocusMul(0, elapsed, liveRt.gameOver)).toBeCloseTo(
+      1.785375 * 1.066125,
+      10,
+    );
+
+    expect(bedFocusApplies(false)).toBe(true);
+    expect(bedRingVisible(0)).toBe(true);
+    expect(bedFocusMul(0, elapsed)).toBeCloseTo(1.785375 * 1.066125, 10);
   });
 });

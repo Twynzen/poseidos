@@ -1,12 +1,14 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   DOOR_FOCUS_PULSE_AMP,
   DOOR_FOCUS_PULSE_SPEED,
   DOOR_FOCUS_REACH,
   DOOR_FOCUS_SCALE_FAR,
   DOOR_FOCUS_SCALE_NEAR,
+  doorFocusApplies,
   doorFocusInReach,
   doorFocusMul,
   doorBadgeDiscScale,
@@ -187,5 +189,41 @@ describe("doorRingVisible", () => {
     expect(doorRingVisible(false, 0, 0)).toBe(false);
     expect(doorRingVisible(true, 0, Number.NaN)).toBe(false);
     expect(doorRingVisible(false, 0, Number.POSITIVE_INFINITY)).toBe(false);
+  });
+});
+
+describe("doorFocusApplies (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte con pulso: anillo hidden + mul 1; ya apagado no-op; load-muerto hidden; vivo/load-vivo pulsa", () => {
+    const elapsed = Math.PI / (2 * 6.9);
+    expect(doorFocusApplies(true)).toBe(false);
+    expect(doorRingVisible(false, 0, DOOR_FOCUS_REACH, true)).toBe(false);
+    expect(doorFocusMul(0, elapsed, true)).toBe(1);
+
+    expect(doorRingVisible(false, 8, DOOR_FOCUS_REACH, true)).toBe(false);
+    expect(doorFocusMul(8, elapsed, true)).toBe(1);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(doorFocusApplies(deadRt.gameOver)).toBe(false);
+    expect(doorRingVisible(true, 0, DOOR_FOCUS_REACH, deadRt.gameOver)).toBe(
+      false,
+    );
+    expect(doorFocusMul(0, elapsed, deadRt.gameOver)).toBe(1);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(doorFocusApplies(liveRt.gameOver)).toBe(true);
+    expect(doorRingVisible(false, 0, DOOR_FOCUS_REACH, liveRt.gameOver)).toBe(
+      true,
+    );
+    expect(doorFocusMul(0, elapsed, liveRt.gameOver)).toBeCloseTo(
+      1.785375 * 1.066125,
+      10,
+    );
+
+    expect(doorFocusApplies(false)).toBe(true);
+    expect(doorRingVisible(false, 0)).toBe(true);
+    expect(doorFocusMul(0, elapsed)).toBeCloseTo(1.785375 * 1.066125, 10);
   });
 });

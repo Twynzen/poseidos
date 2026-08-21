@@ -33,6 +33,16 @@ export const bedBadgeDiscScale = 1.725;
 /** Altura world del floatBadge Z (2.3 × 1.15, para leerse de noche; queda por encima del Soldier 1.5). */
 export const bedBadgeY = 2.645;
 
+/**
+ * HAS MUERTO / F9 load-muerto: no pulso cama (anillo+escala) sobre el cadáver.
+ * Vivo (incl. F9 load-vivo): en reach pulsa igual que hoy.
+ * Ya apagado = no-op; gameOver no inventa pulso.
+ */
+export function bedFocusApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
 /** True si dist está en reach (incl. el borde). */
 export function bedFocusInReach(dist: number): boolean {
   return Number.isFinite(dist) && dist <= BED_FOCUS_REACH;
@@ -58,17 +68,24 @@ export function bedFocusPulse(elapsed: number): number {
   return 1 + BED_FOCUS_PULSE_AMP * Math.sin(t * BED_FOCUS_PULSE_SPEED);
 }
 
-/** scale * pulse si está en reach; si no, 1 (sin pulso). */
-export function bedFocusMul(dist: number, elapsed: number): number {
+/** scale * pulse si está en reach; si no, 1 (sin pulso). gameOver → 1. */
+export function bedFocusMul(
+  dist: number,
+  elapsed: number,
+  gameOver = false,
+): number {
+  if (!bedFocusApplies(gameOver)) return 1;
   if (!bedFocusInReach(dist)) return 1;
   return bedFocusScale(dist) * bedFocusPulse(elapsed);
 }
 
-/** Anillo púrpura sleep solo si la cama está en reach. */
+/** Anillo púrpura sleep solo si la cama está en reach. gameOver → hidden. */
 export function bedRingVisible(
   dist: number,
   reach: number = BED_FOCUS_REACH,
+  gameOver = false,
 ): boolean {
+  if (!bedFocusApplies(gameOver)) return false;
   if (!Number.isFinite(dist) || !Number.isFinite(reach) || reach <= 0) {
     return false;
   }
