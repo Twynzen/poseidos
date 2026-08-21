@@ -804,4 +804,45 @@ describe("death → R HUD vivo (mudos/poseídos, sin HAS MUERTO)", () => {
     expect(closedTrust).toContain(trust);
     expect(closedTrust).not.toContain("diálogo poss-a");
   });
+
+  test("muerte con panel abierto: HAS MUERTO sin leftover diálogo id; ya cerrado igual; keepable se queda", () => {
+    const { muteN, possN } = countKinds(spawnDefaults());
+    const dlg = dialogueOpenHudMsg("poss-a");
+    const combat = "golpe -12 HP";
+    const starve = "hambre te debilita";
+
+    const deadOpen = formatHudStatus(
+      base({ muteN, possN, gameOver: true, msg: "" }),
+    );
+    expect(deadOpen).toBe(GAME_OVER_LINE);
+    expect(deadOpen).toContain("HAS MUERTO");
+    expect(deadOpen).not.toContain("diálogo");
+    expect(deadOpen).not.toContain("poss-a");
+
+    const lingerWould = formatHudStatus(
+      base({ muteN, possN, gameOver: true, msg: dlg }),
+    );
+    expect(lingerWould).toContain("diálogo poss-a");
+    expect(deadOpen).not.toBe(lingerWould);
+    expect(isKeepableDeathCause(dlg)).toBe(false);
+
+    const deadClosed = formatHudStatus(
+      base({ muteN, possN, gameOver: true }),
+    );
+    expect(deadClosed).toBe(GAME_OVER_LINE);
+    expect(deadClosed).not.toContain("diálogo");
+
+    const deadCombat = formatHudStatus(
+      base({ muteN, possN, gameOver: true, msg: combat }),
+    );
+    expect(deadCombat).toBe(`${GAME_OVER_LINE} · ${combat}`);
+    expect(deadCombat).not.toContain("diálogo");
+    expect(isKeepableDeathCause(combat)).toBe(true);
+
+    const deadStarve = formatHudStatus(
+      base({ muteN, possN, gameOver: true, msg: starve }),
+    );
+    expect(deadStarve).toBe(`${GAME_OVER_LINE} · ${starve}`);
+    expect(isKeepableDeathCause(starve)).toBe(true);
+  });
 });

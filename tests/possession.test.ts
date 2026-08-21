@@ -420,13 +420,42 @@ describe("nextDialogueCloseHud (T / Esc / validate HUD)", () => {
     expect(viaDead).toEqual({ closed: true, lastLootMsg: "" });
   });
 
+  test("muerte con panel abierto: cierra como T/Esc; ya cerrado no-op; keepable causa se queda", () => {
+    const session = new DialogueSession();
+    const openMsg = dialogueOpenHudMsg("poss-a");
+    const combat = "golpe -12 HP";
+    const starve = "hambre te debilita";
+
+    session.begin("poss-a");
+    expect(session.open).toBe(true);
+    const viaDeadOpen = nextDialogueCloseHud(true, openMsg);
+    expect(viaDeadOpen).toEqual({ closed: true, lastLootMsg: "" });
+    session.close();
+    expect(session.open).toBe(false);
+
+    const alreadyClosed = nextDialogueCloseHud(false, openMsg);
+    expect(alreadyClosed).toEqual({ closed: false, lastLootMsg: openMsg });
+
+    session.begin("poss-a");
+    const viaCombat = nextDialogueCloseHud(true, combat);
+    expect(viaCombat).toEqual({ closed: true, lastLootMsg: combat });
+    session.close();
+
+    const viaStarve = nextDialogueCloseHud(true, starve);
+    expect(viaStarve).toEqual({ closed: true, lastLootMsg: starve });
+
+    const closedCombat = nextDialogueCloseHud(false, combat);
+    expect(closedCombat).toEqual({ closed: false, lastLootMsg: combat });
+    expect(nextDialogueCloseHud(false, starve).lastLootMsg).toBe(starve);
+  });
+
   test("Game T close y Esc close asignan lastLootMsg/hudAcc via nextDialogueCloseHud (sin lootToast)", () => {
     const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
     expect(src).toContain("nextDialogueCloseHud(");
     expect(src).toContain("dialogueOpenHudMsg(");
     expect(src).toContain("this.lastLootMsg = dialogueOpenHudMsg(near.id)");
     const closeHits = src.match(/nextDialogueCloseHud\(/g);
-    expect(closeHits?.length).toBe(3);
+    expect(closeHits?.length).toBe(4);
     expect(src).toMatch(
       /if \(this\.dialogue\.open\) \{[\s\S]{0,280}nextDialogueCloseHud\(true, this\.lastLootMsg\)[\s\S]{0,220}this\.hudAcc = 1/,
     );
@@ -436,11 +465,25 @@ describe("nextDialogueCloseHud (T / Esc / validate HUD)", () => {
     expect(src).toMatch(
       /this\.dialogue\.validate\([\s\S]{0,180}if \(!this\.dialogue\.open\) \{[\s\S]{0,200}nextDialogueCloseHud\(true, this\.lastLootMsg\)[\s\S]{0,200}this\.hudAcc = 1/,
     );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,200}closeDialogueOnGameOver\(\)[\s\S]{0,280}isKeepableDeathCause[\s\S]{0,200}syncDialoguePanel/,
+    );
+    expect(src).toMatch(
+      /if \(!this\.gameOver\) this\.enterGameOver\(\);[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)/,
+    );
+    expect(src).toMatch(
+      /closeDialogueOnGameOver\(\): void \{[\s\S]{0,120}if \(!this\.dialogue\.open\) return;[\s\S]{0,80}nextDialogueCloseHud\(true, this\.lastLootMsg\)[\s\S]{0,220}this\.hudAcc = 1[\s\S]{0,80}syncDialoguePanel/,
+    );
+    expect(src).toMatch(
+      /this\.syncSpeechOverlay\(\);\s*this\.syncDialoguePanel\(\);[\s\S]{0,80}this\.hudAcc \+= dt/,
+    );
     expect((src.match(/consumeTalk\(\)/g) ?? []).length).toBe(1);
     expect((src.match(/consumeCancel\(\)/g) ?? []).length).toBe(1);
+    expect((src.match(/closeDialogueOnGameOver\(\)/g) ?? []).length).toBe(3);
     expect(src).not.toMatch(/tryToggleDialogue\(\)[\s\S]{0,900}lootToast/);
     expect(src).not.toMatch(/consumeCancel\(\)[\s\S]{0,400}lootToast/);
     expect(src).not.toMatch(/dialogue\.validate\([\s\S]{0,400}lootToast/);
+    expect(src).not.toMatch(/enterGameOver\(\)[\s\S]{0,400}lootToast/);
   });
 });
 
