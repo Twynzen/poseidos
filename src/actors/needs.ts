@@ -36,6 +36,9 @@ export const NEEDS_RELIEF = {
   rest: 25,
 } as const;
 
+/** Copy HUD de R vivo (descanso corto). R muerto usa softReset → "reinicio". */
+export const REST_HUD_MSG = "descansaste";
+
 function clamp01to100(v: number): number {
   if (v < 0) return 0;
   if (v > 100) return 100;
