@@ -312,6 +312,9 @@ export class Game {
   }
 
   start(): void {
+    // Overlay skip (Espacio) no debe colarse como melee/disparo al primer tick.
+    this.input.endFrame();
+    this.renderer.render(this.view.scene, this.view.camera);
     this.loop.start();
   }
 
@@ -413,6 +416,7 @@ export class Game {
     this.noise.clear();
     this.refreshViewAfterLoad();
     this.lastLootMsg = "cargado";
+    this.refreshHud(true);
     return true;
   }
 
@@ -461,6 +465,8 @@ export class Game {
     this.syncDialoguePanel();
     this.syncLighting();
     this.view.followCamera(this.player.x, this.player.y);
+    // R: pintar HUD vivo ya (no esperar 0.25s del freeze path).
+    this.refreshHud(true);
   }
 
   /** Tras applySave: remesh chunks, puertas, FOV, player, día/noche. */
