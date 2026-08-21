@@ -33,6 +33,16 @@ export const doorBadgeDiscScale = 1.725;
 /** Altura world del floatBadge E (2.3 × 1.15, para leerse de noche; queda por encima del Soldier 1.5). */
 export const doorBadgeY = 2.645;
 
+/**
+ * HAS MUERTO / F9 load-muerto: no pulso puerta (anillo+escala) sobre el cadáver.
+ * Vivo (incl. F9 load-vivo): en reach pulsa igual que hoy.
+ * Ya apagado = no-op; gameOver no inventa pulso.
+ */
+export function doorFocusApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
 /** True si dist está en reach (incl. el borde). */
 export function doorFocusInReach(dist: number): boolean {
   return Number.isFinite(dist) && dist <= DOOR_FOCUS_REACH;
@@ -58,8 +68,13 @@ export function doorFocusPulse(elapsed: number): number {
   return 1 + DOOR_FOCUS_PULSE_AMP * Math.sin(t * DOOR_FOCUS_PULSE_SPEED);
 }
 
-/** scale * pulse si está en reach; si no, 1 (sin pulso). */
-export function doorFocusMul(dist: number, elapsed: number): number {
+/** scale * pulse si está en reach; si no, 1 (sin pulso). gameOver → 1. */
+export function doorFocusMul(
+  dist: number,
+  elapsed: number,
+  gameOver = false,
+): number {
+  if (!doorFocusApplies(gameOver)) return 1;
   if (!doorFocusInReach(dist)) return 1;
   return doorFocusScale(dist) * doorFocusPulse(elapsed);
 }
@@ -67,12 +82,15 @@ export function doorFocusMul(dist: number, elapsed: number): number {
 /**
  * Anillo steel blue-grey si la puerta está en reach.
  * `open` se ignora: abierta o cerrada, ambas se muestran en alcance.
+ * gameOver → hidden.
  */
 export function doorRingVisible(
   _open: boolean,
   dist: number,
   reach: number = DOOR_FOCUS_REACH,
+  gameOver = false,
 ): boolean {
+  if (!doorFocusApplies(gameOver)) return false;
   if (!Number.isFinite(dist) || !Number.isFinite(reach) || reach <= 0) {
     return false;
   }

@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import { CONTAINER_REACH } from "../src/items";
 import {
   LOOT_FOCUS_PULSE_AMP,
@@ -10,6 +11,7 @@ import {
   LOOT_FOCUS_SCALE_NEAR,
   lootBadgeIconScale,
   lootBadgeY,
+  lootFocusApplies,
   lootFocusInReach,
   lootFocusMul,
   lootFocusPulse,
@@ -144,5 +146,86 @@ describe("lootRingVisible", () => {
     expect(lootRingVisible(false, 0, 0)).toBe(false);
     expect(lootRingVisible(false, 0, Number.NaN)).toBe(false);
     expect(lootRingVisible(false, 0, Number.POSITIVE_INFINITY)).toBe(false);
+  });
+});
+
+describe("lootFocusApplies (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte con pulso: anillo hidden + mul 1; ya apagado no-op; load-muerto hidden; vivo/load-vivo pulsa", () => {
+    const elapsed = Math.PI / (2 * 6.9); // pulse ≠ 1
+    expect(lootFocusApplies(true)).toBe(false);
+    expect(lootRingVisible(false, 0, LOOT_FOCUS_REACH, true)).toBe(false);
+    expect(lootFocusMul(0, elapsed, true)).toBe(1);
+
+    const alreadyEmpty = lootRingVisible(true, 0, LOOT_FOCUS_REACH, true);
+    expect(alreadyEmpty).toBe(false);
+    expect(lootFocusMul(8, elapsed, true)).toBe(1);
+    expect(lootFocusApplies(true)).toBe(false);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(lootFocusApplies(deadRt.gameOver)).toBe(false);
+    expect(lootRingVisible(false, 0, LOOT_FOCUS_REACH, deadRt.gameOver)).toBe(
+      false,
+    );
+    expect(lootFocusMul(0, elapsed, deadRt.gameOver)).toBe(1);
+    expect(lootRingVisible(true, 0, LOOT_FOCUS_REACH, deadRt.gameOver)).toBe(
+      false,
+    );
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(lootFocusApplies(liveRt.gameOver)).toBe(true);
+    expect(lootRingVisible(false, 0, LOOT_FOCUS_REACH, liveRt.gameOver)).toBe(
+      true,
+    );
+    expect(lootFocusMul(0, elapsed, liveRt.gameOver)).toBeCloseTo(
+      1.785375 * 1.066125,
+      10,
+    );
+
+    expect(lootFocusApplies(false)).toBe(true);
+    expect(lootRingVisible(false, 0)).toBe(true);
+    expect(lootFocusMul(0, elapsed)).toBeCloseTo(1.785375 * 1.066125, 10);
+    expect(lootRingVisible(true, 0)).toBe(false);
+    expect(lootFocusMul(1.61, elapsed)).toBe(1);
+  });
+
+  test("Game enterGameOver / freeze / F9 load-muerto apagan pulso; vivo no hide", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("syncInteractFocus");
+    expect(src).toMatch(
+      /syncInteractFocus\(dt = 0\): void \{[\s\S]{0,400}this\.view\.syncLootFocus\([\s\S]{0,200}this\.gameOver/,
+    );
+    expect(src).toMatch(
+      /syncInteractFocus\(dt = 0\): void \{[\s\S]{0,400}this\.view\.syncDoorFocus\([\s\S]{0,80}this\.gameOver/,
+    );
+    expect(src).toMatch(
+      /syncInteractFocus\(dt = 0\): void \{[\s\S]{0,400}this\.view\.syncBedFocus\([\s\S]{0,80}this\.gameOver/,
+    );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,720}this\.syncInteractFocus\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,900}if \(this\.gameOver\) this\.syncInteractFocus\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2200}this\.syncInteractFocus\(dt\)/,
+    );
+    expect(src).toMatch(
+      /if \(!this\.player\.alive\) \{[\s\S]{0,200}enterGameOver\(\)[\s\S]{0,400}this\.syncInteractFocus\(dt\)/,
+    );
+    expect(src).toMatch(
+      /this\.view\.syncPlayer\(this\.player\.x, this\.player\.y\);\s*this\.syncInteractFocus\(dt\);/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2200}this\.view\.syncLootFocus\(/,
+    );
   });
 });

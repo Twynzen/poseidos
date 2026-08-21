@@ -407,23 +407,27 @@ export interface WorldView {
    * Fuera de reach: scale 1; anillo/badge ocultos. Nameplate sigue (salvo empty).
    * `emptyIds`: contenedores vacíos — grupo oculto, no reciben foco.
    * Nameplate canvas: `plate.visible` + opacity + `plate.scale` (mul dist).
+   * `gameOver`: HAS MUERTO / F9 load-muerto — anillo+escala off (nameplate sigue).
    */
   syncLootFocus(
     wx: number,
     wy: number,
     dt: number,
     emptyIds?: ReadonlySet<string>,
+    gameOver?: boolean,
   ): void;
   /**
    * Pulso de escala de la puerta más cercana en reach (anillo+badge).
    * Fuera de reach: scale 1; anillo/badge ocultos. `dt` avanza el seno.
+   * `gameOver`: HAS MUERTO / F9 load-muerto — anillo+escala off.
    */
-  syncDoorFocus(wx: number, wy: number, dt: number): void;
+  syncDoorFocus(wx: number, wy: number, dt: number, gameOver?: boolean): void;
   /**
    * Pulso de escala de la cama más cercana en reach (anillo+badge).
    * Fuera de reach: scale 1; anillo/badge ocultos. `dt` avanza el seno.
+   * `gameOver`: HAS MUERTO / F9 load-muerto — anillo+escala off.
    */
-  syncBedFocus(wx: number, wy: number, dt: number): void;
+  syncBedFocus(wx: number, wy: number, dt: number, gameOver?: boolean): void;
   /**
    * Locomocion visual: silueta locoBob o mixer GLB (Idle/Walk/Run).
    * No mueve el root mundo — solo locoRoot local (bob) o mixer + yaw.
@@ -1569,7 +1573,7 @@ export function createWorldView(
     addLootMarker(id, x, y, name, inv) {
       addLootMarker({ id, x, y, name, inv });
     },
-    syncLootFocus(wx, wy, dt, emptyIds) {
+    syncLootFocus(wx, wy, dt, emptyIds, gameOver = false) {
       const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
       lootFocusElapsed += safeDt;
       let best = -1;
@@ -1578,7 +1582,7 @@ export function createWorldView(
         const e = lootMarkerGroups[i]!;
         const empty = !!emptyIds?.has(e.id);
         const d = Math.hypot(wx - e.x, wy - e.y);
-        const vis = lootRingVisible(empty, d, LOOT_FOCUS_REACH);
+        const vis = lootRingVisible(empty, d, LOOT_FOCUS_REACH, gameOver);
         e.group.visible = !empty;
         setInteractRingVisible(e.group, vis);
         e.nameplate.visible = lootNameplateVisible(empty, d);
@@ -1602,11 +1606,12 @@ export function createWorldView(
           e.group.scale.setScalar(1);
           continue;
         }
-        const mul = i === best ? lootFocusMul(bestD, lootFocusElapsed) : 1;
+        const mul =
+          i === best ? lootFocusMul(bestD, lootFocusElapsed, gameOver) : 1;
         e.group.scale.setScalar(mul);
       }
     },
-    syncDoorFocus(wx, wy, dt) {
+    syncDoorFocus(wx, wy, dt, gameOver = false) {
       const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
       doorFocusElapsed += safeDt;
       let best = -1;
@@ -1615,7 +1620,7 @@ export function createWorldView(
         const e = doorMarkerGroups[i]!;
         const d = Math.hypot(wx - e.x, wy - e.y);
         const open = map.get(Math.floor(e.x), Math.floor(e.y))?.open ?? false;
-        const vis = doorRingVisible(open, d, DOOR_FOCUS_REACH);
+        const vis = doorRingVisible(open, d, DOOR_FOCUS_REACH, gameOver);
         setInteractRingVisible(e.group, vis);
         if (vis && d < bestD) {
           bestD = d;
@@ -1624,11 +1629,12 @@ export function createWorldView(
       }
       for (let i = 0; i < doorMarkerGroups.length; i++) {
         const e = doorMarkerGroups[i]!;
-        const mul = i === best ? doorFocusMul(bestD, doorFocusElapsed) : 1;
+        const mul =
+          i === best ? doorFocusMul(bestD, doorFocusElapsed, gameOver) : 1;
         e.group.scale.setScalar(mul);
       }
     },
-    syncBedFocus(wx, wy, dt) {
+    syncBedFocus(wx, wy, dt, gameOver = false) {
       const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
       bedFocusElapsed += safeDt;
       let best = -1;
@@ -1636,7 +1642,7 @@ export function createWorldView(
       for (let i = 0; i < bedMarkerGroups.length; i++) {
         const e = bedMarkerGroups[i]!;
         const d = Math.hypot(wx - e.x, wy - e.y);
-        const vis = bedRingVisible(d, BED_FOCUS_REACH);
+        const vis = bedRingVisible(d, BED_FOCUS_REACH, gameOver);
         setInteractRingVisible(e.group, vis);
         if (vis && d < bestD) {
           bestD = d;
@@ -1645,7 +1651,8 @@ export function createWorldView(
       }
       for (let i = 0; i < bedMarkerGroups.length; i++) {
         const e = bedMarkerGroups[i]!;
-        const mul = i === best ? bedFocusMul(bestD, bedFocusElapsed) : 1;
+        const mul =
+          i === best ? bedFocusMul(bestD, bedFocusElapsed, gameOver) : 1;
         e.group.scale.setScalar(mul);
       }
     },

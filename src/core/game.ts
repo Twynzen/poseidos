@@ -502,6 +502,8 @@ export class Game {
     this.syncLootFloaterOverlay();
     this.syncInventoryPanel();
     this.syncMoodlesHud();
+    // Load-muerto: apagar pulso leftover (load-vivo espera el tick, igual que hoy).
+    if (this.gameOver) this.syncInteractFocus();
     this.syncLighting();
     this.view.followCamera(this.player.x, this.player.y);
   }
@@ -842,6 +844,7 @@ export class Game {
     this.syncLootFloaterOverlay();
     this.syncInventoryPanel();
     this.syncMoodlesHud();
+    this.syncInteractFocus();
   }
 
 
@@ -1141,14 +1144,7 @@ export class Game {
       this.view.tickNoiseRings(dt);
       this.tickHitFlashOverlay(dt);
       this.view.syncPlayer(this.player.x, this.player.y);
-      this.view.syncLootFocus(
-        this.player.x,
-        this.player.y,
-        dt,
-        this.emptyLootIds(),
-      );
-      this.view.syncDoorFocus(this.player.x, this.player.y, dt);
-      this.view.syncBedFocus(this.player.x, this.player.y, dt);
+      this.syncInteractFocus(dt);
       // Mixer must keep ticking during freeze so death LoopOnce can play/clamp.
       this.view.tickPlayerLoco(dt, false, false);
       this.renderer.render(this.view.scene, this.view.camera);
@@ -1245,14 +1241,7 @@ export class Game {
       this.syncSpeechOverlay();
       this.tickHitFlashOverlay(dt);
       this.view.syncPlayer(this.player.x, this.player.y);
-      this.view.syncLootFocus(
-        this.player.x,
-        this.player.y,
-        dt,
-        this.emptyLootIds(),
-      );
-      this.view.syncDoorFocus(this.player.x, this.player.y, dt);
-      this.view.syncBedFocus(this.player.x, this.player.y, dt);
+      this.syncInteractFocus(dt);
       this.view.tickPlayerLoco(dt, false, false);
       this.renderer.render(this.view.scene, this.view.camera);
       this.refreshHud(true);
@@ -1620,14 +1609,7 @@ export class Game {
     this.view.syncVisibleChunks(this.player.x, this.player.y);
     this.applyFov();
     this.view.syncPlayer(this.player.x, this.player.y);
-    this.view.syncLootFocus(
-      this.player.x,
-      this.player.y,
-      dt,
-      this.emptyLootIds(),
-    );
-    this.view.syncDoorFocus(this.player.x, this.player.y, dt);
-    this.view.syncBedFocus(this.player.x, this.player.y, dt);
+    this.syncInteractFocus(dt);
     {
       const ax = this.input.axes;
       const moving = ax.x !== 0 || ax.z !== 0;
@@ -1655,6 +1637,22 @@ export class Game {
       this.hudAcc = 0;
       this.refreshHud(false);
     }
+  }
+
+  /**
+   * Pulso loot/puerta/cama: gameOver → anillo+escala off (no pulse sobre el cadáver).
+   * Vivo (incl. F9 load-vivo): igual que hoy. Ya apagado = no-op.
+   */
+  private syncInteractFocus(dt = 0): void {
+    this.view.syncLootFocus(
+      this.player.x,
+      this.player.y,
+      dt,
+      this.emptyLootIds(),
+      this.gameOver,
+    );
+    this.view.syncDoorFocus(this.player.x, this.player.y, dt, this.gameOver);
+    this.view.syncBedFocus(this.player.x, this.player.y, dt, this.gameOver);
   }
 
   /** Ids de contenedores sin loot — anillo de loot oculto. */

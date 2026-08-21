@@ -26,6 +26,16 @@ export const lootBadgeY = 2.645;
 /** Escala world del glifo loot (0.8 × 1.15, misma convención door/bed letter/disc). */
 export const lootBadgeIconScale = 0.92;
 
+/**
+ * HAS MUERTO / F9 load-muerto: no pulso loot (anillo+escala) sobre el cadáver.
+ * Vivo (incl. F9 load-vivo): en reach pulsa igual que hoy.
+ * Ya apagado = no-op; gameOver no inventa pulso.
+ */
+export function lootFocusApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
 /** True si dist está en reach (incl. el borde). */
 export function lootFocusInReach(dist: number): boolean {
   return Number.isFinite(dist) && dist <= LOOT_FOCUS_REACH;
@@ -51,18 +61,25 @@ export function lootFocusPulse(elapsed: number): number {
   return 1 + LOOT_FOCUS_PULSE_AMP * Math.sin(t * LOOT_FOCUS_PULSE_SPEED);
 }
 
-/** scale * pulse si está en reach; si no, 1 (sin pulso). */
-export function lootFocusMul(dist: number, elapsed: number): number {
+/** scale * pulse si está en reach; si no, 1 (sin pulso). gameOver → 1. */
+export function lootFocusMul(
+  dist: number,
+  elapsed: number,
+  gameOver = false,
+): number {
+  if (!lootFocusApplies(gameOver)) return 1;
   if (!lootFocusInReach(dist)) return 1;
   return lootFocusScale(dist) * lootFocusPulse(elapsed);
 }
 
-/** Anillo ámbar solo si hay loot Y está en reach. */
+/** Anillo ámbar solo si hay loot Y está en reach. gameOver → hidden. */
 export function lootRingVisible(
   empty: boolean,
   dist: number,
   reach: number = LOOT_FOCUS_REACH,
+  gameOver = false,
 ): boolean {
+  if (!lootFocusApplies(gameOver)) return false;
   if (empty) return false;
   if (!Number.isFinite(dist) || !Number.isFinite(reach) || reach <= 0) {
     return false;
