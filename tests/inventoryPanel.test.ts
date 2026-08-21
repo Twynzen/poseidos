@@ -5,12 +5,16 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   buildInventoryPanelData,
   createInventory,
   type Inventory,
 } from "../src/items";
-import { createInventoryPanel } from "../src/ui/inventory";
+import {
+  createInventoryPanel,
+  inventoryPanelVisible,
+} from "../src/ui/inventory";
 import { inventoryInspectLabel } from "../src/ui/hotbar";
 
 function invWithHole(): Inventory {
@@ -701,5 +705,85 @@ describe("inventory panel CSS", () => {
     expect(html).not.toMatch(
       /\.inv-badge\s*\{[^}]*border:\s*1px solid rgba\(96,\s*165,\s*250,\s*0\.35\)/s,
     );
+  });
+});
+
+describe("inventoryPanelVisible (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte con I abierto: overlay hidden; ya cerrado no-op; load-muerto hidden; vivo/load-vivo pinta", () => {
+    expect(inventoryPanelVisible(true, true)).toBe(false);
+
+    const alreadyClosed = inventoryPanelVisible(true, false);
+    expect(alreadyClosed).toBe(false);
+    expect(inventoryPanelVisible(true, false)).toBe(false);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(inventoryPanelVisible(deadRt.gameOver, true)).toBe(false);
+    expect(inventoryPanelVisible(deadRt.gameOver, false)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(inventoryPanelVisible(liveRt.gameOver, true)).toBe(true);
+
+    expect(inventoryPanelVisible(false, true)).toBe(true);
+    expect(inventoryPanelVisible(false, false)).toBe(false);
+  });
+
+  test("Game enterGameOver / freeze / F9 load-muerto ocultan #inventory-panel; vivo no hide", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("inventoryPanelVisible(");
+    expect(src).toMatch(
+      /syncInventoryPanel\(\): void \{[\s\S]{0,280}inventoryPanelVisible\(\s*this\.gameOver/,
+    );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,560}this\.syncInventoryPanel\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,560}this\.syncInventoryPanel\(\)/,
+    );
+    expect(src).toMatch(
+      /this\.syncSpeechOverlay\(\);\s*this\.syncDialoguePanel\(\);\s*this\.syncLootFloaterOverlay\(\);\s*this\.syncInventoryPanel\(\);\s*this\.hudAcc \+= dt/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,900}this\.showInvDetail = true/,
+    );
+  });
+});
+
+describe("createInventoryPanel hide (HAS MUERTO)", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  test("sync open false oculta panel abierto; ya oculto sigue oculto; vivo reabre", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [{ id: "scrap", qty: 1 }]);
+    const data = buildInventoryPanelData(inv);
+    const el = root.querySelector<HTMLElement>("#inventory-panel");
+    expect(el).toBeTruthy();
+
+    panel.sync({ open: true, data });
+    expect(el!.hidden).toBe(false);
+
+    panel.sync({ open: false, data });
+    expect(el!.hidden).toBe(true);
+
+    panel.sync({ open: false, data });
+    expect(el!.hidden).toBe(true);
+
+    panel.sync({ open: true, data });
+    expect(el!.hidden).toBe(false);
+    panel.dispose();
   });
 });

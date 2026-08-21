@@ -19,6 +19,19 @@ export interface InventoryPanelView {
   selectedIndex?: number | null;
 }
 
+/**
+ * HAS MUERTO / F9 load-muerto: no pintar #inventory-panel encima.
+ * Vivo (incl. F9 load-vivo): showInvDetail igual que hoy.
+ * Ya cerrado (showInvDetail false) = hidden; gameOver no inventa panel.
+ */
+export function inventoryPanelVisible(
+  gameOver: boolean,
+  showInvDetail: boolean,
+): boolean {
+  if (gameOver) return false;
+  return showInvDetail;
+}
+
 export interface InventoryPanel {
   sync(view: InventoryPanelView): void;
   /** Último clic en fila; last-wins; consume y limpia. */

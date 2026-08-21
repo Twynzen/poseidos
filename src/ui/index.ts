@@ -42,6 +42,7 @@ export {
 
 export {
   createInventoryPanel,
+  inventoryPanelVisible,
   type InventoryPanel,
   type InventoryPanelView,
 } from "./inventory";

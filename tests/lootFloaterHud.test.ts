@@ -431,7 +431,7 @@ describe("lootFloaterVisible (HAS MUERTO / F9 load-muerto)", () => {
       /refreshViewAfterLoad\(\): void \{[\s\S]{0,500}this\.syncLootFloaterOverlay\(\)/,
     );
     expect(src).toMatch(
-      /this\.syncSpeechOverlay\(\);\s*this\.syncDialoguePanel\(\);\s*this\.syncLootFloaterOverlay\(\);\s*this\.hudAcc \+= dt/,
+      /this\.syncSpeechOverlay\(\);\s*this\.syncDialoguePanel\(\);\s*this\.syncLootFloaterOverlay\(\);\s*this\.syncInventoryPanel\(\);\s*this\.hudAcc \+= dt/,
     );
     expect(src).toMatch(
       /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
