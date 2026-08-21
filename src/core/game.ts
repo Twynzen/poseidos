@@ -92,6 +92,7 @@ import {
   createLootFloaterHud,
   lootFloaterVisible,
   createInventoryPanel,
+  inventoryPanelVisible,
   hotbarSlots,
   hotbarInspectLabel,
   inventoryInspectLabel,
@@ -496,6 +497,7 @@ export class Game {
     this.syncDialoguePanel();
     this.syncHitFlashOverlay();
     this.syncLootFloaterOverlay();
+    this.syncInventoryPanel();
     this.syncLighting();
     this.view.followCamera(this.player.x, this.player.y);
   }
@@ -834,6 +836,7 @@ export class Game {
     this.view.triggerPlayerAction("death");
     this.syncDialoguePanel();
     this.syncLootFloaterOverlay();
+    this.syncInventoryPanel();
   }
 
 
@@ -1128,6 +1131,7 @@ export class Game {
       this.syncSpeechOverlay();
       this.syncDialoguePanel();
       this.syncLootFloaterOverlay();
+      this.syncInventoryPanel();
       this.hudAcc += dt;
       if (this.hudAcc >= 0.25) {
         this.hudAcc = 0;
@@ -1683,7 +1687,7 @@ export class Game {
   }
 
   private syncInventoryPanel(): void {
-    const open = this.showInvDetail && !this.gameOver;
+    const open = inventoryPanelVisible(this.gameOver, this.showInvDetail);
     this.inventoryPanel.sync({
       open,
       data: buildInventoryPanelData(this.player.inventory),
@@ -1774,10 +1778,7 @@ export class Game {
       this.hud.classList.toggle("hud-help", this.showHelp);
       this.moodlesHud.sync(this.buildPlayerHudMoodles());
       this.hotbarHud.sync(hotbarSlots(this.player.inventory), this.hotbarSelected);
-      this.inventoryPanel.sync({
-        open: false,
-        data: buildInventoryPanelData(this.player.inventory),
-      });
+      this.syncInventoryPanel();
       return;
     }
 
