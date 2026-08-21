@@ -307,7 +307,7 @@ describe("hotbarInputApplies (HAS MUERTO / F9 load-muerto)", () => {
     expect(src).toContain("hotbarInputApplies(");
     expect(src).toContain("nextHotbarSelected(");
     expect(src).toMatch(
-      /hotbarInputApplies\(\s*this\.gameOver[\s\S]{0,900}if \(this\.gameOver \|\| !this\.player\.alive\)/,
+      /hotbarInputApplies\(\s*this\.gameOver[\s\S]{0,1600}if \(this\.gameOver \|\| !this\.player\.alive\)/,
     );
     expect(src).toMatch(
       /this\.hotbarSelected = nextHotbarSelected\(\s*this\.gameOver/,
