@@ -32,7 +32,8 @@ import {
   findSlot,
   removeFromSlot,
   canRefillFromRain,
-  tryRefillFromRain,
+  attemptRefill,
+  refillFullMessage,
   hasFlashlight,
   fovRadiusWithFlashlight,
   torchLightIntensity,
@@ -827,17 +828,18 @@ export class Game {
         this.player.inventory,
       )
     ) {
-      if (
-        tryRefillFromRain(
-          this.weather.isRaining,
-          outdoor,
-          this.player.inventory,
-        )
-      ) {
+      const filled = attemptRefill(
+        this.weather.isRaining,
+        outdoor,
+        this.player.inventory,
+      );
+      if (filled.ok) {
         playUse(this.interactPlayer, this.ambient.muted);
         this.lastLootMsg = RAIN_FILL_MSG;
         this.lootToast.show(this.lastLootMsg, "water_bottle");
         this.hudAcc = 1;
+      } else if (filled.reason === "inv_full") {
+        this.toastRefillFull(0);
       }
       return;
     }
@@ -893,17 +895,18 @@ export class Game {
         this.player.inventory,
       )
     ) {
-      if (
-        tryRefillFromRain(
-          this.weather.isRaining,
-          outdoor,
-          this.player.inventory,
-        )
-      ) {
+      const filled = attemptRefill(
+        this.weather.isRaining,
+        outdoor,
+        this.player.inventory,
+      );
+      if (filled.ok) {
         playUse(this.interactPlayer, this.ambient.muted);
         this.lastLootMsg = RAIN_FILL_MSG;
         this.lootToast.show(this.lastLootMsg, "water_bottle");
         this.hudAcc = 1;
+      } else if (filled.reason === "inv_full") {
+        this.toastRefillFull(0);
       }
       return;
     }
@@ -963,6 +966,15 @@ export class Game {
   /** H: dest inv no acepta el plato → toast existente. */
   private toastCookFull(added: number): void {
     const msg = cookFullMessage(added);
+    if (!msg) return;
+    this.lastLootMsg = msg;
+    this.lootToast.show(msg);
+    this.hudAcc = 1;
+  }
+
+  /** Q / clic / hotbar: dest inv no acepta el agua leftover → toast existente. */
+  private toastRefillFull(added: number): void {
+    const msg = refillFullMessage(added);
     if (!msg) return;
     this.lastLootMsg = msg;
     this.lootToast.show(msg);
@@ -1403,17 +1415,18 @@ export class Game {
           this.player.inventory,
         )
       ) {
-        if (
-          tryRefillFromRain(
-            this.weather.isRaining,
-            outdoor,
-            this.player.inventory,
-          )
-        ) {
+        const filled = attemptRefill(
+          this.weather.isRaining,
+          outdoor,
+          this.player.inventory,
+        );
+        if (filled.ok) {
           playUse(this.interactPlayer, this.ambient.muted);
           this.lastLootMsg = RAIN_FILL_MSG;
           this.lootToast.show(this.lastLootMsg, "water_bottle");
           this.hudAcc = 1;
+        } else if (filled.reason === "inv_full") {
+          this.toastRefillFull(0);
         }
       } else {
         this.useHotbarSlot(this.hotbarSelected);

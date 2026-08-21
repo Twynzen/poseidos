@@ -4,6 +4,7 @@
  * Tecla Q prioriza refill sobre consumir (ver game.ts).
  * Última del stack: water_bottle en el mismo índice (sticky, como drink);
  * leftover: addItem + rollback.
+ * Dest lleno (leftover): botella rollback, reason inv_full.
  */
 
 import {
@@ -11,10 +12,22 @@ import {
   findSlot,
   insertStackAt,
   removeFromSlot,
+  totalWeight,
   type Inventory,
 } from "./inventory";
+import { getItemDef } from "./defs";
 
 export type RefillFailReason = "no_rain" | "indoor" | "no_bottle" | "inv_full";
+
+export interface RefillAttempt {
+  ok: true;
+}
+
+export interface RefillFail {
+  ok: false;
+  reason: RefillFailReason;
+  message: string;
+}
 
 /**
  * ¿Se puede intentar recoger lluvia?
@@ -30,6 +43,21 @@ export function canRefillFromRain(
   return i >= 0 && (inv.slots[i]?.qty ?? 0) >= 1;
 }
 
+/**
+ * Leftover (qty>1): ¿cabe 1 water_bottle tras quitar 1 vacía
+ * (mismos slots; peso −vacía +agua)? Última del stack siempre cabe (sticky).
+ */
+function canAcceptLeftoverWater(inv: Inventory): boolean {
+  const emptyW = getItemDef("empty_bottle").weight;
+  const water = getItemDef("water_bottle");
+  if (totalWeight(inv) - emptyW + water.weight > inv.maxWeight + 1e-9) {
+    return false;
+  }
+  const wi = findSlot(inv, "water_bottle");
+  if (wi >= 0 && (inv.slots[wi]?.qty ?? 0) < water.maxStack) return true;
+  return inv.slots.length < inv.maxSlots;
+}
+
 export function diagnoseRefill(
   weatherIsRaining: boolean,
   outdoor: boolean,
@@ -38,7 +66,9 @@ export function diagnoseRefill(
   if (!weatherIsRaining) return "no_rain";
   if (!outdoor) return "indoor";
   const i = findSlot(inv, "empty_bottle");
-  if (i < 0 || (inv.slots[i]?.qty ?? 0) < 1) return "no_bottle";
+  const qty = inv.slots[i]?.qty ?? 0;
+  if (i < 0 || qty < 1) return "no_bottle";
+  if (qty > 1 && !canAcceptLeftoverWater(inv)) return "inv_full";
   return null;
 }
 
@@ -53,6 +83,16 @@ export function refillFailMessage(reason: RefillFailReason): string {
     case "inv_full":
       return "inventario lleno";
   }
+}
+
+/**
+ * Toast HUD si el agua no entró. Reusa el copy existente
+ * `inventario lleno` (loot / drop / craft / cook dest lleno).
+ * `added` > 0 → null (éxito).
+ */
+export function refillFullMessage(added: number): string | null {
+  if (added > 0) return null;
+  return "inventario lleno";
 }
 
 /**
@@ -79,4 +119,21 @@ export function tryRefillFromRain(
     return false;
   }
   return true;
+}
+
+/** Intento con mensaje HUD (éxito o fallo). */
+export function attemptRefill(
+  weatherIsRaining: boolean,
+  outdoor: boolean,
+  inv: Inventory,
+): RefillAttempt | RefillFail {
+  const fail = diagnoseRefill(weatherIsRaining, outdoor, inv);
+  if (fail) {
+    return { ok: false, reason: fail, message: refillFailMessage(fail) };
+  }
+  if (!tryRefillFromRain(weatherIsRaining, outdoor, inv)) {
+    // diagnose ya filtró rain / indoor / bottle; rollback deja la vacía.
+    return { ok: false, reason: "inv_full", message: refillFailMessage("inv_full") };
+  }
+  return { ok: true };
 }

@@ -93,8 +93,12 @@ export {
   canRefillFromRain,
   diagnoseRefill,
   refillFailMessage,
+  refillFullMessage,
   tryRefillFromRain,
+  attemptRefill,
   type RefillFailReason,
+  type RefillAttempt,
+  type RefillFail,
 } from "./rainFill";
 
 export {
