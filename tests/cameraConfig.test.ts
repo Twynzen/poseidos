@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   ISO_FRUSTUM,
@@ -5,8 +7,12 @@ import {
   ISO_FRUSTUM_MIN,
   ISO_FRUSTUM_STEP,
   clampIsoFrustum,
+  nextIsoZoom,
+  zoomHudMsg,
   zoomInFrustum,
   zoomOutFrustum,
+  ZOOM_IN_HUD_MSG,
+  ZOOM_OUT_HUD_MSG,
 } from "../src/render/cameraConfig";
 import { PLAYER_SOLDIER_MANIFEST } from "../src/render/characterManifest";
 
@@ -51,6 +57,66 @@ describe("clampIsoFrustum / zoomInFrustum / zoomOutFrustum", () => {
     expect(f).toBe(ISO_FRUSTUM_MIN);
     for (let i = 0; i < 40; i++) f = zoomOutFrustum(f);
     expect(f).toBe(ISO_FRUSTUM_MAX);
+  });
+});
+
+describe("nextIsoZoom / zoomHudMsg (HUD +/-)", () => {
+  test("zoomHudMsg: acercaste vs alejaste", () => {
+    expect(ZOOM_IN_HUD_MSG).toBe("acercaste");
+    expect(ZOOM_OUT_HUD_MSG).toBe("alejaste");
+    expect(zoomHudMsg("in")).toBe(ZOOM_IN_HUD_MSG);
+    expect(zoomHudMsg("out")).toBe(ZOOM_OUT_HUD_MSG);
+    expect(ZOOM_IN_HUD_MSG).not.toBe(ZOOM_OUT_HUD_MSG);
+  });
+
+  test("zoom changed: frustum + lastLootMsg; min/max no spam", () => {
+    const midIn = nextIsoZoom(10, true, false);
+    expect(midIn).toEqual({
+      frustum: 9,
+      changed: true,
+      msg: ZOOM_IN_HUD_MSG,
+    });
+
+    const midOut = nextIsoZoom(10, false, true);
+    expect(midOut).toEqual({
+      frustum: 11,
+      changed: true,
+      msg: ZOOM_OUT_HUD_MSG,
+    });
+
+    const idle = nextIsoZoom(10, false, false);
+    expect(idle).toEqual({ frustum: 10, changed: false, msg: null });
+
+    const atMin = nextIsoZoom(ISO_FRUSTUM_MIN, true, false);
+    expect(atMin).toEqual({
+      frustum: ISO_FRUSTUM_MIN,
+      changed: false,
+      msg: null,
+    });
+
+    const atMax = nextIsoZoom(ISO_FRUSTUM_MAX, false, true);
+    expect(atMax).toEqual({
+      frustum: ISO_FRUSTUM_MAX,
+      changed: false,
+      msg: null,
+    });
+
+    const minThenOut = nextIsoZoom(ISO_FRUSTUM_MIN, true, true);
+    expect(minThenOut.changed).toBe(true);
+    expect(minThenOut.frustum).toBe(ISO_FRUSTUM_MIN + ISO_FRUSTUM_STEP);
+    expect(minThenOut.msg).toBe(ZOOM_OUT_HUD_MSG);
+  });
+
+  test("Game applyIsoZoomInput asigna lastLootMsg/hudAcc via nextIsoZoom (sin lootToast)", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("nextIsoZoom(");
+    expect(src).toContain("if (next.msg) this.lastLootMsg = next.msg");
+    expect(src).toMatch(
+      /if \(!next\.changed\) return;[\s\S]{0,180}this\.hudAcc = 1/,
+    );
+    expect(src).not.toMatch(/applyIsoZoomInput\(\)[\s\S]{0,400}lootToast/);
+    expect((src.match(/consumeZoomIn\(\)/g) ?? []).length).toBe(1);
+    expect((src.match(/consumeZoomOut\(\)/g) ?? []).length).toBe(1);
   });
 });
 

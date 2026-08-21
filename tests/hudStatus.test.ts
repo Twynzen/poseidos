@@ -22,6 +22,10 @@ import {
 } from "../src/ui/hudStatus";
 import { REST_HUD_MSG } from "../src/actors/needs";
 import { MUTE_HUD_MSG, SOUND_HUD_MSG } from "../src/audio/ambientStub";
+import {
+  ZOOM_IN_HUD_MSG,
+  ZOOM_OUT_HUD_MSG,
+} from "../src/render/cameraConfig";
 
 function base(over: Partial<HudStatusInput> = {}): HudStatusInput {
   return {
@@ -153,6 +157,8 @@ describe("formatHudStatus compact", () => {
     expect(isKeepableDeathCause(REST_HUD_MSG)).toBe(false);
     expect(isKeepableDeathCause(MUTE_HUD_MSG)).toBe(false);
     expect(isKeepableDeathCause(SOUND_HUD_MSG)).toBe(false);
+    expect(isKeepableDeathCause(ZOOM_IN_HUD_MSG)).toBe(false);
+    expect(isKeepableDeathCause(ZOOM_OUT_HUD_MSG)).toBe(false);
     expect(isKeepableDeathCause("golpe -5 HP")).toBe(true);
     expect(isKeepableDeathCause("sed te debilita")).toBe(true);
     expect(isKeepableDeathCause("hambre y sed te debilitan")).toBe(true);
@@ -691,5 +697,42 @@ describe("death → R HUD vivo (mudos/poseídos, sin HAS MUERTO)", () => {
     expect(deadSound).toBe(`${GAME_OVER_LINE} · ${SOUND_HUD_MSG}`);
     expect(deadSound).toContain("sonido");
     expect(deadSound).not.toContain("mute");
+  });
+
+  test("+/- zoom: acercaste/alejaste en HUD; game-over también pinta lastLootMsg", () => {
+    const { muteN, possN } = countKinds(spawnDefaults());
+    expect(ZOOM_IN_HUD_MSG).toBe("acercaste");
+    expect(ZOOM_OUT_HUD_MSG).toBe("alejaste");
+    expect(ZOOM_IN_HUD_MSG).not.toBe(ZOOM_OUT_HUD_MSG);
+
+    const zoomedIn = formatHudStatus(
+      base({ muteN, possN, msg: ZOOM_IN_HUD_MSG }),
+    );
+    expect(zoomedIn).toContain("acercaste");
+    expect(zoomedIn).toContain("mudos 3");
+    expect(zoomedIn).not.toContain("alejaste");
+    expect(zoomedIn).not.toContain("HAS MUERTO");
+
+    const zoomedOut = formatHudStatus(
+      base({ muteN, possN, msg: ZOOM_OUT_HUD_MSG }),
+    );
+    expect(zoomedOut).toContain("alejaste");
+    expect(zoomedOut).toContain("mudos 3");
+    expect(zoomedOut).not.toContain("acercaste");
+    expect(zoomedOut).not.toContain("HAS MUERTO");
+
+    const deadIn = formatHudStatus(
+      base({ muteN, possN, gameOver: true, msg: ZOOM_IN_HUD_MSG }),
+    );
+    expect(deadIn).toBe(`${GAME_OVER_LINE} · ${ZOOM_IN_HUD_MSG}`);
+    expect(deadIn).toContain("acercaste");
+    expect(deadIn).not.toContain("alejaste");
+
+    const deadOut = formatHudStatus(
+      base({ muteN, possN, gameOver: true, msg: ZOOM_OUT_HUD_MSG }),
+    );
+    expect(deadOut).toBe(`${GAME_OVER_LINE} · ${ZOOM_OUT_HUD_MSG}`);
+    expect(deadOut).toContain("alejaste");
+    expect(deadOut).not.toContain("acercaste");
   });
 });
