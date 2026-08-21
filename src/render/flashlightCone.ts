@@ -155,8 +155,16 @@ export function flashlightConeWedgePoints(
   return flashlightConeWedge(yaw, length, halfWidth);
 }
 
-/** ¿Cono / luces visibles? Mismo umbral que syncTorchLight (intensity > 0.0174). */
-export function flashlightConeVisible(intensity: number): boolean {
+/**
+ * ¿Cono / luces visibles? Mismo umbral que syncTorchLight (intensity > 0.0174).
+ * gameOver → hidden (HAS MUERTO / F9 load-muerto; no ilumina el cadáver).
+ * Ya apagado = no-op; gameOver no inventa cono.
+ */
+export function flashlightConeVisible(
+  intensity: number,
+  gameOver = false,
+): boolean {
+  if (gameOver) return false;
   return Number.isFinite(intensity) && intensity > FLASHLIGHT_CONE_VISIBLE_EPS;
 }
 

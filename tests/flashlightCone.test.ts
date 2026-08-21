@@ -315,6 +315,9 @@ describe("flashlightConeVisible / flashlightWedgeOpacity", () => {
     expect(flashlightConeVisible(0.021)).toBe(true);
     expect(flashlightConeVisible(1.5)).toBe(true);
     expect(flashlightConeVisible(Number.NaN)).toBe(false);
+    expect(flashlightConeVisible(1.5, true)).toBe(false);
+    expect(flashlightConeVisible(0, true)).toBe(false);
+    expect(flashlightConeVisible(1.5, false)).toBe(true);
   });
 
   test("opacity 0 off; on = base + intensity × gain", () => {

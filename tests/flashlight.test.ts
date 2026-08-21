@@ -1,4 +1,7 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import { PlayerSim } from "../src/actors/player";
 import {
   addItem,
@@ -8,9 +11,13 @@ import {
   getItemDef,
   hasFlashlight,
   inventorySummary,
+  torchLightApplies,
   torchLightIntensity,
   LOOT_CABINET,
 } from "../src/items";
+import {
+  flashlightConeVisible,
+} from "../src/render/flashlightCone";
 import {
   applySave,
   createMemoryStorage,
@@ -83,6 +90,82 @@ describe("hasFlashlight / FOV / intensity", () => {
     expect(night).toBeGreaterThanOrEqual(1.2);
     expect(night).toBeLessThanOrEqual(1.8);
     expect(night).toBeGreaterThan(day);
+  });
+});
+
+describe("torchLightApplies (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte oculta torch; ya apagado no-op; load-muerto hidden; vivo/load-vivo pinta", () => {
+    const nightOn = torchLightIntensity(true, true, 0.08);
+    expect(nightOn).toBeGreaterThan(1);
+    expect(flashlightConeVisible(nightOn)).toBe(true);
+
+    expect(torchLightApplies(true)).toBe(false);
+    expect(torchLightIntensity(true, true, 0.08, true)).toBe(0);
+    expect(flashlightConeVisible(nightOn, true)).toBe(false);
+    expect(flashlightConeVisible(0, true)).toBe(false);
+
+    const alreadyOff = torchLightIntensity(false, true, 0.08, true);
+    expect(alreadyOff).toBe(0);
+    expect(torchLightIntensity(true, false, 0.08, true)).toBe(0);
+    expect(flashlightConeVisible(alreadyOff, true)).toBe(false);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(torchLightApplies(deadRt.gameOver)).toBe(false);
+    expect(torchLightIntensity(true, true, 0.08, deadRt.gameOver)).toBe(0);
+    expect(flashlightConeVisible(nightOn, deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(torchLightApplies(liveRt.gameOver)).toBe(true);
+    expect(torchLightIntensity(true, true, 0.08, liveRt.gameOver)).toBeGreaterThan(
+      1,
+    );
+    expect(
+      flashlightConeVisible(
+        torchLightIntensity(true, true, 0.08, liveRt.gameOver),
+        liveRt.gameOver,
+      ),
+    ).toBe(true);
+    expect(torchLightIntensity(false, true, 0.08, liveRt.gameOver)).toBe(0);
+    expect(torchLightIntensity(true, false, 0.08, liveRt.gameOver)).toBe(0);
+
+    expect(torchLightApplies(false)).toBe(true);
+    expect(torchLightIntensity(true, true, 0.08)).toBe(nightOn);
+    expect(torchLightIntensity(true, true, 0.08, false)).toBe(nightOn);
+  });
+
+  test("Game syncLighting usa torchLightApplies(gameOver); freeze y F9 load-muerto siguen sync", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("torchLightApplies(");
+    expect(gameSrc).toMatch(
+      /syncLighting\(\): void \{[\s\S]{0,900}torchLightApplies\(\s*this\.gameOver/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}this\.syncLighting\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,900}this\.syncLighting\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2200}this\.syncLighting\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,900}this\.flashlightOn = false/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}this\.flashlightOn = false/,
+    );
   });
 });
 

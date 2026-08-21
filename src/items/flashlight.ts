@@ -28,15 +28,27 @@ export function fovRadiusWithFlashlight(
 }
 
 /**
+ * HAS MUERTO / F9 load-muerto: no cono/luz de linterna sobre el cadáver.
+ * Vivo (incl. F9 load-vivo): on && hasItem igual que hoy.
+ * Ya apagado = no-op; gameOver no inventa restore del flag.
+ */
+export function torchLightApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
  * Intensidad PointLight linterna.
- * 0 si off o sin item; de noche ~1.2–1.8; de día ~0.35 si on.
+ * 0 si off o sin item o gameOver; de noche ~1.2–1.8; de día ~0.35 si on.
  * `daylight` del GameClock (noche baja ~0.08, mediodía 1).
  */
 export function torchLightIntensity(
   on: boolean,
   hasItem: boolean,
   daylight: number,
+  gameOver = false,
 ): number {
+  if (!torchLightApplies(gameOver)) return 0;
   if (!on || !hasItem) return 0;
   const d = Math.max(0, Math.min(1, daylight));
   // daylight bajo → noche fuerte; alto → día flojo
