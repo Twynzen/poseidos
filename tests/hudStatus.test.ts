@@ -768,4 +768,40 @@ describe("death → R HUD vivo (mudos/poseídos, sin HAS MUERTO)", () => {
     expect(lingerWould).toContain("diálogo poss-a");
     expect(closed).not.toBe(lingerWould);
   });
+
+  test("validate cierra diálogo: diálogo id no queda; still-open sí pinta; msg linger evitado", () => {
+    const { muteN, possN } = countKinds(spawnDefaults());
+    const dlg = dialogueOpenHudMsg("poss-a");
+    const trust = "calmar → trust 64 (+14)";
+
+    const stillOpen = formatHudStatus(
+      base({ muteN, possN, dlgHint: dlg, msg: dlg }),
+    );
+    expect(stillOpen).toContain("diálogo poss-a");
+    expect(stillOpen).toContain("mudos 3");
+    expect(stillOpen).not.toContain("HAS MUERTO");
+
+    const closed = formatHudStatus(
+      base({
+        muteN,
+        possN,
+        talkHint: "T hablar poss-a (trust 50)",
+      }),
+    );
+    expect(closed).not.toContain("diálogo poss-a");
+    expect(closed).toContain("T hablar poss-a (trust 50)");
+    expect(closed).not.toContain("HAS MUERTO");
+
+    const lingerWould = formatHudStatus(
+      base({ muteN, possN, msg: dlg }),
+    );
+    expect(lingerWould).toContain("diálogo poss-a");
+    expect(closed).not.toBe(lingerWould);
+
+    const closedTrust = formatHudStatus(
+      base({ muteN, possN, msg: trust }),
+    );
+    expect(closedTrust).toContain(trust);
+    expect(closedTrust).not.toContain("diálogo poss-a");
+  });
 });
