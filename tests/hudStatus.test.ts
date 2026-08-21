@@ -21,6 +21,7 @@ import {
   type HudStatusInput,
 } from "../src/ui/hudStatus";
 import { REST_HUD_MSG } from "../src/actors/needs";
+import { MUTE_HUD_MSG, SOUND_HUD_MSG } from "../src/audio/ambientStub";
 
 function base(over: Partial<HudStatusInput> = {}): HudStatusInput {
   return {
@@ -150,6 +151,8 @@ describe("formatHudStatus compact", () => {
     expect(isKeepableDeathCause("HAS MUERTO")).toBe(false);
     expect(isKeepableDeathCause("cocinaste un plato caliente")).toBe(false);
     expect(isKeepableDeathCause(REST_HUD_MSG)).toBe(false);
+    expect(isKeepableDeathCause(MUTE_HUD_MSG)).toBe(false);
+    expect(isKeepableDeathCause(SOUND_HUD_MSG)).toBe(false);
     expect(isKeepableDeathCause("golpe -5 HP")).toBe(true);
     expect(isKeepableDeathCause("sed te debilita")).toBe(true);
     expect(isKeepableDeathCause("hambre y sed te debilitan")).toBe(true);
@@ -651,5 +654,42 @@ describe("death → R HUD vivo (mudos/poseídos, sin HAS MUERTO)", () => {
     );
     expect(stillDead).toContain("HAS MUERTO");
     expect(stillDead).not.toContain("descansaste");
+  });
+
+  test("M mute/sonido en HUD; game-over también pinta lastLootMsg", () => {
+    const { muteN, possN } = countKinds(spawnDefaults());
+    expect(MUTE_HUD_MSG).toBe("mute");
+    expect(SOUND_HUD_MSG).toBe("sonido");
+    expect(MUTE_HUD_MSG).not.toBe(SOUND_HUD_MSG);
+
+    const muted = formatHudStatus(
+      base({ muteN, possN, audioHint: MUTE_HUD_MSG, msg: MUTE_HUD_MSG }),
+    );
+    expect(muted).toContain("mute");
+    expect(muted).toContain("mudos 3");
+    expect(muted).not.toContain("sonido");
+    expect(muted).not.toContain("HAS MUERTO");
+
+    const unmuted = formatHudStatus(
+      base({ muteN, possN, msg: SOUND_HUD_MSG }),
+    );
+    expect(unmuted).toContain("sonido");
+    expect(unmuted).toContain("mudos 3");
+    expect(unmuted).not.toContain("mute");
+    expect(unmuted).not.toContain("HAS MUERTO");
+
+    const deadMute = formatHudStatus(
+      base({ muteN, possN, gameOver: true, msg: MUTE_HUD_MSG }),
+    );
+    expect(deadMute).toBe(`${GAME_OVER_LINE} · ${MUTE_HUD_MSG}`);
+    expect(deadMute).toContain("mute");
+    expect(deadMute).not.toContain("sonido");
+
+    const deadSound = formatHudStatus(
+      base({ muteN, possN, gameOver: true, msg: SOUND_HUD_MSG }),
+    );
+    expect(deadSound).toBe(`${GAME_OVER_LINE} · ${SOUND_HUD_MSG}`);
+    expect(deadSound).toContain("sonido");
+    expect(deadSound).not.toContain("mute");
   });
 });

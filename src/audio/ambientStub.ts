@@ -94,11 +94,21 @@ export function ambientLevels(bus: AmbientBus): AmbientLevels {
   };
 }
 
+/** Copy HUD de M mute (reusa el token de describeAmbient). */
+export const MUTE_HUD_MSG = "mute";
+/** Copy HUD de M unmute. */
+export const SOUND_HUD_MSG = "sonido";
+
+/** lastLootMsg de M según el estado nuevo (muted → mute, no muted → sonido). */
+export function muteHudMsg(muted: boolean): string {
+  return muted ? MUTE_HUD_MSG : SOUND_HUD_MSG;
+}
+
 /**
  * Hint compacto HUD: "mute" | "lluvia♪" | "♪" | null (silencio).
  */
 export function describeAmbient(bus: AmbientBus): string | null {
-  if (bus.muted) return "mute";
+  if (bus.muted) return MUTE_HUD_MSG;
   const L = ambientLevels(bus);
   if (L.rain >= 0.35) return "lluvia♪";
   if (L.threat >= 0.2 || L.night >= 0.12 || L.indoor >= 0.15) return "♪";
