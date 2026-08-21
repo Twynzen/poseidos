@@ -73,6 +73,8 @@ import {
   proposeDialogueGates,
   nearestPossessed,
   DIALOGUE_REACH,
+  dialogueOpenHudMsg,
+  nextDialogueCloseHud,
   StubLlmBridge,
   type DialogueIntent,
   type GateTag,
@@ -736,10 +738,13 @@ export class Game {
 
   private tryToggleDialogue(): void {
     if (this.dialogue.open) {
+      const next = nextDialogueCloseHud(true, this.lastLootMsg);
       this.dialogue.close();
       this.dialogueLastLine = null;
       this.dialogueLastTone = null;
       this.dialogueGateLine = null;
+      this.lastLootMsg = next.lastLootMsg;
+      this.hudAcc = 1;
       this.syncDialoguePanel();
       return;
     }
@@ -759,7 +764,7 @@ export class Game {
     this.dialogueLastLine = null;
     this.dialogueLastTone = null;
     this.dialogueGateLine = this.gates.gateLine(near.id);
-    this.lastLootMsg = `diálogo ${near.id}`;
+    this.lastLootMsg = dialogueOpenHudMsg(near.id);
     this.hudAcc = 1;
     this.syncDialoguePanel();
   }
@@ -1505,11 +1510,16 @@ export class Game {
     if (this.input.consumeTalk()) {
       this.tryToggleDialogue();
     }
-    if (this.input.consumeCancel() && this.dialogue.open) {
-      this.dialogue.close();
-      this.dialogueLastLine = null;
-      this.dialogueLastTone = null;
-      this.dialogueGateLine = null;
+    if (this.input.consumeCancel()) {
+      const next = nextDialogueCloseHud(this.dialogue.open, this.lastLootMsg);
+      if (next.closed) {
+        this.dialogue.close();
+        this.dialogueLastLine = null;
+        this.dialogueLastTone = null;
+        this.dialogueGateLine = null;
+        this.lastLootMsg = next.lastLootMsg;
+        this.hudAcc = 1;
+      }
     }
     if (this.dialogue.open) {
       this.dialogue.validate(
@@ -1763,9 +1773,10 @@ export class Game {
     const talkHint = nearPoss
       ? `T hablar ${nearPoss.id} (trust ${this.trust.get(nearPoss.id)})`
       : undefined;
-    const dlgHint = this.dialogue.open
-      ? `diálogo ${this.dialogue.target}`
-      : undefined;
+    const dlgHint =
+      this.dialogue.open && this.dialogue.target
+        ? dialogueOpenHudMsg(this.dialogue.target)
+        : undefined;
     const pacifyLeft = this.hudPacifyLeft();
     const speedBumpLeft = this.hudSpeedBumpLeft();
     const moodBias = this.hudMoodBias();

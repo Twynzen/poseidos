@@ -26,6 +26,7 @@ import {
   ZOOM_IN_HUD_MSG,
   ZOOM_OUT_HUD_MSG,
 } from "../src/render/cameraConfig";
+import { dialogueOpenHudMsg } from "../src/possession";
 
 function base(over: Partial<HudStatusInput> = {}): HudStatusInput {
   return {
@@ -159,6 +160,7 @@ describe("formatHudStatus compact", () => {
     expect(isKeepableDeathCause(SOUND_HUD_MSG)).toBe(false);
     expect(isKeepableDeathCause(ZOOM_IN_HUD_MSG)).toBe(false);
     expect(isKeepableDeathCause(ZOOM_OUT_HUD_MSG)).toBe(false);
+    expect(isKeepableDeathCause(dialogueOpenHudMsg("poss-a"))).toBe(false);
     expect(isKeepableDeathCause("golpe -5 HP")).toBe(true);
     expect(isKeepableDeathCause("sed te debilita")).toBe(true);
     expect(isKeepableDeathCause("hambre y sed te debilitan")).toBe(true);
@@ -734,5 +736,36 @@ describe("death → R HUD vivo (mudos/poseídos, sin HAS MUERTO)", () => {
     expect(deadOut).toBe(`${GAME_OVER_LINE} · ${ZOOM_OUT_HUD_MSG}`);
     expect(deadOut).toContain("alejaste");
     expect(deadOut).not.toContain("acercaste");
+  });
+
+  test("T/Esc cierra diálogo: diálogo id no queda; talkHint sí; open sigue pintando", () => {
+    const { muteN, possN } = countKinds(spawnDefaults());
+    const dlg = dialogueOpenHudMsg("poss-a");
+    expect(dlg).toBe("diálogo poss-a");
+
+    const opened = formatHudStatus(
+      base({ muteN, possN, dlgHint: dlg, msg: dlg }),
+    );
+    expect(opened).toContain("diálogo poss-a");
+    expect(opened).toContain("mudos 3");
+    expect(opened).not.toContain("HAS MUERTO");
+
+    const closed = formatHudStatus(
+      base({
+        muteN,
+        possN,
+        talkHint: "T hablar poss-a (trust 50)",
+      }),
+    );
+    expect(closed).not.toContain("diálogo poss-a");
+    expect(closed).toContain("T hablar poss-a (trust 50)");
+    expect(closed).toContain("mudos 3");
+    expect(closed).not.toContain("HAS MUERTO");
+
+    const lingerWould = formatHudStatus(
+      base({ muteN, possN, msg: dlg }),
+    );
+    expect(lingerWould).toContain("diálogo poss-a");
+    expect(closed).not.toBe(lingerWould);
   });
 });

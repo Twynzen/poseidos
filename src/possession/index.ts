@@ -32,15 +32,19 @@ export {
 export {
   DIALOGUE_OPTIONS,
   DIALOGUE_REACH,
+  DIALOGUE_OPEN_HUD_PREFIX,
   DialogueSession,
   applyDialogueChoice,
   applyDialogueChoiceAsync,
   nearestPossessed,
   optionFor,
+  dialogueOpenHudMsg,
+  nextDialogueCloseHud,
   type DialogueIntent,
   type DialogueOption,
   type DialogueResult,
   type DialogueLlmOpts,
+  type DialogueCloseHudNext,
   type NearbyPossessed,
 } from "./dialogue";
 
