@@ -411,7 +411,7 @@ describe("flashlightToggleApplies / nextFlashlightOn (HAS MUERTO / F9 load-muert
       /enterGameOver\(\): void \{[\s\S]{0,400}consumeFlashlightToggle\(\)/,
     );
     expect(gameSrc).toMatch(
-      /doLoad\(\): boolean \{[\s\S]{0,900}if \(loaded\.gameOver\) \{[\s\S]{0,200}consumeFlashlightToggle\(\);\s*\}/,
+      /doLoad\(\): boolean \{[\s\S]{0,900}if \(loaded\.gameOver\) \{[\s\S]{0,80}consumeFlashlightToggle\(\);[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)/,
     );
     expect(gameSrc).toMatch(
       /flashlightToggleApplies\(\s*this\.gameOver[\s\S]{0,80}wantsFlashlight[\s\S]{0,200}nextFlashlightOn\(/,

@@ -431,9 +431,8 @@ export class Game {
     }
     // Load-muerto salta enterGameOver: cerrar panel antes de refreshViewAfterLoad.
     if (loaded.gameOver) {
-      this.closeDialogueOnGameOver();
-      // Drain L; no assign flashlightOn (on queda on, off queda off).
       this.input.consumeFlashlightToggle();
+      this.closeDialogueOnGameOver();
     }
     if (!hasFlashlight(this.player.inventory)) this.flashlightOn = false;
     this.noise.clear();
