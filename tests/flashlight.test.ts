@@ -77,6 +77,18 @@ describe("hasFlashlight / FOV / intensity", () => {
     expect(fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, false, false)).toBe(
       DEFAULT_FOV_RADIUS,
     );
+    expect(fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, true, true, true)).toBe(
+      DEFAULT_FOV_RADIUS,
+    );
+    expect(fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, true, true, false)).toBe(
+      DEFAULT_FOV_RADIUS + FLASHLIGHT_FOV_BONUS,
+    );
+    expect(fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, false, true, false)).toBe(
+      DEFAULT_FOV_RADIUS,
+    );
+    expect(fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, true, false, false)).toBe(
+      DEFAULT_FOV_RADIUS,
+    );
   });
 
   test("torchLightIntensity: 0 off/sin item; noche > día", () => {
@@ -156,6 +168,86 @@ describe("torchLightApplies (HAS MUERTO / F9 load-muerto)", () => {
     );
     expect(gameSrc).toMatch(
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2200}this\.syncLighting\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,900}this\.flashlightOn = false/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}this\.flashlightOn = false/,
+    );
+  });
+});
+
+describe("fovRadiusWithFlashlight (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: radio base aunque on+item; vivo/load-vivo bonus; off/sin item base", () => {
+    expect(FLASHLIGHT_FOV_BONUS).toBe(4);
+    expect(
+      fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, true, true, true),
+    ).toBe(DEFAULT_FOV_RADIUS);
+    expect(
+      fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, true, true, false),
+    ).toBe(DEFAULT_FOV_RADIUS + FLASHLIGHT_FOV_BONUS);
+    expect(
+      fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, false, true, false),
+    ).toBe(DEFAULT_FOV_RADIUS);
+    expect(
+      fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, true, false, false),
+    ).toBe(DEFAULT_FOV_RADIUS);
+    expect(
+      fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, false, true, true),
+    ).toBe(DEFAULT_FOV_RADIUS);
+    expect(
+      fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, true, false, true),
+    ).toBe(DEFAULT_FOV_RADIUS);
+    expect(fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, true, true)).toBe(
+      DEFAULT_FOV_RADIUS + FLASHLIGHT_FOV_BONUS,
+    );
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(
+      fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, true, true, deadRt.gameOver),
+    ).toBe(DEFAULT_FOV_RADIUS);
+    expect(
+      fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, false, true, deadRt.gameOver),
+    ).toBe(DEFAULT_FOV_RADIUS);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(
+      fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, true, true, liveRt.gameOver),
+    ).toBe(DEFAULT_FOV_RADIUS + FLASHLIGHT_FOV_BONUS);
+    expect(
+      fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, false, true, liveRt.gameOver),
+    ).toBe(DEFAULT_FOV_RADIUS);
+    expect(
+      fovRadiusWithFlashlight(DEFAULT_FOV_RADIUS, true, false, liveRt.gameOver),
+    ).toBe(DEFAULT_FOV_RADIUS);
+  });
+
+  test("Game applyFov usa gameOver; enterGameOver / freeze / F9 load-muerto re-aplican FOV; no muta flashlightOn", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toMatch(
+      /applyFov\(\): void \{[\s\S]{0,400}fovRadiusWithFlashlight\([\s\S]{0,200}this\.gameOver/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,900}this\.applyFov\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,400}this\.applyFov\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}this\.applyFov\(\)/,
     );
     expect(gameSrc).toMatch(
       /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
