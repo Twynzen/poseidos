@@ -335,9 +335,17 @@ describe("dialogue choices", () => {
     expect(far).toBe(false);
     expect(session.open).toBe(false);
   });
+
+  test("DialogueSession cierra si el target muere", () => {
+    const session = new DialogueSession();
+    session.begin("poss-a");
+    const dead = session.validate([], 1.2, 1.1);
+    expect(dead).toBe(false);
+    expect(session.open).toBe(false);
+  });
 });
 
-describe("nextDialogueCloseHud (T / Esc HUD)", () => {
+describe("nextDialogueCloseHud (T / Esc / validate HUD)", () => {
   test("T/Esc cierran: quita leftover diálogo id y pide refresh; Esc ya cerrado no-op", () => {
     const openMsg = dialogueOpenHudMsg("poss-a");
     expect(DIALOGUE_OPEN_HUD_PREFIX).toBe("diálogo ");
@@ -369,23 +377,70 @@ describe("nextDialogueCloseHud (T / Esc HUD)", () => {
     expect(closedTrust.lastLootMsg).toBe("calmar → trust 64 (+14)");
   });
 
+  test("validate close: HUD como T/Esc; still-open no toca lastLootMsg", () => {
+    const session = new DialogueSession();
+    session.begin("poss-a");
+    const openMsg = dialogueOpenHudMsg("poss-a");
+    const trustMsg = "calmar → trust 64 (+14)";
+
+    const keep = session.validate(
+      [{ id: "poss-a", x: 1, y: 1, kind: "possessed" }],
+      1.2,
+      1.1,
+    );
+    expect(keep).toBe(true);
+    expect(session.open).toBe(true);
+    // Game: HUD solo si validate cerró (still-open = no llamar / no-op).
+    const noSpam = session.open
+      ? { closed: false, lastLootMsg: openMsg }
+      : nextDialogueCloseHud(true, openMsg);
+    expect(noSpam).toEqual({ closed: false, lastLootMsg: openMsg });
+    expect(nextDialogueCloseHud(false, openMsg)).toEqual({
+      closed: false,
+      lastLootMsg: openMsg,
+    });
+    expect(nextDialogueCloseHud(false, trustMsg).lastLootMsg).toBe(trustMsg);
+
+    const walk = session.validate(
+      [{ id: "poss-a", x: 1, y: 1, kind: "possessed" }],
+      20,
+      20,
+    );
+    expect(walk).toBe(false);
+    expect(session.open).toBe(false);
+    const viaWalk = nextDialogueCloseHud(true, openMsg);
+    expect(viaWalk).toEqual({ closed: true, lastLootMsg: "" });
+    expect(nextDialogueCloseHud(true, trustMsg).lastLootMsg).toBe(trustMsg);
+
+    session.begin("poss-a");
+    const dead = session.validate([], 1.2, 1.1);
+    expect(dead).toBe(false);
+    expect(session.open).toBe(false);
+    const viaDead = nextDialogueCloseHud(true, openMsg);
+    expect(viaDead).toEqual({ closed: true, lastLootMsg: "" });
+  });
+
   test("Game T close y Esc close asignan lastLootMsg/hudAcc via nextDialogueCloseHud (sin lootToast)", () => {
     const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
     expect(src).toContain("nextDialogueCloseHud(");
     expect(src).toContain("dialogueOpenHudMsg(");
     expect(src).toContain("this.lastLootMsg = dialogueOpenHudMsg(near.id)");
     const closeHits = src.match(/nextDialogueCloseHud\(/g);
-    expect(closeHits?.length).toBe(2);
+    expect(closeHits?.length).toBe(3);
     expect(src).toMatch(
       /if \(this\.dialogue\.open\) \{[\s\S]{0,280}nextDialogueCloseHud\(true, this\.lastLootMsg\)[\s\S]{0,220}this\.hudAcc = 1/,
     );
     expect(src).toMatch(
       /consumeCancel\(\)\) \{[\s\S]{0,280}nextDialogueCloseHud\(this\.dialogue\.open, this\.lastLootMsg\)[\s\S]{0,80}if \(next\.closed\) \{[\s\S]{0,280}this\.hudAcc = 1/,
     );
+    expect(src).toMatch(
+      /this\.dialogue\.validate\([\s\S]{0,180}if \(!this\.dialogue\.open\) \{[\s\S]{0,200}nextDialogueCloseHud\(true, this\.lastLootMsg\)[\s\S]{0,200}this\.hudAcc = 1/,
+    );
     expect((src.match(/consumeTalk\(\)/g) ?? []).length).toBe(1);
     expect((src.match(/consumeCancel\(\)/g) ?? []).length).toBe(1);
     expect(src).not.toMatch(/tryToggleDialogue\(\)[\s\S]{0,900}lootToast/);
     expect(src).not.toMatch(/consumeCancel\(\)[\s\S]{0,400}lootToast/);
+    expect(src).not.toMatch(/dialogue\.validate\([\s\S]{0,400}lootToast/);
   });
 });
 

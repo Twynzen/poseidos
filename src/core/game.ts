@@ -1529,9 +1529,12 @@ export class Game {
         DIALOGUE_REACH,
       );
       if (!this.dialogue.open) {
+        const next = nextDialogueCloseHud(true, this.lastLootMsg);
         this.dialogueLastLine = null;
         this.dialogueLastTone = null;
         this.dialogueGateLine = null;
+        this.lastLootMsg = next.lastLootMsg;
+        this.hudAcc = 1;
       }
     }
     if (this.input.consumeFlashlightToggle()) {
