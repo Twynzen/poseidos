@@ -21,6 +21,9 @@ import {
   rollLoot,
   totalWeight,
   transferOne,
+  transferStack,
+  lootFullMessage,
+  refillFailMessage,
   buildInventoryPanelData,
   formatEquipmentLine,
   formatSlotLine,
@@ -173,6 +176,32 @@ describe("inventory", () => {
     expect(to.slots[0]?.qty).toBe(1);
   });
 
+  test("transferOne dest lleno: null y el item se queda en origen", () => {
+    const from = createInventory(4, 20, [{ id: "canned_food", qty: 2 }]);
+    const slotsFull = createInventory(1, 20, [{ id: "scrap", qty: 1 }]);
+    expect(transferOne(from, slotsFull, 0)).toBeNull();
+    expect(from.slots[0]).toEqual({ id: "canned_food", qty: 2 });
+    expect(slotsFull.slots).toEqual([{ id: "scrap", qty: 1 }]);
+
+    const weightFull = createInventory(8, 0.5, [{ id: "canned_food", qty: 1 }]);
+    expect(transferOne(from, weightFull, 0)).toBeNull();
+    expect(from.slots[0]?.qty).toBe(2);
+    expect(weightFull.slots[0]?.qty).toBe(1);
+
+    const stackFull = createInventory(1, 20, [{ id: "canned_food", qty: 5 }]);
+    expect(transferOne(from, stackFull, 0)).toBeNull();
+    expect(from.slots[0]?.qty).toBe(2);
+    expect(stackFull.slots[0]?.qty).toBe(5);
+
+    const stackRoom = createInventory(1, 20, [{ id: "canned_food", qty: 2 }]);
+    expect(transferOne(from, stackRoom, 0)).toEqual({ id: "canned_food", qty: 1 });
+    expect(from.slots[0]?.qty).toBe(1);
+    expect(stackRoom.slots[0]?.qty).toBe(3);
+
+    expect(transferStack(from, slotsFull, 0)).toBe(0);
+    expect(from.slots[0]?.qty).toBe(1);
+  });
+
   test("findConsumableSlot prioriza prefer", () => {
     const inv = createInventory(8, 20, [
       { id: "scrap", qty: 1 },
@@ -266,6 +295,74 @@ describe("containers + transfer", () => {
     expect(taken).toEqual({ id: "canned_food", qty: 1 });
     expect(dest.slots[0]?.qty).toBe(1);
     expect(reg.at(5, 5)?.inv.slots[0]?.qty).toBe(1);
+  });
+
+  test("lootOne dest lleno: null, item se queda, toast inventario lleno", () => {
+    const box = createWorldContainer("c1", 5, 5, "cocina", [
+      { id: "canned_food", qty: 2 },
+    ]);
+    const reg = new ContainerRegistry([box]);
+    const dest = createInventory(1, 20, [{ id: "scrap", qty: 1 }]);
+    const destBefore = dest.slots.map((s) => ({ ...s }));
+    const boxBefore = box.inv.slots.map((s) => ({ ...s }));
+
+    const taken = reg.lootOne(5.5, 5.5, dest);
+    expect(taken).toBeNull();
+    expect(dest.slots).toEqual(destBefore);
+    expect(box.inv.slots).toEqual(boxBefore);
+    expect(containerHasLoot(box)).toBe(true);
+    expect(lootFullMessage(taken, box)).toBe("inventario lleno");
+    expect(lootFullMessage(taken, box)).toBe(refillFailMessage("inv_full"));
+
+    const weightDest = createInventory(8, 0.5, [{ id: "canned_food", qty: 1 }]);
+    expect(reg.lootOne(5.5, 5.5, weightDest)).toBeNull();
+    expect(box.inv.slots[0]?.qty).toBe(2);
+    expect(lootFullMessage(null, box)).toBe("inventario lleno");
+
+    const stackDest = createInventory(1, 20, [{ id: "canned_food", qty: 5 }]);
+    expect(reg.lootOne(5.5, 5.5, stackDest)).toBeNull();
+    expect(box.inv.slots[0]?.qty).toBe(2);
+
+    const stackRoom = createInventory(1, 20, [{ id: "canned_food", qty: 2 }]);
+    expect(reg.lootOne(5.5, 5.5, stackRoom)).toEqual({
+      id: "canned_food",
+      qty: 1,
+    });
+    expect(box.inv.slots[0]?.qty).toBe(1);
+    expect(stackRoom.slots[0]?.qty).toBe(3);
+    expect(lootFullMessage({ id: "canned_food", qty: 1 }, box)).toBeNull();
+  });
+
+  test("lootStack dest lleno: null y el stack se queda; parcial deja leftover", () => {
+    const box = createWorldContainer("ammo8", 5, 5, "pila", [
+      { id: "ammo", qty: 8 },
+    ]);
+    const reg = new ContainerRegistry([box]);
+    const dest = createInventory(1, 20, [{ id: "scrap", qty: 1 }]);
+    expect(reg.lootStack(5.5, 5.5, dest)).toBeNull();
+    expect(box.inv.slots[0]).toEqual({ id: "ammo", qty: 8 });
+    expect(dest.slots).toEqual([{ id: "scrap", qty: 1 }]);
+    expect(lootFullMessage(null, box)).toBe("inventario lleno");
+
+    const leftoverBox = createWorldContainer("ammo8b", 5, 5, "pila", [
+      { id: "ammo", qty: 8 },
+    ]);
+    const leftoverReg = new ContainerRegistry([leftoverBox]);
+    const stackAlmost = createInventory(1, 20, [{ id: "ammo", qty: 22 }]);
+    const taken = leftoverReg.lootStack(5.5, 5.5, stackAlmost);
+    expect(taken).toEqual({ id: "ammo", qty: 2 });
+    expect(leftoverBox.inv.slots[0]).toEqual({ id: "ammo", qty: 6 });
+    expect(stackAlmost.slots[0]?.qty).toBe(24);
+    expect(lootFullMessage(taken, leftoverBox)).toBeNull();
+  });
+
+  test("lootFullMessage: sin loot cerca o taken → null (G lejos silent)", () => {
+    expect(lootFullMessage(null, null)).toBeNull();
+    const empty = createWorldContainer("empty", 5, 5, "caja");
+    expect(lootFullMessage(null, empty)).toBeNull();
+    expect(
+      lootFullMessage({ id: "canned_food", qty: 1 }, null),
+    ).toBeNull();
   });
 
   test("lootStack toma el primer stack entero; lootOne sigue 1", () => {
@@ -395,6 +492,28 @@ describe("PlayerSim loot + consume", () => {
     ]);
     const player = new PlayerSim({ x: 1, y: 1 });
     expect(player.tryLoot(reg)).toBeNull();
+    expect(lootFullMessage(null, reg.nearest(1, 1))).toBeNull();
+  });
+
+  test("tryLoot / tryLootStack dest lleno: null y el contenedor no pierde el item", () => {
+    const box = createWorldContainer("box", 2, 2, "cocina", [
+      { id: "canned_food", qty: 2 },
+    ]);
+    const reg = new ContainerRegistry([box]);
+    const player = new PlayerSim(
+      { x: 2.4, y: 2.3 },
+      undefined,
+      createInventory(1, 20, [{ id: "scrap", qty: 1 }]),
+    );
+    expect(player.tryLoot(reg)).toBeNull();
+    expect(box.inv.slots[0]).toEqual({ id: "canned_food", qty: 2 });
+    expect(player.inventory.slots).toEqual([{ id: "scrap", qty: 1 }]);
+    expect(lootFullMessage(null, reg.nearest(player.x, player.y))).toBe(
+      "inventario lleno",
+    );
+
+    expect(player.tryLootStack(reg)).toBeNull();
+    expect(box.inv.slots[0]).toEqual({ id: "canned_food", qty: 2 });
   });
 
   test("tryLootStack toma el stack entero; tryLoot sigue 1", () => {

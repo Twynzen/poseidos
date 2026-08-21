@@ -39,6 +39,20 @@ export function containerHasLoot(c: WorldContainer): boolean {
   return c.inv.slots.length > 0 && totalQty(c.inv) > 0;
 }
 
+/**
+ * Toast HUD si loot falló con dest lleno y el item sigue en el contenedor.
+ * Reusa el copy existente de refill (`inventario lleno`).
+ * `taken` truthy o sin loot cerca → null (sin toast; G lejos sigue silent).
+ */
+export function lootFullMessage(
+  taken: ItemStack | null,
+  container: WorldContainer | null,
+): string | null {
+  if (taken) return null;
+  if (!container || !containerHasLoot(container)) return null;
+  return "inventario lleno";
+}
+
 export function createWorldContainer(
   id: string,
   x: number,
@@ -116,7 +130,7 @@ export class ContainerRegistry {
 
   /**
    * Toma 1 unidad del primer stack del contenedor cercano → inventario destino.
-   * Devuelve el stack transferido o null.
+   * Devuelve el stack transferido o null. Dest lleno: item se queda (transferOne).
    */
   lootOne(
     wx: number,

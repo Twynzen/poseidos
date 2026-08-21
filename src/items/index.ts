@@ -39,6 +39,7 @@ export {
   createWorldContainer,
   createContainerFromLoot,
   ContainerRegistry,
+  lootFullMessage,
   type WorldContainer,
   type LootPreferTile,
 } from "./containers";

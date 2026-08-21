@@ -349,7 +349,11 @@ describe("createLootFloaterHud", () => {
     expect(el.classes.has(LOOT_FLOATER_HUD_ERR_CLASS)).toBe(true);
     hud.show("vacío");
     expect(el.classes.has(LOOT_FLOATER_HUD_ERR_CLASS)).toBe(true);
+    hud.show("inventario lleno");
+    expect(el.classes.has(LOOT_FLOATER_HUD_ERR_CLASS)).toBe(true);
     expect(el.style.color).toBe("#fca5a5");
+    expect(el.innerHTML).not.toContain("loot-floater-icon");
+    expect(el.textContent).toBe("inventario lleno");
 
     hud.show("+madera");
     expect(el.classes.has(LOOT_FLOATER_HUD_ERR_CLASS)).toBe(false);
