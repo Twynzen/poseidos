@@ -45,10 +45,10 @@ export type DialogueCloseHudNext = {
 };
 
 /**
- * T toggle-off, Esc, validate (alejarse / target muere) o muerte
- * (enterGameOver / tick game-over): si el panel está abierto, pide refresh
- * y quita leftover «diálogo id» de lastLootMsg.
- * Esc ya cerrado / validate still-open / muerte ya cerrado = no-op
+ * T toggle-off, Esc, validate (alejarse / target muere), muerte
+ * (enterGameOver / tick game-over) o F9 load-muerto (doLoad): si el panel
+ * está abierto, pide refresh y quita leftover «diálogo id» de lastLootMsg.
+ * Esc ya cerrado / validate still-open / muerte o load-muerto ya cerrado = no-op
  * (lastLootMsg intacto). No inventa copy: limpia el leftover de apertura.
  * Trust/otros msgs se quedan (enterGameOver luego filtra keepable causa).
  */

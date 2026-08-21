@@ -18,7 +18,7 @@ describe("dialogue panel CSS", () => {
   });
 });
 
-describe("dialogue panel close (muerte / T / Esc)", () => {
+describe("dialogue panel close (muerte / T / Esc / F9 load-muerto)", () => {
   let root: HTMLElement;
 
   afterEach(() => {
