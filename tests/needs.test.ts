@@ -6,6 +6,7 @@ import {
   NEEDS_FULL_SEC,
   NEEDS_RATE,
   NEEDS_RELIEF,
+  REST_HUD_MSG,
   rest,
   tickNeeds,
 } from "../src/actors/needs";
@@ -65,6 +66,11 @@ describe("needs tick", () => {
     drink(n);
     expect(n.thirst).toBe(0);
   });
+
+  test("REST_HUD_MSG es descansaste (R vivo; distinto de reinicio)", () => {
+    expect(REST_HUD_MSG).toBe("descansaste");
+    expect(REST_HUD_MSG).not.toBe("reinicio");
+  });
 });
 
 describe("PlayerSim + GameClock needs", () => {
@@ -92,6 +98,8 @@ describe("PlayerSim + GameClock needs", () => {
     );
     player.rest();
     expect(player.needs.fatigue).toBeCloseTo(60 - NEEDS_RELIEF.rest, 5);
+    expect(player.alive).toBe(true);
+    expect(REST_HUD_MSG).toBe("descansaste");
     expect(player.tryConsume("food")).toBe("food");
     expect(player.needs.hunger).toBeCloseTo(80 - NEEDS_RELIEF.eat, 5);
     expect(player.tryConsume("drink")).toBe("drink");

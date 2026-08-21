@@ -20,6 +20,7 @@ import {
   isKeepableDeathCause,
   type HudStatusInput,
 } from "../src/ui/hudStatus";
+import { REST_HUD_MSG } from "../src/actors/needs";
 
 function base(over: Partial<HudStatusInput> = {}): HudStatusInput {
   return {
@@ -148,6 +149,7 @@ describe("formatHudStatus compact", () => {
     );
     expect(isKeepableDeathCause("HAS MUERTO")).toBe(false);
     expect(isKeepableDeathCause("cocinaste un plato caliente")).toBe(false);
+    expect(isKeepableDeathCause(REST_HUD_MSG)).toBe(false);
     expect(isKeepableDeathCause("golpe -5 HP")).toBe(true);
     expect(isKeepableDeathCause("sed te debilita")).toBe(true);
     expect(isKeepableDeathCause("hambre y sed te debilitan")).toBe(true);
@@ -620,5 +622,34 @@ describe("death → R HUD vivo (mudos/poseídos, sin HAS MUERTO)", () => {
     expect(f9Alive).toContain("mudos 3");
     expect(f9Alive).toContain("cargado");
     expect(f9Alive).not.toContain("HAS MUERTO");
+  });
+
+  test("R vivo: descansaste en HUD; R muerto: reinicio, no descansaste", () => {
+    const { muteN, possN } = countKinds(spawnDefaults());
+    expect(REST_HUD_MSG).toBe("descansaste");
+    expect(REST_HUD_MSG).not.toBe("reinicio");
+
+    const aliveRest = formatHudStatus(
+      base({ muteN, possN, msg: REST_HUD_MSG }),
+    );
+    expect(aliveRest).toContain("descansaste");
+    expect(aliveRest).toContain("mudos 3");
+    expect(aliveRest).toContain("poseídos 2");
+    expect(aliveRest).not.toContain("HAS MUERTO");
+    expect(aliveRest).not.toContain("reinicio");
+
+    const afterDeadR = formatHudStatus(
+      base({ muteN, possN, msg: "reinicio" }),
+    );
+    expect(afterDeadR).toContain("reinicio");
+    expect(afterDeadR).toContain("mudos 3");
+    expect(afterDeadR).not.toContain("descansaste");
+    expect(afterDeadR).not.toContain("HAS MUERTO");
+
+    const stillDead = formatHudStatus(
+      base({ muteN, possN, gameOver: true, msg: "reinicio" }),
+    );
+    expect(stillDead).toContain("HAS MUERTO");
+    expect(stillDead).not.toContain("descansaste");
   });
 });

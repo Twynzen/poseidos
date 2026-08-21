@@ -116,6 +116,7 @@ import {
 } from "../ui";
 import { buildHudMoodles } from "../actors/moodles";
 import { trySleep, isSafehouseHint, nearBed, hostileNearby } from "../actors/sleep";
+import { REST_HUD_MSG } from "../actors/needs";
 import {
   createAmbientBus,
   tickAmbient,
@@ -1447,6 +1448,8 @@ export class Game {
     }
     if (this.input.consumeRestOrRestart()) {
       this.player.rest();
+      this.lastLootMsg = REST_HUD_MSG;
+      this.hudAcc = 1;
     }
     if (this.input.consumeSleep()) {
       const result = trySleep(
