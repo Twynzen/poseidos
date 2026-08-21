@@ -119,25 +119,51 @@ export function attemptBuildBarricade(
   return { ok: true, result };
 }
 
+/** Resultado de craft vendaje (add-first no cabe: mismo inv que las mats). */
+export type CraftBandageResult = {
+  added: number;
+};
+
 /**
- * Craft: 1 tela + 1 chatarra → 1 vendaje en el inventario.
- * Devuelve true si se craftó.
+ * Craft: 1 tela + 1 chatarra → 1 vendaje en el mismo inventario.
+ * Dest lleno: added 0, tela+chatarra intactas (rollback, como cook/refill).
+ * add-first de dropOnTile no cabe: las mats ocupan el hueco del vendaje.
+ * Receta qty 1 → added 0|1; consume solo si el vendaje entra.
  */
-export function tryCraftBandage(inv: Inventory): boolean {
-  if (!hasBandageMaterials(inv)) return false;
+export function tryCraftBandage(inv: Inventory): CraftBandageResult {
+  if (!hasBandageMaterials(inv)) return { added: 0 };
   const clothSlot = findSlot(inv, "cloth");
   const scrapSlot = findSlot(inv, "scrap");
-  if (clothSlot < 0 || scrapSlot < 0) return false;
+  if (clothSlot < 0 || scrapSlot < 0) return { added: 0 };
   // Quitar el de índice mayor primero para no invalidar el menor al splice
-  const order =
-    clothSlot > scrapSlot
-      ? ([clothSlot, "cloth", BANDAGE_CLOTH_COST, scrapSlot, "scrap", BANDAGE_SCRAP_COST] as const)
-      : ([scrapSlot, "scrap", BANDAGE_SCRAP_COST, clothSlot, "cloth", BANDAGE_CLOTH_COST] as const);
-  const [hi, hiId, hiCost, , loId, loCost] = order;
-  if (removeFromSlot(inv, hi, hiCost) < hiCost) return false;
+  const hiIsCloth = clothSlot > scrapSlot;
+  const hiId = hiIsCloth ? "cloth" : "scrap";
+  const loId = hiIsCloth ? "scrap" : "cloth";
+  const hiCost = hiIsCloth ? BANDAGE_CLOTH_COST : BANDAGE_SCRAP_COST;
+  const loCost = hiIsCloth ? BANDAGE_SCRAP_COST : BANDAGE_CLOTH_COST;
+  if (removeFromSlot(inv, hiIsCloth ? clothSlot : scrapSlot, hiCost) < hiCost) {
+    return { added: 0 };
+  }
   const loAgain = findSlot(inv, loId);
-  if (loAgain < 0) return false;
-  if (removeFromSlot(inv, loAgain, loCost) < loCost) return false;
-  void hiId;
-  return addItem(inv, "bandage", 1) === 1;
+  if (loAgain < 0 || removeFromSlot(inv, loAgain, loCost) < loCost) {
+    addItem(inv, hiId, hiCost);
+    return { added: 0 };
+  }
+  const added = addItem(inv, "bandage", 1);
+  if (added <= 0) {
+    addItem(inv, "cloth", BANDAGE_CLOTH_COST);
+    addItem(inv, "scrap", BANDAGE_SCRAP_COST);
+    return { added: 0 };
+  }
+  return { added };
+}
+
+/**
+ * Toast HUD si el vendaje no entró. Reusa el copy existente
+ * `inventario lleno` (refill / loot / drop dest lleno).
+ * `added` > 0 → null (éxito; leftover tela/chatarra no toastea).
+ */
+export function craftFullMessage(added: number): string | null {
+  if (added > 0) return null;
+  return "inventario lleno";
 }

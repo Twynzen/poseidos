@@ -34,6 +34,7 @@ import {
   type BarricadeFail,
   type CookAttempt,
   type CookFail,
+  type CraftBandageResult,
   type Inventory,
   type ItemStack,
 } from "../items";
@@ -397,9 +398,10 @@ export class PlayerSim {
 
   /**
    * Craft vendaje (tecla C): 1 tela + 1 chatarra → 1 vendaje.
+   * Dest lleno: added 0, mats intactas.
    */
-  tryCraftBandage(): boolean {
-    if (!this.alive) return false;
+  tryCraftBandage(): CraftBandageResult {
+    if (!this.alive) return { added: 0 };
     return craftBandageRecipe(this.inventory);
   }
 

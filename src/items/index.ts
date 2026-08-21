@@ -55,10 +55,12 @@ export {
   tryBuildBarricade,
   attemptBuildBarricade,
   tryCraftBandage,
+  craftFullMessage,
   type BuildResult,
   type BarricadeFailReason,
   type BarricadeAttempt,
   type BarricadeFail,
+  type CraftBandageResult,
 } from "./craft";
 export {
   INVENTORY_EMPTY_MSG,
