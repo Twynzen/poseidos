@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   createAmbientBus,
@@ -6,6 +8,9 @@ import {
   ambientTargets,
   describeAmbient,
   toggleAmbientMute,
+  muteHudMsg,
+  MUTE_HUD_MSG,
+  SOUND_HUD_MSG,
   type AmbientState,
 } from "../src/audio/ambientStub";
 
@@ -145,6 +150,43 @@ describe("tickAmbient / ambientLevels", () => {
     expect(describeAmbient(silent)).toBeNull();
 
     toggleAmbientMute(silent);
+    expect(describeAmbient(silent)).toBe(MUTE_HUD_MSG);
     expect(describeAmbient(silent)).toBe("mute");
+  });
+
+  test("muteHudMsg: mute vs sonido según el estado nuevo", () => {
+    expect(MUTE_HUD_MSG).toBe("mute");
+    expect(SOUND_HUD_MSG).toBe("sonido");
+    expect(muteHudMsg(true)).toBe(MUTE_HUD_MSG);
+    expect(muteHudMsg(false)).toBe(SOUND_HUD_MSG);
+    expect(MUTE_HUD_MSG).not.toBe(SOUND_HUD_MSG);
+
+    const bus = createAmbientBus();
+    expect(bus.muted).toBe(false);
+    const afterMute = muteHudMsg(toggleAmbientMute(bus));
+    expect(bus.muted).toBe(true);
+    expect(afterMute).toBe(MUTE_HUD_MSG);
+    expect(ambientLevels(bus).rain).toBe(0);
+    expect(describeAmbient(bus)).toBe(MUTE_HUD_MSG);
+
+    const afterUnmute = muteHudMsg(toggleAmbientMute(bus));
+    expect(bus.muted).toBe(false);
+    expect(afterUnmute).toBe(SOUND_HUD_MSG);
+    expect(describeAmbient(bus)).not.toBe(MUTE_HUD_MSG);
+  });
+
+  test("Game M vivo y muerto asignan lastLootMsg via muteHudMsg (sin lootToast)", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    const assign =
+      "this.lastLootMsg = muteHudMsg(toggleAmbientMute(this.ambient))";
+    const hits = src.match(
+      /this\.lastLootMsg = muteHudMsg\(toggleAmbientMute\(this\.ambient\)\)/g,
+    );
+    expect(hits?.length).toBe(2);
+    expect(src).toContain(assign);
+    expect((src.match(/consumeMute\(\)/g) ?? []).length).toBe(2);
+    expect(src).not.toMatch(
+      /consumeMute\(\)[\s\S]{0,180}lootToast/,
+    );
   });
 });

@@ -122,6 +122,7 @@ import {
   tickAmbient,
   describeAmbient,
   toggleAmbientMute,
+  muteHudMsg,
   createFootstepsBus,
   tickFootsteps,
   describeFootsteps,
@@ -1069,7 +1070,7 @@ export class Game {
         this.hudAcc = 1;
       }
       if (this.input.consumeMute()) {
-        toggleAmbientMute(this.ambient);
+        this.lastLootMsg = muteHudMsg(toggleAmbientMute(this.ambient));
         this.hudAcc = 1;
       }
       this.input.endFrame();
@@ -1443,7 +1444,7 @@ export class Game {
       this.hudAcc = 1;
     }
     if (this.input.consumeMute()) {
-      toggleAmbientMute(this.ambient);
+      this.lastLootMsg = muteHudMsg(toggleAmbientMute(this.ambient));
       this.hudAcc = 1;
     }
     if (this.input.consumeRestOrRestart()) {
