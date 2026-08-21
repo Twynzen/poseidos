@@ -40,8 +40,8 @@ import {
   splitStack,
   mergeStack,
   swapInventoryStacks,
-  takeFromSlot,
-  dropOnTile,
+  dropFromSlot,
+  dropFullMessage,
   dropQty,
   dropSourceIndex,
   dropToastLabel,
@@ -939,6 +939,15 @@ export class Game {
     }
   }
 
+  /** U / Shift+U / inv throw: dest pila llena → toast existente. */
+  private toastDropFull(added: number): void {
+    const msg = dropFullMessage(added);
+    if (!msg) return;
+    this.lastLootMsg = msg;
+    this.lootToast.show(msg);
+    this.hudAcc = 1;
+  }
+
   /** G / Shift+G / E-fallback: dest lleno + loot cerca → toast existente. */
   private toastLootFull(): void {
     const msg = lootFullMessage(
@@ -1277,8 +1286,8 @@ export class Game {
       );
       const stack = this.player.inventory.slots[i];
       const qty = dropQty(stack?.qty, drop.whole);
-      const taken = takeFromSlot(this.player.inventory, i, qty);
-      if (taken) {
+      if (stack && qty >= 1) {
+        const itemId = stack.id;
         const { tx, ty } = dropTargetTile(
           this.player.x,
           this.player.y,
@@ -1286,14 +1295,26 @@ export class Game {
           this.player.facingY,
           (x, y) => this.map.walkable(x, y),
         );
-        const id = `drop-${tx}-${ty}-${taken.id}`;
-        const c = dropOnTile(this.containers, tx, ty, taken, id);
-        this.view.addLootMarker(c.id, c.x, c.y, c.name, c.inv);
-        playLoot(this.interactPlayer, this.ambient.muted);
-        const label = dropToastLabel(getItemDef(taken.id).name, taken.qty);
-        this.lootToast.show(label, taken.id);
-        this.lastLootMsg = label;
-        this.hudAcc = 1;
+        const id = `drop-${tx}-${ty}-${itemId}`;
+        const { container: c, added } = dropFromSlot(
+          this.player.inventory,
+          i,
+          qty,
+          this.containers,
+          tx,
+          ty,
+          id,
+        );
+        if (added <= 0) {
+          this.toastDropFull(added);
+        } else if (c) {
+          this.view.addLootMarker(c.id, c.x, c.y, c.name, c.inv);
+          playLoot(this.interactPlayer, this.ambient.muted);
+          const label = dropToastLabel(getItemDef(itemId).name, added);
+          this.lootToast.show(label, itemId);
+          this.lastLootMsg = label;
+          this.hudAcc = 1;
+        }
       }
     }
     if (inspected !== null) {

@@ -110,10 +110,13 @@ export {
 export {
   takeFromSlot,
   dropOnTile,
+  dropFromSlot,
+  dropFullMessage,
   dropQty,
   dropSourceIndex,
   dropToastLabel,
   dropTargetTile,
+  type DropOnTileResult,
 } from "./drop";
 
 export { lootPileLabel } from "./lootLabel";

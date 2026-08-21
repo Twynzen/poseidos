@@ -8,6 +8,7 @@ import { getItemDef } from "./defs";
 import {
   addItem,
   removeFromSlot,
+  totalQty,
   type Inventory,
   type ItemStack,
 } from "./inventory";
@@ -111,9 +112,16 @@ export function takeFromSlot(
   return { id, qty: n };
 }
 
+/** Resultado de dejar un stack en el tile (addItem primero). */
+export type DropOnTileResult = {
+  container: WorldContainer | null;
+  added: number;
+};
+
 /**
- * Deja `stack` en el tile. Si ya hay contenedor, addItem y lo devuelve;
- * si no, crea WorldContainer con el nombre del item y lo registra.
+ * Deja hasta `stack.qty` en el tile. Si ya hay contenedor, addItem;
+ * si no, crea WorldContainer. Dest lleno: added 0, pila sin cambio
+ * (no registra contenedor vacío). El caller quita del inv solo `added`.
  */
 export function dropOnTile(
   containers: ContainerRegistry,
@@ -121,20 +129,63 @@ export function dropOnTile(
   ty: number,
   stack: ItemStack,
   id: string,
-): WorldContainer {
+): DropOnTileResult {
   let c = containers.at(tx, ty);
   if (c) {
-    addItem(c.inv, stack.id, stack.qty);
-  } else {
-    c = createWorldContainer(
-      id,
-      tx,
-      ty,
-      getItemDef(stack.id).name,
-      [stack],
-    );
-    containers.add(c);
+    const added = addItem(c.inv, stack.id, stack.qty);
+    if (added > 0) {
+      c.name = lootPileLabel(c.inv, getItemDef(stack.id).name);
+    }
+    return { container: c, added };
   }
-  c.name = lootPileLabel(c.inv, getItemDef(stack.id).name);
-  return c;
+  const name = getItemDef(stack.id).name;
+  c = createWorldContainer(id, tx, ty, name, [stack]);
+  const added = totalQty(c.inv);
+  if (added <= 0) return { container: null, added: 0 };
+  c.name = lootPileLabel(c.inv, name);
+  containers.add(c);
+  return { container: c, added };
+}
+
+/**
+ * Tira hasta `qty` del slot al tile. addItem primero; solo quita lo que entra.
+ * Dest lleno: added 0, slot intacto.
+ */
+export function dropFromSlot(
+  inv: Inventory,
+  slotIndex: number,
+  qty: number,
+  containers: ContainerRegistry,
+  tx: number,
+  ty: number,
+  id: string,
+): DropOnTileResult {
+  const slot = inv.slots[slotIndex];
+  if (!slot) return { container: containers.at(tx, ty), added: 0 };
+  const want =
+    typeof qty === "number" && Number.isFinite(qty) && qty >= 1
+      ? Math.min(slot.qty, Math.trunc(qty))
+      : 0;
+  if (want < 1) return { container: containers.at(tx, ty), added: 0 };
+  const result = dropOnTile(
+    containers,
+    tx,
+    ty,
+    { id: slot.id, qty: want },
+    id,
+  );
+  if (result.added > 0) {
+    takeFromSlot(inv, slotIndex, result.added);
+  }
+  return result;
+}
+
+/**
+ * Toast HUD si el drop no entró nada. Reusa el copy existente
+ * `inventario lleno` (refill / loot dest lleno).
+ * `added` > 0 → null (éxito / leftover parcial no toastea).
+ */
+export function dropFullMessage(added: number): string | null {
+  if (added > 0) return null;
+  return "inventario lleno";
 }
