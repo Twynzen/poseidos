@@ -47,6 +47,7 @@ import {
   dropToastLabel,
   dropTargetTile,
   craftFullMessage,
+  cookFullMessage,
   hasBandageMaterials,
   type ContainerRegistry,
   type ItemId,
@@ -959,6 +960,15 @@ export class Game {
     this.hudAcc = 1;
   }
 
+  /** H: dest inv no acepta el plato → toast existente. */
+  private toastCookFull(added: number): void {
+    const msg = cookFullMessage(added);
+    if (!msg) return;
+    this.lastLootMsg = msg;
+    this.lootToast.show(msg);
+    this.hudAcc = 1;
+  }
+
   /** G / Shift+G / E-fallback: dest lleno + loot cerca → toast existente. */
   private toastLootFull(): void {
     const msg = lootFullMessage(
@@ -1471,8 +1481,12 @@ export class Game {
         this.lastLootMsg = "cocinaste un plato caliente";
         this.hudAcc = 1;
       } else if (cooked && !cooked.ok) {
-        this.lastLootMsg = cooked.message;
-        this.hudAcc = 1;
+        if (cooked.reason === "inv_full") {
+          this.toastCookFull(0);
+        } else {
+          this.lastLootMsg = cooked.message;
+          this.hudAcc = 1;
+        }
       }
     }
     if (this.input.consumeTalk()) {

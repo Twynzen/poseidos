@@ -408,6 +408,7 @@ export class PlayerSim {
   /**
    * Cocinar (tecla H): 1 canned_food → 1 hot_meal.
    * Requiere indoor o cerca de furniture.
+   * Dest lleno: lata rollback, reason inv_full.
    */
   tryCook(map: TileMap): CookAttempt | CookFail | null {
     if (!this.alive) return null;

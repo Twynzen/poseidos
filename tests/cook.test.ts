@@ -4,11 +4,13 @@ import {
   attemptCook,
   canCookHere,
   cookFailMessage,
+  cookFullMessage,
   createInventory,
   diagnoseCook,
   getItemDef,
   hasCookIngredients,
   nearFurniture,
+  refillFailMessage,
   tryCook,
 } from "../src/items";
 import { TileMap } from "../src/world/tilemap";
@@ -77,6 +79,13 @@ describe("tryCook", () => {
     expect(tryCook(map, inv, 8.5, 8.5)).toBe(false);
     expect(inv.slots.find((s) => s.id === "canned_food")?.qty).toBe(1);
     expect(inv.slots.find((s) => s.id === "hot_meal")).toBeUndefined();
+    const fail = attemptCook(map, inv, 8.5, 8.5);
+    expect(fail.ok).toBe(false);
+    if (!fail.ok) {
+      expect(fail.reason).toBe("bad_place");
+      expect(fail.message).toBe("no puedes cocinar aquí");
+      expect(fail.message).not.toBe(refillFailMessage("inv_full"));
+    }
   });
 
   test("fail sin item", () => {
@@ -87,6 +96,79 @@ describe("tryCook", () => {
     const fail = attemptCook(map, empty, 6.5, 7.2);
     expect(fail.ok).toBe(false);
     if (!fail.ok) expect(fail.message).toBe("falta comida");
+  });
+
+  test("dest slots llenos: lata intacta, toast inventario lleno", () => {
+    const map = room();
+    const inv = createInventory(1, 20);
+    addItem(inv, "canned_food", 2);
+    const before = inv.slots.map((s) => ({ ...s }));
+    expect(hasCookIngredients(inv)).toBe(true);
+    expect(canCookHere(map, 6.5, 7.2)).toBe(true);
+    expect(diagnoseCook(map, inv, 6.5, 7.2)).toBeNull();
+    expect(tryCook(map, inv, 6.5, 7.2)).toBe(false);
+    expect(inv.slots).toEqual(before);
+    expect(inv.slots.find((s) => s.id === "canned_food")?.qty).toBe(2);
+    expect(inv.slots.find((s) => s.id === "hot_meal")).toBeUndefined();
+    const fail = attemptCook(map, inv, 6.5, 7.2);
+    expect(fail.ok).toBe(false);
+    if (!fail.ok) {
+      expect(fail.reason).toBe("inv_full");
+      expect(fail.message).toBe("inventario lleno");
+      expect(fail.message).toBe(refillFailMessage("inv_full"));
+      expect(fail.message).not.toBe(cookFailMessage("bad_place"));
+    }
+    expect(cookFullMessage(0)).toBe("inventario lleno");
+    expect(cookFullMessage(0)).toBe(refillFailMessage("inv_full"));
+  });
+
+  test("dest max stack: lata intacta, toast inventario lleno", () => {
+    const map = room();
+    const inv = createInventory(2, 20);
+    addItem(inv, "hot_meal", 5);
+    addItem(inv, "canned_food", 1);
+    const before = inv.slots.map((s) => ({ ...s }));
+    expect(tryCook(map, inv, 6.5, 7.2)).toBe(false);
+    expect(inv.slots).toEqual(before);
+    expect(inv.slots.find((s) => s.id === "canned_food")?.qty).toBe(1);
+    expect(inv.slots.find((s) => s.id === "hot_meal")?.qty).toBe(5);
+    const fail = attemptCook(map, inv, 6.5, 7.2);
+    expect(fail.ok).toBe(false);
+    if (!fail.ok) {
+      expect(fail.reason).toBe("inv_full");
+      expect(fail.message).toBe("inventario lleno");
+    }
+    expect(cookFullMessage(0)).toBe("inventario lleno");
+  });
+
+  test("slots llenos pero la lata libera hueco: entra el plato", () => {
+    const map = room();
+    const inv = createInventory(1, 20);
+    addItem(inv, "canned_food", 1);
+    expect(tryCook(map, inv, 6.5, 7.2)).toBe(true);
+    expect(inv.slots.find((s) => s.id === "hot_meal")?.qty).toBe(1);
+    expect(inv.slots.find((s) => s.id === "canned_food")).toBeUndefined();
+    expect(cookFullMessage(1)).toBeNull();
+  });
+
+  test("player dest lleno: lata se queda, toast inventario lleno", () => {
+    const map = room();
+    const player = new PlayerSim(
+      { x: 6.5, y: 7.2 },
+      undefined,
+      createInventory(1, 20),
+    );
+    addItem(player.inventory, "canned_food", 2);
+    const before = player.inventory.slots.map((s) => ({ ...s }));
+    const fail = player.tryCook(map);
+    expect(fail?.ok).toBe(false);
+    if (fail && !fail.ok) {
+      expect(fail.reason).toBe("inv_full");
+      expect(fail.message).toBe("inventario lleno");
+      expect(fail.message).toBe(refillFailMessage("inv_full"));
+    }
+    expect(player.inventory.slots).toEqual(before);
+    expect(cookFullMessage(0)).toBe("inventario lleno");
   });
 
   test("player tryCook + Q hot_meal alivia hunger y fatigue", () => {
@@ -111,6 +193,23 @@ describe("tryCook", () => {
       50 - (meal.fatigueRelief ?? 0),
       5,
     );
+  });
+});
+
+describe("cookFullMessage", () => {
+  test("added 0 → inventario lleno (mismo copy refill)", () => {
+    expect(cookFullMessage(0)).toBe("inventario lleno");
+    expect(cookFullMessage(0)).toBe(refillFailMessage("inv_full"));
+    expect(cookFailMessage("inv_full")).toBe(refillFailMessage("inv_full"));
+  });
+
+  test("added > 0 → null (éxito)", () => {
+    expect(cookFullMessage(1)).toBeNull();
+  });
+
+  test("bad_place sigue no puedes cocinar aquí", () => {
+    expect(cookFailMessage("bad_place")).toBe("no puedes cocinar aquí");
+    expect(cookFailMessage("bad_place")).not.toBe(refillFailMessage("inv_full"));
   });
 });
 

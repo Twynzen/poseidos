@@ -81,6 +81,7 @@ export {
   hasCookIngredients,
   diagnoseCook,
   cookFailMessage,
+  cookFullMessage,
   tryCook,
   attemptCook,
   type CookFailReason,
