@@ -26,6 +26,32 @@ export function torchLightApplies(gameOver: boolean): boolean {
 }
 
 /**
+ * HAS MUERTO / F9 load-muerto: L no aplica (se drena, el flag no flippea).
+ * Vivo (incl. F9 load-vivo): L togglea si hay item, igual que hoy.
+ * No esconde el cono; solo gate de input. gameOver no fuerza off.
+ */
+export function flashlightToggleApplies(gameOver: boolean): boolean {
+  return torchLightApplies(gameOver);
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: current sin cambio (on queda on, off queda off).
+ * Vivo + wantsToggle + hasItem → flip. Vivo + sin item → off.
+ * !wantsToggle → current. No inventa HUD copy.
+ */
+export function nextFlashlightOn(
+  gameOver: boolean,
+  current: boolean,
+  wantsToggle: boolean,
+  hasItem: boolean,
+): boolean {
+  if (!flashlightToggleApplies(gameOver)) return current;
+  if (!hasItem) return false;
+  if (wantsToggle) return !current;
+  return current;
+}
+
+/**
  * Radio FOV efectivo: base+bonus si on && hasItem; si no, base.
  * gameOver → base (HAS MUERTO / F9 load-muerto; no extra tiles al cadáver).
  */

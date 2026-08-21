@@ -107,6 +107,8 @@ export {
   fovRadiusWithFlashlight,
   torchLightApplies,
   torchLightIntensity,
+  flashlightToggleApplies,
+  nextFlashlightOn,
 } from "./flashlight";
 
 export {
