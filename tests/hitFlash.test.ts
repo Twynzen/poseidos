@@ -1,12 +1,14 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   HIT_FLASH_PEAK,
   HIT_FLASH_DECAY_PER_SEC,
   createHitFlash,
   triggerHitFlash,
   tickHitFlash,
+  hitFlashOverlayOpacity,
 } from "../src/ui/hitFlash";
 
 describe("#hit-flash CSS", () => {
@@ -120,5 +122,79 @@ describe("tickHitFlash", () => {
       tickHitFlash(b, 1 / 60);
     }
     expect(a.intensity).toBe(b.intensity);
+  });
+});
+
+describe("hitFlashOverlayOpacity (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte con flash activo: overlay hidden; ya vacío no-op; load-muerto hidden; vivo/load-vivo pinta", () => {
+    const flash = createHitFlash();
+    triggerHitFlash(flash, 1);
+    expect(flash.intensity).toBe(1);
+
+    const deadOpen = hitFlashOverlayOpacity(true, flash.intensity);
+    expect(deadOpen).toBe(0);
+
+    const alreadyEmpty = hitFlashOverlayOpacity(true, 0);
+    expect(alreadyEmpty).toBe(0);
+    expect(hitFlashOverlayOpacity(true, createHitFlash().intensity)).toBe(0);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(hitFlashOverlayOpacity(deadRt.gameOver, flash.intensity)).toBe(0);
+    expect(hitFlashOverlayOpacity(deadRt.gameOver, 0)).toBe(0);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(hitFlashOverlayOpacity(liveRt.gameOver, flash.intensity)).toBeCloseTo(
+      HIT_FLASH_PEAK,
+      10,
+    );
+
+    expect(hitFlashOverlayOpacity(false, 1)).toBeCloseTo(HIT_FLASH_PEAK, 10);
+    expect(hitFlashOverlayOpacity(false, 0)).toBe(0);
+    expect(hitFlashOverlayOpacity(false, 0.4)).toBeCloseTo(
+      0.4 * HIT_FLASH_PEAK,
+      10,
+    );
+  });
+
+  test("gameOver oculta; intensity sigue decayendo (R / load-vivo igual que hoy)", () => {
+    const flash = createHitFlash();
+    triggerHitFlash(flash, 1);
+    expect(hitFlashOverlayOpacity(true, flash.intensity)).toBe(0);
+    tickHitFlash(flash, 0.2);
+    expect(flash.intensity).toBeCloseTo(1 - HIT_FLASH_DECAY_PER_SEC * 0.2, 10);
+    expect(hitFlashOverlayOpacity(true, flash.intensity)).toBe(0);
+    expect(hitFlashOverlayOpacity(false, flash.intensity)).toBeCloseTo(
+      flash.intensity * HIT_FLASH_PEAK,
+      10,
+    );
+  });
+
+  test("Game syncHitFlashOverlay usa hitFlashOverlayOpacity(gameOver); freeze y F9 load-muerto siguen sync", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("hitFlashOverlayOpacity(");
+    expect(src).toMatch(
+      /syncHitFlashOverlay\(\): void \{[\s\S]{0,280}hitFlashOverlayOpacity\(\s*this\.gameOver/,
+    );
+    expect(src).not.toMatch(
+      /syncHitFlashOverlay\(\): void \{[\s\S]{0,280}this\.hitFlash\.intensity\s*\*\s*HIT_FLASH_PEAK/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,500}this\.syncHitFlashOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /this\.view\.tickNoiseRings\(dt\);\s*this\.tickHitFlashOverlay\(dt\)/,
+    );
+    expect(src).toMatch(
+      /if \(!this\.player\.alive\) \{[\s\S]{0,200}enterGameOver\(\)[\s\S]{0,280}this\.tickHitFlashOverlay\(dt\)/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
   });
 });

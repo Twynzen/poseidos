@@ -101,10 +101,10 @@ import {
   formatHudStatus,
   isKeepableDeathCause,
   formatGateLine,
-  HIT_FLASH_PEAK,
   createHitFlash,
   triggerHitFlash,
   tickHitFlash,
+  hitFlashOverlayOpacity,
   type SpeechOverlay,
   type DialoguePanel,
   type MoodlesHud,
@@ -493,6 +493,7 @@ export class Game {
     this.syncHostileView();
     this.syncSpeechOverlay();
     this.syncDialoguePanel();
+    this.syncHitFlashOverlay();
     this.syncLighting();
     this.view.followCamera(this.player.x, this.player.y);
   }
@@ -1657,7 +1658,7 @@ export class Game {
     }
   }
 
-  /** Overlay `#hit-flash`: decay + opacity = intensity × peak. */
+  /** Overlay `#hit-flash`: decay + opacity (0 si gameOver). */
   private tickHitFlashOverlay(dt: number): void {
     tickHitFlash(this.hitFlash, dt);
     this.syncHitFlashOverlay();
@@ -1666,7 +1667,7 @@ export class Game {
   private syncHitFlashOverlay(): void {
     if (!this.hitFlashEl) return;
     this.hitFlashEl.style.opacity = String(
-      this.hitFlash.intensity * HIT_FLASH_PEAK,
+      hitFlashOverlayOpacity(this.gameOver, this.hitFlash.intensity),
     );
   }
 

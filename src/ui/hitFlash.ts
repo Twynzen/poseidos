@@ -33,3 +33,16 @@ export function tickHitFlash(flash: HitFlash, dt: number): void {
   }
   flash.intensity = Math.max(0, flash.intensity - HIT_FLASH_DECAY_PER_SEC * safeDt);
 }
+
+/**
+ * HAS MUERTO / F9 load-muerto: no pintar flash rojo encima.
+ * Vivo (incl. F9 load-vivo): intensity × peak, igual que hoy.
+ * Ya vacío (intensity 0) = 0; gameOver no inventa flash.
+ */
+export function hitFlashOverlayOpacity(
+  gameOver: boolean,
+  intensity: number,
+): number {
+  if (gameOver) return 0;
+  return intensity * HIT_FLASH_PEAK;
+}

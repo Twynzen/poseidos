@@ -81,6 +81,7 @@ export {
   createHitFlash,
   triggerHitFlash,
   tickHitFlash,
+  hitFlashOverlayOpacity,
   type HitFlash,
 } from "./hitFlash";
 
