@@ -11,7 +11,7 @@ if (!(root instanceof HTMLElement)) {
 
 const game = new Game(root);
 
-/** Loading diegético: overlay encima; el juego arranca en paralelo. */
+/** Loading diegético: overlay encima; el loop arranca al dismiss (skip o timeout). */
 const progress = createLoadingProgress();
 const overlay = createLoadingOverlay();
 overlay.mount(root);
@@ -37,6 +37,9 @@ function finishLoading(): void {
   overlayEl?.removeEventListener("click", onClickSkip);
   overlay.dismiss();
   overlay.dispose();
+  // Loop solo tras dismiss: gracia/needs no corren bajo el modal;
+  // Game.start limpia edges (Espacio skip ≠ melee).
+  game.start();
 }
 
 function onKeySkip(e: KeyboardEvent): void {
@@ -59,8 +62,6 @@ function onClickSkip(): void {
 const overlayEl = document.getElementById("loading-overlay");
 overlayEl?.addEventListener("click", onClickSkip);
 window.addEventListener("keydown", onKeySkip);
-
-game.start();
 
 function tickLoad(now: number): void {
   if (finished) return;

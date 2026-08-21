@@ -1,5 +1,10 @@
 import { describe, expect, test } from "vitest";
 import {
+  HostileSim,
+  defaultHostileSpawns,
+  defaultPossessedSpawns,
+} from "../src/ai";
+import {
   CONTROLS_HELP,
   GAME_OVER_LINE,
   formatHudDebugTokens,
@@ -559,5 +564,61 @@ describe("formatHudStatus compact", () => {
     expect(formatHudStatus(base({ lineSource: "llm" }))).not.toContain(
       "RECHAZO",
     );
+  });
+});
+
+describe("death → R HUD vivo (mudos/poseídos, sin HAS MUERTO)", () => {
+  function countKinds(sim: HostileSim): { muteN: number; possN: number } {
+    return {
+      muteN: sim.hostiles.filter((h) => h.kind === "mute").length,
+      possN: sim.hostiles.filter((h) => h.kind === "possessed").length,
+    };
+  }
+
+  function spawnDefaults(): HostileSim {
+    const sim = new HostileSim();
+    for (const s of defaultHostileSpawns()) sim.add(s.id, s.x, s.y);
+    for (const s of defaultPossessedSpawns()) {
+      sim.add(s.id, s.x, s.y, undefined, "possessed");
+    }
+    return sim;
+  }
+
+  test("spawns default = mudos 3 / poseídos 2; game-over no los pinta", () => {
+    const { muteN, possN } = countKinds(spawnDefaults());
+    expect(muteN).toBe(3);
+    expect(possN).toBe(2);
+    expect(defaultHostileSpawns()).toHaveLength(3);
+    expect(defaultPossessedSpawns()).toHaveLength(2);
+
+    const living = formatHudStatus(base({ muteN, possN }));
+    expect(living).toContain("mudos 3");
+    expect(living).toContain("poseídos 2");
+    expect(living).not.toContain("HAS MUERTO");
+
+    const dead = formatHudStatus(base({ muteN, possN, gameOver: true }));
+    expect(dead).toBe(GAME_OVER_LINE);
+    expect(dead).not.toContain("mudos");
+    expect(dead).not.toContain("poseídos");
+    expect(dead.match(/HAS MUERTO/g)).toEqual(["HAS MUERTO"]);
+  });
+
+  test("R respawn: gameOver false + msg reinicio → línea viva, una sola vez", () => {
+    const { muteN, possN } = countKinds(spawnDefaults());
+    const afterR = formatHudStatus(
+      base({ muteN, possN, msg: "reinicio" }),
+    );
+    expect(afterR).toContain("mudos 3");
+    expect(afterR).toContain("poseídos 2");
+    expect(afterR).toContain("reinicio");
+    expect(afterR).not.toContain("HAS MUERTO");
+    expect(afterR).not.toMatch(/HAS MUERTO/);
+
+    const f9Alive = formatHudStatus(
+      base({ muteN, possN, msg: "cargado" }),
+    );
+    expect(f9Alive).toContain("mudos 3");
+    expect(f9Alive).toContain("cargado");
+    expect(f9Alive).not.toContain("HAS MUERTO");
   });
 });

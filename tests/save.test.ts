@@ -15,6 +15,7 @@ import {
 } from "../src/core/save";
 import { createNeighborhood } from "../src/world/neighborhood";
 import { PlayerSim } from "../src/actors/player";
+import { MAX_HEALTH } from "../src/actors/body";
 import { addItem, inventorySummary, totalQty, tryBuildBarricade } from "../src/items";
 import {
   DialogueBehaviorGates,
@@ -318,5 +319,77 @@ describe("save/load", () => {
     expect(loaded.possession.lastApplied).toEqual({});
     expect(loaded.possession.lastRejected).toEqual({});
     expect(loaded.possession.gateLine).toEqual({});
+  });
+});
+
+describe("F5/F9 player.health (campo ya existente)", () => {
+  test("captureSave escribe health; applySave lo restaura", () => {
+    const world = makeWorld();
+    expect(world.player.health).toBe(MAX_HEALTH);
+    world.player.takeDamage(37);
+    expect(world.player.health).toBe(MAX_HEALTH - 37);
+    expect(world.player.alive).toBe(true);
+
+    const save = captureSave(world);
+    expect(save.player.health).toBe(MAX_HEALTH - 37);
+
+    const world2 = makeWorld();
+    expect(world2.player.health).toBe(MAX_HEALTH);
+    applySave(world2, save);
+    expect(world2.player.health).toBe(MAX_HEALTH - 37);
+    expect(world2.player.alive).toBe(true);
+  });
+
+  test("health 0 → muerto; F9 load-alive (health>0) revive", () => {
+    const world = makeWorld();
+    world.player.takeDamage(MAX_HEALTH);
+    expect(world.player.health).toBe(0);
+    expect(world.player.alive).toBe(false);
+
+    const dead = captureSave(world);
+    expect(dead.player.health).toBe(0);
+
+    const world2 = makeWorld();
+    applySave(world2, dead);
+    expect(world2.player.health).toBe(0);
+    expect(world2.player.alive).toBe(false);
+
+    const living = captureSave(makeWorld());
+    expect(living.player.health).toBe(MAX_HEALTH);
+    applySave(world2, living);
+    expect(world2.player.health).toBe(MAX_HEALTH);
+    expect(world2.player.alive).toBe(true);
+  });
+
+  test("save antiguo sin health → 100; NaN rechaza; clamp 0–100", () => {
+    const world = makeWorld();
+    const save = captureSave(world);
+    const { health: _dropped, ...playerNoHp } = save.player;
+    expect("health" in playerNoHp).toBe(false);
+    const legacy = loadFromString(
+      JSON.stringify({ ...save, player: playerNoHp }),
+    );
+    expect(legacy.player.health).toBe(MAX_HEALTH);
+
+    const world2 = makeWorld();
+    world2.player.takeDamage(20);
+    applySave(world2, legacy);
+    expect(world2.player.health).toBe(MAX_HEALTH);
+    expect(world2.player.alive).toBe(true);
+
+    expect(() =>
+      loadFromString(
+        JSON.stringify({ ...save, player: { ...save.player, health: "x" } }),
+      ),
+    ).toThrow(/health/);
+
+    const over = loadFromString(
+      JSON.stringify({ ...save, player: { ...save.player, health: 140 } }),
+    );
+    expect(over.player.health).toBe(MAX_HEALTH);
+    const under = loadFromString(
+      JSON.stringify({ ...save, player: { ...save.player, health: -8 } }),
+    );
+    expect(under.player.health).toBe(0);
   });
 });

@@ -91,3 +91,27 @@ describe("consumeLoot", () => {
     expect(input.consumeLoot()).toBeNull();
   });
 });
+
+describe("endFrame limpia edges (Espacio skip ≠ melee)", () => {
+  let input: Input;
+
+  afterEach(() => {
+    input?.dispose();
+  });
+
+  test("Space en pressed → consumeAttack; endFrame lo descarta", () => {
+    input = new Input();
+    keydown("Space");
+    expect(input.consumeAttack()).toBe(true);
+    keydown("Space");
+    input.endFrame();
+    expect(input.consumeAttack()).toBe(false);
+  });
+
+  test("KeyX (disparo) también se limpia con endFrame", () => {
+    input = new Input();
+    keydown("KeyX");
+    input.endFrame();
+    expect(input.consumeShoot()).toBe(false);
+  });
+});
