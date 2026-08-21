@@ -99,6 +99,8 @@ import {
   HOTBAR_SIZE,
   clampHotbarIndex,
   stepHotbarIndex,
+  hotbarInputApplies,
+  nextHotbarSelected,
   swapHotbarStacks,
   formatHudStatus,
   isKeepableDeathCause,
@@ -1049,15 +1051,7 @@ export class Game {
   private tick(dt: number): void {
     this.applyIsoZoomInput();
     const slot = this.input.consumeHotbar();
-    if (slot !== null) {
-      this.hotbarSelected = slot;
-      this.hudAcc = 1;
-    }
     const wheel = this.input.consumeHotbarWheel();
-    if (wheel !== null) {
-      this.hotbarSelected = stepHotbarIndex(this.hotbarSelected, wheel);
-      this.hudAcc = 1;
-    }
     const clicked = this.hotbarHud.consumeClick();
     const dragged = this.hotbarHud.consumeDrag();
     const inspected = this.hotbarHud.consumeInspect();
@@ -1070,18 +1064,45 @@ export class Game {
     const splitIdx = this.inventoryPanel.consumeSplit();
     const mergeIdx = this.inventoryPanel.consumeMerge();
     const invDragged = this.inventoryPanel.consumeDrag();
-    if (dragged) {
-      if (swapHotbarStacks(this.player.inventory, dragged.from, dragged.to)) {
-        this.hotbarSelected = dragged.to;
+    // Drain 1–5 / rueda / clic / swap; HAS MUERTO no cambia selección ni stacks.
+    if (hotbarInputApplies(this.gameOver)) {
+      if (slot !== null) {
+        this.hotbarSelected = nextHotbarSelected(
+          this.gameOver,
+          this.hotbarSelected,
+          slot,
+        );
         this.hudAcc = 1;
       }
-    } else if (
-      clicked !== null &&
-      hotbarSplitIdx === null &&
-      hotbarMergeIdx === null
-    ) {
-      this.hotbarSelected = clicked;
-      this.hudAcc = 1;
+      if (wheel !== null) {
+        this.hotbarSelected = nextHotbarSelected(
+          this.gameOver,
+          this.hotbarSelected,
+          stepHotbarIndex(this.hotbarSelected, wheel),
+        );
+        this.hudAcc = 1;
+      }
+      if (dragged) {
+        if (swapHotbarStacks(this.player.inventory, dragged.from, dragged.to)) {
+          this.hotbarSelected = nextHotbarSelected(
+            this.gameOver,
+            this.hotbarSelected,
+            dragged.to,
+          );
+          this.hudAcc = 1;
+        }
+      } else if (
+        clicked !== null &&
+        hotbarSplitIdx === null &&
+        hotbarMergeIdx === null
+      ) {
+        this.hotbarSelected = nextHotbarSelected(
+          this.gameOver,
+          this.hotbarSelected,
+          clicked,
+        );
+        this.hudAcc = 1;
+      }
     }
 
     // Game-over: solo R reinicia / F9 carga (F5 no aplica)
