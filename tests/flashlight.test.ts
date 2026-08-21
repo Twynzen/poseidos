@@ -28,7 +28,13 @@ import {
 } from "../src/core/save";
 import { GameClock } from "../src/core/clock";
 import { createNeighborhood } from "../src/world/neighborhood";
-import { DEFAULT_FOV_RADIUS } from "../src/world/los";
+import { makeFloor } from "../src/world/tile";
+import { TileMap } from "../src/world/tilemap";
+import {
+  computeVisibleTiles,
+  DEFAULT_FOV_RADIUS,
+  tileKey,
+} from "../src/world/los";
 
 describe("flashlight def", () => {
   test("catálogo: linterna peso/stack/uso none", () => {
@@ -258,6 +264,101 @@ describe("fovRadiusWithFlashlight (HAS MUERTO / F9 load-muerto)", () => {
     expect(gameSrc).not.toMatch(
       /enterGameOver\(\): void \{[\s\S]{0,800}this\.flashlightOn = false/,
     );
+  });
+
+  test("Game enterGameOver / freeze / F9 load-muerto llaman syncHostileView tras applyFov", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,900}this\.applyFov\(\)[\s\S]{0,200}this\.syncHostileView\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,400}this\.applyFov\(\)[\s\S]{0,200}this\.syncHostileView\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}this\.applyFov\(\)[\s\S]{0,80}this\.syncHostileView/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,900}this\.flashlightOn = false/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,900}this\.flashlightOn = false/,
+    );
+  });
+
+  test("anillo +4: gameOver + FOV base oculta; vivo con bonus sigue pintando; fuera ya hidden", () => {
+    const map = new TileMap(48, 48, makeFloor);
+    const px = 20;
+    const py = 20;
+    const ring = DEFAULT_FOV_RADIUS + 2;
+    expect(ring).toBeGreaterThan(DEFAULT_FOV_RADIUS);
+    expect(ring).toBeLessThan(DEFAULT_FOV_RADIUS + FLASHLIGHT_FOV_BONUS);
+    const ringKey = tileKey(px + ring, py);
+    const farKey = tileKey(
+      px + DEFAULT_FOV_RADIUS + FLASHLIGHT_FOV_BONUS + 2,
+      py,
+    );
+    const nearKey = tileKey(px + 3, py);
+
+    const liveRadius = fovRadiusWithFlashlight(
+      DEFAULT_FOV_RADIUS,
+      true,
+      true,
+      false,
+    );
+    const deadRadius = fovRadiusWithFlashlight(
+      DEFAULT_FOV_RADIUS,
+      true,
+      true,
+      true,
+    );
+    expect(liveRadius).toBe(DEFAULT_FOV_RADIUS + FLASHLIGHT_FOV_BONUS);
+    expect(deadRadius).toBe(DEFAULT_FOV_RADIUS);
+
+    const liveFov = computeVisibleTiles(map, px, py, liveRadius);
+    const deadFov = computeVisibleTiles(map, px, py, deadRadius);
+
+    // Misma culling que syncHostileView: fovVisible.has(tileKey(floor x, floor y)).
+    expect(liveFov.has(ringKey)).toBe(true);
+    expect(deadFov.has(ringKey)).toBe(false);
+    expect(liveFov.has(nearKey)).toBe(true);
+    expect(deadFov.has(nearKey)).toBe(true);
+    expect(liveFov.has(farKey)).toBe(false);
+    expect(deadFov.has(farKey)).toBe(false);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(
+      computeVisibleTiles(
+        map,
+        px,
+        py,
+        fovRadiusWithFlashlight(
+          DEFAULT_FOV_RADIUS,
+          true,
+          true,
+          deadRt.gameOver,
+        ),
+      ).has(ringKey),
+    ).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(
+      computeVisibleTiles(
+        map,
+        px,
+        py,
+        fovRadiusWithFlashlight(
+          DEFAULT_FOV_RADIUS,
+          true,
+          true,
+          liveRt.gameOver,
+        ),
+      ).has(ringKey),
+    ).toBe(true);
   });
 });
 
