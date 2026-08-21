@@ -91,30 +91,32 @@ describe("lootPileLabel", () => {
 describe("dropOnTile name", () => {
   test("ammo×8 → container.name munición ×8", () => {
     const reg = new ContainerRegistry();
-    const c = dropOnTile(
+    const { container: c, added } = dropOnTile(
       reg,
       24,
       15,
       { id: "ammo", qty: 8 },
       "drop-24-15-ammo",
     );
-    expect(c.name).toBe("munición ×8");
-    expect(c.inv.slots[0]).toEqual({ id: "ammo", qty: 8 });
+    expect(added).toBe(8);
+    expect(c?.name).toBe("munición ×8");
+    expect(c?.inv.slots[0]).toEqual({ id: "ammo", qty: 8 });
   });
 
   test("merge two drops → munición ×2", () => {
     const reg = new ContainerRegistry();
     dropOnTile(reg, 24, 15, { id: "ammo", qty: 1 }, "drop-24-15-ammo");
-    const again = dropOnTile(
+    const { container: again, added } = dropOnTile(
       reg,
       24,
       15,
       { id: "ammo", qty: 1 },
       "drop-24-15-ammo",
     );
+    expect(added).toBe(1);
     expect(reg.list).toHaveLength(1);
-    expect(again.name).toBe("munición ×2");
-    expect(again.inv.slots[0]).toEqual({ id: "ammo", qty: 2 });
+    expect(again?.name).toBe("munición ×2");
+    expect(again?.inv.slots[0]).toEqual({ id: "ammo", qty: 2 });
   });
 });
 

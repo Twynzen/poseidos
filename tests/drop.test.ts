@@ -3,11 +3,15 @@ import {
   ContainerRegistry,
   createInventory,
   createStarterInventory,
+  createWorldContainer,
+  dropFromSlot,
+  dropFullMessage,
   dropOnTile,
   dropQty,
   dropSourceIndex,
   dropTargetTile,
   dropToastLabel,
+  refillFailMessage,
   takeFromSlot,
 } from "../src/items";
 
@@ -124,19 +128,20 @@ describe("takeFromSlot", () => {
 describe("dropOnTile", () => {
   test('empty registry → container named "botella de agua" at (24,15)', () => {
     const reg = new ContainerRegistry();
-    const c = dropOnTile(
+    const { container: c, added } = dropOnTile(
       reg,
       24,
       15,
       { id: "water_bottle", qty: 1 },
       "drop-24-15-water_bottle",
     );
-    expect(c.name).toBe("botella de agua");
-    expect(c.x).toBe(24);
-    expect(c.y).toBe(15);
-    expect(c.id).toBe("drop-24-15-water_bottle");
+    expect(added).toBe(1);
+    expect(c?.name).toBe("botella de agua");
+    expect(c?.x).toBe(24);
+    expect(c?.y).toBe(15);
+    expect(c?.id).toBe("drop-24-15-water_bottle");
     expect(reg.list).toHaveLength(1);
-    expect(c.inv.slots[0]).toEqual({ id: "water_bottle", qty: 1 });
+    expect(c?.inv.slots[0]).toEqual({ id: "water_bottle", qty: 1 });
   });
 
   test("drop same tile again → merge, list.length 1", () => {
@@ -156,10 +161,11 @@ describe("dropOnTile", () => {
       "drop-24-15-water_bottle",
     );
     expect(reg.list).toHaveLength(1);
-    expect(again).toBe(first);
-    expect(again.inv.slots).toHaveLength(1);
-    expect(again.inv.slots[0]).toEqual({ id: "water_bottle", qty: 2 });
-    expect(again.name).toBe("botella de agua ×2");
+    expect(again.container).toBe(first.container);
+    expect(again.added).toBe(1);
+    expect(again.container?.inv.slots).toHaveLength(1);
+    expect(again.container?.inv.slots[0]).toEqual({ id: "water_bottle", qty: 2 });
+    expect(again.container?.name).toBe("botella de agua ×2");
   });
 
   test("drop other tile → second container", () => {
@@ -171,17 +177,18 @@ describe("dropOnTile", () => {
       { id: "water_bottle", qty: 1 },
       "drop-24-15-water_bottle",
     );
-    const other = dropOnTile(
+    const { container: other, added } = dropOnTile(
       reg,
       10,
       10,
       { id: "canned_food", qty: 1 },
       "drop-10-10-canned_food",
     );
+    expect(added).toBe(1);
     expect(reg.list).toHaveLength(2);
-    expect(other.name).toBe("lata de comida");
-    expect(other.x).toBe(10);
-    expect(other.y).toBe(10);
+    expect(other?.name).toBe("lata de comida");
+    expect(other?.x).toBe(10);
+    expect(other?.y).toBe(10);
   });
 
   test("lootOne can pick 1 from the dropped pile", () => {
@@ -198,5 +205,209 @@ describe("dropOnTile", () => {
     expect(taken).toEqual({ id: "water_bottle", qty: 1 });
     expect(dest.slots[0]).toEqual({ id: "water_bottle", qty: 1 });
     expect(reg.at(24, 15)?.inv.slots).toHaveLength(0);
+  });
+
+  test("dest slots llenos: added 0, pila y nombre iguales", () => {
+    const pile = createWorldContainer(
+      "full",
+      24,
+      16,
+      "pila",
+      [
+        { id: "scrap", qty: 1 },
+        { id: "wood", qty: 1 },
+        { id: "cloth", qty: 1 },
+        { id: "bandage", qty: 1 },
+        { id: "knife", qty: 1 },
+        { id: "flashlight", qty: 1 },
+      ],
+    );
+    const nameBefore = pile.name;
+    const slotsBefore = pile.inv.slots.map((s) => ({ ...s }));
+    const reg = new ContainerRegistry([pile]);
+    const { container, added } = dropOnTile(
+      reg,
+      24,
+      16,
+      { id: "water_bottle", qty: 1 },
+      "drop-24-16-water_bottle",
+    );
+    expect(added).toBe(0);
+    expect(container).toBe(pile);
+    expect(pile.inv.slots).toEqual(slotsBefore);
+    expect(pile.name).toBe(nameBefore);
+    expect(dropFullMessage(added)).toBe("inventario lleno");
+    expect(dropFullMessage(added)).toBe(refillFailMessage("inv_full"));
+  });
+
+  test("dest peso lleno: added 0", () => {
+    const pile = createWorldContainer(
+      "heavy",
+      24,
+      16,
+      "pila",
+      [{ id: "canned_food", qty: 1 }],
+      6,
+      0.5,
+    );
+    const reg = new ContainerRegistry([pile]);
+    const { added } = dropOnTile(
+      reg,
+      24,
+      16,
+      { id: "canned_food", qty: 1 },
+      "drop-24-16-canned_food",
+    );
+    expect(added).toBe(0);
+    expect(pile.inv.slots[0]).toEqual({ id: "canned_food", qty: 1 });
+    expect(dropFullMessage(added)).toBe("inventario lleno");
+  });
+
+  test("dest max stack: added 0; hueco en stack entra", () => {
+    const pile = createWorldContainer(
+      "ammo24",
+      24,
+      16,
+      "pila",
+      [{ id: "ammo", qty: 24 }],
+      1,
+      40,
+    );
+    const reg = new ContainerRegistry([pile]);
+    const { added } = dropOnTile(
+      reg,
+      24,
+      16,
+      { id: "ammo", qty: 1 },
+      "drop-24-16-ammo",
+    );
+    expect(added).toBe(0);
+    expect(pile.inv.slots[0]).toEqual({ id: "ammo", qty: 24 });
+
+    const room = createWorldContainer(
+      "ammo22",
+      10,
+      10,
+      "pila",
+      [{ id: "ammo", qty: 22 }],
+      1,
+      40,
+    );
+    const roomReg = new ContainerRegistry([room]);
+    const roomDrop = dropOnTile(
+      roomReg,
+      10,
+      10,
+      { id: "ammo", qty: 8 },
+      "drop-10-10-ammo",
+    );
+    expect(roomDrop.added).toBe(2);
+    expect(room.inv.slots[0]).toEqual({ id: "ammo", qty: 24 });
+    expect(dropFullMessage(roomDrop.added)).toBeNull();
+  });
+});
+
+describe("dropFromSlot", () => {
+  test("dest lleno: slot intacto, toast inventario lleno", () => {
+    const pile = createWorldContainer(
+      "full",
+      24,
+      16,
+      "pila",
+      [
+        { id: "scrap", qty: 1 },
+        { id: "wood", qty: 1 },
+        { id: "cloth", qty: 1 },
+        { id: "bandage", qty: 1 },
+        { id: "knife", qty: 1 },
+        { id: "flashlight", qty: 1 },
+      ],
+    );
+    const reg = new ContainerRegistry([pile]);
+    const inv = createInventory(8, 20, [{ id: "water_bottle", qty: 1 }]);
+    const invBefore = inv.slots.map((s) => ({ ...s }));
+    const pileBefore = pile.inv.slots.map((s) => ({ ...s }));
+
+    const { added } = dropFromSlot(
+      inv,
+      0,
+      1,
+      reg,
+      24,
+      16,
+      "drop-24-16-water_bottle",
+    );
+    expect(added).toBe(0);
+    expect(inv.slots).toEqual(invBefore);
+    expect(pile.inv.slots).toEqual(pileBefore);
+    expect(dropFullMessage(added)).toBe("inventario lleno");
+  });
+
+  test("Shift+U leftover parcial: entra lo que cabe, resto en inv", () => {
+    const pile = createWorldContainer(
+      "ammo22",
+      24,
+      16,
+      "pila",
+      [{ id: "ammo", qty: 22 }],
+      1,
+      40,
+    );
+    const reg = new ContainerRegistry([pile]);
+    const inv = createInventory(8, 20, [{ id: "ammo", qty: 8 }]);
+    const { added } = dropFromSlot(
+      inv,
+      0,
+      dropQty(inv.slots[0]?.qty, true),
+      reg,
+      24,
+      16,
+      "drop-24-16-ammo",
+    );
+    expect(added).toBe(2);
+    expect(pile.inv.slots[0]).toEqual({ id: "ammo", qty: 24 });
+    expect(inv.slots[0]).toEqual({ id: "ammo", qty: 6 });
+    expect(dropFullMessage(added)).toBeNull();
+  });
+
+  test("tile vacío: quita del inv y crea pila", () => {
+    const reg = new ContainerRegistry();
+    const inv = createStarterInventory();
+    expect(inv.slots[0]?.id).toBe("water_bottle");
+    const { container: c, added } = dropFromSlot(
+      inv,
+      0,
+      1,
+      reg,
+      24,
+      15,
+      "drop-24-15-water_bottle",
+    );
+    expect(added).toBe(1);
+    expect(c?.name).toBe("botella de agua");
+    expect(inv.slots[0]?.id).toBe("canned_food");
+    expect(reg.list).toHaveLength(1);
+  });
+
+  test("slot vacío / qty 0 → added 0, inv intacto", () => {
+    const reg = new ContainerRegistry();
+    const inv = createStarterInventory();
+    const before = inv.slots.map((s) => ({ ...s }));
+    expect(dropFromSlot(inv, 99, 1, reg, 24, 15, "x").added).toBe(0);
+    expect(dropFromSlot(inv, 0, 0, reg, 24, 15, "x").added).toBe(0);
+    expect(inv.slots).toEqual(before);
+    expect(reg.list).toHaveLength(0);
+  });
+});
+
+describe("dropFullMessage", () => {
+  test("added 0 → inventario lleno (mismo copy refill)", () => {
+    expect(dropFullMessage(0)).toBe("inventario lleno");
+    expect(dropFullMessage(0)).toBe(refillFailMessage("inv_full"));
+  });
+
+  test("added > 0 → null (éxito / leftover no toastea)", () => {
+    expect(dropFullMessage(1)).toBeNull();
+    expect(dropFullMessage(8)).toBeNull();
   });
 });
