@@ -13,6 +13,8 @@ import {
   inventorySummary,
   torchLightApplies,
   torchLightIntensity,
+  flashlightToggleApplies,
+  nextFlashlightOn,
   LOOT_CABINET,
 } from "../src/items";
 import {
@@ -362,16 +364,77 @@ describe("fovRadiusWithFlashlight (HAS MUERTO / F9 load-muerto)", () => {
   });
 });
 
+describe("flashlightToggleApplies / nextFlashlightOn (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: L no flippea; vivo togglea si hay item; sin item se queda off", () => {
+    expect(flashlightToggleApplies(true)).toBe(false);
+    expect(flashlightToggleApplies(false)).toBe(true);
+
+    expect(nextFlashlightOn(true, true, true, true)).toBe(true);
+    expect(nextFlashlightOn(true, false, true, true)).toBe(false);
+    expect(nextFlashlightOn(true, true, true, false)).toBe(true);
+    expect(nextFlashlightOn(true, false, true, false)).toBe(false);
+    expect(nextFlashlightOn(true, true, false, true)).toBe(true);
+    expect(nextFlashlightOn(true, false, false, true)).toBe(false);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(flashlightToggleApplies(deadRt.gameOver)).toBe(false);
+    expect(nextFlashlightOn(deadRt.gameOver, true, true, true)).toBe(true);
+    expect(nextFlashlightOn(deadRt.gameOver, false, true, true)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(flashlightToggleApplies(liveRt.gameOver)).toBe(true);
+    expect(nextFlashlightOn(liveRt.gameOver, false, true, true)).toBe(true);
+    expect(nextFlashlightOn(liveRt.gameOver, true, true, true)).toBe(false);
+    expect(nextFlashlightOn(liveRt.gameOver, true, true, false)).toBe(false);
+    expect(nextFlashlightOn(liveRt.gameOver, false, true, false)).toBe(false);
+    expect(nextFlashlightOn(liveRt.gameOver, true, false, true)).toBe(true);
+
+    expect(nextFlashlightOn(false, false, true, true)).toBe(true);
+    expect(nextFlashlightOn(false, true, true, true)).toBe(false);
+    expect(nextFlashlightOn(false, true, true, false)).toBe(false);
+    expect(nextFlashlightOn(false, false, true, false)).toBe(false);
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto drenan L sin assign flashlightOn; vivo gatea", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("flashlightToggleApplies(");
+    expect(gameSrc).toContain("nextFlashlightOn(");
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeFlashlightToggle\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,400}consumeFlashlightToggle\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}if \(loaded\.gameOver\) \{[\s\S]{0,200}consumeFlashlightToggle\(\);\s*\}/,
+    );
+    expect(gameSrc).toMatch(
+      /flashlightToggleApplies\(\s*this\.gameOver[\s\S]{0,80}wantsFlashlight[\s\S]{0,200}nextFlashlightOn\(/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}this\.flashlightOn = /,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}this\.flashlightOn = /,
+    );
+  });
+});
+
 describe("toggle sin item (lógica headless)", () => {
   test("sin linterna: no enciende", () => {
     const inv = createInventory(4, 20, [{ id: "scrap", qty: 1 }]);
     expect(hasFlashlight(inv)).toBe(false);
-    let flashlightOn = false;
-    if (!hasFlashlight(inv)) {
-      flashlightOn = false;
-    } else {
-      flashlightOn = !flashlightOn;
-    }
+    const flashlightOn = nextFlashlightOn(
+      false,
+      false,
+      true,
+      hasFlashlight(inv),
+    );
     expect(flashlightOn).toBe(false);
     expect(
       torchLightIntensity(flashlightOn, hasFlashlight(inv), 0.1),
@@ -381,12 +444,11 @@ describe("toggle sin item (lógica headless)", () => {
   test("con linterna: toggle on/off cambia intensidad/FOV", () => {
     const inv = createInventory(4, 20, [{ id: "flashlight", qty: 1 }]);
     expect(hasFlashlight(inv)).toBe(true);
-    let on = false;
-    on = !on;
+    let on = nextFlashlightOn(false, false, true, true);
     expect(on).toBe(true);
     expect(fovRadiusWithFlashlight(12, on, true)).toBe(16);
     expect(torchLightIntensity(on, true, 0.08)).toBeGreaterThan(1);
-    on = !on;
+    on = nextFlashlightOn(false, on, true, true);
     expect(on).toBe(false);
     expect(fovRadiusWithFlashlight(12, on, true)).toBe(12);
     expect(torchLightIntensity(on, true, 0.08)).toBe(0);

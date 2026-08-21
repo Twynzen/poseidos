@@ -34,6 +34,8 @@ import {
   fovRadiusWithFlashlight,
   torchLightApplies,
   torchLightIntensity,
+  flashlightToggleApplies,
+  nextFlashlightOn,
   getItemDef,
   splitStack,
   mergeStack,
@@ -430,6 +432,8 @@ export class Game {
     // Load-muerto salta enterGameOver: cerrar panel antes de refreshViewAfterLoad.
     if (loaded.gameOver) {
       this.closeDialogueOnGameOver();
+      // Drain L; no assign flashlightOn (on queda on, off queda off).
+      this.input.consumeFlashlightToggle();
     }
     if (!hasFlashlight(this.player.inventory)) this.flashlightOn = false;
     this.noise.clear();
@@ -835,6 +839,8 @@ export class Game {
   private enterGameOver(): void {
     if (this.gameOver) return;
     this.gameOver = true;
+    // Drain L; no assign flashlightOn (R / load-vivo sin restore inventado).
+    this.input.consumeFlashlightToggle();
     this.closeDialogueOnGameOver();
     // formatHudStatus already paints HAS MUERTO. Keep combate/hambre-sed; drop leftover.
     if (!isKeepableDeathCause(this.lastLootMsg)) {
@@ -1139,6 +1145,8 @@ export class Game {
         this.lastLootMsg = muteHudMsg(toggleAmbientMute(this.ambient));
         this.hudAcc = 1;
       }
+      // Drain L; HAS MUERTO no togglea flashlightOn (no leak al R / primer tick vivo).
+      this.input.consumeFlashlightToggle();
       this.input.endFrame();
       this.syncAmbient(dt);
       this.syncHeartbeat(dt);
@@ -1593,14 +1601,20 @@ export class Game {
         this.hudAcc = 1;
       }
     }
-    if (this.input.consumeFlashlightToggle()) {
-      if (!hasFlashlight(this.player.inventory)) {
-        this.flashlightOn = false;
-        this.lastLootMsg = "sin linterna";
-      } else {
-        this.flashlightOn = !this.flashlightOn;
-        this.lastLootMsg = this.flashlightOn ? "linterna on" : "linterna off";
-      }
+    const wantsFlashlight = this.input.consumeFlashlightToggle();
+    if (flashlightToggleApplies(this.gameOver) && wantsFlashlight) {
+      const has = hasFlashlight(this.player.inventory);
+      this.flashlightOn = nextFlashlightOn(
+        this.gameOver,
+        this.flashlightOn,
+        true,
+        has,
+      );
+      this.lastLootMsg = !has
+        ? "sin linterna"
+        : this.flashlightOn
+          ? "linterna on"
+          : "linterna off";
       this.hudAcc = 1;
     }
     if (this.input.consumeSave()) {
