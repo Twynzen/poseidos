@@ -488,7 +488,7 @@ export function defaultPossessedSpawns(): Array<{
   ];
 }
 
-/** Segundos sin daño touch tras spawnThreats / reinicio. */
+/** Segundos sin daño touch tras spawnThreats / reinicio / F9 load-vivo. */
 export const SPAWN_GRACE_SECONDS = 6;
 
 /** Baja la gracia de spawn con dt (nunca negativa). */
@@ -500,4 +500,27 @@ export function tickSpawnGrace(spawnGrace: number, dt: number): number {
 /** Durante gracia, el player ignora hits de hostiles. */
 export function hostileDamageAllowed(spawnGrace: number): boolean {
   return spawnGrace <= 0;
+}
+
+/** Runtime F9 tras applySave: gameOver / gracia / clip death (campos ya existentes). */
+export interface LoadAliveRuntime {
+  gameOver: boolean;
+  spawnGrace: number;
+  /** true → trigger death; false → clearPlayerAction (loco). */
+  deathClip: boolean;
+}
+
+/**
+ * Tras F9 applySave: vivo limpia death + gracia de spawn;
+ * muerto congela (clip death, gracia 0).
+ */
+export function loadAliveRuntime(alive: boolean): LoadAliveRuntime {
+  if (alive) {
+    return {
+      gameOver: false,
+      spawnGrace: SPAWN_GRACE_SECONDS,
+      deathClip: false,
+    };
+  }
+  return { gameOver: true, spawnGrace: 0, deathClip: true };
 }

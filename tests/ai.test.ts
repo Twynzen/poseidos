@@ -8,6 +8,7 @@ import {
   SPAWN_GRACE_SECONDS,
   tickSpawnGrace,
   hostileDamageAllowed,
+  loadAliveRuntime,
 } from "../src/ai";
 import { NoiseBus } from "../src/world/noise";
 import { PlayerSim } from "../src/actors/player";
@@ -390,5 +391,64 @@ describe("HostileSim chase-search polish", () => {
     const h = sim.hostiles[0]!;
     expect(h.mode).toBe("chase");
     expect(h.x).toBeGreaterThan(2.5);
+  });
+});
+
+describe("F9 load-alive (clip death + gracia)", () => {
+  test("vivo: no gameOver, gracia 6, sin death clip; hostiles no dañan", () => {
+    const rt = loadAliveRuntime(true);
+    expect(rt.gameOver).toBe(false);
+    expect(rt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(rt.deathClip).toBe(false);
+    expect(hostileDamageAllowed(rt.spawnGrace)).toBe(false);
+  });
+
+  test("muerto: gameOver, gracia 0, death clip", () => {
+    const rt = loadAliveRuntime(false);
+    expect(rt.gameOver).toBe(true);
+    expect(rt.spawnGrace).toBe(0);
+    expect(rt.deathClip).toBe(true);
+    expect(hostileDamageAllowed(rt.spawnGrace)).toBe(true);
+  });
+
+  test("gracia agotada + muerte → load-vivo restaura gracia (touch no daña)", () => {
+    const map = corridorMap();
+    const sim = new HostileSim({
+      visionRange: 0,
+      hearRange: 0,
+      speed: 0,
+      touchRange: 1,
+      attackCooldown: 0.1,
+    });
+    sim.add("touchy", 2.5, 2.5);
+    const player = new PlayerSim({ x: 2.5, y: 2.5 });
+
+    let grace = tickSpawnGrace(SPAWN_GRACE_SECONDS, 10);
+    expect(grace).toBe(0);
+    expect(hostileDamageAllowed(grace)).toBe(true);
+
+    const hits = sim.tick(0.1, map, player.x, player.y);
+    expect(hits.length).toBeGreaterThan(0);
+    for (const hit of hits) player.takeDamage(hit.damage);
+    player.takeDamage(player.health);
+    expect(player.alive).toBe(false);
+
+    // applySave living: health vuelve; doLoad usa loadAliveRuntime(alive)
+    player.body.health = MAX_HEALTH;
+    expect(player.alive).toBe(true);
+    const rt = loadAliveRuntime(player.alive);
+    grace = rt.spawnGrace;
+    expect(rt.gameOver).toBe(false);
+    expect(rt.deathClip).toBe(false);
+    expect(grace).toBe(SPAWN_GRACE_SECONDS);
+    expect(hostileDamageAllowed(grace)).toBe(false);
+
+    const after = sim.tick(0.1, map, player.x, player.y);
+    expect(after.length).toBeGreaterThan(0);
+    if (hostileDamageAllowed(grace)) {
+      for (const hit of after) player.takeDamage(hit.damage);
+    }
+    expect(player.health).toBe(MAX_HEALTH);
+    expect(player.alive).toBe(true);
   });
 });

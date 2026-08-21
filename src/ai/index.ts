@@ -5,6 +5,8 @@ export {
   SPAWN_GRACE_SECONDS,
   tickSpawnGrace,
   hostileDamageAllowed,
+  loadAliveRuntime,
+  type LoadAliveRuntime,
   type Hostile,
   type HostileMode,
   type ThreatKind,

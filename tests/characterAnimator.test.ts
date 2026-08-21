@@ -8,6 +8,7 @@ import {
   DEFAULT_ATTACK_DURATION,
   DEFAULT_HIT_DURATION,
 } from "../src/render/characterAnimator";
+import { loadAliveRuntime } from "../src/ai";
 
 describe("setLocomotion / currentRole", () => {
   test("idle por defecto", () => {
@@ -78,6 +79,25 @@ describe("setAction + tick", () => {
     setAction(a, "death");
     expect(currentRole(a)).toBe("death");
     setAction(a, null);
+    expect(a.actionRole).toBeNull();
+    expect(currentRole(a)).toBe("idle");
+  });
+
+  test("F9 load-alive: death sticky → loadAliveRuntime(vivo) limpia a idle", () => {
+    const a = createCharacterAnimator();
+    setAction(a, "death");
+    expect(currentRole(a)).toBe("death");
+
+    const dead = loadAliveRuntime(false);
+    expect(dead.deathClip).toBe(true);
+    setAction(a, "death");
+    expect(currentRole(a)).toBe("death");
+
+    const living = loadAliveRuntime(true);
+    expect(living.deathClip).toBe(false);
+    expect(living.gameOver).toBe(false);
+    if (living.deathClip) setAction(a, "death");
+    else setAction(a, null);
     expect(a.actionRole).toBeNull();
     expect(currentRole(a)).toBe("idle");
   });

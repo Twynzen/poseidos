@@ -55,6 +55,7 @@ import {
   SPAWN_GRACE_SECONDS,
   tickSpawnGrace,
   hostileDamageAllowed,
+  loadAliveRuntime,
 } from "../ai";
 import { tryApplyTouchKnockback } from "../combat";
 import { tileKey } from "../world/los";
@@ -223,7 +224,7 @@ export class Game {
   private lastLootMsg = "";
   /** HP ≤ 0: congela gameplay; R reinicia / F9 carga. */
   private gameOver = false;
-  /** Tras spawnThreats/reinicio: sin daño touch al player. */
+  /** Tras spawnThreats/reinicio/F9 load-vivo: sin daño touch al player. */
   private spawnGrace = 0;
   /** Cooldown HUD para mensajes de daño por hambre/sed (~2s). */
   private needsDamageMsgCd = 0;
@@ -406,11 +407,13 @@ export class Game {
     this.dialogueGateLine = loadedTarget
       ? this.gates.gateLine(loadedTarget)
       : null;
-    this.gameOver = !this.player.alive;
-    if (this.player.alive) {
-      this.view.clearPlayerAction();
-    } else {
+    const loaded = loadAliveRuntime(this.player.alive);
+    this.gameOver = loaded.gameOver;
+    this.spawnGrace = loaded.spawnGrace;
+    if (loaded.deathClip) {
       this.view.triggerPlayerAction("death");
+    } else {
+      this.view.clearPlayerAction();
     }
     if (!hasFlashlight(this.player.inventory)) this.flashlightOn = false;
     this.noise.clear();

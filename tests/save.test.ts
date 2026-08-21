@@ -17,6 +17,7 @@ import { createNeighborhood } from "../src/world/neighborhood";
 import { PlayerSim } from "../src/actors/player";
 import { MAX_HEALTH } from "../src/actors/body";
 import { addItem, inventorySummary, totalQty, tryBuildBarricade } from "../src/items";
+import { SPAWN_GRACE_SECONDS, loadAliveRuntime } from "../src/ai";
 import {
   DialogueBehaviorGates,
   SpeechDirector,
@@ -353,12 +354,20 @@ describe("F5/F9 player.health (campo ya existente)", () => {
     applySave(world2, dead);
     expect(world2.player.health).toBe(0);
     expect(world2.player.alive).toBe(false);
+    const deadRt = loadAliveRuntime(world2.player.alive);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(deadRt.deathClip).toBe(true);
 
     const living = captureSave(makeWorld());
     expect(living.player.health).toBe(MAX_HEALTH);
     applySave(world2, living);
     expect(world2.player.health).toBe(MAX_HEALTH);
     expect(world2.player.alive).toBe(true);
+    const liveRt = loadAliveRuntime(world2.player.alive);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(liveRt.deathClip).toBe(false);
   });
 
   test("save antiguo sin health → 100; NaN rechaza; clamp 0–100", () => {
