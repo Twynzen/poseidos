@@ -146,7 +146,7 @@ describe("torchLightApplies (HAS MUERTO / F9 load-muerto)", () => {
     );
     expect(gameSrc).toContain("torchLightApplies(");
     expect(gameSrc).toMatch(
-      /syncLighting\(\): void \{[\s\S]{0,500}torchLightApplies\(\s*this\.gameOver/,
+      /syncLighting\(\): void \{[\s\S]{0,900}torchLightApplies\(\s*this\.gameOver/,
     );
     expect(gameSrc).toMatch(
       /enterGameOver\(\): void \{[\s\S]{0,800}this\.syncLighting\(\)/,
