@@ -15,7 +15,7 @@ export const COOK_OUTPUT_ID = "hot_meal" as const;
 /** Radio Chebyshev para “cerca de furniture”. */
 export const COOK_FURNITURE_RADIUS = 1;
 
-export type CookFailReason = "no_food" | "bad_place";
+export type CookFailReason = "no_food" | "bad_place" | "inv_full";
 
 export interface CookAttempt {
   ok: true;
@@ -72,7 +72,18 @@ export function diagnoseCook(
 
 export function cookFailMessage(reason: CookFailReason): string {
   if (reason === "no_food") return "falta comida";
+  if (reason === "inv_full") return "inventario lleno";
   return "no puedes cocinar aquí";
+}
+
+/**
+ * Toast HUD si el plato no entró. Reusa el copy existente
+ * `inventario lleno` (refill / loot / drop / craft dest lleno).
+ * `added` > 0 → null (éxito).
+ */
+export function cookFullMessage(added: number): string | null {
+  if (added > 0) return null;
+  return "inventario lleno";
 }
 
 /**
@@ -110,8 +121,8 @@ export function attemptCook(
     return { ok: false, reason: fail, message: cookFailMessage(fail) };
   }
   if (!tryCook(map, inv, wx, wy)) {
-    const again = diagnoseCook(map, inv, wx, wy) ?? "bad_place";
-    return { ok: false, reason: again, message: cookFailMessage(again) };
+    // diagnose ya filtró no_food / bad_place; rollback deja la lata.
+    return { ok: false, reason: "inv_full", message: cookFailMessage("inv_full") };
   }
   return { ok: true };
 }
