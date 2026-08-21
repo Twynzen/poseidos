@@ -16,6 +16,7 @@ export {
 
 export {
   createMoodlesHud,
+  moodlesHudVisible,
   type MoodlesHud,
 } from "./moodles";
 
