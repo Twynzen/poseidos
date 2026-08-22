@@ -577,7 +577,7 @@ export class Game {
     this.syncHitFlashOverlay();
     this.syncInventoryPanel();
     this.lastLootMsg = lastLootMsgAfterRestart();
-    // R: WorldView nuevo = grassTime 0 + grass tiles spawn + rain Y/vx/vy/vz/opacity/scaleY/count/hide/pos + camera look fresco; leftover sway/tiles/caída/viento/speed/deriva/wrap/look/largo/active/hide/origin/follow no filtra.
+    // R: WorldView nuevo = loot focus spawn + grassTime 0 + grass tiles spawn + rain Y/vx/vy/vz/opacity/scaleY/count/hide/pos + camera look fresco; leftover focus/sway/tiles/caída/viento/speed/deriva/wrap/look/largo/active/hide/origin/follow no filtra.
     this.view.dispose();
     this.view = createWorldView(this.map, this.containers);
     // R: cámara nueva = ISO_FRUSTUM + look spawn; leftover zoom / origin 0,0 no filtra.

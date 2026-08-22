@@ -214,7 +214,16 @@ import {
   rainStreakYFromFall,
   rainStreakYFromWrap,
 } from "./rainStreaks";
-import { lootBadgeIconScale, lootBadgeY, lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
+import {
+  lootBadgeIconScale,
+  lootBadgeY,
+  lootFocusDistFromLook,
+  lootFocusElapsedAfterRestart,
+  lootFocusLookXAfterRestart,
+  lootFocusLookZAfterRestart,
+  lootFocusMulFromLook,
+  lootRingVisibleFromLook,
+} from "./lootFocus";
 import {
   LOOT_NAMEPLATE_FILL,
   LOOT_NAMEPLATE_FONT_PX,
@@ -905,7 +914,8 @@ export function createWorldView(
     id: string;
   }
   const lootMarkerGroups: LootMarkerEntry[] = [];
-  let lootFocusElapsed = 0;
+  // R / dispose: elapsed fresco (0); leftover mid-pulse de la vida anterior no filtra.
+  let lootFocusElapsed = lootFocusElapsedAfterRestart();
 
   function makeLootNameplateSprite(
     label: string,
@@ -1009,6 +1019,56 @@ export function createWorldView(
         inv: c.inv,
       });
     }
+  }
+
+  function applyLootFocusLook(
+    wx: number,
+    wy: number,
+    elapsed: number,
+    emptyIds?: ReadonlySet<string>,
+    gameOver = false,
+  ): void {
+    let best = -1;
+    let bestD = Infinity;
+    for (let i = 0; i < lootMarkerGroups.length; i++) {
+      const e = lootMarkerGroups[i]!;
+      const empty = !!emptyIds?.has(e.id);
+      const d = lootFocusDistFromLook(wx, wy, e.x, e.y);
+      const vis = lootRingVisibleFromLook(empty, d, gameOver);
+      e.group.visible = !empty;
+      setInteractRingVisible(e.group, vis);
+      if (!vis) continue;
+      if (d < bestD) {
+        bestD = d;
+        best = i;
+      }
+    }
+    for (let i = 0; i < lootMarkerGroups.length; i++) {
+      const e = lootMarkerGroups[i]!;
+      if (emptyIds?.has(e.id)) {
+        e.group.scale.setScalar(1);
+        continue;
+      }
+      const mul =
+        i === best ? lootFocusMulFromLook(bestD, elapsed, gameOver) : 1;
+      e.group.scale.setScalar(mul);
+    }
+  }
+
+  // R / dispose: look fresco (spawn); leftover Three ring visible / scale 1 no filtra.
+  {
+    const emptyIds = new Set<string>();
+    if (containers) {
+      for (const c of containers.list) {
+        if (lootNameplateInvEmpty(c.inv)) emptyIds.add(c.id);
+      }
+    }
+    applyLootFocusLook(
+      lootFocusLookXAfterRestart(),
+      lootFocusLookZAfterRestart(),
+      lootFocusElapsed,
+      emptyIds,
+    );
   }
 
   // Door: anillo/badge steel blue-grey por tile door. Anillo solo en reach (no FOV).
@@ -1885,15 +1945,10 @@ export function createWorldView(
     syncLootFocus(wx, wy, dt, emptyIds, gameOver = false) {
       const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
       lootFocusElapsed += safeDt;
-      let best = -1;
-      let bestD = Infinity;
       for (let i = 0; i < lootMarkerGroups.length; i++) {
         const e = lootMarkerGroups[i]!;
         const empty = !!emptyIds?.has(e.id);
-        const d = Math.hypot(wx - e.x, wy - e.y);
-        const vis = lootRingVisible(empty, d, LOOT_FOCUS_REACH, gameOver);
-        e.group.visible = !empty;
-        setInteractRingVisible(e.group, vis);
+        const d = lootFocusDistFromLook(wx, wy, e.x, e.y);
         e.nameplate.visible = lootNameplateVisible(empty, d, gameOver);
         const plateMat = e.nameplate.material as THREE.SpriteMaterial;
         plateMat.opacity = lootNameplateOpacity(d);
@@ -1903,22 +1958,8 @@ export function createWorldView(
           LOOT_NAMEPLATE_SCALE_Y * s,
           1,
         );
-        if (!vis) continue;
-        if (d < bestD) {
-          bestD = d;
-          best = i;
-        }
       }
-      for (let i = 0; i < lootMarkerGroups.length; i++) {
-        const e = lootMarkerGroups[i]!;
-        if (emptyIds?.has(e.id)) {
-          e.group.scale.setScalar(1);
-          continue;
-        }
-        const mul =
-          i === best ? lootFocusMul(bestD, lootFocusElapsed, gameOver) : 1;
-        e.group.scale.setScalar(mul);
-      }
+      applyLootFocusLook(wx, wy, lootFocusElapsed, emptyIds, gameOver);
     },
     syncDoorFocus(wx, wy, dt, gameOver = false) {
       const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
