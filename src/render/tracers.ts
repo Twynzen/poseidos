@@ -233,6 +233,31 @@ export function tracerDepthWriteAfterRestart(): boolean {
   return tracerDepthWriteFromLook(TRACER_DEPTH_WRITE_SPAWN);
 }
 
+/** Transparent del tracer mesh. Ctor tracerMatBase.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const TRACER_TRANSPARENT = true;
+
+/** Idle tracer mesh transparent. Ctor tracerMatBase.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const TRACER_TRANSPARENT_SPAWN = true;
+
+/**
+ * Transparent que leería spawn/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * spawn/tick no escribe transparent (ctor constant).
+ */
+export function tracerTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle true).
+ * WorldView nace tracerMatBase.transparent AfterRestart; leftover mid-life no filtra.
+ * spawn/tick no escribe transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function tracerTransparentAfterRestart(): boolean {
+  return tracerTransparentFromLook(TRACER_TRANSPARENT_SPAWN);
+}
+
 /** Longitud del segmento (mínimo epsilon para evitar NaN en escala). */
 export function tracerLength(from: TracerPoint, to: TracerPoint): number {
   return Math.max(0.05, Math.hypot(to.x - from.x, to.y - from.y));
