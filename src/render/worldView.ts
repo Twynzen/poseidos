@@ -1066,6 +1066,31 @@ export function possessedMetalnessAfterRestart(): number {
   return possessedMetalnessFromLook(POSSESSED_METALNESS_SPAWN);
 }
 
+/** Opacity del possessed mesh. Ctor possessedMat.opacity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_OPACITY = 1;
+
+/** Idle possessed mesh opacity. Ctor possessedMat.opacity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_OPACITY_SPAWN = 1;
+
+/**
+ * Opacity que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * attach/tick no escriben opacity (ctor constant).
+ */
+export function possessedOpacityFromLook(opacity: number): number {
+  return opacity;
+}
+
+/**
+ * R / softReset: opacity fresco (idle 1).
+ * WorldView nace possessedMat.opacity AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben opacity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function possessedOpacityAfterRestart(): number {
+  return possessedOpacityFromLook(POSSESSED_OPACITY_SPAWN);
+}
+
 /** Color de la silueta fallback poseída (cabeza). 0x7a3d8a × 1.15/canal para leerse de noche. */
 export const POSSESSED_HEAD_COLOR = 0x8c469f;
 
@@ -3614,6 +3639,8 @@ export function createWorldView(
     roughness: possessedRoughnessAfterRestart(),
     // R / dispose: metalness fresco (idle); leftover mid-life metalness de la vida anterior no filtra.
     metalness: possessedMetalnessAfterRestart(),
+    // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
+    opacity: possessedOpacityAfterRestart(),
   });
   const possessedHeadMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
