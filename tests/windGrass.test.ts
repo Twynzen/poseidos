@@ -11,11 +11,16 @@ import {
   BLADE_Y_MUL,
   BLADES_PER_TILE,
   bladeBasePose,
+  bladePoseAfterRestart,
   bladePoseAt,
+  bladePoseFromWindTime,
   bladeWind,
+  bladeWindAfterRestart,
+  bladeWindFromTime,
   buildBladePoses,
   collectGrassTiles,
   countSolidsNear,
+  grassWindTimeAfterRestart,
   GRASS_RADIUS,
   MAX_GRASS_INSTANCES,
   tileAcceptsGrass,
@@ -260,5 +265,131 @@ describe("grassVisualApplies (HAS MUERTO / F9 load-muerto)", () => {
     );
     expect(viewSrc).toContain("tickGrassWindTime(");
     expect(viewSrc).not.toContain("grassTime += Math.max(0, dt)");
+  });
+});
+
+describe("grassWindTimeAfterRestart (R / softReset)", () => {
+  test("viento fresco (time 0); leftover sway no filtra", () => {
+    const boot = grassWindTimeAfterRestart();
+    expect(boot).toBe(0);
+    expect(boot).toBe(tickGrassWindTime(0, 0, false));
+
+    const leftoverTime = Math.PI / WIND_SPEED;
+    expect(leftoverTime).not.toBe(boot);
+    expect(tickGrassWindTime(leftoverTime, 0.2, true)).toBe(leftoverTime);
+    expect(tickGrassWindTime(leftoverTime, 0.2, true)).not.toBe(boot);
+
+    const leftoverWind = bladeWindFromTime(leftoverTime, 0.25);
+    const bootWind = bladeWindAfterRestart(0.25);
+    expect(bootWind).toEqual(bladeWindFromTime(boot, 0.25));
+    expect(bootWind).toEqual(bladeWind(0, 0.25));
+    expect(leftoverWind).not.toEqual(bootWind);
+    expect(leftoverWind.dx).not.toBe(bootWind.dx);
+    expect(leftoverWind.dyaw).not.toBe(bootWind.dyaw);
+
+    const leftoverPose = bladePoseFromWindTime(5, 2, 1, 0.4, leftoverTime);
+    const bootPose = bladePoseAfterRestart(5, 2, 1, 0.4);
+    expect(bootPose).toEqual(bladePoseAt(5, 2, 1, 0.4, boot));
+    expect(leftoverPose).not.toEqual(bootPose);
+    expect(
+      leftoverPose.x !== bootPose.x ||
+        leftoverPose.z !== bootPose.z ||
+        leftoverPose.yaw !== bootPose.yaw,
+    ).toBe(true);
+  });
+
+  test("vivo tick no usa el helper (time avanza)", () => {
+    const boot = grassWindTimeAfterRestart();
+    const live = tickGrassWindTime(boot, 0.2, false);
+    expect(live).toBeCloseTo(0.2, 10);
+    expect(live).not.toBe(grassWindTimeAfterRestart());
+    expect(bladeWindFromTime(live, 0.25)).not.toEqual(bladeWindAfterRestart(0.25));
+    expect(bladePoseFromWindTime(5, 2, 1, 0.4, live)).not.toEqual(
+      bladePoseAfterRestart(5, 2, 1, 0.4),
+    );
+  });
+});
+
+describe("grass recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace grassTime fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const grassSrc = readFileSync(
+      resolve(process.cwd(), "src/render/windGrass.ts"),
+      "utf8",
+    );
+    expect(grassSrc).toContain("grassWindTimeAfterRestart(");
+    expect(grassSrc).toContain("bladeWindFromTime(");
+    expect(grassSrc).toContain("bladePoseFromWindTime(");
+    expect(grassSrc).toMatch(
+      /bladePoseAt\([\s\S]{0,280}bladeWindFromTime\(/,
+    );
+    expect(viewSrc).toContain("grassWindTimeAfterRestart(");
+    expect(viewSrc).toContain("bladePoseFromWindTime(");
+    expect(viewSrc).toMatch(
+      /let grassTime = grassWindTimeAfterRestart\(\)/,
+    );
+    expect(viewSrc).toMatch(
+      /applyGrassPoses\(\): void \{[\s\S]{0,280}bladePoseFromWindTime\(\s*t\.tx,\s*t\.ty,\s*b,\s*t\.seed,\s*grassTime\)/,
+    );
+    expect(viewSrc).toContain("tickGrassWindTime(");
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /syncGrassVisual\(dt = 0\): void \{[\s\S]{0,280}grassVisualApplies\(\s*this\.gameOver\) \? dt : 0/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.syncGrassVisual\(dt\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}grassWindTimeAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}grassWindTimeAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}grassWindTimeAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}grassWindTimeAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("grassWindTimeAfterRestart(");
+    expect(saveSrc).not.toContain("grassWindTimeAfterRestart");
+    expect(saveSrc).not.toContain("grassTime");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
   });
 });
