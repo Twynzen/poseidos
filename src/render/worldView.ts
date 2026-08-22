@@ -1233,6 +1233,34 @@ export function wallBaseRoughnessAfterRestart(): number {
   return wallBaseRoughnessFromLook(WALL_BASE_ROUGHNESS_SPAWN);
 }
 
+/** Roughness del barricade mesh. Ctor barricadeMat.roughness: 0.75 = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_ROUGHNESS = 0.75;
+
+/** Roughness del barricade mesh. Ctor barricadeMat.roughness: 0.75 = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_MESH_ROUGHNESS = 0.75;
+
+/** Idle barricade mesh roughness. Ctor barricadeMat.roughness: 0.75 = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_ROUGHNESS_SPAWN = 0.75;
+
+/**
+ * Roughness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0.75).
+ * attach/tick no escriben roughness (ctor constant).
+ */
+export function barricadeRoughnessFromLook(value: number): number {
+  return value;
+}
+
+/**
+ * R / softReset: roughness fresco (idle 0.75).
+ * WorldView nace barricadeMat.roughness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben roughness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function barricadeRoughnessAfterRestart(): number {
+  return barricadeRoughnessFromLook(BARRICADE_ROUGHNESS_SPAWN);
+}
+
 /** Alto de la barricada. 1.35 × 1.15 para leerse un poco más alta de noche. */
 export const BARRICADE_HEIGHT = 1.5525;
 /** Ancho de la barricada. 0.92 × 1.15 para leerse un poco más ancha de noche. */
@@ -1614,7 +1642,8 @@ export function createWorldView(
   });
   const barricadeMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(BARRICADE_COLOR, lastDaylight),
-    roughness: 0.75,
+    // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
+    roughness: barricadeRoughnessAfterRestart(),
   });
   const barricadeEdgeMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(BARRICADE_EDGE, lastDaylight),
