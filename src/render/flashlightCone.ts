@@ -353,6 +353,28 @@ export function flashlightFillIntensityAfterRestart(): number {
   return flashlightFillIntensityFromLook(FLASHLIGHT_FILL_INTENSITY_SPAWN);
 }
 
+/** Idle fill decay. Ctor torchLight.decay FLASHLIGHT_FILL_DECAY 1.74 = fresco. Mid-life leftover ≠ fresco. */
+export const FLASHLIGHT_FILL_DECAY_SPAWN = 1.74;
+
+/**
+ * Decay que leería syncTorchLight (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle FLASHLIGHT_FILL_DECAY).
+ * syncTorchLight no escribe decay (ctor constant).
+ */
+export function flashlightFillDecayFromLook(decay: number): number {
+  return decay;
+}
+
+/**
+ * R / softReset: decay fresco (idle FLASHLIGHT_FILL_DECAY).
+ * WorldView nace torchLight.decay AfterRestart; leftover mid-life no filtra.
+ * syncTorchLight no escribe decay (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function flashlightFillDecayAfterRestart(): number {
+  return flashlightFillDecayFromLook(FLASHLIGHT_FILL_DECAY_SPAWN);
+}
+
 /** Idle spot origin X. Ctor torchSpot position.x 0 + visible false = fresco. Mid-life leftover ≠ 0. */
 export const FLASHLIGHT_SPOT_ORIGIN_X_SPAWN = 0;
 

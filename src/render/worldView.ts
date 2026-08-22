@@ -53,6 +53,7 @@ import {
   flashlightFillOriginZFromLook,
   flashlightFillVisibleAfterRestart,
   flashlightFillVisibleFromLook,
+  flashlightFillDecayAfterRestart,
   flashlightSpotOriginXAfterRestart,
   flashlightSpotOriginXFromLook,
   flashlightSpotOriginZAfterRestart,
@@ -842,8 +843,8 @@ export function createWorldView(
   scene.add(warmLight);
 
   // Linterna: PointLight fill + SpotLight al facing (separada de warm / muzzle).
-  const torchLight = new THREE.PointLight(FLASHLIGHT_FILL_COLOR, flashlightFillIntensityAfterRestart(), flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY);
-  // R / dispose: fill fresco (idle origin 0,0 / visible false / intensity 0 / distance BASE 8.05); leftover ctor 10 / mid-life no filtra.
+  const torchLight = new THREE.PointLight(FLASHLIGHT_FILL_COLOR, flashlightFillIntensityAfterRestart(), flashlightFillDistanceAfterRestart(), flashlightFillDecayAfterRestart());
+  // R / dispose: fill fresco (idle origin 0,0 / visible false / intensity 0 / distance BASE 8.05 / decay 1.74); leftover ctor 10 / mid-life no filtra.
   torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart());
   torchLight.visible = flashlightFillVisibleAfterRestart();
   scene.add(torchLight);
