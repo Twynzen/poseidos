@@ -1364,9 +1364,7 @@ export function createWorldView(
     muzzleMesh.visible = muzzleFlashActiveFromLook(out.active);
     muzzleLight.visible = muzzleFlashActiveFromLook(out.active);
     muzzleMat.opacity = muzzleFlashIntensityFromLook(out.intensity);
-    muzzleLight.intensity = out.active
-      ? MUZZLE_LIGHT_PEAK * muzzleFlashIntensityFromLook(out.intensity)
-      : 0;
+    muzzleLight.intensity = out.active ? MUZZLE_LIGHT_PEAK * out.intensity : 0;
   }
 
   function tickMuzzle(dt: number, gameOver = false): void {
