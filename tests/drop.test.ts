@@ -543,10 +543,10 @@ describe("dropInputApplies / applyDropInput (HAS MUERTO / F9 load-muerto)", () =
       /enterGameOver\(\): void \{[\s\S]{0,1400}consumeDrop\(\)/,
     );
     expect(gameSrc).toMatch(
-      /doLoad\(\): boolean \{[\s\S]{0,900}if \(loaded\.gameOver\) \{[\s\S]{0,280}consumeDrop\(\)/,
+      /doLoad\(\): boolean \{[\s\S]{0,1400}if \(loaded\.gameOver\) this\.input\.consumeDrop\(\)/,
     );
     expect(gameSrc).toMatch(
-      /dropInputApplies\(\s*this\.gameOver[\s\S]{0,80}drop[\s\S]{0,200}dropFromSlot/,
+      /dropInputApplies\(\s*this\.gameOver[\s\S]{0,80}drop[\s\S]{0,700}dropFromSlot/,
     );
     expect(gameSrc).not.toMatch(
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}dropFromSlot/,

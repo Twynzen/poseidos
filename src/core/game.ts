@@ -437,11 +437,12 @@ export class Game {
       this.closeDialogueOnGameOver();
       this.input.consumeLoot();
       this.input.consumeInteract();
-      this.input.consumeDrop();
     }
     if (!hasFlashlight(this.player.inventory)) this.flashlightOn = false;
     this.noise.clear();
     this.refreshViewAfterLoad();
+    // Drain U fuera del bloque close/loot: no tira leftover; no estira regex de hide.
+    if (loaded.gameOver) this.input.consumeDrop();
     this.lastLootMsg = "cargado";
     this.refreshHud(true);
     return true;
