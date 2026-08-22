@@ -60,3 +60,62 @@ export function facingChevronOffset(
     z: Math.cos(a) * d,
   };
 }
+
+/** Idle chevron yaw. Ctor playerGltfYaw 0 + placeFacingChevron = fresco. Mid-life leftover ≠ 0. */
+export const FACING_CHEVRON_YAW_SPAWN = 0;
+
+/**
+ * Yaw que lee placeFacingChevron (look fresco o vivo).
+ * leftover mid-life yaw ≠ fresco (idle 0).
+ */
+export function facingChevronYawFromLook(yaw: number): number {
+  return yaw;
+}
+
+/**
+ * Offset X que lee placeFacingChevron (look fresco o vivo).
+ * leftover mid-life / far 40 ≠ fresco (yaw 0 → 0).
+ */
+export function facingChevronOffsetXFromLook(x: number): number {
+  return x;
+}
+
+/**
+ * Offset Z que lee placeFacingChevron (look fresco o vivo).
+ * leftover mid-life / far 30 ≠ fresco (yaw 0 → DIST).
+ */
+export function facingChevronOffsetZFromLook(z: number): number {
+  return z;
+}
+
+/**
+ * R / softReset: yaw fresco (idle 0).
+ * WorldView nace rotation.y AfterRestart; leftover mid-life yaw no filtra.
+ * placeFacingChevron lee facingChevronYawFromLook.
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function facingChevronYawAfterRestart(): number {
+  return facingChevronYawFromLook(FACING_CHEVRON_YAW_SPAWN);
+}
+
+/**
+ * R / softReset: offset X fresco (yaw 0 → 0).
+ * WorldView nace position.x AfterRestart; leftover mid-life / far no filtra.
+ * placeFacingChevron lee facingChevronOffsetXFromLook.
+ */
+export function facingChevronOffsetXAfterRestart(): number {
+  return facingChevronOffsetXFromLook(
+    facingChevronOffset(facingChevronYawAfterRestart()).x,
+  );
+}
+
+/**
+ * R / softReset: offset Z fresco (yaw 0 → DIST).
+ * WorldView nace position.z AfterRestart; leftover mid-life / far no filtra.
+ * placeFacingChevron lee facingChevronOffsetZFromLook.
+ */
+export function facingChevronOffsetZAfterRestart(): number {
+  return facingChevronOffsetZFromLook(
+    facingChevronOffset(facingChevronYawAfterRestart()).z,
+  );
+}
