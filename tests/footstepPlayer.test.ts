@@ -2,9 +2,14 @@ import { describe, expect, test } from "vitest";
 import {
   shouldEmitFootstep,
   createFootstepPlayer,
+  resetFootstepPlayerAfterRestart,
   syncFootstepPlayer,
 } from "../src/audio/footstepPlayer";
-import { createFootstepsBus, tickFootsteps } from "../src/audio/footstepsStub";
+import {
+  createFootstepsBus,
+  resetFootstepsAfterRestart,
+  tickFootsteps,
+} from "../src/audio/footstepsStub";
 
 describe("shouldEmitFootstep", () => {
   test("mismo floor → false", () => {
@@ -50,5 +55,34 @@ describe("createFootstepPlayer / syncFootstepPlayer (headless)", () => {
     expect(phaseBefore).toBeGreaterThan(0);
     syncFootstepPlayer(player, bus);
     expect(player.prevPhase).toBe(phaseBefore);
+  });
+});
+
+describe("resetFootstepPlayerAfterRestart (R / softReset)", () => {
+  test("reinicio → prevPhase 0; stride previo no filtra el primer paso", () => {
+    const boot = createFootstepPlayer();
+    const bus = createFootstepsBus();
+    const player = createFootstepPlayer();
+    tickFootsteps(bus, { moved: 0.4, sprint: true }, 0.2);
+    syncFootstepPlayer(player, bus, { sprint: true });
+    expect(bus.phase).toBeGreaterThan(1);
+    expect(player.prevPhase).toBe(bus.phase);
+    expect(player.prevPhase).toBeGreaterThan(boot.prevPhase);
+
+    resetFootstepsAfterRestart(bus);
+    resetFootstepPlayerAfterRestart(player);
+    expect(player.prevPhase).toBe(0);
+    expect(player.prevPhase).toBe(boot.prevPhase);
+    expect(bus.phase).toBe(0);
+
+    tickFootsteps(bus, { moved: 0.08 }, 0.05);
+    expect(shouldEmitFootstep(player.prevPhase, bus.phase)).toBe(
+      shouldEmitFootstep(0, bus.phase),
+    );
+    expect(shouldEmitFootstep(4.2, bus.phase)).toBe(false);
+    syncFootstepPlayer(player, bus);
+    expect(player.prevPhase).toBe(bus.phase);
+    expect(player.prevPhase).toBeGreaterThan(0);
+    expect(player.prevPhase).toBeLessThan(1);
   });
 });

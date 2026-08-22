@@ -60,6 +60,15 @@ export function createFootstepPlayer(): FootstepPlayer {
   };
 }
 
+/**
+ * R / softReset: stride fresco (prevPhase 0). ctx se queda.
+ * Game.footstepPlayer debe coincidir (floor leftover no filtra el primer paso).
+ * F9 load no usa esto — el player persiste (misma carrera).
+ */
+export function resetFootstepPlayerAfterRestart(player: FootstepPlayer): void {
+  player.prevPhase = 0;
+}
+
 function playBeep(ctx: AudioContext, hz: number, level: number): void {
   const t0 = ctx.currentTime;
   const osc = ctx.createOscillator();
