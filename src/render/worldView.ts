@@ -282,6 +282,7 @@ import {
   fogScaleXAfterRestart,
   fogScaleYAfterRestart,
   fogScaleZAfterRestart,
+  fogTransparentAfterRestart,
   fogYAfterRestart,
   nightAmbientIntensity,
   nightSunIntensity,
@@ -959,7 +960,8 @@ export function createWorldView(
   const fogMat = new THREE.MeshBasicMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
     color: fogColorAfterRestart(),
-    transparent: true,
+    // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+    transparent: fogTransparentAfterRestart(),
     // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
     opacity: fogOpacityAfterRestart(),
     depthWrite: false,

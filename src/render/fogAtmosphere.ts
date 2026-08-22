@@ -512,6 +512,31 @@ export function fogScaleZAfterRestart(): number {
   return fogScaleZFromLook(FOG_SCALE_Z_SPAWN);
 }
 
+/** Transparent del fog de tiles fuera de LOS. Ctor fogMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const FOG_TRANSPARENT = true;
+
+/** Idle fog mesh transparent. Ctor fogMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const FOG_TRANSPARENT_SPAWN = true;
+
+/**
+ * Transparent que leería chunk/FOV (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * chunk/FOV no escribe transparent (ctor constant).
+ */
+export function fogTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle true).
+ * WorldView nace fogMat.transparent AfterRestart; leftover mid-life no filtra.
+ * chunk/FOV no escribe transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function fogTransparentAfterRestart(): boolean {
+  return fogTransparentFromLook(FOG_TRANSPARENT_SPAWN);
+}
+
 function clamp01(v: number): number {
   return Math.max(0, Math.min(1, v));
 }
