@@ -418,7 +418,7 @@ describe("impact spark recreate lock (R / softReset)", () => {
       /impactMat\.opacity = impactSparkIntensityFromLook\(out\.intensity\)/,
     );
     expect(viewSrc).toMatch(
-      /impactSparkColorAfterRestart\(\),[\s\S]{0,200}opacity:\s*impactSparkIntensityAfterRestart\(\)/,
+      /impactSparkColorAfterRestart\(\),[\s\S]{0,260}opacity:\s*impactSparkIntensityAfterRestart\(\)/,
     );
     expect(viewSrc).not.toMatch(
       /impactSparkColorAfterRestart\(\),[\s\S]{0,200}opacity:\s*1,/,

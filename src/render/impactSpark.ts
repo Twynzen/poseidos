@@ -250,6 +250,31 @@ export function impactSparkDepthWriteAfterRestart(): boolean {
   return impactSparkDepthWriteFromLook(IMPACT_SPARK_DEPTH_WRITE_SPAWN);
 }
 
+/** Transparent del impact spark mesh. Ctor impactMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const IMPACT_SPARK_TRANSPARENT = true;
+
+/** Idle impact spark mesh transparent. Ctor impactMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const IMPACT_SPARK_TRANSPARENT_SPAWN = true;
+
+/**
+ * Transparent que leería applyImpactSparkVisual (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * apply/tick no escribe transparent (ctor constant).
+ */
+export function impactSparkTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle true).
+ * WorldView nace impactMat.transparent AfterRestart; leftover mid-life no filtra.
+ * apply/tick no escribe transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function impactSparkTransparentAfterRestart(): boolean {
+  return impactSparkTransparentFromLook(IMPACT_SPARK_TRANSPARENT_SPAWN);
+}
+
 /**
  * HAS MUERTO / F9 load-muerto: no avanzar el spark ni pintarlo.
  * Vivo (incl. F9 load-vivo): tick/intensity de hoy.

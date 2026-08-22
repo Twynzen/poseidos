@@ -260,6 +260,7 @@ import {
   impactSparkPosZFromLook,
   impactSparkColorAfterRestart,
   impactSparkDepthWriteAfterRestart,
+  impactSparkTransparentAfterRestart,
   impactSparkLightColorAfterRestart,
   impactSparkLightDecayAfterRestart,
   impactSparkLightDistanceAfterRestart,
@@ -1580,7 +1581,8 @@ export function createWorldView(
   const impactGeo = new THREE.SphereGeometry(IMPACT_SPARK_RADIUS, 10, 8);
   const impactMat = new THREE.MeshBasicMaterial({
     color: impactSparkColorAfterRestart(),
-    transparent: true,
+    // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+    transparent: impactSparkTransparentAfterRestart(),
     // R / dispose: opacity fresco (inactive); leftover ctor Three 1 no filtra.
     opacity: impactSparkIntensityAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
