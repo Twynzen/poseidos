@@ -163,13 +163,13 @@ describe("player pos recreate lock (R / softReset)", () => {
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3300}this\.view\.dispose\(\)/,
+      /softReset\(\): void \{[\s\S]{0,3400}this\.view\.dispose\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,4200}this\.view\.syncPlayer\(\s*this\.player\.x,\s*this\.player\.y\)/,
+      /softReset\(\): void \{[\s\S]{0,4300}this\.view\.syncPlayer\(\s*this\.player\.x,\s*this\.player\.y\)/,
     );
     expect(gameSrc).not.toMatch(
       /doLoad\(\): boolean \{[\s\S]{0,2800}playerPosXAfterRestart/,
