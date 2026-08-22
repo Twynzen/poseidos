@@ -25,6 +25,16 @@ export type AmbientBus = {
 
 const LAYERS: readonly AmbientLayer[] = ["rain", "night", "indoor", "threat"];
 
+/**
+ * HAS MUERTO / F9 load-muerto: no avanzar threatPhase ni lerp rain/night/indoor.
+ * Vivo (incl. F9 load-vivo): tick/dt de hoy.
+ * No mutea; solo gate de dt. gameOver no inventa mute.
+ */
+export function ambientTickApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
 /** Velocidad de fade hacia targets (~4 → settle ~1s). */
 const LERP_RATE = 4;
 
@@ -58,13 +68,16 @@ export function ambientTargets(state: AmbientState, threatPhase = 0): AmbientLev
 /**
  * Avanza capas hacia targets. Determinista (sin RNG).
  * `state.muted` sincroniza el flag del bus si se pasa.
+ * gameOver → dt 0 (congela threatPhase / lerp; no mutea).
  */
 export function tickAmbient(
   bus: AmbientBus,
   state: AmbientState,
   dt: number,
+  gameOver = false,
 ): void {
   if (state.muted !== undefined) bus.muted = state.muted;
+  if (!ambientTickApplies(gameOver)) dt = 0;
   if (dt < 0) dt = 0;
 
   if (state.threatNearby) {
