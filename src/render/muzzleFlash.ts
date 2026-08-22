@@ -131,6 +131,28 @@ export function muzzleFlashPosZAfterRestart(
   return muzzleFlashPosZFromLook(oz);
 }
 
+/** Idle muzzle decay. Ctor muzzleLight.decay MUZZLE_LIGHT_DECAY 1.74 = fresco. Mid-life leftover ≠ fresco. */
+export const MUZZLE_LIGHT_DECAY_SPAWN = 1.74;
+
+/**
+ * Decay que leería applyMuzzleFlashVisual (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle MUZZLE_LIGHT_DECAY).
+ * apply/tick no escribe decay (ctor constant).
+ */
+export function muzzleLightDecayFromLook(decay: number): number {
+  return decay;
+}
+
+/**
+ * R / softReset: decay fresco (idle MUZZLE_LIGHT_DECAY).
+ * WorldView nace muzzleLight.decay AfterRestart; leftover mid-life no filtra.
+ * apply/tick no escribe decay (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function muzzleLightDecayAfterRestart(): number {
+  return muzzleLightDecayFromLook(MUZZLE_LIGHT_DECAY_SPAWN);
+}
+
 /**
  * HAS MUERTO / F9 load-muerto: no avanzar el flash ni pintarlo.
  * Vivo (incl. F9 load-vivo): tick/intensity de hoy.

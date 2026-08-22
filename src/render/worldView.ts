@@ -226,6 +226,7 @@ import {
   muzzleFlashPosYAfterRestart,
   muzzleFlashPosZAfterRestart,
   muzzleFlashPosZFromLook,
+  muzzleLightDecayAfterRestart,
   tickMuzzleFlash as stepMuzzleFlash,
   triggerMuzzleFlash as startMuzzleFlash,
 } from "./muzzleFlash";
@@ -1373,7 +1374,7 @@ export function createWorldView(
     MUZZLE_LIGHT_COLOR,
     0,
     MUZZLE_LIGHT_DISTANCE,
-    MUZZLE_LIGHT_DECAY,
+    muzzleLightDecayAfterRestart(),
   );
   muzzleLight.visible = muzzleFlashActiveAfterRestart();
   // R / dispose: pos fresco (spawn yaw 0); leftover ctor origin 0,0 no filtra.
