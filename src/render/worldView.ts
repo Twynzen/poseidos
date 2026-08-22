@@ -94,8 +94,10 @@ import {
 } from "./characterMixer";
 import {
   createMeleeSwingState,
-  tickMeleeSwing,
+  swingPoseApplies,
+  tickMeleeSwing as stepMeleeSwing,
   triggerMeleeSwing,
+  type MeleeSwingOutput,
 } from "./meleeSwing";
 import {
   createHitLeanState,
@@ -439,7 +441,7 @@ export interface WorldView {
   /**
    * Locomocion visual: silueta locoBob o mixer GLB (Idle/Walk/Run).
    * No mueve el root mundo — solo locoRoot local (bob) o mixer + yaw.
-   * Aplica meleeSwing a rotation.x/z si el golpe procedural está activo.
+   * Aplica last meleeSwing overlay a rotation.x/z (tick aparte).
    * Hit lean (recoil) overridea el swing mientras está activo.
    * Avanza camera shake (offset para followCamera).
    * Coloca el chevron de facing (siempre on).
@@ -452,6 +454,13 @@ export interface WorldView {
     faceX?: number,
     faceZ?: number,
   ): void;
+  /**
+   * Avanza el swing melee procedural (lean overlay).
+   * `gameOver`: HAS MUERTO / F9 load-muerto — skip tick + reset overlay pose.
+   */
+  tickMeleeSwing(dt: number, gameOver?: boolean): void;
+  /** Quita lean leftover (HAS MUERTO / F9 load-muerto). Ya en reposo = no-op. */
+  hideMeleeSwing(): void;
   /**
    * One-shot de vista: melee/disparo ok → primary-attack; toque hostil → hit;
    * game-over → death. setAction + mixer sync (no-op si el GLB no tiene el clip).
@@ -753,6 +762,11 @@ export function createWorldView(
   let cameraShakeOut: CameraShakeOutput = {
     offsetX: 0,
     offsetZ: 0,
+    active: false,
+  };
+  let meleeSwingOut: MeleeSwingOutput = {
+    pitch: 0,
+    yawBias: 0,
     active: false,
   };
   /** Roles mixer-agnosticos; GLB opcional via candidates (Soldier first). */
@@ -1120,6 +1134,26 @@ export function createWorldView(
       x: impactSpark.x,
       y: impactSpark.y,
     });
+  }
+
+  function applySwingOverlayPose(swing: MeleeSwingOutput): void {
+    const lean = tickHitLean(playerHitLean, 0);
+    const pose = lean.active ? lean : swing;
+    playerLocoRoot.rotation.z = pose.yawBias;
+    playerLocoRoot.rotation.x = pose.pitch;
+  }
+
+  function tickSwing(dt: number, gameOver = false): void {
+    if (!swingPoseApplies(gameOver)) {
+      hideSwing();
+      return;
+    }
+    meleeSwingOut = stepMeleeSwing(playerSwing, dt, gameOver);
+  }
+
+  function hideSwing(): void {
+    meleeSwingOut = { pitch: 0, yawBias: 0, active: false };
+    applySwingOverlayPose(meleeSwingOut);
   }
 
   const hostileGeo = new THREE.BoxGeometry(HOSTILE_BODY_WIDTH, HOSTILE_BODY_HEIGHT, HOSTILE_BODY_DEPTH);
@@ -1735,7 +1769,7 @@ export function createWorldView(
     tickPlayerLoco(dt, moving, sprinting, faceX, faceZ) {
       setLocomotion(playerAnimator, { moving, sprinting });
       tickCharacterAnimator(playerAnimator, dt);
-      const swing = tickMeleeSwing(playerSwing, dt);
+      const swing = meleeSwingOut;
       const lean = tickHitLean(playerHitLean, dt);
       cameraShakeOut = tickCameraShake(playerCameraShake, dt);
       if (faceX != null && faceZ != null) {
@@ -1773,6 +1807,8 @@ export function createWorldView(
     triggerMuzzleFlash() {
       startMuzzleFlash(playerMuzzle);
     },
+    tickMeleeSwing: tickSwing,
+    hideMeleeSwing: hideSwing,
     tickMuzzleFlash: tickMuzzle,
     hideMuzzleFlash: hideMuzzle,
     triggerImpactSpark(x, y) {

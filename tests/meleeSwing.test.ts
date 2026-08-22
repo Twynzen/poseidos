@@ -1,9 +1,13 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   MELEE_SWING_ANGLE,
   MELEE_SWING_DURATION,
   MELEE_SWING_YAW_RATIO,
   createMeleeSwingState,
+  swingPoseApplies,
   tickMeleeSwing,
   triggerMeleeSwing,
 } from "../src/render/meleeSwing";
@@ -113,5 +117,109 @@ describe("create / trigger / tick", () => {
     expect(s.active).toBe(true);
     const out = tickMeleeSwing(s, MELEE_SWING_DURATION / 2);
     expect(out.pitch).toBeCloseTo(MELEE_SWING_ANGLE, 10);
+  });
+});
+
+describe("swingPoseApplies (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: no aplica; ya en reposo no-op; load-muerto no; vivo/load-vivo sí", () => {
+    expect(swingPoseApplies(true)).toBe(false);
+    expect(swingPoseApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(swingPoseApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(swingPoseApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver no avanza age; reset pose; vivo sí; dt<=0 no-op", () => {
+    const dead = createMeleeSwingState();
+    triggerMeleeSwing(dead);
+    tickMeleeSwing(dead, 0.05, false);
+    const age = dead.age;
+    const hidden = tickMeleeSwing(dead, 0.05, true);
+    expect(dead.age).toBe(age);
+    expect(hidden.active).toBe(false);
+    expect(hidden.pitch).toBe(0);
+    expect(hidden.yawBias).toBe(0);
+
+    const idle = createMeleeSwingState();
+    expect(tickMeleeSwing(idle, 0.1, true)).toEqual({
+      pitch: 0,
+      yawBias: 0,
+      active: false,
+    });
+    expect(idle.active).toBe(false);
+    expect(idle.age).toBe(0);
+
+    const live = createMeleeSwingState();
+    triggerMeleeSwing(live);
+    const out = tickMeleeSwing(live, 0.05, false);
+    expect(out.active).toBe(true);
+    expect(out.pitch).toBeGreaterThan(0);
+    expect(out.yawBias).toBeGreaterThan(0);
+    expect(live.age).toBeCloseTo(0.05, 10);
+
+    expect(tickMeleeSwing(live, 0, false).active).toBe(true);
+    expect(live.age).toBeCloseTo(0.05, 10);
+    expect(tickMeleeSwing(live, -1, false).active).toBe(true);
+    expect(live.age).toBeCloseTo(0.05, 10);
+    expect(tickMeleeSwing(live, Number.NaN, false).active).toBe(true);
+    expect(live.age).toBeCloseTo(0.05, 10);
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto resetan swing; vivo tickea; mixer death se queda", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("swingPoseApplies(");
+    expect(src).toContain("this.view.hideMeleeSwing()");
+    expect(src).toMatch(
+      /syncSwingPoseOverlay\(dt = 0\): void \{[\s\S]{0,280}swingPoseApplies\(\s*this\.gameOver/,
+    );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2000}this\.syncSwingPoseOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2000}this\.syncSwingPoseOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,4400}this\.syncSwingPoseOverlay\(dt\)/,
+    );
+    expect(src).toMatch(
+      /this\.syncSwingPoseOverlay\(dt\);\s*this\.view\.tickPlayerLoco\(dt, false, false\);\s*this\.syncMuzzleFlashOverlay\(dt\);\s*this\.syncImpactSparkOverlay\(dt\)/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,4400}this\.view\.tickMeleeSwing\(dt\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+    expect(src).toMatch(
+      /Mixer must keep ticking during freeze[\s\S]{0,160}this\.view\.tickPlayerLoco\(dt, false, false\)/,
+    );
+
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain("swingPoseApplies(");
+    expect(viewSrc).toContain("stepMeleeSwing(");
+    expect(viewSrc).toContain("hideMeleeSwing: hideSwing");
+    expect(viewSrc).toContain("playerMixer.update(dt, currentRole(playerAnimator))");
+    expect(viewSrc).not.toContain("tickMeleeSwing(playerSwing, dt)");
   });
 });

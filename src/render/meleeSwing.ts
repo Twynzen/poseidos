@@ -32,6 +32,16 @@ export function createMeleeSwingState(): MeleeSwingState {
   return { age: 0, active: false };
 }
 
+/**
+ * HAS MUERTO / F9 load-muerto: no avanzar el swing ni aplicar lean overlay.
+ * Vivo (incl. F9 load-vivo): tick/pose de hoy.
+ * Ya en reposo = no-op; gameOver no inventa swing.
+ */
+export function swingPoseApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
 /** Reinicia el swing desde t=0 (re-trigger a mitad de golpe = nuevo golpe). */
 export function triggerMeleeSwing(state: MeleeSwingState): void {
   state.age = 0;
@@ -50,11 +60,16 @@ function easeOutSine(t: number): number {
 /**
  * Avanza el swing y devuelve offsets puros (deterministas para tests).
  * Mutates `state`. dt≤0 no avanza age.
+ * gameOver → skip tick / reset overlay pose (ceros); no inventa swing.
  */
 export function tickMeleeSwing(
   state: MeleeSwingState,
   dt: number,
+  gameOver = false,
 ): MeleeSwingOutput {
+  if (!swingPoseApplies(gameOver)) {
+    return { pitch: 0, yawBias: 0, active: false };
+  }
   const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
   if (state.active) {
     state.age += safeDt;
