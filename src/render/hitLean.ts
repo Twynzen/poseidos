@@ -13,6 +13,61 @@ export const HIT_LEAN_ANGLE = 0.4025;
 /** yawBias = pitch * este ratio (sesgo, no un yaw completo). 0.5 × 1.15 para leer de noche. */
 export const HIT_LEAN_YAW_RATIO = 0.575;
 
+/** Idle lean pitch. Ctor locoRoot.rotation.x overlay 0 = fresco. Mid-recoil leftover ≠ 0. */
+export const HIT_LEAN_PITCH_SPAWN = 0;
+/** Idle lean yawBias. Ctor locoRoot.rotation.z overlay 0 = fresco. Mid-recoil leftover ≠ 0. */
+export const HIT_LEAN_YAW_SPAWN = 0;
+
+/**
+ * Pitch que lee apply/tick (look fresco o vivo).
+ * leftover mid-recoil / leftover ctor non-zero ≠ fresco (idle 0).
+ */
+export function hitLeanPitchFromLook(pitch: number): number {
+  return pitch;
+}
+
+/**
+ * yawBias que lee apply/tick (look fresco o vivo).
+ * leftover mid-recoil / leftover ctor non-zero ≠ fresco (idle 0).
+ */
+export function hitLeanYawBiasFromLook(yawBias: number): number {
+  return yawBias;
+}
+
+/**
+ * Active que lee apply/tick (look fresco o vivo).
+ * leftover mid-recoil active ≠ fresco (idle).
+ */
+export function hitLeanActiveFromLook(active: boolean): boolean {
+  return active;
+}
+
+/**
+ * R / softReset: pitch fresco (idle 0).
+ * WorldView nace hitLeanOut AfterRestart; leftover mid-recoil no filtra.
+ * apply/tick lee hitLeanPitchFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function hitLeanPitchAfterRestart(): number {
+  return hitLeanPitchFromLook(HIT_LEAN_PITCH_SPAWN);
+}
+
+/**
+ * R / softReset: yawBias fresco (idle 0).
+ * WorldView nace hitLeanOut AfterRestart; leftover mid-recoil no filtra.
+ * apply/tick lee hitLeanYawBiasFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function hitLeanYawBiasAfterRestart(): number {
+  return hitLeanYawBiasFromLook(HIT_LEAN_YAW_SPAWN);
+}
+
+/**
+ * R / softReset: active fresco (false).
+ * leftover mid-recoil no filtra.
+ */
+export function hitLeanActiveAfterRestart(): boolean {
+  return hitLeanActiveFromLook(false);
+}
+
 export interface HitLeanState {
   /** Segundos transcurridos del lean actual. */
   age: number;

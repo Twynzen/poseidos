@@ -141,7 +141,13 @@ import {
 } from "./meleeSwing";
 import {
   createHitLeanState,
+  hitLeanActiveAfterRestart,
+  hitLeanActiveFromLook,
   hitLeanApplies,
+  hitLeanPitchAfterRestart,
+  hitLeanPitchFromLook,
+  hitLeanYawBiasAfterRestart,
+  hitLeanYawBiasFromLook,
   tickHitLean as stepHitLean,
   triggerHitLean,
   type HitLeanOutput,
@@ -883,6 +889,9 @@ export function createWorldView(
   // R / dispose: swing fresco (idle 0); leftover mid-swing no filtra.
   playerLocoRoot.rotation.x = meleeSwingPitchAfterRestart();
   playerLocoRoot.rotation.z = meleeSwingYawBiasAfterRestart();
+  // R / dispose: lean fresco (idle 0); leftover mid-recoil no filtra.
+  playerLocoRoot.rotation.x = hitLeanPitchAfterRestart();
+  playerLocoRoot.rotation.z = hitLeanYawBiasAfterRestart();
   // R / dispose: loco fresco (idle 0); leftover mid-stride no filtra.
   playerLocoRoot.position.y = locoBobYAfterRestart();
   const playerBody = new THREE.Mesh(playerBodyGeo, playerBodyMat);
@@ -913,9 +922,9 @@ export function createWorldView(
     active: meleeSwingActiveAfterRestart(),
   };
   let hitLeanOut: HitLeanOutput = {
-    pitch: 0,
-    yawBias: 0,
-    active: false,
+    pitch: hitLeanPitchAfterRestart(),
+    yawBias: hitLeanYawBiasAfterRestart(),
+    active: hitLeanActiveAfterRestart(),
   };
   let locoBobOut: LocoBobOutput = {
     bobY: locoBobYAfterRestart(),
@@ -1504,7 +1513,10 @@ export function createWorldView(
 
   function applySwingOverlayPose(swing: MeleeSwingOutput): void {
     const pose = hitLeanOut.active
-      ? hitLeanOut
+      ? {
+          pitch: hitLeanPitchFromLook(hitLeanOut.pitch),
+          yawBias: hitLeanYawBiasFromLook(hitLeanOut.yawBias),
+        }
       : {
           pitch: meleeSwingPitchFromLook(swing.pitch),
           yawBias: meleeSwingYawBiasFromLook(swing.yawBias),
@@ -1522,7 +1534,10 @@ export function createWorldView(
 
   function applyLeanOverlayPose(lean: HitLeanOutput): void {
     const pose = lean.active
-      ? lean
+      ? {
+          pitch: hitLeanPitchFromLook(lean.pitch),
+          yawBias: hitLeanYawBiasFromLook(lean.yawBias),
+        }
       : {
           pitch: meleeSwingPitchFromLook(meleeSwingOut.pitch),
           yawBias: meleeSwingYawBiasFromLook(meleeSwingOut.yawBias),
@@ -1530,6 +1545,13 @@ export function createWorldView(
     playerLocoRoot.rotation.z = pose.yawBias;
     playerLocoRoot.rotation.x = pose.pitch;
   }
+
+  // R / dispose: look fresco (idle 0); leftover mid-recoil no filtra.
+  applyLeanOverlayPose({
+    pitch: hitLeanPitchAfterRestart(),
+    yawBias: hitLeanYawBiasAfterRestart(),
+    active: hitLeanActiveAfterRestart(),
+  });
 
   function tickSwing(dt: number, gameOver = false): void {
     if (!swingPoseApplies(gameOver)) {
@@ -1558,7 +1580,12 @@ export function createWorldView(
       hideLean();
       return;
     }
-    hitLeanOut = stepHitLean(playerHitLean, dt, gameOver);
+    const out = stepHitLean(playerHitLean, dt, gameOver);
+    hitLeanOut = {
+      pitch: hitLeanPitchFromLook(out.pitch),
+      yawBias: hitLeanYawBiasFromLook(out.yawBias),
+      active: hitLeanActiveFromLook(out.active),
+    };
   }
 
   function applyLocoBobOffsets(out: LocoBobOutput): void {
@@ -1567,7 +1594,10 @@ export function createWorldView(
       return;
     }
     const pose = hitLeanOut.active
-      ? hitLeanOut
+      ? {
+          pitch: hitLeanPitchFromLook(hitLeanOut.pitch),
+          yawBias: hitLeanYawBiasFromLook(hitLeanOut.yawBias),
+        }
       : {
           pitch: meleeSwingPitchFromLook(meleeSwingOut.pitch),
           yawBias: meleeSwingYawBiasFromLook(meleeSwingOut.yawBias),
@@ -1615,7 +1645,11 @@ export function createWorldView(
   }
 
   function hideLean(): void {
-    hitLeanOut = { pitch: 0, yawBias: 0, active: false };
+    hitLeanOut = {
+      pitch: hitLeanPitchFromLook(0),
+      yawBias: hitLeanYawBiasFromLook(0),
+      active: hitLeanActiveFromLook(false),
+    };
     applyLeanOverlayPose(hitLeanOut);
   }
 
@@ -2229,7 +2263,10 @@ export function createWorldView(
       }
       placeFacingChevron();
       const pose = lean.active
-        ? lean
+        ? {
+            pitch: hitLeanPitchFromLook(lean.pitch),
+            yawBias: hitLeanYawBiasFromLook(lean.yawBias),
+          }
         : {
             pitch: meleeSwingPitchFromLook(swing.pitch),
             yawBias: meleeSwingYawBiasFromLook(swing.yawBias),
