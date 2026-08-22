@@ -128,9 +128,11 @@ import {
   createMoodlesHud,
   moodlesHudVisible,
   createHotbarHud,
+  resetHotbarHudAfterRestart,
   createLootFloaterHud,
   lootFloaterVisible,
   createInventoryPanel,
+  resetInventoryPanelAfterRestart,
   inventoryPanelVisible,
   inventoryToggleApplies,
   nextShowInvDetail,
@@ -591,6 +593,9 @@ export class Game {
     this.refreshHud(true);
     // R: cadence boot (0); leftover 1 de HAS MUERTO no filtra. Freeze R no pisa.
     this.hudAcc = hudAccAfterRestart();
+    // R: corta drag/inspect leftover del widget persistente. F9 no.
+    resetHotbarHudAfterRestart(this.hotbarHud);
+    resetInventoryPanelAfterRestart(this.inventoryPanel);
   }
 
   /** Tras applySave: remesh chunks, puertas, FOV, player, día/noche. */

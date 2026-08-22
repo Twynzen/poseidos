@@ -14,9 +14,11 @@ import {
 import {
   applyInventoryToggle,
   createInventoryPanel,
+  inventoryInspectAfterRestart,
   inventoryPanelVisible,
   inventoryToggleApplies,
   nextShowInvDetail,
+  resetInventoryPanelAfterRestart,
 } from "../src/ui/inventory";
 import { inventoryInspectLabel } from "../src/ui/hotbar";
 
@@ -904,5 +906,110 @@ describe("createInventoryPanel hide (HAS MUERTO)", () => {
     panel.sync({ open: true, data });
     expect(el!.hidden).toBe(false);
     panel.dispose();
+  });
+});
+
+describe("resetInventoryPanelAfterRestart (R / softReset)", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  test("reinicio → inspect null + sin drag leftover; leftover no filtra", () => {
+    expect(inventoryInspectAfterRestart()).toBeNull();
+
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [
+      { id: "scrap", qty: 1 },
+      { id: "water_bottle", qty: 1 },
+    ]);
+    panel.sync({ open: true, data: buildInventoryPanelData(inv) });
+
+    contextmenuRow(root, 0);
+    expect(panel.consumeInspect()).not.toBe(inventoryInspectAfterRestart());
+
+    contextmenuRow(root, 0);
+    pointerOnRow(root, 0, "pointerdown");
+    pointerOnRow(root, 1, "pointerup");
+    resetInventoryPanelAfterRestart(panel);
+    expect(panel.consumeInspect()).toBe(inventoryInspectAfterRestart());
+    expect(panel.consumeClick()).toBeNull();
+    expect(panel.consumeDrag()).toBeNull();
+    expect(panel.consumeDblClick()).toBeNull();
+    expect(panel.consumeSplit()).toBeNull();
+    expect(panel.consumeMerge()).toBeNull();
+    expect(root.querySelector(".inv-slot-dragging")).toBeNull();
+    panel.dispose();
+  });
+
+  test("vivo consume no usa el helper (inspect/drag igual que hoy)", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [
+      { id: "scrap", qty: 1 },
+      { id: "water_bottle", qty: 1 },
+    ]);
+    panel.sync({ open: true, data: buildInventoryPanelData(inv) });
+
+    contextmenuRow(root, 0);
+    expect(panel.consumeInspect()).toBe(0);
+    expect(0).not.toBe(inventoryInspectAfterRestart());
+    expect(panel.consumeInspect()).toBe(inventoryInspectAfterRestart());
+
+    pointerOnRow(root, 0, "pointerdown");
+    pointerOnRow(root, 1, "pointerup");
+    expect(panel.consumeDrag()).toEqual({ from: 0, to: 1 });
+    panel.dispose();
+  });
+
+  test("sync open false no resetea pending (death paint); F9 no usa helper", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [{ id: "scrap", qty: 1 }]);
+    const data = buildInventoryPanelData(inv);
+    panel.sync({ open: true, data });
+    contextmenuRow(root, 0);
+    panel.sync({ open: false, data });
+    expect(panel.consumeInspect()).toBe(0);
+    expect(0).not.toBe(inventoryInspectAfterRestart());
+    panel.dispose();
+
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("resetInventoryPanelAfterRestart(");
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,3600}resetInventoryPanelAfterRestart\(this\.inventoryPanel\)/,
+    );
+    expect(gameSrc).toMatch(
+      /resetHotbarHudAfterRestart\(this\.hotbarHud\);[\s\S]{0,80}resetInventoryPanelAfterRestart\(this\.inventoryPanel\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}resetInventoryPanelAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2000}resetInventoryPanelAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}resetInventoryPanelAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}resetInventoryPanelAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
   });
 });

@@ -83,7 +83,25 @@ export interface InventoryPanel {
   consumeMerge(): number | null;
   /** Último arrastre fila→fila; last-wins; consume y limpia. */
   consumeDrag(): { from: number; to: number } | null;
+  /**
+   * R / softReset: corta drag/pending leftover (inspect/click).
+   * F9 no. sync(open:false) no lo llama (death paint se queda).
+   */
+  resetAfterRestart(): void;
   dispose(): void;
+}
+
+/** R / softReset: pending inspect del ctor (null). F9 no. */
+export function inventoryInspectAfterRestart(): number | null {
+  return null;
+}
+
+/**
+ * R / softReset: corta drag/pending leftover. Live tick / F9 no.
+ * Game.inventoryPanel debe coincidir (inspect/drag de la vida anterior no filtra).
+ */
+export function resetInventoryPanelAfterRestart(panel: InventoryPanel): void {
+  panel.resetAfterRestart();
 }
 
 function slotIndexFromEvent(e: Event): number | null {
@@ -211,6 +229,16 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
       const dragged = pendingDrag;
       pendingDrag = null;
       return dragged;
+    },
+    resetAfterRestart() {
+      endDrag();
+      pendingClick = inventoryInspectAfterRestart();
+      pendingDblClick = inventoryInspectAfterRestart();
+      pendingInspect = inventoryInspectAfterRestart();
+      pendingSplit = inventoryInspectAfterRestart();
+      pendingMerge = inventoryInspectAfterRestart();
+      pendingDrag = null;
+      draggedThisGesture = false;
     },
     sync(view) {
       if (!view.open) {
