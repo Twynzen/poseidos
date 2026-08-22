@@ -371,3 +371,44 @@ export function flashlightSpotOriginZAfterRestart(): number {
 export function flashlightSpotVisibleAfterRestart(): boolean {
   return flashlightSpotVisibleFromLook(FLASHLIGHT_SPOT_VISIBLE_SPAWN);
 }
+
+/** Idle spot target X. Ctor torchSpot.target position.x 0 (origin 0 + tip.x yaw 0) = fresco. Mid-life leftover ≠ 0. */
+export const FLASHLIGHT_SPOT_TARGET_X_SPAWN = 0;
+
+/** Idle spot target Z. Ctor torchSpot.target position.z LENGTH (origin 0 + tip.z yaw 0) = fresco. Mid-life leftover ≠ LENGTH. */
+export const FLASHLIGHT_SPOT_TARGET_Z_SPAWN = FLASHLIGHT_CONE_LENGTH;
+
+/**
+ * Target X que lee syncTorchLight (look fresco o vivo).
+ * leftover mid-life / far 40 ≠ fresco (idle 0).
+ */
+export function flashlightSpotTargetXFromLook(x: number): number {
+  return x;
+}
+
+/**
+ * Target Z que lee syncTorchLight (look fresco o vivo).
+ * leftover mid-life / far 30 ≠ fresco (idle LENGTH).
+ */
+export function flashlightSpotTargetZFromLook(z: number): number {
+  return z;
+}
+
+/**
+ * R / softReset: target X fresco (idle 0 = origin 0 + tip.x yaw 0).
+ * WorldView nace torchSpot.target.position.x AfterRestart; leftover mid-life / far no filtra.
+ * syncTorchLight lee flashlightSpotTargetXFromLook.
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function flashlightSpotTargetXAfterRestart(): number {
+  return flashlightSpotTargetXFromLook(FLASHLIGHT_SPOT_TARGET_X_SPAWN);
+}
+
+/**
+ * R / softReset: target Z fresco (idle LENGTH = origin 0 + tip.z yaw 0).
+ * WorldView nace torchSpot.target.position.z AfterRestart; leftover mid-life / far no filtra.
+ * syncTorchLight lee flashlightSpotTargetZFromLook.
+ */
+export function flashlightSpotTargetZAfterRestart(): number {
+  return flashlightSpotTargetZFromLook(FLASHLIGHT_SPOT_TARGET_Z_SPAWN);
+}

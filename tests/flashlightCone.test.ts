@@ -487,13 +487,11 @@ describe("flashlight cone recreate lock (R / softReset)", () => {
       /flashlightConeOffsetZAfterRestart\([\s\S]{0,200}flashlightConeOffsetZFromLook\(/,
     );
     expect(viewSrc).toContain("flashlightConeYawAfterRestart(");
-    expect(viewSrc).toContain("flashlightConeOffsetXAfterRestart(");
-    expect(viewSrc).toContain("flashlightConeOffsetZAfterRestart(");
     expect(viewSrc).toContain("flashlightConeYawFromLook(");
     expect(viewSrc).toContain("flashlightConeOffsetXFromLook(");
     expect(viewSrc).toContain("flashlightConeOffsetZFromLook(");
-    expect(viewSrc).toContain("flashlightConeOffsetXAfterRestart()");
-    expect(viewSrc).toContain("flashlightConeOffsetZAfterRestart()");
+    expect(viewSrc).toContain("flashlightSpotTargetXAfterRestart()");
+    expect(viewSrc).toContain("flashlightSpotTargetZAfterRestart()");
     expect(viewSrc).toContain("flashlightConeYawAfterRestart()");
     expect(viewSrc).toContain("flashlightConeYawFromLook(playerGltfYaw)");
     expect(viewSrc).toContain("flashlightConeOffsetXFromLook(tip.x)");
