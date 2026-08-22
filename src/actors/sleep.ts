@@ -169,3 +169,26 @@ export function trySleep(
     onBed,
   };
 }
+
+/**
+ * HAS MUERTO / F9 load-muerto: Z no aplica (se drena, no duerme).
+ * Vivo (incl. F9 load-vivo): indoor / cama / suelo, igual que hoy.
+ * No cambia reglas de safehouse ni toast; solo gate de input.
+ */
+export function sleepInputApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no llama apply (needs / reloj iguales).
+ * Vivo + wants → apply(). !wants → null.
+ */
+export function applySleepInput<T>(
+  gameOver: boolean,
+  wants: boolean,
+  apply: () => T | null,
+): T | null {
+  if (!sleepInputApplies(gameOver) || !wants) return null;
+  return apply();
+}
