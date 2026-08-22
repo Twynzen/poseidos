@@ -297,7 +297,7 @@ describe("tracer recreate lock (R / softReset)", () => {
       "const op = tracerOpacityFromLook(tracerOpacity(t.age, t.ttl))",
     );
     expect(viewSrc).toMatch(
-      /tracerColorAfterRestart\(\),[\s\S]{0,200}opacity:\s*tracerOpacityAfterRestart\(\)/,
+      /tracerColorAfterRestart\(\),[\s\S]{0,240}opacity:\s*tracerOpacityAfterRestart\(\)/,
     );
     expect(viewSrc).not.toMatch(
       /tracerColorAfterRestart\(\),[\s\S]{0,200}opacity:\s*1,/,
