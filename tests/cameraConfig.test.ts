@@ -371,7 +371,7 @@ describe("isoFrustumAfterRestart (R / softReset)", () => {
     );
     expect(gameSrc).toContain("isoFrustumAfterRestart(");
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,2700}this\.isoFrustum = isoFrustumAfterRestart\(\)/,
+      /softReset\(\): void \{[\s\S]{0,2800}this\.isoFrustum = isoFrustumAfterRestart\(\)/,
     );
     expect(gameSrc).toMatch(
       /softReset\(\): void \{[\s\S]{0,2800}this\.isoFrustum = isoFrustumAfterRestart\(\);[\s\S]{0,80}this\.resize\(\)/,

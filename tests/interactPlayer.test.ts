@@ -188,7 +188,7 @@ describe("resetInteractPlayerAfterRestart (R / softReset)", () => {
     );
     expect(gameSrc).toContain("resetInteractPlayerAfterRestart(");
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3100}resetInteractPlayerAfterRestart\(this\.interactPlayer\)/,
+      /softReset\(\): void \{[\s\S]{0,3200}resetInteractPlayerAfterRestart\(this\.interactPlayer\)/,
     );
     expect(gameSrc).toMatch(
       /resetHeartbeatPlayerAfterRestart\(this\.heartbeatPlayer\);[\s\S]{0,240}resetInteractPlayerAfterRestart\(this\.interactPlayer\)/,

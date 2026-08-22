@@ -1457,11 +1457,7 @@ export function createWorldView(
   // R / dispose: yaw fresco (idle 0); leftover mid-life yaw no filtra.
   flashlightConeWedge.rotation.y = flashlightConeYawAfterRestart();
   // R / dispose: target fresco (idle origin 0 + tip +Z); leftover ctor Three origin 0,0 / mid-life no filtra.
-  torchSpot.target.position.set(
-    flashlightSpotTargetXAfterRestart(),
-    FLASHLIGHT_SPOT_TARGET_Y,
-    flashlightSpotTargetZAfterRestart(),
-  );
+  torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart());
   playerMesh.add(flashlightConeWedge);
 
   function applyMuzzleFlashVisual(out: {
