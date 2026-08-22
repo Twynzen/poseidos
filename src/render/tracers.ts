@@ -142,6 +142,28 @@ export function tracerFlashDecayAfterRestart(): number {
   return tracerFlashDecayFromLook(TRACER_FLASH_DECAY_SPAWN);
 }
 
+/** Idle tracer flash color. Ctor flash.color TRACER_FLASH_COLOR 0xffdd6e = fresco. Mid-life leftover ≠ fresco. */
+export const TRACER_FLASH_COLOR_SPAWN = 0xffdd6e;
+
+/**
+ * Color que leería spawn/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle TRACER_FLASH_COLOR 0xffdd6e).
+ * spawn/tick no escribe color (ctor constant).
+ */
+export function tracerFlashColorFromLook(color: number): number {
+  return color;
+}
+
+/**
+ * R / softReset: color fresco (idle TRACER_FLASH_COLOR 0xffdd6e).
+ * WorldView nace flash.color AfterRestart; leftover mid-life no filtra.
+ * spawn/tick no escribe color (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function tracerFlashColorAfterRestart(): number {
+  return tracerFlashColorFromLook(TRACER_FLASH_COLOR_SPAWN);
+}
+
 /** Longitud del segmento (mínimo epsilon para evitar NaN en escala). */
 export function tracerLength(from: TracerPoint, to: TracerPoint): number {
   return Math.max(0.05, Math.hypot(to.x - from.x, to.y - from.y));

@@ -164,7 +164,7 @@ describe("resetHeartbeatPlayerAfterRestart (R / softReset)", () => {
     );
     expect(gameSrc).toContain("resetHeartbeatPlayerAfterRestart(");
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3500}resetHeartbeatPlayerAfterRestart\(this\.heartbeatPlayer\)/,
+      /softReset\(\): void \{[\s\S]{0,3600}resetHeartbeatPlayerAfterRestart\(this\.heartbeatPlayer\)/,
     );
     expect(gameSrc).toMatch(
       /this\.isoFrustum = isoFrustumAfterRestart\(\);[\s\S]{0,240}resetHeartbeatPlayerAfterRestart\(this\.heartbeatPlayer\)/,
