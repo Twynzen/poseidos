@@ -1577,6 +1577,31 @@ export function floorMetalnessAfterRestart(): number {
   return floorMetalnessFromLook(FLOOR_METALNESS_SPAWN);
 }
 
+/** Emisivo del floor mesh. Ctor floorMat.emissive: 0x000000 = fresco. Mid-life leftover ≠ fresco. */
+export const FLOOR_EMISSIVE = 0x000000;
+
+/** Idle floor mesh emissive. Ctor floorMat.emissive: 0x000000 = fresco. Mid-life leftover ≠ fresco. */
+export const FLOOR_EMISSIVE_SPAWN = 0x000000;
+
+/**
+ * Emisivo que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0x000000).
+ * attach/tick no escriben emissive (ctor constant).
+ */
+export function floorEmissiveFromLook(emissive: number): number {
+  return emissive;
+}
+
+/**
+ * R / softReset: emissive fresco (idle 0x000000).
+ * WorldView nace floorMat.emissive AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben emissive (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function floorEmissiveAfterRestart(): number {
+  return floorEmissiveFromLook(FLOOR_EMISSIVE_SPAWN);
+}
+
 /** Roughness del wall mesh. Ctor wallMat.roughness: 0.85 = fresco. Mid-life leftover ≠ fresco. */
 export const WALL_ROUGHNESS = 0.85;
 
@@ -2160,6 +2185,8 @@ export function createWorldView(
       roughness: floorRoughnessAfterRestart(),
       // R / dispose: metalness fresco (idle); leftover mid-life metalness de la vida anterior no filtra.
       metalness: floorMetalnessAfterRestart(),
+      // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
+      emissive: floorEmissiveAfterRestart(),
     });
     floorMatByColor.set(key, m);
     return m;
