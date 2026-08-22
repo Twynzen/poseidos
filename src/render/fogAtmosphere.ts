@@ -362,6 +362,31 @@ export function fogYAfterRestart(): number {
   return fogYFromLook(FOG_Y_SPAWN);
 }
 
+/** Rot X del fog de tiles fuera de LOS. Ctor fog.rotation.x -Math.PI / 2 = fresco. Mid-life leftover ≠ fresco. */
+export const FOG_ROT_X = -Math.PI / 2;
+
+/** Idle fog mesh rot X. Ctor fog.rotation.x -Math.PI / 2 = fresco. Mid-life leftover ≠ fresco. */
+export const FOG_ROT_X_SPAWN = -Math.PI / 2;
+
+/**
+ * Rot X que leería chunk/FOV (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle -Math.PI / 2).
+ * chunk/FOV no escribe rot (ctor constant).
+ */
+export function fogRotXFromLook(rotX: number): number {
+  return rotX;
+}
+
+/**
+ * R / softReset: rot X fresco (idle -Math.PI / 2).
+ * WorldView nace fog.rotation.x AfterRestart; leftover mid-life no filtra.
+ * chunk/FOV no escribe rot (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function fogRotXAfterRestart(): number {
+  return fogRotXFromLook(FOG_ROT_X_SPAWN);
+}
+
 function clamp01(v: number): number {
   return Math.max(0, Math.min(1, v));
 }
