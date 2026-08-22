@@ -383,6 +383,31 @@ export function markerBadgeRoughnessAfterRestart(): number {
   return markerBadgeRoughnessFromLook(MARKER_BADGE_ROUGHNESS_SPAWN);
 }
 
+/** Metalness del marker-badge mesh. Ctor badgeMat.metalness: 0.1 = fresco. Mid-life leftover ≠ fresco. */
+export const MARKER_BADGE_METALNESS = 0.1;
+
+/** Idle marker-badge mesh metalness. Ctor badgeMat.metalness: 0.1 = fresco. Mid-life leftover ≠ fresco. */
+export const MARKER_BADGE_METALNESS_SPAWN = 0.1;
+
+/**
+ * Metalness que leería attach (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0.1).
+ * attach no escribe metalness (ctor constant).
+ */
+export function markerBadgeMetalnessFromLook(metalness: number): number {
+  return metalness;
+}
+
+/**
+ * R / softReset: metalness fresco (idle 0.1).
+ * WorldView nace badgeMat.metalness AfterRestart; leftover mid-life no filtra.
+ * attach no escribe metalness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function markerBadgeMetalnessAfterRestart(): number {
+  return markerBadgeMetalnessFromLook(MARKER_BADGE_METALNESS_SPAWN);
+}
+
 /** Altura world del floatBadge mute (2.3 × 1.15, misma banda door/bed/loot; queda por encima del Soldier 1.5). */
 export const muteBadgeY = 2.645;
 
