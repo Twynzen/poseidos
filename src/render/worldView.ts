@@ -111,6 +111,7 @@ import {
   noiseRingActiveAfterRestart,
   noiseRingApplies,
   noiseRingCountAfterRestart,
+  noiseRingDepthWriteAfterRestart,
   noiseRingOpacityAfterRestart,
   noiseRingOpacityFromLook,
   noiseRingScaleAfterRestart,
@@ -1972,7 +1973,8 @@ export function createWorldView(
       transparent: noiseRingTransparentAfterRestart(),
       // R / dispose: opacity fresco (idle 0); leftover mid-life no filtra.
       opacity: noiseRingOpacityAfterRestart(),
-      depthWrite: false,
+      // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
+      depthWrite: noiseRingDepthWriteAfterRestart(),
       side: THREE.DoubleSide,
     });
     const mesh = new THREE.Mesh(noiseRingGeo, mat);
