@@ -253,9 +253,12 @@ import {
   doorBadgeLabel,
   doorBadgeLetterScale,
   doorBadgeY,
-  doorFocusMul,
-  doorRingVisible,
-  DOOR_FOCUS_REACH,
+  doorFocusDistFromLook,
+  doorFocusElapsedAfterRestart,
+  doorFocusLookXAfterRestart,
+  doorFocusLookZAfterRestart,
+  doorFocusMulFromLook,
+  doorRingVisibleFromLook,
 } from "./doorFocus";
 import {
   bedBadgeDiscScale,
@@ -1110,7 +1113,8 @@ export function createWorldView(
     y: number;
   }
   const doorMarkerGroups: DoorMarkerEntry[] = [];
-  let doorFocusElapsed = 0;
+  // R / dispose: elapsed fresco (0); leftover mid-pulse de la vida anterior no filtra.
+  let doorFocusElapsed = doorFocusElapsedAfterRestart();
   map.forEach((tx, ty, tile) => {
     if (tile.kind !== "door") return;
     const group = new THREE.Group();
@@ -1122,6 +1126,40 @@ export function createWorldView(
     scene.add(group);
     doorMarkerGroups.push({ group, x, y });
   });
+
+  function applyDoorFocusLook(
+    wx: number,
+    wy: number,
+    elapsed: number,
+    gameOver = false,
+  ): void {
+    let best = -1;
+    let bestD = Infinity;
+    for (let i = 0; i < doorMarkerGroups.length; i++) {
+      const e = doorMarkerGroups[i]!;
+      const d = doorFocusDistFromLook(wx, wy, e.x, e.y);
+      const open = map.get(Math.floor(e.x), Math.floor(e.y))?.open ?? false;
+      const vis = doorRingVisibleFromLook(open, d, gameOver);
+      setInteractRingVisible(e.group, vis);
+      if (vis && d < bestD) {
+        bestD = d;
+        best = i;
+      }
+    }
+    for (let i = 0; i < doorMarkerGroups.length; i++) {
+      const e = doorMarkerGroups[i]!;
+      const mul =
+        i === best ? doorFocusMulFromLook(bestD, elapsed, gameOver) : 1;
+      e.group.scale.setScalar(mul);
+    }
+  }
+
+  // R / dispose: look fresco (spawn); leftover Three ring visible / dist 0 no filtra.
+  applyDoorFocusLook(
+    doorFocusLookXAfterRestart(),
+    doorFocusLookZAfterRestart(),
+    doorFocusElapsed,
+  );
 
   // Bed: anillo/badge púrpura sleep por tile cama. Anillo solo en reach (no FOV).
   // Neighborhood: (6,6) y (24,22).
@@ -1983,25 +2021,7 @@ export function createWorldView(
     syncDoorFocus(wx, wy, dt, gameOver = false) {
       const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
       doorFocusElapsed += safeDt;
-      let best = -1;
-      let bestD = Infinity;
-      for (let i = 0; i < doorMarkerGroups.length; i++) {
-        const e = doorMarkerGroups[i]!;
-        const d = Math.hypot(wx - e.x, wy - e.y);
-        const open = map.get(Math.floor(e.x), Math.floor(e.y))?.open ?? false;
-        const vis = doorRingVisible(open, d, DOOR_FOCUS_REACH, gameOver);
-        setInteractRingVisible(e.group, vis);
-        if (vis && d < bestD) {
-          bestD = d;
-          best = i;
-        }
-      }
-      for (let i = 0; i < doorMarkerGroups.length; i++) {
-        const e = doorMarkerGroups[i]!;
-        const mul =
-          i === best ? doorFocusMul(bestD, doorFocusElapsed, gameOver) : 1;
-        e.group.scale.setScalar(mul);
-      }
+      applyDoorFocusLook(wx, wy, doorFocusElapsed, gameOver);
     },
     syncBedFocus(wx, wy, dt, gameOver = false) {
       const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
