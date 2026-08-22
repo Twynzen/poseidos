@@ -365,6 +365,7 @@ import {
   lootNameplateLookZAfterRestart,
   lootNameplateOpacityFromLook,
   lootNameplateScaleFromLook,
+  lootNameplateColorAfterRestart,
   lootNameplateDepthWriteAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
@@ -1132,6 +1133,8 @@ export function createWorldView(
     map.needsUpdate = true;
     const mat = new THREE.SpriteMaterial({
       map,
+      // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
+      color: lootNameplateColorAfterRestart(),
       // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
       transparent: lootNameplateTransparentAfterRestart(),
       // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
