@@ -513,6 +513,40 @@ describe("hotbar slot icon CSS", () => {
   });
 });
 
+describe("createHotbarHud hide (HAS MUERTO)", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  test("hide oculta #hotbar; ya oculto no-op; vivo vuelve a pintar", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+    const bar = root.querySelector<HTMLElement>("#hotbar");
+    expect(bar).toBeTruthy();
+    expect(bar!.hidden).toBe(false);
+    expect(root.querySelectorAll(".hotbar-slot")).toHaveLength(5);
+    expect(slotAt(root, 0).getAttribute("aria-label")).toMatch(
+      /botella|pistola|vacío/i,
+    );
+
+    hud.hide();
+    expect(bar!.hidden).toBe(true);
+
+    hud.hide();
+    expect(bar!.hidden).toBe(true);
+    expect(root.querySelectorAll(".hotbar-slot")).toHaveLength(5);
+
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+    expect(bar!.hidden).toBe(false);
+    expect(root.querySelectorAll(".hotbar-slot")).toHaveLength(5);
+    hud.dispose();
+  });
+});
+
 describe("hotbar selected CSS", () => {
   test(".hotbar-selected gold matches .inv-slot-selected; key #e8c36a", () => {
     const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");

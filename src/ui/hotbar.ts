@@ -109,11 +109,24 @@ export function stepHotbarIndex(current: number, delta: number): number {
 /**
  * HAS MUERTO / F9 load-muerto: 1–5 / rueda / clic / swap no aplican.
  * Vivo (incl. F9 load-vivo): igual que hoy.
- * No esconde la hotbar; solo gate de input.
+ * Solo gate de input; la pintura la decide `hotbarHudVisible`.
  */
 export function hotbarInputApplies(gameOver: boolean): boolean {
   if (gameOver) return false;
   return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no pintar #hotbar junto a HAS MUERTO.
+ * Vivo (incl. F9 load-vivo): showing igual que hoy.
+ * Ya oculto (showing false) = hidden; gameOver no inventa slots.
+ */
+export function hotbarHudVisible(
+  gameOver: boolean,
+  showing: boolean,
+): boolean {
+  if (gameOver) return false;
+  return showing;
 }
 
 /**

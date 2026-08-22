@@ -119,6 +119,7 @@ import {
   clampHotbarIndex,
   stepHotbarIndex,
   hotbarInputApplies,
+  hotbarHudVisible,
   nextHotbarSelected,
   swapHotbarStacks,
   formatHudStatus,
@@ -548,6 +549,7 @@ export class Game {
     this.syncLootFloaterOverlay();
     this.syncInventoryPanel();
     this.syncMoodlesHud();
+    this.syncHotbarHud();
     this.syncHelpHud();
     // Load-muerto: apagar pulso leftover (load-vivo espera el tick, igual que hoy).
     if (this.gameOver) this.syncInteractFocus();
@@ -894,6 +896,7 @@ export class Game {
     this.syncLootFloaterOverlay();
     this.syncInventoryPanel();
     this.syncMoodlesHud();
+    this.syncHotbarHud();
     this.syncHelpHud();
     this.syncInteractFocus();
     this.applyFov();
@@ -1837,6 +1840,15 @@ export class Game {
     this.moodlesHud.sync(this.buildPlayerHudMoodles());
   }
 
+  /** Overlay `#hotbar`: hide si gameOver (no tapa HAS MUERTO). */
+  private syncHotbarHud(): void {
+    if (!hotbarHudVisible(this.gameOver, true)) {
+      this.hotbarHud.hide();
+      return;
+    }
+    this.hotbarHud.sync(hotbarSlots(this.player.inventory), this.hotbarSelected);
+  }
+
   /** Clase `#hud.hud-help`: drop si gameOver (no tapa HAS MUERTO). */
   private syncHelpHud(): void {
     if (!this.hud) return;
@@ -1931,7 +1943,7 @@ export class Game {
         helpHudVisible(this.gameOver, this.showHelp),
       );
       this.syncMoodlesHud();
-      this.hotbarHud.sync(hotbarSlots(this.player.inventory), this.hotbarSelected);
+      this.syncHotbarHud();
       this.syncInventoryPanel();
       return;
     }
@@ -1981,7 +1993,7 @@ export class Game {
     const lastRejected = this.hudLastRejected();
     const lineSource = this.hudLineSource();
     this.syncMoodlesHud();
-    this.hotbarHud.sync(hotbarSlots(this.player.inventory), this.hotbarSelected);
+    this.syncHotbarHud();
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
     const safe =
       indoor && isSafehouseHint(this.map, this.player.x, this.player.y);

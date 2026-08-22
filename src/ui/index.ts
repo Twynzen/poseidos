@@ -27,6 +27,7 @@ export {
   clampHotbarIndex,
   stepHotbarIndex,
   hotbarInputApplies,
+  hotbarHudVisible,
   nextHotbarSelected,
   swapHotbarStacks,
   hotbarSlots,
