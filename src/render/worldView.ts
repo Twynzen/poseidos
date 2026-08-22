@@ -832,6 +832,31 @@ export function hostileEmissiveAfterRestart(): number {
   return hostileEmissiveFromLook(HOSTILE_EMISSIVE_SPAWN);
 }
 
+/** Intensidad del hostile mesh. Ctor hostileMat.emissiveIntensity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const HOSTILE_EMISSIVE_INTENSITY = 1;
+
+/** Idle hostile mesh emissiveIntensity. Ctor hostileMat.emissiveIntensity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const HOSTILE_EMISSIVE_INTENSITY_SPAWN = 1;
+
+/**
+ * Intensidad que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ */
+export function hostileEmissiveIntensityFromLook(intensity: number): number {
+  return intensity;
+}
+
+/**
+ * R / softReset: intensity fresco (idle 1).
+ * WorldView nace hostileMat.emissiveIntensity AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function hostileEmissiveIntensityAfterRestart(): number {
+  return hostileEmissiveIntensityFromLook(HOSTILE_EMISSIVE_INTENSITY_SPAWN);
+}
+
 /** Poseído: púrpura enfermo. 0x5a2d6b × 1.15/canal para leerse de noche. */
 export const POSSESSED_COLOR = 0x68347b;
 
@@ -3250,6 +3275,8 @@ export function createWorldView(
     metalness: hostileMetalnessAfterRestart(),
     // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
     emissive: hostileEmissiveAfterRestart(),
+    // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
+    emissiveIntensity: hostileEmissiveIntensityAfterRestart(),
   });
   const possessedMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
