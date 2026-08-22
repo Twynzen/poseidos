@@ -455,6 +455,27 @@ export function flashlightSpotTargetZAfterRestart(): number {
   return flashlightSpotTargetZFromLook(FLASHLIGHT_SPOT_TARGET_Z_SPAWN);
 }
 
+/** Idle spot distance. Ctor torchSpot.distance LENGTH+2.4 leftover vs idle LENGTH+EXTRA 8.227675. Mid-life leftover ≠ 8.227675. */
+export const FLASHLIGHT_SPOT_DISTANCE_SPAWN = 8.227675;
+
+/**
+ * Distance que lee syncTorchLight (look fresco o vivo).
+ * leftover mid-life / ctor LENGTH+2.4 ≠ fresco (idle LENGTH+EXTRA 8.227675).
+ */
+export function flashlightSpotDistanceFromLook(distance: number): number {
+  return distance;
+}
+
+/**
+ * R / softReset: distance fresco (idle LENGTH+EXTRA 8.227675 / intensity-0).
+ * WorldView nace torchSpot.distance AfterRestart; leftover ctor LENGTH+2.4 / mid-life no filtra.
+ * syncTorchLight lee flashlightSpotDistanceFromLook.
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function flashlightSpotDistanceAfterRestart(): number {
+  return flashlightSpotDistanceFromLook(FLASHLIGHT_SPOT_DISTANCE_SPAWN);
+}
+
 /** Idle cone visible. Ctor flashlightConeWedge.visible false = fresco. Vivo on ≠ boot. */
 export const FLASHLIGHT_CONE_VISIBLE_SPAWN = false;
 
