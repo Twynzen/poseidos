@@ -2,6 +2,7 @@ import { Game } from "./core/game";
 import {
   createLoadingOverlay,
   createLoadingProgress,
+  dismissBootSplash,
 } from "./ui";
 
 const root = document.querySelector("#app");
@@ -35,8 +36,7 @@ function finishLoading(): void {
   finished = true;
   window.removeEventListener("keydown", onKeySkip);
   overlayEl?.removeEventListener("click", onClickSkip);
-  overlay.dismiss();
-  overlay.dispose();
+  dismissBootSplash(overlay);
   // Loop solo tras dismiss: gracia/needs no corren bajo el modal;
   // Game.start limpia edges (Espacio skip ≠ melee).
   game.start();

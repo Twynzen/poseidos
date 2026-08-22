@@ -63,11 +63,15 @@ export {
 export {
   LOADING_LINES,
   createLoadingProgress,
+  loadingLineAfterRestart,
   type LoadingProgress,
 } from "./loadingScreen";
 
 export {
   createLoadingOverlay,
+  dismissBootSplash,
+  loadingOverlayVisibleAfterRestart,
+  bootSkipSpaceRestarts,
   type LoadingOverlay,
 } from "./loadingOverlay";
 
