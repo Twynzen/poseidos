@@ -7,7 +7,12 @@ import { resolve } from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
 import { createInventory, createStarterInventory } from "../src/items";
 import { hotbarSlots } from "../src/ui/hotbar";
-import { createHotbarHud } from "../src/ui/hotbarHud";
+import {
+  createHotbarHud,
+  hotbarHudDraggingAfterRestart,
+  hotbarInspectAfterRestart,
+  resetHotbarHudAfterRestart,
+} from "../src/ui/hotbarHud";
 
 function slotAt(root: HTMLElement, index: number): HTMLElement {
   const slot = root.querySelectorAll<HTMLElement>(".hotbar-slot")[index];
@@ -510,6 +515,109 @@ describe("hotbar slot icon CSS", () => {
     const html = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
     expect(html).toMatch(/\.hotbar-slot-icon\s*\{[^}]*width:\s*40px;\s*height:\s*40px/s);
     expect(html).toMatch(/\.hotbar-slot-icon svg\s*\{\s*width:\s*40px;\s*height:\s*40px;/);
+  });
+});
+
+describe("resetHotbarHudAfterRestart (R / softReset)", () => {
+  let root: HTMLElement;
+
+  afterEach(() => {
+    root?.remove();
+  });
+
+  test("reinicio → inspect null + sin dragging; leftover no filtra", () => {
+    expect(hotbarInspectAfterRestart()).toBeNull();
+    expect(hotbarHudDraggingAfterRestart()).toBe(false);
+
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    pointerOnSlot(root, 2, "pointerdown");
+    expect(slotAt(root, 2).classList.contains("hotbar-dragging")).toBe(true);
+    expect(hotbarHudDraggingAfterRestart()).toBe(false);
+
+    contextmenuSlot(root, 3);
+    expect(hud.consumeInspect()).not.toBe(hotbarInspectAfterRestart());
+
+    pointerOnSlot(root, 1, "pointerdown");
+    contextmenuSlot(root, 4);
+    expect(slotAt(root, 1).classList.contains("hotbar-dragging")).toBe(true);
+    resetHotbarHudAfterRestart(hud);
+    expect(hud.consumeInspect()).toBe(hotbarInspectAfterRestart());
+    expect(hud.consumeClick()).toBeNull();
+    expect(hud.consumeDrag()).toBeNull();
+    expect(hud.consumeDblClick()).toBeNull();
+    expect(hud.consumeSplit()).toBeNull();
+    expect(hud.consumeMerge()).toBeNull();
+    expect(slotAt(root, 1).classList.contains("hotbar-dragging")).toBe(
+      hotbarHudDraggingAfterRestart(),
+    );
+    expect(slotAt(root, 1).style.cursor).toBe("grab");
+    hud.dispose();
+  });
+
+  test("vivo consume no usa el helper (inspect/drag igual que hoy)", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    contextmenuSlot(root, 2);
+    expect(hud.consumeInspect()).toBe(2);
+    expect(2).not.toBe(hotbarInspectAfterRestart());
+    expect(hud.consumeInspect()).toBe(hotbarInspectAfterRestart());
+
+    pointerOnSlot(root, 0, "pointerdown");
+    pointerOnSlot(root, 3, "pointerup");
+    expect(hud.consumeDrag()).toEqual({ from: 0, to: 3 });
+    hud.dispose();
+  });
+
+  test("hide no resetea pending (death paint); F9 no usa helper", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+    contextmenuSlot(root, 3);
+    hud.hide();
+    expect(hud.consumeInspect()).toBe(3);
+    expect(3).not.toBe(hotbarInspectAfterRestart());
+    hud.dispose();
+
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("resetHotbarHudAfterRestart(");
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}resetHotbarHudAfterRestart\(this\.hotbarHud\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.hotbarSelected = hotbarSelectedAfterRestart\(\);[\s\S]{0,240}resetHotbarHudAfterRestart\(this\.hotbarHud\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}resetHotbarHudAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2000}resetHotbarHudAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}resetHotbarHudAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}resetHotbarHudAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
   });
 });
 

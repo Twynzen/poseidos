@@ -30,7 +30,30 @@ export interface HotbarHud {
   consumeInspect(): number | null;
   consumeSplit(): number | null;
   consumeMerge(): number | null;
+  /**
+   * R / softReset: corta drag + pending leftover (inspect/click/split).
+   * F9 no. hide() no lo llama (death paint se queda).
+   */
+  resetAfterRestart(): void;
   dispose(): void;
+}
+
+/** R / softReset: pending inspect del ctor (null). F9 no. */
+export function hotbarInspectAfterRestart(): number | null {
+  return null;
+}
+
+/** R / softReset: sin clase `hotbar-dragging`. F9 no. */
+export function hotbarHudDraggingAfterRestart(): boolean {
+  return false;
+}
+
+/**
+ * R / softReset: corta drag/pending leftover. Live tick / hide / F9 no.
+ * Game.hotbarHud debe coincidir (inspect/drag de la vida anterior no filtra).
+ */
+export function resetHotbarHudAfterRestart(hud: HotbarHud): void {
+  hud.resetAfterRestart();
 }
 
 export function createHotbarHud(root: HTMLElement): HotbarHud {
@@ -177,6 +200,16 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
       const merge = pendingMerge;
       pendingMerge = null;
       return merge;
+    },
+    resetAfterRestart() {
+      endDrag();
+      pendingClick = hotbarInspectAfterRestart();
+      pendingDblClick = hotbarInspectAfterRestart();
+      pendingDrag = null;
+      pendingInspect = hotbarInspectAfterRestart();
+      pendingSplit = hotbarInspectAfterRestart();
+      pendingMerge = hotbarInspectAfterRestart();
+      ignoreClick = false;
     },
     hide() {
       if (bar.hidden) return;

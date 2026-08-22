@@ -42,6 +42,9 @@ export {
 
 export {
   createHotbarHud,
+  resetHotbarHudAfterRestart,
+  hotbarInspectAfterRestart,
+  hotbarHudDraggingAfterRestart,
   type HotbarHud,
 } from "./hotbarHud";
 
@@ -51,6 +54,8 @@ export {
   inventoryToggleApplies,
   applyInventoryToggle,
   nextShowInvDetail,
+  resetInventoryPanelAfterRestart,
+  inventoryInspectAfterRestart,
   type InventoryPanel,
   type InventoryPanelView,
 } from "./inventory";
