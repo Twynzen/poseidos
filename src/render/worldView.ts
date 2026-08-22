@@ -159,7 +159,16 @@ import {
   IMPACT_SPARK_LIGHT_PEAK,
   IMPACT_SPARK_RADIUS,
   createImpactSpark,
+  impactSparkActiveAfterRestart,
+  impactSparkActiveFromLook,
   impactSparkApplies,
+  impactSparkIntensityAfterRestart,
+  impactSparkIntensityFromLook,
+  impactSparkPosXAfterRestart,
+  impactSparkPosXFromLook,
+  impactSparkPosYAfterRestart,
+  impactSparkPosZAfterRestart,
+  impactSparkPosZFromLook,
   tickImpactSpark as stepImpactSpark,
   triggerImpactSpark as startImpactSpark,
 } from "./impactSpark";
@@ -1397,19 +1406,32 @@ export function createWorldView(
   const impactMat = new THREE.MeshBasicMaterial({
     color: IMPACT_SPARK_COLOR,
     transparent: true,
-    opacity: 1,
+    // R / dispose: opacity fresco (inactive); leftover ctor Three 1 no filtra.
+    opacity: impactSparkIntensityAfterRestart(),
     depthWrite: false,
     blending: THREE.AdditiveBlending,
   });
   const impactMesh = new THREE.Mesh(impactGeo, impactMat);
-  impactMesh.visible = false;
+  // R / dispose: hidden fresco; leftover mid-spark visible no filtra.
+  impactMesh.visible = impactSparkActiveAfterRestart();
   const impactLight = new THREE.PointLight(
     IMPACT_SPARK_LIGHT_COLOR,
     0,
     IMPACT_SPARK_LIGHT_DISTANCE,
     IMPACT_SPARK_LIGHT_DECAY,
   );
-  impactLight.visible = false;
+  impactLight.visible = impactSparkActiveAfterRestart();
+  // R / dispose: pos fresco (idle 0 + TRACER_HEIGHT); leftover ctor origin 0,0 no filtra.
+  impactMesh.position.set(
+    impactSparkPosXAfterRestart(),
+    impactSparkPosYAfterRestart(),
+    impactSparkPosZAfterRestart(),
+  );
+  impactLight.position.set(
+    impactSparkPosXAfterRestart(),
+    impactSparkPosYAfterRestart(),
+    impactSparkPosZAfterRestart(),
+  );
   scene.add(impactMesh, impactLight);
 
   function applyImpactSparkVisual(out: {
@@ -1418,11 +1440,13 @@ export function createWorldView(
     x: number;
     y: number;
   }): void {
-    impactMesh.position.set(out.x, TRACER_HEIGHT, out.y);
-    impactLight.position.set(out.x, TRACER_HEIGHT, out.y);
-    impactMesh.visible = out.active;
-    impactLight.visible = out.active;
-    impactMat.opacity = out.intensity;
+    const ox = impactSparkPosXFromLook(out.x);
+    const oz = impactSparkPosZFromLook(out.y);
+    impactMesh.position.set(ox, TRACER_HEIGHT, oz);
+    impactLight.position.set(ox, TRACER_HEIGHT, oz);
+    impactMesh.visible = impactSparkActiveFromLook(out.active);
+    impactLight.visible = impactSparkActiveFromLook(out.active);
+    impactMat.opacity = impactSparkIntensityFromLook(out.intensity);
     impactLight.intensity = out.active
       ? IMPACT_SPARK_LIGHT_PEAK * out.intensity
       : 0;
@@ -1431,8 +1455,8 @@ export function createWorldView(
   function tickImpact(dt: number, gameOver = false): void {
     if (!impactSparkApplies(gameOver)) {
       applyImpactSparkVisual({
-        intensity: 0,
-        active: false,
+        intensity: impactSparkIntensityFromLook(0),
+        active: impactSparkActiveFromLook(false),
         x: impactSpark.x,
         y: impactSpark.y,
       });
@@ -1443,12 +1467,20 @@ export function createWorldView(
 
   function hideImpact(): void {
     applyImpactSparkVisual({
-      intensity: 0,
-      active: false,
+      intensity: impactSparkIntensityFromLook(0),
+      active: impactSparkActiveFromLook(false),
       x: impactSpark.x,
       y: impactSpark.y,
     });
   }
+
+  // R / dispose: look fresco (inactive + pos idle); leftover ctor Three opacity 1 / origin 0,0 no filtra.
+  applyImpactSparkVisual({
+    intensity: impactSparkIntensityAfterRestart(),
+    active: impactSparkActiveAfterRestart(),
+    x: impactSparkPosXAfterRestart(),
+    y: impactSparkPosZAfterRestart(),
+  });
 
   function applySwingOverlayPose(swing: MeleeSwingOutput): void {
     const pose = hitLeanOut.active ? hitLeanOut : swing;

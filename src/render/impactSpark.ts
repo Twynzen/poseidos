@@ -5,6 +5,8 @@
  * worldView aplica intensidad a esfera aditiva + PointLight en (x, y).
  */
 
+import { TRACER_HEIGHT } from "./tracers";
+
 /** Duración del spark (s). 0.22 × 1.15 para leer de noche. */
 export const IMPACT_SPARK_DURATION = 0.253;
 /** Intensidad pico (u=0). 1 × 1.15 para leer de noche. Opacity del mesh = intensity. */
@@ -35,6 +37,104 @@ export interface ImpactSparkOutput {
 
 export function createImpactSpark(): ImpactSparkState {
   return { age: 0, active: false, x: 0, y: 0 };
+}
+
+/** Idle spark world X. createImpactSpark x=0. Three default origin leftover. */
+export const IMPACT_SPARK_POS_X_SPAWN = 0;
+/** Idle spark Three Y = TRACER_HEIGHT. Three default 0 = leftover. */
+export const IMPACT_SPARK_POS_Y_SPAWN = TRACER_HEIGHT;
+/** Idle spark world Y → Three Z. createImpactSpark y=0. Three default origin leftover. */
+export const IMPACT_SPARK_POS_Z_SPAWN = 0;
+
+/**
+ * Intensity/opacity que lee applyImpactSparkVisual (look fresco o vivo).
+ * leftover ctor Three opacity 1 / mid-spark ≠ fresco (inactive 0).
+ */
+export function impactSparkIntensityFromLook(intensity: number): number {
+  return intensity;
+}
+
+/**
+ * Active/visible que lee applyImpactSparkVisual (look fresco o vivo).
+ * leftover mid-spark active ≠ fresco (inactive).
+ */
+export function impactSparkActiveFromLook(active: boolean): boolean {
+  return active;
+}
+
+/**
+ * Pos X mundo que lee applyImpactSparkVisual (ox fresco o vivo).
+ * leftover ctor origin 0 / far ≠ pos fresco (idle 0).
+ */
+export function impactSparkPosXFromLook(ox: number): number {
+  return ox;
+}
+
+/**
+ * Pos Y Three que lee applyImpactSparkVisual (TRACER_HEIGHT fresco o vivo).
+ * leftover ctor origin 0 ≠ pos fresco (TRACER_HEIGHT).
+ */
+export function impactSparkPosYFromLook(oy: number): number {
+  return oy;
+}
+
+/**
+ * Pos Z Three (mapa y) que lee applyImpactSparkVisual (oz fresco o vivo).
+ * leftover ctor origin 0 / far ≠ pos fresco (idle 0).
+ */
+export function impactSparkPosZFromLook(oz: number): number {
+  return oz;
+}
+
+/**
+ * R / softReset: intensity fresco (inactive 0).
+ * WorldView nace opacity/apply AfterRestart; leftover ctor Three 1 no filtra.
+ * apply/tick lee impactSparkIntensityFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function impactSparkIntensityAfterRestart(): number {
+  return impactSparkIntensityFromLook(0);
+}
+
+/**
+ * R / softReset: active fresco (false).
+ * WorldView nace visible/apply AfterRestart; leftover mid-spark no filtra.
+ */
+export function impactSparkActiveAfterRestart(): boolean {
+  return impactSparkActiveFromLook(false);
+}
+
+/**
+ * R / softReset: pos X fresco (idle 0).
+ * WorldView nace `impactMesh.position.set(impactSparkPosXAfterRestart(), …)`;
+ * leftover ctor origin 0,0 no filtra.
+ * apply lee impactSparkPosXFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function impactSparkPosXAfterRestart(
+  ox = IMPACT_SPARK_POS_X_SPAWN,
+): number {
+  return impactSparkPosXFromLook(ox);
+}
+
+/**
+ * R / softReset: pos Y fresco (TRACER_HEIGHT).
+ * WorldView nace `impactMesh.position.set(…, impactSparkPosYAfterRestart(), …)`;
+ * leftover ctor origin 0 no filtra.
+ */
+export function impactSparkPosYAfterRestart(
+  oy = IMPACT_SPARK_POS_Y_SPAWN,
+): number {
+  return impactSparkPosYFromLook(oy);
+}
+
+/**
+ * R / softReset: pos Z fresco (idle 0).
+ * WorldView nace `impactMesh.position.set(…, impactSparkPosZAfterRestart())`;
+ * leftover ctor origin 0 no filtra.
+ */
+export function impactSparkPosZAfterRestart(
+  oz = IMPACT_SPARK_POS_Z_SPAWN,
+): number {
+  return impactSparkPosZFromLook(oz);
 }
 
 /**
