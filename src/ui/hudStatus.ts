@@ -295,7 +295,7 @@ export function nextShowHelp(
 /**
  * R / softReset: cadence HUD del ctor (`hudAcc` 0).
  * Game.hudAcc debe coincidir (leftover 1 de HAS MUERTO no filtra el primer tick vivo).
- * F9 load no usa esto — misma carrera; freeze / enterGameOver siguen `hudAcc = 1`.
+ * F9 load no usa esto — misma carrera. enterGameOver / freeze death siguen `hudAcc = 1`.
  */
 export function hudAccAfterRestart(): number {
   return 0;

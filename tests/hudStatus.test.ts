@@ -1115,7 +1115,7 @@ describe("hudAccAfterRestart (R / softReset)", () => {
     expect(1).not.toBe(hudAccAfterRestart());
   });
 
-  test("Game softReset usa helper tras refreshHud; F9 no; freeze/enterGameOver siguen 1", () => {
+  test("Game softReset usa helper tras refreshHud; freeze R no pisa 1; F9/enterGameOver siguen 1", () => {
     const gameSrc = readFileSync(
       resolve(process.cwd(), "src/core/game.ts"),
       "utf8",
@@ -1147,6 +1147,9 @@ describe("hudAccAfterRestart (R / softReset)", () => {
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}hudAccAfterRestart/,
     );
     expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
       /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
     );
     expect(gameSrc).toMatch(
