@@ -130,7 +130,7 @@ describe("constantes", () => {
       resolve(process.cwd(), "src/render/worldView.ts"),
       "utf8",
     );
-    expect(viewSrc).toContain("color: FLASHLIGHT_WEDGE_COLOR");
+    expect(viewSrc).toContain("color: flashlightConeColorAfterRestart()");
   });
 
   test("spot color 0xf8ffff (0xd8eeff × 1.15, g/b clamp); wedge/length/half-width/Y/opacities/spot/fill/penumbra sin cambio (no double-apply)", () => {
