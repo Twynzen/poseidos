@@ -3951,7 +3951,8 @@ describe("worldView tracer flash Y offset", () => {
     expect(src).toContain("torchSpot.position.set(flashlightSpotOriginXAfterRestart(), FLASHLIGHT_SPOT_Y, flashlightSpotOriginZAfterRestart())");
     expect(src).toContain("torchSpot.position.set(flashlightSpotOriginXFromLook(wx), FLASHLIGHT_SPOT_Y, flashlightSpotOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
@@ -4060,7 +4061,8 @@ describe("worldView flashlight spot target Y", () => {
       "utf8",
     );
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const MUZZLE_FORWARD = 0.552");
@@ -4269,7 +4271,8 @@ describe("worldView muzzle forward", () => {
     expect(src).not.toMatch(/export const CHEVRON_Y = 0\.12/);
     expect(src).not.toMatch(/chevronMesh\.position\.set\(x, 0\.12, z\)/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -4477,7 +4480,8 @@ describe("worldView facing chevron Y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -4820,7 +4824,8 @@ describe("worldView facing chevron tilt", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -5161,7 +5166,8 @@ describe("worldView noise ring Y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -5502,7 +5508,8 @@ describe("worldView marker ring Y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -5843,7 +5850,8 @@ describe("worldView marker icon Y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -6184,7 +6192,8 @@ describe("worldView marker icon size", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -6525,7 +6534,8 @@ describe("worldView marker badge radius", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -6866,7 +6876,8 @@ describe("worldView marker badge tilt", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -7207,7 +7218,8 @@ describe("worldView player body base Y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -7548,7 +7560,8 @@ describe("worldView player head base Y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -7889,7 +7902,8 @@ describe("worldView hostile body base Y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -8230,7 +8244,8 @@ describe("worldView hostile head base Y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -8571,7 +8586,8 @@ describe("worldView hostile mute XZ scale", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -8912,7 +8928,8 @@ describe("worldView hostile body width", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -9273,7 +9290,8 @@ describe("worldView hostile body height", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -9634,7 +9652,8 @@ describe("worldView hostile body depth", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -9990,7 +10009,8 @@ describe("worldView hostile head size", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -10354,7 +10374,8 @@ describe("worldView player head size", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -10712,7 +10733,8 @@ describe("worldView player body width", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -11070,7 +11092,8 @@ describe("worldView player body height", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -11428,7 +11451,8 @@ describe("worldView player body depth", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -11797,7 +11821,8 @@ describe("worldView wall height", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -12172,7 +12197,8 @@ describe("worldView wall base Y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -12562,7 +12588,8 @@ describe("worldView door height", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -12964,7 +12991,8 @@ describe("worldView door base Y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -13373,7 +13401,8 @@ describe("worldView door depth", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -13792,7 +13821,8 @@ describe("worldView bed height", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -14217,7 +14247,8 @@ describe("worldView bed base Y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -14649,7 +14680,8 @@ describe("worldView bed depth", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -15091,7 +15123,8 @@ describe("worldView furniture height", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -15539,7 +15572,8 @@ describe("worldView furniture xz", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -15993,7 +16027,8 @@ describe("worldView furniture base y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -16466,7 +16501,8 @@ describe("worldView barricade height", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -16941,7 +16977,8 @@ describe("worldView barricade width", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -17451,7 +17488,8 @@ describe("worldView barricade depth", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -17963,7 +18001,8 @@ describe("worldView barricade plank y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -18477,7 +18516,8 @@ describe("worldView barricade cross y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -18993,7 +19033,8 @@ describe("worldView barricade cross scale y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -19511,7 +19552,8 @@ describe("worldView barricade cross scale x", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -20031,7 +20073,8 @@ describe("worldView barricade cross scale z", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -20553,7 +20596,8 @@ describe("worldView door open x", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -21077,7 +21121,8 @@ describe("worldView barricade plank rot y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");
@@ -21603,7 +21648,8 @@ describe("worldView barricade cross rot y", () => {
     expect(src).not.toMatch(/const MUZZLE_FORWARD = 0\.48/);
     expect(src).not.toMatch(/export const MUZZLE_FORWARD = 0\.48/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_TARGET_Y = 0.138");
-    expect(src).toContain("torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z)");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart())");
+    expect(src).toContain("torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z))");
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const TRACER_FLASH_Y_OFFSET = 0.1725");

@@ -35,9 +35,7 @@ import {
   FLASHLIGHT_SPOT_PENUMBRA,
   FLASHLIGHT_WEDGE_COLOR,
   FLASHLIGHT_WEDGE_OPACITY_BASE,
-  flashlightConeOffsetXAfterRestart,
   flashlightConeOffsetXFromLook,
-  flashlightConeOffsetZAfterRestart,
   flashlightConeOffsetZFromLook,
   flashlightConeTip,
   flashlightConeVisible,
@@ -55,6 +53,10 @@ import {
   flashlightSpotOriginZFromLook,
   flashlightSpotVisibleAfterRestart,
   flashlightSpotVisibleFromLook,
+  flashlightSpotTargetXAfterRestart,
+  flashlightSpotTargetXFromLook,
+  flashlightSpotTargetZAfterRestart,
+  flashlightSpotTargetZFromLook,
   flashlightSpotAngle,
   flashlightWedgeOpacity,
   flashlightWedgeVertexColors,
@@ -1454,12 +1456,8 @@ export function createWorldView(
   flashlightConeWedge.position.set(0, FLASHLIGHT_CONE_Y, 0);
   // R / dispose: yaw fresco (idle 0); leftover mid-life yaw no filtra.
   flashlightConeWedge.rotation.y = flashlightConeYawAfterRestart();
-  // R / dispose: tip fresco (yaw 0 → +Z); leftover ctor target origin 0,0 / mid-life no filtra.
-  torchSpot.target.position.set(
-    flashlightConeOffsetXAfterRestart(),
-    FLASHLIGHT_SPOT_TARGET_Y,
-    flashlightConeOffsetZAfterRestart(),
-  );
+  // R / dispose: target fresco (idle origin 0 + tip +Z); leftover ctor Three origin 0,0 / mid-life no filtra.
+  torchSpot.target.position.set(flashlightSpotTargetXAfterRestart(), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZAfterRestart());
   playerMesh.add(flashlightConeWedge);
 
   function applyMuzzleFlashVisual(out: {
@@ -2560,7 +2558,7 @@ export function createWorldView(
       torchSpot.intensity = i * FLASHLIGHT_SPOT_INTENSITY_MUL;
       torchSpot.distance = FLASHLIGHT_CONE_LENGTH + FLASHLIGHT_SPOT_DISTANCE_EXTRA + i * FLASHLIGHT_SPOT_DISTANCE_GAIN;
       torchSpot.position.set(flashlightSpotOriginXFromLook(wx), FLASHLIGHT_SPOT_Y, flashlightSpotOriginZFromLook(wy));
-      torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z);
+      torchSpot.target.position.set(flashlightSpotTargetXFromLook(wx + tip.x), FLASHLIGHT_SPOT_TARGET_Y, flashlightSpotTargetZFromLook(wy + tip.z));
       torchSpot.target.updateMatrixWorld();
       torchSpot.visible = flashlightSpotVisibleFromLook(on);
       torchSpot.color.setHex(FLASHLIGHT_SPOT_COLOR);
