@@ -505,10 +505,10 @@ describe("spawnGraceAfterRestart (R / softReset)", () => {
     );
     expect(gameSrc).toContain("spawnGraceAfterRestart(");
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,1600}this\.spawnGrace = spawnGraceAfterRestart\(\)/,
+      /softReset\(\): void \{[\s\S]{0,2800}this\.spawnGrace = spawnGraceAfterRestart\(\)/,
     );
     expect(gameSrc).toMatch(
-      /lastRunRingAgeAfterRestart\(\);[\s\S]{0,200}this\.spawnThreats\(\);[\s\S]{0,200}this\.spawnGrace = spawnGraceAfterRestart\(\)/,
+      /this\.isoFrustum = isoFrustumAfterRestart\(\);[\s\S]{0,200}this\.resize\(\);[\s\S]{0,200}this\.spawnGrace = spawnGraceAfterRestart\(\)/,
     );
     expect(gameSrc).toMatch(
       /spawnThreats\(\): void \{[\s\S]{0,800}this\.spawnGrace = SPAWN_GRACE_SECONDS/,

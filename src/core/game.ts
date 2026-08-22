@@ -536,8 +536,6 @@ export class Game {
     // R: kit fresco = nunca sprintó; no filtrar RUN_NOISE_RING_MIN_AGE de la vida anterior.
     this.lastRunRingAgeSec = lastRunRingAgeAfterRestart();
     this.spawnThreats();
-    // R: kit fresco = gracia de spawn; leftover 0 de la vida anterior no filtra.
-    this.spawnGrace = spawnGraceAfterRestart();
     this.clock = new GameClock(DEFAULT_DAY_LENGTH_SEC);
     this.weather = new WeatherSystem({ initial: "drizzle" });
     // R: mix fresco; no filtrar night/indoor/threat de la vida anterior. Mute se queda.
@@ -571,6 +569,8 @@ export class Game {
     // R: cámara nueva = ISO_FRUSTUM; no filtrar el zoom de la vida anterior.
     this.isoFrustum = isoFrustumAfterRestart();
     this.resize();
+    // R: kit fresco = gracia de spawn; leftover 0 de la vida anterior no filtra.
+    this.spawnGrace = spawnGraceAfterRestart();
     // R: corta beep leftover (heartbeat sine 80ms). Mute se queda.
     resetHeartbeatPlayerAfterRestart(this.heartbeatPlayer);
     // R: corta beep leftover (door 90ms / loot 70ms / use 80ms). Mute se queda.
