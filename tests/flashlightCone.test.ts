@@ -477,6 +477,7 @@ describe("flashlight cone recreate lock (R / softReset)", () => {
     expect(coneSrc).toContain("flashlightConeOpacityAfterRestart(");
     expect(coneSrc).toContain("flashlightFillDistanceAfterRestart(");
     expect(coneSrc).toContain("flashlightFillIntensityAfterRestart(");
+    expect(coneSrc).toContain("flashlightSpotDistanceAfterRestart(");
     expect(coneSrc).toContain("flashlightConeYawFromLook(");
     expect(coneSrc).toContain("flashlightConeOffsetXFromLook(");
     expect(coneSrc).toContain("flashlightConeOffsetZFromLook(");
@@ -484,6 +485,7 @@ describe("flashlight cone recreate lock (R / softReset)", () => {
     expect(coneSrc).toContain("flashlightConeOpacityFromLook(");
     expect(coneSrc).toContain("flashlightFillDistanceFromLook(");
     expect(coneSrc).toContain("flashlightFillIntensityFromLook(");
+    expect(coneSrc).toContain("flashlightSpotDistanceFromLook(");
     expect(coneSrc).toContain("FLASHLIGHT_CONE_YAW_SPAWN");
     expect(coneSrc).toMatch(
       /flashlightConeYawAfterRestart\([\s\S]{0,200}flashlightConeYawFromLook\(/,
@@ -514,6 +516,10 @@ describe("flashlight cone recreate lock (R / softReset)", () => {
     expect(viewSrc).toContain(
       "flashlightFillIntensityFromLook(i * FLASHLIGHT_FILL_INTENSITY_MUL)",
     );
+    expect(viewSrc).toContain("flashlightSpotDistanceAfterRestart()");
+    expect(viewSrc).toContain(
+      "flashlightSpotDistanceFromLook(FLASHLIGHT_CONE_LENGTH + FLASHLIGHT_SPOT_DISTANCE_EXTRA + i * FLASHLIGHT_SPOT_DISTANCE_GAIN)",
+    );
     expect(viewSrc).toContain("flashlightConeYawAfterRestart()");
     expect(viewSrc).toContain("flashlightConeYawFromLook(playerGltfYaw)");
     expect(viewSrc).toContain("flashlightConeOffsetXFromLook(tip.x)");
@@ -526,7 +532,7 @@ describe("flashlight cone recreate lock (R / softReset)", () => {
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+      /softReset\(\): void \{[\s\S]{0,2900}this\.view\.dispose\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,

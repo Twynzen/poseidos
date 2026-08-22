@@ -110,10 +110,13 @@ describe("torch spot recreate lock (R / softReset)", () => {
     expect(coneSrc).toContain("flashlightSpotOriginXAfterRestart(");
     expect(coneSrc).toContain("flashlightSpotOriginZAfterRestart(");
     expect(coneSrc).toContain("flashlightSpotVisibleAfterRestart(");
+    expect(coneSrc).toContain("flashlightSpotDistanceAfterRestart(");
     expect(coneSrc).toContain("flashlightSpotOriginXFromLook(");
     expect(coneSrc).toContain("flashlightSpotOriginZFromLook(");
     expect(coneSrc).toContain("flashlightSpotVisibleFromLook(");
+    expect(coneSrc).toContain("flashlightSpotDistanceFromLook(");
     expect(coneSrc).toContain("FLASHLIGHT_SPOT_ORIGIN_X_SPAWN");
+    expect(coneSrc).toContain("FLASHLIGHT_SPOT_DISTANCE_SPAWN");
     expect(coneSrc).toContain("FLASHLIGHT_SPOT_ORIGIN_Z_SPAWN");
     expect(coneSrc).toContain("FLASHLIGHT_SPOT_VISIBLE_SPAWN");
     expect(coneSrc).toMatch(
@@ -125,15 +128,24 @@ describe("torch spot recreate lock (R / softReset)", () => {
     expect(coneSrc).toMatch(
       /flashlightSpotVisibleAfterRestart\([\s\S]{0,200}flashlightSpotVisibleFromLook\(/,
     );
+    expect(coneSrc).toMatch(
+      /flashlightSpotDistanceAfterRestart\([\s\S]{0,200}flashlightSpotDistanceFromLook\(/,
+    );
     expect(viewSrc).toContain("flashlightSpotOriginXAfterRestart(");
     expect(viewSrc).toContain("flashlightSpotOriginZAfterRestart(");
     expect(viewSrc).toContain("flashlightSpotVisibleAfterRestart(");
+    expect(viewSrc).toContain("flashlightSpotDistanceAfterRestart(");
     expect(viewSrc).toContain("flashlightSpotOriginXFromLook(");
     expect(viewSrc).toContain("flashlightSpotOriginZFromLook(");
     expect(viewSrc).toContain("flashlightSpotVisibleFromLook(");
+    expect(viewSrc).toContain("flashlightSpotDistanceFromLook(");
     expect(viewSrc).toContain("flashlightSpotOriginXAfterRestart()");
     expect(viewSrc).toContain("flashlightSpotOriginZAfterRestart()");
     expect(viewSrc).toContain("flashlightSpotVisibleAfterRestart()");
+    expect(viewSrc).toContain("flashlightSpotDistanceAfterRestart()");
+    expect(viewSrc).toContain(
+      "flashlightSpotDistanceFromLook(FLASHLIGHT_CONE_LENGTH + FLASHLIGHT_SPOT_DISTANCE_EXTRA + i * FLASHLIGHT_SPOT_DISTANCE_GAIN)",
+    );
     expect(viewSrc).toContain("flashlightSpotOriginXFromLook(wx)");
     expect(viewSrc).toContain("flashlightSpotOriginZFromLook(wy)");
     expect(viewSrc).toContain("flashlightSpotVisibleFromLook(on)");
@@ -147,7 +159,7 @@ describe("torch spot recreate lock (R / softReset)", () => {
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+      /softReset\(\): void \{[\s\S]{0,2900}this\.view\.dispose\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
