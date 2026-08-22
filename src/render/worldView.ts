@@ -1343,6 +1343,31 @@ export function bedMetalnessAfterRestart(): number {
   return bedMetalnessFromLook(BED_METALNESS_SPAWN);
 }
 
+/** Emisivo del bed mesh. Ctor bedMat.emissive: 0x000000 = fresco. Mid-life leftover ≠ fresco. */
+export const BED_EMISSIVE = 0x000000;
+
+/** Idle bed mesh emissive. Ctor bedMat.emissive: 0x000000 = fresco. Mid-life leftover ≠ fresco. */
+export const BED_EMISSIVE_SPAWN = 0x000000;
+
+/**
+ * Emisivo que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0x000000).
+ * attach/tick no escriben emissive (ctor constant).
+ */
+export function bedEmissiveFromLook(emissive: number): number {
+  return emissive;
+}
+
+/**
+ * R / softReset: emissive fresco (idle 0x000000).
+ * WorldView nace bedMat.emissive AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben emissive (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function bedEmissiveAfterRestart(): number {
+  return bedEmissiveFromLook(BED_EMISSIVE_SPAWN);
+}
+
 /** Roughness del door-closed mesh. Ctor doorClosedMat.roughness: 0.7 = fresco. Mid-life leftover ≠ fresco. */
 export const DOOR_CLOSED_ROUGHNESS = 0.7;
 
@@ -2052,6 +2077,8 @@ export function createWorldView(
     roughness: bedRoughnessAfterRestart(),
     // R / dispose: metalness fresco (idle); leftover mid-life metalness de la vida anterior no filtra.
     metalness: bedMetalnessAfterRestart(),
+    // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
+    emissive: bedEmissiveAfterRestart(),
   });
   const doorClosedMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(DOOR_CLOSED, lastDaylight),
