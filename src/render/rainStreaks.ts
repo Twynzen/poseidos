@@ -310,3 +310,26 @@ export function rainActiveCount(intensity: number, daylight: number): number {
     Math.floor(RAIN_COUNT * (RAIN_ACTIVE_BASE + i * RAIN_ACTIVE_GAIN) * nightCut),
   );
 }
+
+/**
+ * Count de look que lee syncRain (intensity + daylight fresco o vivo).
+ * leftover mid-life (ctor 47 / storm noon / drizzle noon) ≠ count fresco (drizzle medianoche).
+ */
+export function rainActiveCountFromLook(
+  intensity: number,
+  daylight: number,
+): number {
+  return rainActiveCount(intensity, daylight);
+}
+
+/**
+ * R / softReset: count fresco (drizzle 0.4 + medianoche 0.08).
+ * WorldView nace con rainActiveCountAfterRestart; leftover mid-life no filtra.
+ * syncRain lee rainActiveCountFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function rainActiveCountAfterRestart(
+  intensity = 0.4,
+  daylight = 0.08,
+): number {
+  return rainActiveCountFromLook(intensity, daylight);
+}

@@ -171,7 +171,8 @@ import {
   RAIN_COUNT,
   RAIN_STREAK_LENGTH_DAY,
   RAIN_STREAK_WIDTH,
-  rainActiveCount,
+  rainActiveCountAfterRestart,
+  rainActiveCountFromLook,
   rainStreakOpacityAfterRestart,
   rainStreakOpacityFromLook,
   rainStreakScaleYAfterRestart,
@@ -1529,6 +1530,8 @@ export function createWorldView(
     mesh.position.set(vx, y, vz);
     // R / dispose: scaleY fresco (largo); leftover mid-life scale de la vida anterior no filtra.
     mesh.scale.set(1, rainStreakScaleYAfterRestart(), 1);
+    // R / dispose: count fresco (active); leftover mid-life 47/noon de la vida anterior no filtra.
+    mesh.visible = i < rainActiveCountAfterRestart();
     rainGroup.add(mesh);
     rainDrops.push({
       mesh,
@@ -1559,7 +1562,7 @@ export function createWorldView(
     rainGroup.visible = true;
     // R / dispose: look fresco; leftover mid-life opacity de la vida anterior no filtra.
     const op = rainStreakOpacityFromLook(i, daylight);
-    const active = rainActiveCount(i, daylight);
+    const active = rainActiveCountFromLook(i, daylight);
     // R / dispose: largo fresco; leftover mid-life scaleY de la vida anterior no filtra.
     const sy = rainStreakScaleYFromLook(daylight);
     for (let n = 0; n < rainDrops.length; n++) {

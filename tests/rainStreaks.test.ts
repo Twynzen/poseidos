@@ -17,6 +17,8 @@ import {
   RAIN_STREAK_WIDTH,
   RAIN_WRAP_BELOW,
   rainActiveCount,
+  rainActiveCountAfterRestart,
+  rainActiveCountFromLook,
   rainNightMix,
   rainStreakLength,
   rainStreakNeedsWrap,
@@ -1141,6 +1143,150 @@ describe("rain wrap/respawn recreate lock (R / softReset)", () => {
     expect(saveSrc).not.toContain("rainStreakYWrapAfterRestart");
     expect(saveSrc).not.toContain("rainStreakYFromWrap");
     expect(saveSrc).not.toContain("rainStreakNeedsWrap");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+  });
+});
+
+describe("rainActiveCountAfterRestart (R / softReset)", () => {
+  test("count fresco (drizzle + medianoche); leftover mid-life active no filtra", () => {
+    const boot = rainActiveCountAfterRestart();
+    expect(boot).toBe(rainActiveCountFromLook(0.4, 0.08));
+    expect(boot).toBe(rainActiveCount(0.4, 0.08));
+    expect(boot).toBe(
+      Math.max(
+        RAIN_ACTIVE_MIN,
+        Math.floor(47 * (0.4025 + 0.4 * 0.7475) * (1 - 0.16617 * 0.92)),
+      ),
+    );
+    expect(boot).toBe(27);
+    expect(rainActiveCountAfterRestart(0.4, 0.08)).toBe(boot);
+    expect(rainActiveCountAfterRestart(0, 1)).toBe(rainActiveCount(0, 1));
+    expect(rainActiveCountAfterRestart(1, 0)).toBe(rainActiveCount(1, 0));
+
+    const leftoverCtor = RAIN_COUNT;
+    expect(leftoverCtor).toBe(47);
+    expect(leftoverCtor).not.toBe(boot);
+    expect(leftoverCtor).toBeGreaterThan(boot);
+    expect(rainActiveCountFromLook(0.4, 0.08)).not.toBe(leftoverCtor);
+
+    const leftoverStormNoon = rainActiveCountFromLook(0.85, 1);
+    expect(leftoverStormNoon).toBe(rainActiveCount(0.85, 1));
+    expect(leftoverStormNoon).toBe(
+      Math.floor(47 * (0.4025 + 0.85 * 0.7475)),
+    );
+    expect(leftoverStormNoon).toBe(48);
+    expect(leftoverStormNoon).not.toBe(boot);
+    expect(leftoverStormNoon).not.toBe(rainActiveCountAfterRestart());
+
+    const leftoverDrizzleNoon = rainActiveCountFromLook(0.4, 1);
+    expect(leftoverDrizzleNoon).toBe(rainActiveCount(0.4, 1));
+    expect(leftoverDrizzleNoon).toBe(Math.floor(47 * (0.4025 + 0.4 * 0.7475)));
+    expect(leftoverDrizzleNoon).toBe(32);
+    expect(leftoverDrizzleNoon).toBeGreaterThan(boot);
+    expect(leftoverDrizzleNoon).not.toBe(rainActiveCountAfterRestart());
+
+    expect(rainActiveCountFromLook(0.85, 0.08)).not.toBe(boot);
+    expect(rainStreakYFromFall(4.4, 10, 0.2, 1, true)).toBe(4.4);
+    expect(tickRainStreakY(4.4, 10, 0.2, 1, true)).toBe(4.4);
+  });
+
+  test("vivo tick no usa el helper (count avanza con intensity/daylight)", () => {
+    const boot = rainActiveCountAfterRestart();
+    const liveNoon = rainActiveCountFromLook(0.4, 1);
+    expect(liveNoon).toBe(rainActiveCount(0.4, 1));
+    expect(liveNoon).not.toBe(boot);
+    expect(liveNoon).not.toBe(rainActiveCountAfterRestart());
+    expect(liveNoon).toBeGreaterThan(boot);
+
+    const liveStorm = rainActiveCountFromLook(0.85, 0.08);
+    expect(liveStorm).toBeGreaterThan(boot);
+    expect(liveStorm).not.toBe(rainActiveCountAfterRestart());
+    expect(rainActiveCountFromLook(0.4, 0.08)).toBe(boot);
+  });
+});
+
+describe("rain count/active recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace rain count fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const rainSrc = readFileSync(
+      resolve(process.cwd(), "src/render/rainStreaks.ts"),
+      "utf8",
+    );
+    expect(rainSrc).toContain("rainActiveCountAfterRestart(");
+    expect(rainSrc).toContain("rainActiveCountFromLook(");
+    expect(rainSrc).toContain("rainActiveCount(");
+    expect(rainSrc).toMatch(
+      /rainActiveCountAfterRestart\([\s\S]{0,200}rainActiveCountFromLook\(/,
+    );
+    expect(viewSrc).toContain("rainActiveCountAfterRestart(");
+    expect(viewSrc).toContain("rainActiveCountFromLook(");
+    expect(viewSrc).toMatch(
+      /mesh\.visible = i < rainActiveCountAfterRestart\(\s*\)/,
+    );
+    expect(viewSrc).toMatch(
+      /const active = rainActiveCountFromLook\(\s*i,\s*daylight\)/,
+    );
+    expect(viewSrc).toContain("rainStreakYFromFall(");
+    expect(viewSrc).not.toContain("const active = rainActiveCount(");
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /syncRainVisual\(dt = 0\): void \{[\s\S]{0,360}rainVisualApplies\(\s*this\.gameOver\) \? dt : 0/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.syncRainVisual\(dt\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}rainActiveCountAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}rainActiveCountAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}rainActiveCountAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}rainActiveCountAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("rainActiveCountAfterRestart(");
+    expect(gameSrc).not.toContain("rainActiveCountFromLook(");
+    expect(saveSrc).not.toContain("rainActiveCountAfterRestart");
+    expect(saveSrc).not.toContain("rainActiveCountFromLook");
     expect(gameSrc).not.toMatch(
       /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
     );
