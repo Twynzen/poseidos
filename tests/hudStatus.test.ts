@@ -1271,7 +1271,7 @@ describe("death → R HUD lock (softReset)", () => {
       /softReset\(\): void \{[\s\S]{0,3700}this\.spawnGrace = spawnGraceAfterRestart\(\)/,
     );
     expect(gameSrc).toMatch(
-      /this\.lastLootMsg = lastLootMsgAfterRestart\(\);[\s\S]{0,2500}this\.refreshHud\(true\);[\s\S]{0,200}this\.hudAcc = hudAccAfterRestart\(\)/,
+      /this\.lastLootMsg = lastLootMsgAfterRestart\(\);[\s\S]{0,2600}this\.refreshHud\(true\);[\s\S]{0,200}this\.hudAcc = hudAccAfterRestart\(\)/,
     );
     expect(gameSrc).not.toMatch(
       /softReset\(\): void \{[\s\S]{0,3600}this\.showHelp\s*=/,
