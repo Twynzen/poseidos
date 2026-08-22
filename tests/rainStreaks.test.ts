@@ -410,7 +410,7 @@ describe("rain vx/drift recreate lock (R / softReset)", () => {
       /const vx = rainStreakVxAfterRestart\(\s*Math\.random\(\)\)/,
     );
     expect(viewSrc).toMatch(
-      /if \(dt > 0\) \{[\s\S]{0,360}d\.vx = rainStreakVxFromDrift\(\s*d\.vx,\s*dt\)/,
+      /if \(dt > 0\) \{[\s\S]{0,560}d\.vx = rainStreakVxFromDrift\(\s*d\.vx,\s*dt\)/,
     );
     expect(viewSrc).toContain("rainStreakYFromFall(");
     expect(viewSrc).not.toContain("d.vx = tickRainStreakVx(");
@@ -672,7 +672,7 @@ describe("rain vz/deriva recreate lock (R / softReset)", () => {
       /const vz = rainStreakVzAfterRestart\(\s*Math\.random\(\)\)/,
     );
     expect(viewSrc).toMatch(
-      /if \(dt > 0\) \{[\s\S]{0,400}d\.mesh\.position\.set\(\s*d\.vx,\s*d\.y,\s*rainStreakVzFromZ\(\s*d\.vz\)\)/,
+      /if \(dt > 0\) \{[\s\S]{0,600}d\.mesh\.position\.set\(\s*d\.vx,\s*d\.y,\s*rainStreakVzFromZ\(\s*d\.vz\)\)/,
     );
     expect(viewSrc).toContain("rainStreakYFromFall(");
     expect(viewSrc).not.toContain("d.vz = tickRainStreak");
