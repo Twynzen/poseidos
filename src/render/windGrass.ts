@@ -106,6 +106,31 @@ export function grassMetalnessAfterRestart(): number {
   return grassMetalnessFromLook(GRASS_METALNESS_SPAWN);
 }
 
+/** Emisivo del césped instanced. Ctor grassMat.emissive 0x000000 = fresco. Mid-life leftover ≠ fresco. */
+export const GRASS_EMISSIVE = 0x000000;
+
+/** Idle grass mesh emissive. Ctor grassMat.emissive 0x000000 = fresco. Mid-life leftover ≠ fresco. */
+export const GRASS_EMISSIVE_SPAWN = 0x000000;
+
+/**
+ * Emisivo que leería applyGrassPoses (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0x000000).
+ * applyGrassPoses / color.setHex no escribe emissive (ctor constant).
+ */
+export function grassEmissiveFromLook(emissive: number): number {
+  return emissive;
+}
+
+/**
+ * R / softReset: emissive fresco (idle 0x000000).
+ * WorldView nace grassMat.emissive AfterRestart; leftover mid-life no filtra.
+ * applyGrassPoses / color.setHex no escribe emissive (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function grassEmissiveAfterRestart(): number {
+  return grassEmissiveFromLook(GRASS_EMISSIVE_SPAWN);
+}
+
 export interface GrassTile {
   tx: number;
   ty: number;
