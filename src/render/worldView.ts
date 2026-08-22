@@ -17,7 +17,13 @@ import {
   FACING_CHEVRON_LEN,
   FACING_CHEVRON_OPACITY,
   facingChevronOffset,
+  facingChevronOffsetXAfterRestart,
+  facingChevronOffsetXFromLook,
+  facingChevronOffsetZAfterRestart,
+  facingChevronOffsetZFromLook,
   facingChevronVisible,
+  facingChevronYawAfterRestart,
+  facingChevronYawFromLook,
 } from "./facingChevron";
 import {
   FLASHLIGHT_CONE_HALF_WIDTH,
@@ -1350,6 +1356,14 @@ export function createWorldView(
   const chevronMesh = new THREE.Mesh(chevronGeo, chevronMat);
   chevronMesh.renderOrder = 8;
   chevronMesh.visible = facingChevronVisible(false);
+  // R / dispose: pos fresco (yaw 0 +Z); leftover ctor origin / mid-life yaw no filtra.
+  chevronMesh.position.set(
+    facingChevronOffsetXAfterRestart(),
+    CHEVRON_Y,
+    facingChevronOffsetZAfterRestart(),
+  );
+  chevronMesh.rotation.y = facingChevronYawAfterRestart();
+  chevronMesh.rotation.x = CHEVRON_TILT;
   playerMesh.add(chevronMesh);
 
   function applyFacingChevronVisible(gameOver = false): void {
@@ -1357,9 +1371,14 @@ export function createWorldView(
   }
 
   function placeFacingChevron(): void {
-    const { x, z } = facingChevronOffset(playerGltfYaw);
-    chevronMesh.position.set(x, CHEVRON_Y, z);
-    chevronMesh.rotation.y = playerGltfYaw;
+    const yaw = facingChevronYawFromLook(playerGltfYaw);
+    const { x, z } = facingChevronOffset(yaw);
+    chevronMesh.position.set(
+      facingChevronOffsetXFromLook(x),
+      CHEVRON_Y,
+      facingChevronOffsetZFromLook(z),
+    );
+    chevronMesh.rotation.y = yaw;
     chevronMesh.rotation.x = CHEVRON_TILT;
   }
 
@@ -1370,6 +1389,7 @@ export function createWorldView(
   function hideFacingChevron(): void {
     applyFacingChevronVisible(true);
   }
+  // R / dispose: apply fresco al boot (FromLook del yaw AfterRestart).
   placeFacingChevron();
 
   // Wedge unlit del cono de linterna (suelo; visible solo con torch on).
