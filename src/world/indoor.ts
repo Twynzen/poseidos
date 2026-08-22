@@ -224,3 +224,45 @@ export function warmLightYFromLook(y: number): number {
 export function warmLightYAfterRestart(): number {
   return warmLightYFromLook(WARM_LIGHT_Y_SPAWN);
 }
+
+/** Idle warm color G. Ctor warmLight.color hex 0xffca81 leftover vs idle AMBER_G 0.759. Mid-life leftover ≠ 0.759. */
+export const WARM_LIGHT_COLOR_G_SPAWN = 0.759;
+
+/** Idle warm color B. Ctor warmLight.color hex 0xffca81 leftover vs idle AMBER_B 0.437. Mid-life leftover ≠ 0.437. */
+export const WARM_LIGHT_COLOR_B_SPAWN = 0.437;
+
+/**
+ * Color G que lee syncWarmLight (look fresco o vivo).
+ * leftover mid-life / ctor 0xffca81 ≠ fresco (idle 0.759).
+ */
+export function warmLightColorGFromLook(g: number): number {
+  return g;
+}
+
+/**
+ * Color B que lee syncWarmLight (look fresco o vivo).
+ * leftover mid-life / ctor 0xffca81 ≠ fresco (idle 0.437).
+ */
+export function warmLightColorBFromLook(b: number): number {
+  return b;
+}
+
+/**
+ * R / softReset: color G fresco (idle AMBER_G 0.759).
+ * WorldView nace warmLight.color.g AfterRestart; leftover ctor 0xffca81 / mid-life no filtra.
+ * syncWarmLight lee warmLightColorGFromLook.
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function warmLightColorGAfterRestart(): number {
+  return warmLightColorGFromLook(WARM_LIGHT_COLOR_G_SPAWN);
+}
+
+/**
+ * R / softReset: color B fresco (idle AMBER_B 0.437).
+ * WorldView nace warmLight.color.b AfterRestart; leftover ctor 0xffca81 / mid-life no filtra.
+ * syncWarmLight lee warmLightColorBFromLook.
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function warmLightColorBAfterRestart(): number {
+  return warmLightColorBFromLook(WARM_LIGHT_COLOR_B_SPAWN);
+}
