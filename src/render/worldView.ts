@@ -41,9 +41,12 @@ import {
   TRACER_WIDTH,
   clampTracerTtl,
   tickTracerAge,
+  tracerCountAfterRestart,
   tracerLength,
   tracerMidpoint,
   tracerOpacity,
+  tracerOpacityAfterRestart,
+  tracerOpacityFromLook,
   tracerOverlayApplies,
   tracerYaw,
   type TracerPoint,
@@ -1619,7 +1622,8 @@ export function createWorldView(
   const tracerMatBase = new THREE.MeshBasicMaterial({
     color: TRACER_COLOR,
     transparent: true,
-    opacity: 1,
+    // R / dispose: opacity fresco (idle); leftover ctor Three 1 no filtra.
+    opacity: tracerOpacityAfterRestart(),
     depthWrite: false,
   });
   interface LiveTracer {
@@ -1629,14 +1633,15 @@ export function createWorldView(
     age: number;
     ttl: number;
   }
-  const liveTracers: LiveTracer[] = [];
+  // R / dispose: pool fresco (empty); leftover mid-life count no filtra.
+  const liveTracers: LiveTracer[] = new Array(tracerCountAfterRestart());
 
   function spawnTracer(from: TracerPoint, to: TracerPoint, ttl = DEFAULT_TRACER_TTL): void {
     const life = clampTracerTtl(ttl);
     const len = tracerLength(from, to);
     const mid = tracerMidpoint(from, to);
     const mat = tracerMatBase.clone();
-    mat.opacity = 1;
+    mat.opacity = tracerOpacityFromLook(tracerOpacity(0, life));
     const mesh = new THREE.Mesh(tracerGeo, mat);
     mesh.position.set(mid.x, TRACER_HEIGHT, mid.y);
     mesh.scale.set(TRACER_WIDTH, TRACER_WIDTH, len);
@@ -1658,7 +1663,7 @@ export function createWorldView(
     for (let i = liveTracers.length - 1; i >= 0; i--) {
       const t = liveTracers[i]!;
       t.age = tickTracerAge(t.age, dt, gameOver);
-      const op = tracerOpacity(t.age, t.ttl);
+      const op = tracerOpacityFromLook(tracerOpacity(t.age, t.ttl));
       t.mat.opacity = op;
       t.flash.intensity = TRACER_FLASH_INTENSITY * op;
       if (t.age >= t.ttl) {
