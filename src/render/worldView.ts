@@ -731,6 +731,31 @@ export function hostileRoughnessAfterRestart(): number {
   return hostileRoughnessFromLook(HOSTILE_ROUGHNESS_SPAWN);
 }
 
+/** Metalness del hostile mesh. Ctor hostileMat.metalness: 0 = fresco. Mid-life leftover ≠ fresco. */
+export const HOSTILE_METALNESS = 0;
+
+/** Idle hostile mesh metalness. Ctor hostileMat.metalness: 0 = fresco. Mid-life leftover ≠ fresco. */
+export const HOSTILE_METALNESS_SPAWN = 0;
+
+/**
+ * Metalness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0).
+ * attach/tick no escriben metalness (ctor constant).
+ */
+export function hostileMetalnessFromLook(value: number): number {
+  return value;
+}
+
+/**
+ * R / softReset: metalness fresco (idle 0).
+ * WorldView nace hostileMat.metalness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben metalness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function hostileMetalnessAfterRestart(): number {
+  return hostileMetalnessFromLook(HOSTILE_METALNESS_SPAWN);
+}
+
 /** Poseído: púrpura enfermo. 0x5a2d6b × 1.15/canal para leerse de noche. */
 export const POSSESSED_COLOR = 0x68347b;
 
@@ -2848,6 +2873,8 @@ export function createWorldView(
     color: hostileColorAfterRestart(),
     // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
     roughness: hostileRoughnessAfterRestart(),
+    // R / dispose: metalness fresco (idle); leftover mid-life metalness de la vida anterior no filtra.
+    metalness: hostileMetalnessAfterRestart(),
   });
   const possessedMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
