@@ -226,6 +226,7 @@ import {
   muzzleFlashActiveFromLook,
   muzzleFlashApplies,
   muzzleFlashColorAfterRestart,
+  muzzleFlashDepthWriteAfterRestart,
   muzzleFlashIntensityAfterRestart,
   muzzleFlashIntensityFromLook,
   muzzleFlashPosXAfterRestart,
@@ -1403,7 +1404,8 @@ export function createWorldView(
     transparent: true,
     // R / dispose: opacity fresco (inactive); leftover ctor Three 1 no filtra.
     opacity: muzzleFlashIntensityAfterRestart(),
-    depthWrite: false,
+    // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
+    depthWrite: muzzleFlashDepthWriteAfterRestart(),
     blending: THREE.AdditiveBlending,
   });
   const muzzleMesh = new THREE.Mesh(muzzleGeo, muzzleMat);
