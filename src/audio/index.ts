@@ -30,8 +30,11 @@ export {
 export {
   shouldEmitFootstep,
   createFootstepPlayer,
+  footstepBeepsAfterRestart,
+  footstepPlayerScheduled,
   resetFootstepPlayerAfterRestart,
   syncFootstepPlayer,
+  type FootstepVoice,
   type FootstepPlayer,
   type FootstepPlayerSync,
 } from "./footstepPlayer";
