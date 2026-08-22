@@ -1177,6 +1177,34 @@ export function floorRoughnessAfterRestart(): number {
   return floorRoughnessFromLook(FLOOR_ROUGHNESS_SPAWN);
 }
 
+/** Roughness del wall mesh. Ctor wallMat.roughness: 0.85 = fresco. Mid-life leftover ≠ fresco. */
+export const WALL_ROUGHNESS = 0.85;
+
+/** Roughness del wall mesh. Ctor wallMat.roughness: 0.85 = fresco. Mid-life leftover ≠ fresco. */
+export const WALL_MESH_ROUGHNESS = 0.85;
+
+/** Idle wall mesh roughness. Ctor wallMat.roughness: 0.85 = fresco. Mid-life leftover ≠ fresco. */
+export const WALL_ROUGHNESS_SPAWN = 0.85;
+
+/**
+ * Roughness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0.85).
+ * attach/tick no escriben roughness (ctor constant).
+ */
+export function wallRoughnessFromLook(roughness: number): number {
+  return roughness;
+}
+
+/**
+ * R / softReset: roughness fresco (idle 0.85).
+ * WorldView nace wallMat.roughness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben roughness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function wallRoughnessAfterRestart(): number {
+  return wallRoughnessFromLook(WALL_ROUGHNESS_SPAWN);
+}
+
 /** Alto de la barricada. 1.35 × 1.15 para leerse un poco más alta de noche. */
 export const BARRICADE_HEIGHT = 1.5525;
 /** Ancho de la barricada. 0.92 × 1.15 para leerse un poco más ancha de noche. */
@@ -1548,7 +1576,8 @@ export function createWorldView(
   }
   const wallMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(WALL_COLOR, lastDaylight),
-    roughness: 0.85,
+    // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
+    roughness: wallRoughnessAfterRestart(),
   });
   const wallBaseMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(WALL_BASE_COLOR, lastDaylight),
