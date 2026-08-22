@@ -233,6 +233,31 @@ export function markerIconOpacityAfterRestart(): number {
   return markerIconOpacityFromLook(MARKER_ICON_OPACITY_SPAWN);
 }
 
+/** Color del marker-icon mesh. Ctor iconMat.color 0xffffff = fresco. Mid-life leftover ≠ fresco. */
+export const MARKER_ICON_COLOR = 0xffffff;
+
+/** Idle marker-icon mesh color. Ctor iconMat.color 0xffffff = fresco. Mid-life leftover ≠ fresco. */
+export const MARKER_ICON_COLOR_SPAWN = 0xffffff;
+
+/**
+ * Color que leería attach (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0xffffff).
+ * attach no escribe color (ctor constant).
+ */
+export function markerIconColorFromLook(color: number): number {
+  return color;
+}
+
+/**
+ * R / softReset: color fresco (idle 0xffffff).
+ * WorldView nace iconMat.color AfterRestart; leftover mid-life no filtra.
+ * attach no escribe color (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function markerIconColorAfterRestart(): number {
+  return markerIconColorFromLook(MARKER_ICON_COLOR_SPAWN);
+}
+
 /** Altura world del floatBadge mute (2.3 × 1.15, misma banda door/bed/loot; queda por encima del Soldier 1.5). */
 export const muteBadgeY = 2.645;
 
