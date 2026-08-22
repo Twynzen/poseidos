@@ -2,6 +2,7 @@ import * as THREE from "three";
 import {
   markerBadgeOpacity,
   markerIconDepthWriteAfterRestart,
+  markerIconOpacityAfterRestart,
   markerIconTransparentAfterRestart,
   markerRingDepthWriteAfterRestart,
   markerRingOpacity,
@@ -2983,7 +2984,8 @@ function attachRoleMarkers(
     ...(letterMap ? { map: letterMap } : {}),
     // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
     transparent: markerIconTransparentAfterRestart(),
-    opacity: 0.92,
+    // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
+    opacity: markerIconOpacityAfterRestart(),
     side: THREE.DoubleSide,
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: markerIconDepthWriteAfterRestart(),
