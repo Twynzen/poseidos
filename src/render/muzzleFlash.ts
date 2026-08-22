@@ -5,6 +5,8 @@
  * worldView aplica intensidad a esfera aditiva + PointLight.
  */
 
+import { TRACER_HEIGHT } from "./tracers";
+
 /** Duración del flash (s). 0.12 × 1.15 para leer de noche. */
 export const MUZZLE_FLASH_DURATION = 0.138;
 /** Intensidad pico (u=0). 1 × 1.15 para leer de noche. Opacity del mesh = intensity. */
@@ -29,6 +31,104 @@ export interface MuzzleFlashOutput {
 
 export function createMuzzleFlash(): MuzzleFlashState {
   return { age: 0, active: false };
+}
+
+/** Spawn facing yaw 0: local X = sin(0)×forward = 0. Three default origin leftover. */
+export const MUZZLE_FLASH_POS_X_SPAWN = 0;
+/** Spawn Y = TRACER_HEIGHT. Three default 0 = leftover. */
+export const MUZZLE_FLASH_POS_Y_SPAWN = TRACER_HEIGHT;
+/** Spawn facing yaw 0: local Z = cos(0)×MUZZLE_FORWARD 0.552. Three default 0 = leftover. */
+export const MUZZLE_FLASH_POS_Z_SPAWN = 0.552;
+
+/**
+ * Intensity/opacity que lee applyMuzzleFlashVisual (look fresco o vivo).
+ * leftover ctor Three opacity 1 / mid-flash ≠ fresco (inactive 0).
+ */
+export function muzzleFlashIntensityFromLook(intensity: number): number {
+  return intensity;
+}
+
+/**
+ * Active/visible que lee applyMuzzleFlashVisual (look fresco o vivo).
+ * leftover mid-flash active ≠ fresco (inactive).
+ */
+export function muzzleFlashActiveFromLook(active: boolean): boolean {
+  return active;
+}
+
+/**
+ * Pos X local que lee applyMuzzleFlashVisual (ox fresco o vivo).
+ * leftover ctor origin 0 / far ≠ pos fresco (spawn yaw 0 → 0).
+ */
+export function muzzleFlashPosXFromLook(ox: number): number {
+  return ox;
+}
+
+/**
+ * Pos Y local que lee applyMuzzleFlashVisual (TRACER_HEIGHT fresco o vivo).
+ * leftover ctor origin 0 ≠ pos fresco (TRACER_HEIGHT).
+ */
+export function muzzleFlashPosYFromLook(oy: number): number {
+  return oy;
+}
+
+/**
+ * Pos Z local que lee applyMuzzleFlashVisual (oz fresco o vivo).
+ * leftover ctor origin 0 / far ≠ pos fresco (spawn yaw 0 → 0.552).
+ */
+export function muzzleFlashPosZFromLook(oz: number): number {
+  return oz;
+}
+
+/**
+ * R / softReset: intensity fresco (inactive 0).
+ * WorldView nace opacity/apply AfterRestart; leftover ctor Three 1 no filtra.
+ * apply/tick lee muzzleFlashIntensityFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function muzzleFlashIntensityAfterRestart(): number {
+  return muzzleFlashIntensityFromLook(0);
+}
+
+/**
+ * R / softReset: active fresco (false).
+ * WorldView nace visible/apply AfterRestart; leftover mid-flash no filtra.
+ */
+export function muzzleFlashActiveAfterRestart(): boolean {
+  return muzzleFlashActiveFromLook(false);
+}
+
+/**
+ * R / softReset: pos X fresco (spawn yaw 0 → 0).
+ * WorldView nace `muzzleMesh.position.set(muzzleFlashPosXAfterRestart(), …)`;
+ * leftover ctor origin 0,0 no filtra.
+ * apply lee muzzleFlashPosXFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function muzzleFlashPosXAfterRestart(
+  ox = MUZZLE_FLASH_POS_X_SPAWN,
+): number {
+  return muzzleFlashPosXFromLook(ox);
+}
+
+/**
+ * R / softReset: pos Y fresco (TRACER_HEIGHT).
+ * WorldView nace `muzzleMesh.position.set(…, muzzleFlashPosYAfterRestart(), …)`;
+ * leftover ctor origin 0 no filtra.
+ */
+export function muzzleFlashPosYAfterRestart(
+  oy = MUZZLE_FLASH_POS_Y_SPAWN,
+): number {
+  return muzzleFlashPosYFromLook(oy);
+}
+
+/**
+ * R / softReset: pos Z fresco (spawn yaw 0 → 0.552).
+ * WorldView nace `muzzleMesh.position.set(…, muzzleFlashPosZAfterRestart())`;
+ * leftover ctor origin 0 no filtra.
+ */
+export function muzzleFlashPosZAfterRestart(
+  oz = MUZZLE_FLASH_POS_Z_SPAWN,
+): number {
+  return muzzleFlashPosZFromLook(oz);
 }
 
 /**
