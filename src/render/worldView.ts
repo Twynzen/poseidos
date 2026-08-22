@@ -85,6 +85,7 @@ import {
   tickTracerAge,
   tracerColorAfterRestart,
   tracerCountAfterRestart,
+  tracerDepthWriteAfterRestart,
   tracerFlashColorAfterRestart,
   tracerFlashDecayAfterRestart,
   tracerFlashDistanceAfterRestart,
@@ -1877,7 +1878,8 @@ export function createWorldView(
     transparent: true,
     // R / dispose: opacity fresco (idle); leftover ctor Three 1 no filtra.
     opacity: tracerOpacityAfterRestart(),
-    depthWrite: false,
+    // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
+    depthWrite: tracerDepthWriteAfterRestart(),
   });
   interface LiveTracer {
     mesh: THREE.Mesh;
