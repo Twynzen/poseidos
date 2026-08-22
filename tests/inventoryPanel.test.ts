@@ -985,7 +985,7 @@ describe("resetInventoryPanelAfterRestart (R / softReset)", () => {
     );
     expect(gameSrc).toContain("resetInventoryPanelAfterRestart(");
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,2800}resetInventoryPanelAfterRestart\(this\.inventoryPanel\)/,
+      /softReset\(\): void \{[\s\S]{0,3600}resetInventoryPanelAfterRestart\(this\.inventoryPanel\)/,
     );
     expect(gameSrc).toMatch(
       /resetHotbarHudAfterRestart\(this\.hotbarHud\);[\s\S]{0,80}resetInventoryPanelAfterRestart\(this\.inventoryPanel\)/,

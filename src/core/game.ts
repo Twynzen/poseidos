@@ -555,9 +555,6 @@ export class Game {
     this.lastInvIndex = null;
     // R: kit fresco = slot 1; no filtrar 1–5/rueda de la vida anterior.
     this.hotbarSelected = hotbarSelectedAfterRestart();
-    // R: corta drag/inspect leftover del widget persistente. F9 no.
-    resetHotbarHudAfterRestart(this.hotbarHud);
-    resetInventoryPanelAfterRestart(this.inventoryPanel);
     // R: corta beep leftover (hit 100ms / gun / melee). Mute se queda.
     resetCombatPlayerAfterRestart(this.combatPlayer);
     this.flashlightOn = false;
@@ -596,6 +593,9 @@ export class Game {
     this.refreshHud(true);
     // R: cadence boot (0); leftover 1 de HAS MUERTO no filtra. Freeze R no pisa.
     this.hudAcc = hudAccAfterRestart();
+    // R: corta drag/inspect leftover del widget persistente. F9 no.
+    resetHotbarHudAfterRestart(this.hotbarHud);
+    resetInventoryPanelAfterRestart(this.inventoryPanel);
   }
 
   /** Tras applySave: remesh chunks, puertas, FOV, player, día/noche. */
