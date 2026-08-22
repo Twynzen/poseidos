@@ -293,6 +293,7 @@ import {
   bladePoseFromWindTime,
   BLADE_COLOR,
   grassAnchorTxAfterRestart,
+  grassMetalnessAfterRestart,
   grassRoughnessAfterRestart,
   grassAnchorTxFromLook,
   grassAnchorTyAfterRestart,
@@ -2142,7 +2143,8 @@ export function createWorldView(
     color: BLADE_COLOR,
     // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
     roughness: grassRoughnessAfterRestart(),
-    metalness: 0,
+    // R / dispose: metalness fresco (idle); leftover mid-life metalness de la vida anterior no filtra.
+    metalness: grassMetalnessAfterRestart(),
   });
   const grassMesh = new THREE.InstancedMesh(grassGeo, grassMat, MAX_GRASS_INSTANCES);
   grassMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
