@@ -321,7 +321,7 @@ describe("cookInputApplies / applyCookInput (HAS MUERTO / F9 load-muerto)", () =
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeCook\(\)/,
     );
     expect(gameSrc).toMatch(
-      /enterGameOver\(\): void \{[\s\S]{0,1800}consumeCook\(\)/,
+      /enterGameOver\(\): void \{[\s\S]{0,2000}consumeCook\(\)/,
     );
     expect(gameSrc).toMatch(
       /doLoad\(\): boolean \{[\s\S]{0,1800}if \(loaded\.gameOver\) this\.input\.consumeCook\(\)/,

@@ -32,6 +32,16 @@ export function createCameraShakeState(): CameraShakeState {
   return { age: 0, active: false, dirX: 1, dirZ: 0 };
 }
 
+/**
+ * HAS MUERTO / F9 load-muerto: no avanzar el shake ni aplicar offset.
+ * Vivo (incl. F9 load-vivo): tick/offset de hoy.
+ * Ya en reposo = no-op; gameOver no inventa shake.
+ */
+export function cameraShakeApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
 function unitFromRng(rng: () => number): { dirX: number; dirZ: number } {
   const raw = rng();
   const u = Number.isFinite(raw) ? raw : 0;
@@ -58,11 +68,16 @@ export function triggerCameraShake(
  * Avanza el shake y devuelve offsets puros (deterministas dado dir + age).
  * Mutates `state`. dt≤0 no avanza age.
  * mag = AMP · (1−t) · sin(2π t · FREQ/42) a lo largo de (dirX, dirZ).
+ * gameOver → skip tick / zero offset; no inventa shake.
  */
 export function tickCameraShake(
   state: CameraShakeState,
   dt: number,
+  gameOver = false,
 ): CameraShakeOutput {
+  if (!cameraShakeApplies(gameOver)) {
+    return { offsetX: 0, offsetZ: 0, active: false };
+  }
   const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
   if (state.active) {
     state.age += safeDt;
