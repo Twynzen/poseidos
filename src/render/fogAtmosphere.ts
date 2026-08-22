@@ -312,6 +312,31 @@ export function fogColorAfterRestart(): number {
   return fogColorFromLook(FOG_COLOR_SPAWN);
 }
 
+/** Opacity del fog de tiles fuera de LOS. Ctor fogMat.opacity FOG_OPACITY 0.92 = fresco. Mid-life leftover ≠ fresco. */
+export const FOG_OPACITY = 0.92;
+
+/** Idle fog mesh opacity. Ctor fogMat.opacity FOG_OPACITY 0.92 = fresco. Mid-life leftover ≠ fresco. */
+export const FOG_OPACITY_SPAWN = 0.92;
+
+/**
+ * Opacity que leería chunk/FOV (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle FOG_OPACITY 0.92).
+ * chunk/FOV no escribe opacity (ctor constant).
+ */
+export function fogOpacityFromLook(opacity: number): number {
+  return opacity;
+}
+
+/**
+ * R / softReset: opacity fresco (idle FOG_OPACITY 0.92).
+ * WorldView nace fogMat.opacity AfterRestart; leftover mid-life no filtra.
+ * chunk/FOV no escribe opacity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function fogOpacityAfterRestart(): number {
+  return fogOpacityFromLook(FOG_OPACITY_SPAWN);
+}
+
 function clamp01(v: number): number {
   return Math.max(0, Math.min(1, v));
 }
