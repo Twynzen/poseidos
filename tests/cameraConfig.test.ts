@@ -555,16 +555,16 @@ describe("camera follow/look recreate lock (R / softReset)", () => {
     expect(viewSrc).toContain("cameraFollowPosXFromLook(");
     expect(viewSrc).toContain("cameraFollowPosZFromLook(");
     expect(viewSrc).toMatch(
-      /camera\.position\.set\(\s*cameraFollowPosXAfterRestart\(\s*\),\s*cameraFollowPosYAfterRestart\(\s*\),\s*cameraFollowPosZAfterRestart\(\s*\)/,
+      /camera\.position\.set\(\s*cameraFollowPosXAfterRestart\(\s*CAMERA_LOOK_X_SPAWN,\s*cameraShakeOffsetXAfterRestart\(\s*\),\s*\),\s*cameraFollowPosYAfterRestart\(\s*\),\s*cameraFollowPosZAfterRestart\(\s*CAMERA_LOOK_Z_SPAWN,\s*cameraShakeOffsetZAfterRestart\(\s*\),\s*\)/,
     );
     expect(viewSrc).toMatch(
       /camera\.lookAt\(\s*cameraFollowLookXAfterRestart\(\s*\),\s*0,\s*cameraFollowLookZAfterRestart\(\s*\)/,
     );
     expect(viewSrc).toMatch(
-      /cameraFollowPosXFromLook\(\s*x,\s*cameraShakeOut\.offsetX\)/,
+      /cameraFollowPosXFromLook\(\s*x,\s*cameraShakeOffsetXFromLook\(cameraShakeOut\.offsetX\)/,
     );
     expect(viewSrc).toMatch(
-      /cameraFollowPosZFromLook\(\s*y,\s*cameraShakeOut\.offsetZ\)/,
+      /cameraFollowPosZFromLook\(\s*y,\s*cameraShakeOffsetZFromLook\(cameraShakeOut\.offsetZ\)/,
     );
     expect(viewSrc).toMatch(
       /camera\.lookAt\(\s*cameraFollowLookXFromLook\(\s*x\),\s*0,\s*cameraFollowLookZFromLook\(\s*y\)/,

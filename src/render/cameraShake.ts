@@ -12,6 +12,63 @@ export const CAMERA_SHAKE_AMP = 0.14375;
 /** Frecuencia del sine (base 42 = 1 ciclo). 48.3 × 1.15 para leer de noche. */
 export const CAMERA_SHAKE_FREQ = 55.545;
 
+/** Idle shake offset X. Ctor cameraShakeOut.offsetX 0 = fresco. Mid-shake leftover ≠ 0. */
+export const CAMERA_SHAKE_OFFSET_X_SPAWN = 0;
+/** Idle shake offset Z. Ctor cameraShakeOut.offsetZ 0 = fresco. Mid-shake leftover ≠ 0. */
+export const CAMERA_SHAKE_OFFSET_Z_SPAWN = 0;
+
+/**
+ * Offset X que lee apply/tick / followCamera (look fresco o vivo).
+ * leftover mid-shake / leftover ctor non-zero ≠ fresco (idle 0).
+ */
+export function cameraShakeOffsetXFromLook(offsetX: number): number {
+  return offsetX;
+}
+
+/**
+ * Offset Z que lee apply/tick / followCamera (look fresco o vivo).
+ * leftover mid-shake / leftover ctor non-zero ≠ fresco (idle 0).
+ */
+export function cameraShakeOffsetZFromLook(offsetZ: number): number {
+  return offsetZ;
+}
+
+/**
+ * Active que lee apply/tick (look fresco o vivo).
+ * leftover mid-shake active ≠ fresco (idle).
+ */
+export function cameraShakeActiveFromLook(active: boolean): boolean {
+  return active;
+}
+
+/**
+ * R / softReset: offset X fresco (idle 0).
+ * WorldView nace cameraShakeOut AfterRestart; leftover mid-shake no filtra.
+ * apply/tick / followCamera lee cameraShakeOffsetXFromLook.
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function cameraShakeOffsetXAfterRestart(): number {
+  return cameraShakeOffsetXFromLook(CAMERA_SHAKE_OFFSET_X_SPAWN);
+}
+
+/**
+ * R / softReset: offset Z fresco (idle 0).
+ * WorldView nace cameraShakeOut AfterRestart; leftover mid-shake no filtra.
+ * apply/tick / followCamera lee cameraShakeOffsetZFromLook.
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function cameraShakeOffsetZAfterRestart(): number {
+  return cameraShakeOffsetZFromLook(CAMERA_SHAKE_OFFSET_Z_SPAWN);
+}
+
+/**
+ * R / softReset: active fresco (false).
+ * leftover mid-shake no filtra.
+ */
+export function cameraShakeActiveAfterRestart(): boolean {
+  return cameraShakeActiveFromLook(false);
+}
+
 export interface CameraShakeState {
   /** Segundos transcurridos del shake actual. */
   age: number;
