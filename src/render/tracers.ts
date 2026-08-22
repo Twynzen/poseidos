@@ -208,6 +208,31 @@ export function tracerColorAfterRestart(): number {
   return tracerColorFromLook(TRACER_COLOR_SPAWN);
 }
 
+/** DepthWrite del tracer mesh. Ctor tracerMatBase.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const TRACER_DEPTH_WRITE = false;
+
+/** Idle tracer mesh depthWrite. Ctor tracerMatBase.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const TRACER_DEPTH_WRITE_SPAWN = false;
+
+/**
+ * DepthWrite que leería spawn/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * spawn/tick no escribe depthWrite (ctor constant).
+ */
+export function tracerDepthWriteFromLook(depthWrite: boolean): boolean {
+  return depthWrite;
+}
+
+/**
+ * R / softReset: depthWrite fresco (idle false).
+ * WorldView nace tracerMatBase.depthWrite AfterRestart; leftover mid-life no filtra.
+ * spawn/tick no escribe depthWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function tracerDepthWriteAfterRestart(): boolean {
+  return tracerDepthWriteFromLook(TRACER_DEPTH_WRITE_SPAWN);
+}
+
 /** Longitud del segmento (mínimo epsilon para evitar NaN en escala). */
 export function tracerLength(from: TracerPoint, to: TracerPoint): number {
   return Math.max(0.05, Math.hypot(to.x - from.x, to.y - from.y));
