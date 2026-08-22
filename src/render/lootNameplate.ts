@@ -236,6 +236,31 @@ export function lootNameplateScaleAfterRestart(dist?: number): number {
   return lootNameplateScaleFromLook(dist);
 }
 
+/** Transparent del nameplate sprite. Ctor SpriteMaterial.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_TRANSPARENT = true;
+
+/** Idle nameplate sprite transparent. Ctor SpriteMaterial.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_TRANSPARENT_SPAWN = true;
+
+/**
+ * Transparent que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * syncLootFocus no escribe transparent (ctor constant).
+ */
+export function lootNameplateTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle true).
+ * WorldView nace SpriteMaterial.transparent AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus no escribe transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateTransparentAfterRestart(): boolean {
+  return lootNameplateTransparentFromLook(LOOT_NAMEPLATE_TRANSPARENT_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
