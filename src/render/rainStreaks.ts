@@ -390,3 +390,25 @@ export function rainActiveCountAfterRestart(
 ): number {
   return rainActiveCountFromLook(intensity, daylight);
 }
+
+/** Idle rain mesh color. Ctor rainMat.color RAIN_COLOR 0xdeffff = fresco. Mid-life leftover ≠ fresco. */
+export const RAIN_COLOR_SPAWN = 0xdeffff;
+
+/**
+ * Color que leería spawn/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle RAIN_COLOR 0xdeffff).
+ * spawn/tick no escribe color (ctor constant).
+ */
+export function rainColorFromLook(color: number): number {
+  return color;
+}
+
+/**
+ * R / softReset: color fresco (idle RAIN_COLOR 0xdeffff).
+ * WorldView nace rainMat.color AfterRestart; leftover mid-life no filtra.
+ * spawn/tick no escribe color (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function rainColorAfterRestart(): number {
+  return rainColorFromLook(RAIN_COLOR_SPAWN);
+}

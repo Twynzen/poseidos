@@ -295,7 +295,6 @@ import {
   type GrassTile,
 } from "./windGrass";
 import {
-  RAIN_COLOR,
   RAIN_COUNT,
   RAIN_STREAK_LENGTH_DAY,
   RAIN_STREAK_WIDTH,
@@ -305,6 +304,7 @@ import {
   rainAnchorXFromLook,
   rainAnchorZAfterRestart,
   rainAnchorZFromLook,
+  rainColorAfterRestart,
   rainStreakOpacityAfterRestart,
   rainStreakOpacityFromLook,
   rainStreakScaleYAfterRestart,
@@ -1996,7 +1996,8 @@ export function createWorldView(
     RAIN_STREAK_WIDTH,
   );
   const rainMat = new THREE.MeshBasicMaterial({
-    color: RAIN_COLOR,
+    // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
+    color: rainColorAfterRestart(),
     transparent: true,
     // R / dispose: opacity fresco (look); leftover mid-life de la vida anterior no filtra.
     opacity: rainStreakOpacityAfterRestart(),
