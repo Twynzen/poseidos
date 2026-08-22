@@ -275,6 +275,31 @@ export function impactSparkTransparentAfterRestart(): boolean {
   return impactSparkTransparentFromLook(IMPACT_SPARK_TRANSPARENT_SPAWN);
 }
 
+/** Blending del impact spark mesh. Ctor impactMat.blending THREE.AdditiveBlending (2) = fresco. Mid-life leftover ≠ fresco. */
+export const IMPACT_SPARK_BLENDING = 2;
+
+/** Idle impact spark mesh blending. Ctor impactMat.blending THREE.AdditiveBlending (2) = fresco. Mid-life leftover ≠ fresco. */
+export const IMPACT_SPARK_BLENDING_SPAWN = 2;
+
+/**
+ * Blending que leería applyImpactSparkVisual (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.AdditiveBlending / 2).
+ * apply/tick no escribe blending (ctor constant).
+ */
+export function impactSparkBlendingFromLook(blending: number): number {
+  return blending;
+}
+
+/**
+ * R / softReset: blending fresco (idle THREE.AdditiveBlending / 2).
+ * WorldView nace impactMat.blending AfterRestart; leftover mid-life no filtra.
+ * apply/tick no escribe blending (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function impactSparkBlendingAfterRestart(): number {
+  return impactSparkBlendingFromLook(IMPACT_SPARK_BLENDING_SPAWN);
+}
+
 /**
  * HAS MUERTO / F9 load-muerto: no avanzar el spark ni pintarlo.
  * Vivo (incl. F9 load-vivo): tick/intensity de hoy.

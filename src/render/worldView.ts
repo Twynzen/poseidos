@@ -268,6 +268,7 @@ import {
   impactSparkActiveAfterRestart,
   impactSparkActiveFromLook,
   impactSparkApplies,
+  impactSparkBlendingAfterRestart,
   impactSparkIntensityAfterRestart,
   impactSparkIntensityFromLook,
   impactSparkPosXAfterRestart,
@@ -1615,7 +1616,8 @@ export function createWorldView(
     opacity: impactSparkIntensityAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: impactSparkDepthWriteAfterRestart(),
-    blending: THREE.AdditiveBlending,
+    // R / dispose: blending fresco (idle); leftover mid-life blending de la vida anterior no filtra.
+    blending: impactSparkBlendingAfterRestart() as THREE.Blending,
   });
   const impactMesh = new THREE.Mesh(impactGeo, impactMat);
   // R / dispose: hidden fresco; leftover mid-spark visible no filtra.
