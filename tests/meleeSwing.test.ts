@@ -2,11 +2,20 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
+import { createNeighborhood } from "../src/world/neighborhood";
 import {
   MELEE_SWING_ANGLE,
   MELEE_SWING_DURATION,
+  MELEE_SWING_PITCH_SPAWN,
   MELEE_SWING_YAW_RATIO,
+  MELEE_SWING_YAW_SPAWN,
   createMeleeSwingState,
+  meleeSwingActiveAfterRestart,
+  meleeSwingActiveFromLook,
+  meleeSwingPitchAfterRestart,
+  meleeSwingPitchFromLook,
+  meleeSwingYawBiasAfterRestart,
+  meleeSwingYawBiasFromLook,
   swingPoseApplies,
   tickMeleeSwing,
   triggerMeleeSwing,
@@ -221,5 +230,193 @@ describe("swingPoseApplies (HAS MUERTO / F9 load-muerto)", () => {
     expect(viewSrc).toContain("hideMeleeSwing: hideSwing");
     expect(viewSrc).toContain("playerMixer.update(dt, currentRole(playerAnimator))");
     expect(viewSrc).not.toContain("tickMeleeSwing(playerSwing, dt)");
+  });
+});
+
+describe("meleeSwingAfterRestart (R / softReset)", () => {
+  test("swing fresco (idle 0); leftover mid-swing / far 40,30 no filtra", () => {
+    const barrio = createNeighborhood(48);
+    expect(barrio.spawn.x).toBe(24.5);
+    expect(barrio.spawn.y).toBe(15.5);
+
+    const bootP = meleeSwingPitchAfterRestart();
+    const bootY = meleeSwingYawBiasAfterRestart();
+    const bootA = meleeSwingActiveAfterRestart();
+    expect(bootP).toBe(meleeSwingPitchFromLook(0));
+    expect(bootY).toBe(meleeSwingYawBiasFromLook(0));
+    expect(bootA).toBe(meleeSwingActiveFromLook(false));
+    expect(bootP).toBe(0);
+    expect(bootY).toBe(0);
+    expect(bootA).toBe(false);
+    expect(bootP).toBe(MELEE_SWING_PITCH_SPAWN);
+    expect(bootY).toBe(MELEE_SWING_YAW_SPAWN);
+    expect(meleeSwingPitchAfterRestart()).toBe(bootP);
+    expect(meleeSwingYawBiasAfterRestart()).toBe(bootY);
+    expect(meleeSwingActiveAfterRestart()).toBe(bootA);
+
+    const leftoverMidPitch = MELEE_SWING_ANGLE;
+    const leftoverMidYaw = MELEE_SWING_ANGLE * MELEE_SWING_YAW_RATIO;
+    expect(leftoverMidPitch).not.toBe(bootP);
+    expect(leftoverMidYaw).not.toBe(bootY);
+    expect(meleeSwingPitchFromLook(MELEE_SWING_ANGLE)).toBe(leftoverMidPitch);
+    expect(meleeSwingPitchFromLook(MELEE_SWING_ANGLE)).not.toBe(bootP);
+    expect(meleeSwingYawBiasFromLook(leftoverMidYaw)).toBe(leftoverMidYaw);
+    expect(meleeSwingYawBiasFromLook(leftoverMidYaw)).not.toBe(bootY);
+    expect(meleeSwingActiveFromLook(true)).not.toBe(bootA);
+
+    const leftoverFarX = 40;
+    const leftoverFarZ = 30;
+    expect(leftoverFarX).not.toBe(barrio.spawn.x);
+    expect(leftoverFarZ).not.toBe(barrio.spawn.y);
+    expect(leftoverFarX).not.toBe(24.5);
+    expect(leftoverFarZ).not.toBe(15.5);
+
+    expect(meleeSwingPitchFromLook(0)).toBe(bootP);
+    expect(meleeSwingYawBiasFromLook(0)).toBe(bootY);
+    expect(meleeSwingActiveFromLook(false)).toBe(bootA);
+  });
+
+  test("vivo tick no usa el helper (swing avanza con look)", () => {
+    const bootP = meleeSwingPitchAfterRestart();
+    const bootY = meleeSwingYawBiasAfterRestart();
+    const bootA = meleeSwingActiveAfterRestart();
+    const live = createMeleeSwingState();
+    triggerMeleeSwing(live);
+    const mid = tickMeleeSwing(live, MELEE_SWING_DURATION / 2);
+    const liveP = meleeSwingPitchFromLook(mid.pitch);
+    const liveY = meleeSwingYawBiasFromLook(mid.yawBias);
+    const liveA = meleeSwingActiveFromLook(mid.active);
+    expect(liveP).toBeCloseTo(MELEE_SWING_ANGLE, 10);
+    expect(liveY).toBeCloseTo(MELEE_SWING_ANGLE * MELEE_SWING_YAW_RATIO, 10);
+    expect(liveA).toBe(true);
+    expect(liveP).not.toBe(bootP);
+    expect(liveY).not.toBe(bootY);
+    expect(liveA).not.toBe(bootA);
+    expect(liveP).not.toBe(meleeSwingPitchAfterRestart());
+    expect(liveY).not.toBe(meleeSwingYawBiasAfterRestart());
+    expect(liveA).not.toBe(meleeSwingActiveAfterRestart());
+    expect(liveP).toBeGreaterThan(bootP);
+    expect(liveY).toBeGreaterThan(bootY);
+
+    expect(meleeSwingPitchFromLook(0)).toBe(bootP);
+    expect(meleeSwingYawBiasFromLook(0)).toBe(bootY);
+    expect(meleeSwingActiveFromLook(false)).toBe(bootA);
+    expect(meleeSwingPitchFromLook(MELEE_SWING_ANGLE)).toBe(MELEE_SWING_ANGLE);
+    expect(meleeSwingActiveFromLook(true)).toBe(true);
+  });
+});
+
+describe("melee swing recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace swing fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const swingSrc = readFileSync(
+      resolve(process.cwd(), "src/render/meleeSwing.ts"),
+      "utf8",
+    );
+    expect(swingSrc).toContain("meleeSwingPitchAfterRestart(");
+    expect(swingSrc).toContain("meleeSwingYawBiasAfterRestart(");
+    expect(swingSrc).toContain("meleeSwingActiveAfterRestart(");
+    expect(swingSrc).toContain("meleeSwingPitchFromLook(");
+    expect(swingSrc).toContain("meleeSwingYawBiasFromLook(");
+    expect(swingSrc).toContain("meleeSwingActiveFromLook(");
+    expect(swingSrc).toContain("MELEE_SWING_PITCH_SPAWN");
+    expect(swingSrc).toContain("MELEE_SWING_YAW_SPAWN");
+    expect(swingSrc).toMatch(
+      /meleeSwingPitchAfterRestart\([\s\S]{0,200}meleeSwingPitchFromLook\(/,
+    );
+    expect(swingSrc).toMatch(
+      /meleeSwingYawBiasAfterRestart\([\s\S]{0,200}meleeSwingYawBiasFromLook\(/,
+    );
+    expect(viewSrc).toContain("meleeSwingPitchAfterRestart(");
+    expect(viewSrc).toContain("meleeSwingYawBiasAfterRestart(");
+    expect(viewSrc).toContain("meleeSwingActiveAfterRestart(");
+    expect(viewSrc).toContain("meleeSwingPitchFromLook(");
+    expect(viewSrc).toContain("meleeSwingYawBiasFromLook(");
+    expect(viewSrc).toContain("meleeSwingActiveFromLook(");
+    expect(viewSrc).toMatch(
+      /playerLocoRoot\.rotation\.x = meleeSwingPitchAfterRestart\(\)/,
+    );
+    expect(viewSrc).toMatch(
+      /playerLocoRoot\.rotation\.z = meleeSwingYawBiasAfterRestart\(\)/,
+    );
+    expect(viewSrc).toMatch(
+      /pitch:\s*meleeSwingPitchAfterRestart\(\)/,
+    );
+    expect(viewSrc).toMatch(
+      /yawBias:\s*meleeSwingYawBiasAfterRestart\(\)/,
+    );
+    expect(viewSrc).toMatch(
+      /active:\s*meleeSwingActiveAfterRestart\(\)/,
+    );
+    expect(viewSrc).toContain("meleeSwingPitchFromLook(out.pitch)");
+    expect(viewSrc).toContain("meleeSwingYawBiasFromLook(out.yawBias)");
+    expect(viewSrc).toContain("meleeSwingActiveFromLook(out.active)");
+    expect(viewSrc).toContain("meleeSwingPitchFromLook(swing.pitch)");
+    expect(viewSrc).toMatch(
+      /applySwingOverlayPose\(\{[\s\S]{0,160}meleeSwingPitchAfterRestart\(\)/,
+    );
+    expect(viewSrc).not.toMatch(
+      /hideSwing\(\): void \{[\s\S]{0,200}meleeSwingPitchAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}meleeSwingPitchAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}meleeSwingPitchAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}meleeSwingPitchAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}meleeSwingPitchAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("meleeSwingPitchAfterRestart(");
+    expect(gameSrc).not.toContain("meleeSwingYawBiasAfterRestart(");
+    expect(gameSrc).not.toContain("meleeSwingActiveAfterRestart(");
+    expect(gameSrc).not.toContain("meleeSwingPitchFromLook(");
+    expect(gameSrc).not.toContain("meleeSwingYawBiasFromLook(");
+    expect(gameSrc).not.toContain("meleeSwingActiveFromLook(");
+    expect(saveSrc).not.toContain("meleeSwingPitchAfterRestart");
+    expect(saveSrc).not.toContain("meleeSwingYawBiasAfterRestart");
+    expect(saveSrc).not.toContain("meleeSwingPitchFromLook");
+    expect(saveSrc).not.toContain("meleeSwingYawBiasFromLook");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
   });
 });
