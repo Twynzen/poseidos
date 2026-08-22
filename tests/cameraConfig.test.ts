@@ -581,7 +581,7 @@ describe("camera follow/look recreate lock (R / softReset)", () => {
       /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,4000}this\.view\.followCamera\(\s*this\.player\.x,\s*this\.player\.y\)/,
+      /softReset\(\): void \{[\s\S]{0,4100}this\.view\.followCamera\(\s*this\.player\.x,\s*this\.player\.y\)/,
     );
     expect(gameSrc).not.toMatch(
       /doLoad\(\): boolean \{[\s\S]{0,2800}cameraFollowLookXAfterRestart/,

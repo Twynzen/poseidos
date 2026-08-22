@@ -69,6 +69,7 @@ import {
   flashlightSpotIntensityFromLook,
   flashlightSpotAngleAfterRestart,
   flashlightSpotPenumbraAfterRestart,
+  flashlightSpotDecayAfterRestart,
   flashlightWedgeOpacity,
   flashlightWedgeVertexColors,
 } from "./flashlightCone";
@@ -840,9 +841,9 @@ export function createWorldView(
     flashlightSpotDistanceAfterRestart(),
     flashlightSpotAngleAfterRestart(),
     flashlightSpotPenumbraAfterRestart(),
-    FLASHLIGHT_SPOT_DECAY,
+    flashlightSpotDecayAfterRestart(),
   );
-  // R / dispose: spot fresco (idle origin 0,0 / visible false / intensity 0 / distance LENGTH+EXTRA 8.227675 / angle flashlightSpotAngle() / penumbra FLASHLIGHT_SPOT_PENUMBRA); leftover ctor LENGTH+2.4 / mid-life no filtra.
+  // R / dispose: spot fresco (idle origin 0,0 / visible false / intensity 0 / distance LENGTH+EXTRA 8.227675 / angle flashlightSpotAngle() / penumbra FLASHLIGHT_SPOT_PENUMBRA / decay FLASHLIGHT_SPOT_DECAY); leftover ctor LENGTH+2.4 / mid-life no filtra.
   torchSpot.position.set(flashlightSpotOriginXAfterRestart(), FLASHLIGHT_SPOT_Y, flashlightSpotOriginZAfterRestart());
   torchSpot.visible = flashlightSpotVisibleAfterRestart();
   scene.add(torchSpot);
