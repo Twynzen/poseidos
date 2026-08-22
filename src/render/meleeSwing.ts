@@ -13,6 +13,61 @@ export const MELEE_SWING_ANGLE = 0.46;
 /** yawBias = pitch * este ratio (sesgo, no un yaw completo). 0.5 × 1.15 para leer de noche. */
 export const MELEE_SWING_YAW_RATIO = 0.575;
 
+/** Idle swing pitch. Ctor locoRoot.rotation.x 0 = fresco. Mid-swing leftover ≠ 0. */
+export const MELEE_SWING_PITCH_SPAWN = 0;
+/** Idle swing yawBias. Ctor locoRoot.rotation.z 0 = fresco. Mid-swing leftover ≠ 0. */
+export const MELEE_SWING_YAW_SPAWN = 0;
+
+/**
+ * Pitch que lee apply/tick (look fresco o vivo).
+ * leftover mid-swing / leftover ctor non-zero ≠ fresco (idle 0).
+ */
+export function meleeSwingPitchFromLook(pitch: number): number {
+  return pitch;
+}
+
+/**
+ * yawBias que lee apply/tick (look fresco o vivo).
+ * leftover mid-swing / leftover ctor non-zero ≠ fresco (idle 0).
+ */
+export function meleeSwingYawBiasFromLook(yawBias: number): number {
+  return yawBias;
+}
+
+/**
+ * Active que lee apply/tick (look fresco o vivo).
+ * leftover mid-swing active ≠ fresco (idle).
+ */
+export function meleeSwingActiveFromLook(active: boolean): boolean {
+  return active;
+}
+
+/**
+ * R / softReset: pitch fresco (idle 0).
+ * WorldView nace locoRoot.rotation.x AfterRestart; leftover mid-swing no filtra.
+ * apply/tick lee meleeSwingPitchFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function meleeSwingPitchAfterRestart(): number {
+  return meleeSwingPitchFromLook(MELEE_SWING_PITCH_SPAWN);
+}
+
+/**
+ * R / softReset: yawBias fresco (idle 0).
+ * WorldView nace locoRoot.rotation.z AfterRestart; leftover mid-swing no filtra.
+ * apply/tick lee meleeSwingYawBiasFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function meleeSwingYawBiasAfterRestart(): number {
+  return meleeSwingYawBiasFromLook(MELEE_SWING_YAW_SPAWN);
+}
+
+/**
+ * R / softReset: active fresco (false).
+ * leftover mid-swing no filtra.
+ */
+export function meleeSwingActiveAfterRestart(): boolean {
+  return meleeSwingActiveFromLook(false);
+}
+
 export interface MeleeSwingState {
   /** Segundos transcurridos del swing actual. */
   age: number;

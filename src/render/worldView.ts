@@ -122,6 +122,12 @@ import {
 } from "./characterMixer";
 import {
   createMeleeSwingState,
+  meleeSwingActiveAfterRestart,
+  meleeSwingActiveFromLook,
+  meleeSwingPitchAfterRestart,
+  meleeSwingPitchFromLook,
+  meleeSwingYawBiasAfterRestart,
+  meleeSwingYawBiasFromLook,
   swingPoseApplies,
   tickMeleeSwing as stepMeleeSwing,
   triggerMeleeSwing,
@@ -868,6 +874,9 @@ export function createWorldView(
   const playerMesh = new THREE.Group();
   /** Hijo de silueta: bobY + lean/sway; root queda en suelo (x,0,y). */
   const playerLocoRoot = new THREE.Group();
+  // R / dispose: swing fresco (idle 0); leftover mid-swing no filtra.
+  playerLocoRoot.rotation.x = meleeSwingPitchAfterRestart();
+  playerLocoRoot.rotation.z = meleeSwingYawBiasAfterRestart();
   const playerBody = new THREE.Mesh(playerBodyGeo, playerBodyMat);
   playerBody.position.y = PLAYER_BODY_BASE_Y;
   const playerHead = new THREE.Mesh(playerHeadGeo, playerHeadMat);
@@ -891,9 +900,9 @@ export function createWorldView(
     active: false,
   };
   let meleeSwingOut: MeleeSwingOutput = {
-    pitch: 0,
-    yawBias: 0,
-    active: false,
+    pitch: meleeSwingPitchAfterRestart(),
+    yawBias: meleeSwingYawBiasAfterRestart(),
+    active: meleeSwingActiveAfterRestart(),
   };
   let hitLeanOut: HitLeanOutput = {
     pitch: 0,
@@ -1486,13 +1495,30 @@ export function createWorldView(
   });
 
   function applySwingOverlayPose(swing: MeleeSwingOutput): void {
-    const pose = hitLeanOut.active ? hitLeanOut : swing;
+    const pose = hitLeanOut.active
+      ? hitLeanOut
+      : {
+          pitch: meleeSwingPitchFromLook(swing.pitch),
+          yawBias: meleeSwingYawBiasFromLook(swing.yawBias),
+        };
     playerLocoRoot.rotation.z = pose.yawBias;
     playerLocoRoot.rotation.x = pose.pitch;
   }
 
+  // R / dispose: look fresco (idle 0); leftover mid-swing no filtra.
+  applySwingOverlayPose({
+    pitch: meleeSwingPitchAfterRestart(),
+    yawBias: meleeSwingYawBiasAfterRestart(),
+    active: meleeSwingActiveAfterRestart(),
+  });
+
   function applyLeanOverlayPose(lean: HitLeanOutput): void {
-    const pose = lean.active ? lean : meleeSwingOut;
+    const pose = lean.active
+      ? lean
+      : {
+          pitch: meleeSwingPitchFromLook(meleeSwingOut.pitch),
+          yawBias: meleeSwingYawBiasFromLook(meleeSwingOut.yawBias),
+        };
     playerLocoRoot.rotation.z = pose.yawBias;
     playerLocoRoot.rotation.x = pose.pitch;
   }
@@ -1502,11 +1528,20 @@ export function createWorldView(
       hideSwing();
       return;
     }
-    meleeSwingOut = stepMeleeSwing(playerSwing, dt, gameOver);
+    const out = stepMeleeSwing(playerSwing, dt, gameOver);
+    meleeSwingOut = {
+      pitch: meleeSwingPitchFromLook(out.pitch),
+      yawBias: meleeSwingYawBiasFromLook(out.yawBias),
+      active: meleeSwingActiveFromLook(out.active),
+    };
   }
 
   function hideSwing(): void {
-    meleeSwingOut = { pitch: 0, yawBias: 0, active: false };
+    meleeSwingOut = {
+      pitch: meleeSwingPitchFromLook(0),
+      yawBias: meleeSwingYawBiasFromLook(0),
+      active: meleeSwingActiveFromLook(false),
+    };
     applySwingOverlayPose(meleeSwingOut);
   }
 
@@ -1523,7 +1558,12 @@ export function createWorldView(
       playerLocoRoot.position.y = 0;
       return;
     }
-    const pose = hitLeanOut.active ? hitLeanOut : meleeSwingOut;
+    const pose = hitLeanOut.active
+      ? hitLeanOut
+      : {
+          pitch: meleeSwingPitchFromLook(meleeSwingOut.pitch),
+          yawBias: meleeSwingYawBiasFromLook(meleeSwingOut.yawBias),
+        };
     playerLocoRoot.position.y = out.bobY;
     playerLocoRoot.rotation.z = out.leanZ + pose.yawBias;
     playerLocoRoot.rotation.x = out.swayX + pose.pitch;
@@ -2161,7 +2201,12 @@ export function createWorldView(
         if (yaw !== null) playerGltfYaw = yaw;
       }
       placeFacingChevron();
-      const pose = lean.active ? lean : swing;
+      const pose = lean.active
+        ? lean
+        : {
+            pitch: meleeSwingPitchFromLook(swing.pitch),
+            yawBias: meleeSwingYawBiasFromLook(swing.yawBias),
+          };
       if (playerUsesGltfVisual && playerMixer) {
         playerLocoRoot.position.y = 0;
         playerLocoRoot.rotation.z = pose.yawBias;
