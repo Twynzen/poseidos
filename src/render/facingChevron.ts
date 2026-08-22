@@ -141,3 +141,25 @@ export function facingChevronColorFromLook(color: number): number {
 export function facingChevronColorAfterRestart(): number {
   return facingChevronColorFromLook(FACING_CHEVRON_COLOR_SPAWN);
 }
+
+/** Idle chevron mesh opacity. Ctor chevronMat.opacity FACING_CHEVRON_OPACITY 0.991875 = fresco. Mid-life leftover ≠ fresco. */
+export const FACING_CHEVRON_OPACITY_SPAWN = 0.991875;
+
+/**
+ * Opacity que leería place/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle FACING_CHEVRON_OPACITY 0.991875).
+ * place/tick no escribe opacity (ctor constant).
+ */
+export function facingChevronOpacityFromLook(opacity: number): number {
+  return opacity;
+}
+
+/**
+ * R / softReset: opacity fresco (idle FACING_CHEVRON_OPACITY 0.991875).
+ * WorldView nace chevronMat.opacity AfterRestart; leftover mid-life no filtra.
+ * place/tick no escribe opacity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function facingChevronOpacityAfterRestart(): number {
+  return facingChevronOpacityFromLook(FACING_CHEVRON_OPACITY_SPAWN);
+}
