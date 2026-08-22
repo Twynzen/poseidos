@@ -412,3 +412,28 @@ export function rainColorFromLook(color: number): number {
 export function rainColorAfterRestart(): number {
   return rainColorFromLook(RAIN_COLOR_SPAWN);
 }
+
+/** Transparent del rain mesh. Ctor rainMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const RAIN_TRANSPARENT = true;
+
+/** Idle rain mesh transparent. Ctor rainMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const RAIN_TRANSPARENT_SPAWN = true;
+
+/**
+ * Transparent que leería spawn/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * spawn/tick no escribe transparent (ctor constant).
+ */
+export function rainTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle true).
+ * WorldView nace rainMat.transparent AfterRestart; leftover mid-life no filtra.
+ * spawn/tick no escribe transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function rainTransparentAfterRestart(): boolean {
+  return rainTransparentFromLook(RAIN_TRANSPARENT_SPAWN);
+}

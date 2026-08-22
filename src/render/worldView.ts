@@ -315,6 +315,7 @@ import {
   rainAnchorZAfterRestart,
   rainAnchorZFromLook,
   rainColorAfterRestart,
+  rainTransparentAfterRestart,
   rainStreakOpacityAfterRestart,
   rainStreakOpacityFromLook,
   rainStreakScaleYAfterRestart,
@@ -2008,7 +2009,8 @@ export function createWorldView(
   const rainMat = new THREE.MeshBasicMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
     color: rainColorAfterRestart(),
-    transparent: true,
+    // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+    transparent: rainTransparentAfterRestart(),
     // R / dispose: opacity fresco (look); leftover mid-life de la vida anterior no filtra.
     opacity: rainStreakOpacityAfterRestart(),
     depthWrite: false,
