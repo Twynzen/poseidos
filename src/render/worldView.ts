@@ -1499,6 +1499,31 @@ export function doorOpenMetalnessAfterRestart(): number {
   return doorOpenMetalnessFromLook(DOOR_OPEN_METALNESS_SPAWN);
 }
 
+/** Emisivo del door-open mesh. Ctor doorOpenMat.emissive: 0x000000 = fresco. Mid-life leftover ≠ fresco. */
+export const DOOR_OPEN_EMISSIVE = 0x000000;
+
+/** Idle door-open mesh emissive. Ctor doorOpenMat.emissive: 0x000000 = fresco. Mid-life leftover ≠ fresco. */
+export const DOOR_OPEN_EMISSIVE_SPAWN = 0x000000;
+
+/**
+ * Emisivo que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0x000000).
+ * attach/tick no escriben emissive (ctor constant).
+ */
+export function doorOpenEmissiveFromLook(emissive: number): number {
+  return emissive;
+}
+
+/**
+ * R / softReset: emissive fresco (idle 0x000000).
+ * WorldView nace doorOpenMat.emissive AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben emissive (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function doorOpenEmissiveAfterRestart(): number {
+  return doorOpenEmissiveFromLook(DOOR_OPEN_EMISSIVE_SPAWN);
+}
+
 /** Roughness del floor mesh. Ctor floorMat.roughness: 0.95 = fresco. Mid-life leftover ≠ fresco. */
 export const FLOOR_ROUGHNESS = 0.95;
 
@@ -2120,6 +2145,8 @@ export function createWorldView(
     roughness: doorOpenRoughnessAfterRestart(),
     // R / dispose: metalness fresco (idle); leftover mid-life metalness de la vida anterior no filtra.
     metalness: doorOpenMetalnessAfterRestart(),
+    // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
+    emissive: doorOpenEmissiveAfterRestart(),
   });
   /** Cache de materiales de floor por color final (tint+AO) — barato, sin GTAO. */
   const floorMatByColor = new Map<number, THREE.MeshStandardMaterial>();
