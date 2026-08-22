@@ -653,6 +653,34 @@ export function hostileColorAfterRestart(): number {
   return hostileColorFromLook(HOSTILE_COLOR_SPAWN);
 }
 
+/** Roughness del hostile mesh. Ctor hostileMat.roughness: 0.55 = fresco. Mid-life leftover ≠ fresco. */
+export const HOSTILE_ROUGHNESS = 0.55;
+
+/** Roughness del hostile mesh. Ctor hostileMat.roughness: 0.55 = fresco. Mid-life leftover ≠ fresco. */
+export const HOSTILE_MESH_ROUGHNESS = 0.55;
+
+/** Idle hostile mesh roughness. Ctor hostileMat.roughness: 0.55 = fresco. Mid-life leftover ≠ fresco. */
+export const HOSTILE_ROUGHNESS_SPAWN = 0.55;
+
+/**
+ * Roughness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0.55).
+ * attach/tick no escriben roughness (ctor constant).
+ */
+export function hostileRoughnessFromLook(roughness: number): number {
+  return roughness;
+}
+
+/**
+ * R / softReset: roughness fresco (idle 0.55).
+ * WorldView nace hostileMat.roughness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben roughness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function hostileRoughnessAfterRestart(): number {
+  return hostileRoughnessFromLook(HOSTILE_ROUGHNESS_SPAWN);
+}
+
 /** Poseído: púrpura enfermo. 0x5a2d6b × 1.15/canal para leerse de noche. */
 export const POSSESSED_COLOR = 0x68347b;
 
@@ -2203,7 +2231,8 @@ export function createWorldView(
   const hostileMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
     color: hostileColorAfterRestart(),
-    roughness: 0.55,
+    // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
+    roughness: hostileRoughnessAfterRestart(),
   });
   const possessedMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
