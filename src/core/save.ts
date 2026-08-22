@@ -264,6 +264,29 @@ export function clearSave(
   storage.removeItem(key);
 }
 
+/**
+ * HAS MUERTO / F9 load-muerto: F5 no aplica (se drena, storage y lastLootMsg iguales).
+ * Vivo (incl. F9 load-vivo): F5 guarda, igual que hoy (`guardado` / `sin storage`).
+ * No inventa copy. gameOver no pinta `F5 no aplica (muerto)`.
+ */
+export function saveInputApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no llama apply (storage / lastLootMsg iguales).
+ * Vivo + wants → apply(). !wants → null.
+ */
+export function applySaveInput<T>(
+  gameOver: boolean,
+  wants: boolean,
+  apply: () => T | null,
+): T | null {
+  if (!saveInputApplies(gameOver) || !wants) return null;
+  return apply();
+}
+
 function cloneSlots(slots: readonly ItemStack[]): ItemStack[] {
   return slots.map((s) => ({ id: s.id, qty: s.qty }));
 }

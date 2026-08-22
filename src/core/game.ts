@@ -6,6 +6,7 @@ import {
   applySave,
   browserStorage,
   readSave,
+  saveInputApplies,
   writeSave,
   type SaveStorage,
   type SaveWorld,
@@ -462,7 +463,7 @@ export class Game {
     if (!hasFlashlight(this.player.inventory)) this.flashlightOn = false;
     this.noise.clear();
     this.refreshViewAfterLoad();
-    // Drain U / Q / C / H / X / Space/V / Z / B / T / Esc / I / F1 / +/- fuera del bloque close/loot: no tira ni consume ni craftea ni cocina ni dispara ni golpea ni duerme ni coloca ni abre ni cierra diálogo ni togglea inventario ni ayuda ni zoomea leftover; no estira regex de hide.
+    // Drain U / Q / C / H / X / Space/V / Z / B / T / Esc / I / F1 / +/- / F5 fuera del bloque close/loot: no tira ni consume ni craftea ni cocina ni dispara ni golpea ni duerme ni coloca ni abre ni cierra diálogo ni togglea inventario ni ayuda ni zoomea ni guarda leftover; no estira regex de hide.
     if (loaded.gameOver) this.input.consumeDrop();
     if (loaded.gameOver) this.input.consumeUse();
     if (loaded.gameOver) this.input.consumeCraft();
@@ -477,6 +478,7 @@ export class Game {
     if (loaded.gameOver) this.input.consumeHelp();
     if (loaded.gameOver) this.input.consumeZoomIn();
     if (loaded.gameOver) this.input.consumeZoomOut();
+    if (loaded.gameOver) this.input.consumeSave();
     this.lastLootMsg = "cargado";
     this.refreshHud(true);
     return true;
@@ -898,7 +900,7 @@ export class Game {
     // FOV ya en radio base: ocultar mudos/poseídos del anillo +4 linterna.
     this.syncHostileView();
     this.syncLighting();
-    // Drain G/E/F / U / Q / C / H / X / Space/V / Z / B / T / Esc / I / F1 / +/- al final: no loot/puerta/drop/use/craft/cook/shoot/melee/sleep/build/diálogo/inventario/ayuda/zoom; no empuja ventanas de scan del hide.
+    // Drain G/E/F / U / Q / C / H / X / Space/V / Z / B / T / Esc / I / F1 / +/- / F5 al final: no loot/puerta/drop/use/craft/cook/shoot/melee/sleep/build/diálogo/inventario/ayuda/zoom/save; no empuja ventanas de scan del hide.
     this.input.consumeLoot();
     this.input.consumeInteract();
     this.input.consumeDrop();
@@ -915,6 +917,7 @@ export class Game {
     this.input.consumeHelp();
     this.input.consumeZoomIn();
     this.input.consumeZoomOut();
+    this.input.consumeSave();
   }
 
 
@@ -1191,15 +1194,12 @@ export class Game {
       } else if (this.input.consumeLoad()) {
         this.doLoad();
         this.hudAcc = 1;
-      } else if (this.input.consumeSave()) {
-        this.doSave();
-        this.hudAcc = 1;
       }
       if (this.input.consumeMute()) {
         this.lastLootMsg = muteHudMsg(toggleAmbientMute(this.ambient));
         this.hudAcc = 1;
       }
-      // Drain L / G / E / F / U / Q / C / H / X / Space/V / Z / B / T / Esc / I / F1 / +/-; HAS MUERTO no togglea ni lootea / abre puertas / tira / usa / craftea / cocina / dispara / golpea / duerme / coloca / abre ni cierra diálogo ni inventario ni ayuda ni zoomea.
+      // Drain L / G / E / F / U / Q / C / H / X / Space/V / Z / B / T / Esc / I / F1 / +/- / F5; HAS MUERTO no togglea ni lootea / abre puertas / tira / usa / craftea / cocina / dispara / golpea / duerme / coloca / abre ni cierra diálogo ni inventario ni ayuda ni zoomea ni guarda.
       this.input.consumeFlashlightToggle();
       this.input.consumeLoot();
       this.input.consumeInteract();
@@ -1217,6 +1217,7 @@ export class Game {
       this.input.consumeHelp();
       this.input.consumeZoomIn();
       this.input.consumeZoomOut();
+      this.input.consumeSave();
       this.input.endFrame();
       this.syncAmbient(dt);
       this.syncHeartbeat(dt);
@@ -1704,7 +1705,8 @@ export class Game {
           : "linterna off";
       this.hudAcc = 1;
     }
-    if (this.input.consumeSave()) {
+    const wantsSave = this.input.consumeSave();
+    if (saveInputApplies(this.gameOver) && wantsSave) {
       this.doSave();
       this.hudAcc = 1;
     }
