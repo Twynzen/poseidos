@@ -156,9 +156,10 @@ import {
   nightSunIntensity,
 } from "./fogAtmosphere";
 import {
-  bladePoseAt,
+  bladePoseFromWindTime,
   BLADE_COLOR,
   collectGrassTiles,
+  grassWindTimeAfterRestart,
   GRASS_RADIUS,
   MAX_GRASS_INSTANCES,
   BLADES_PER_TILE,
@@ -1593,7 +1594,8 @@ export function createWorldView(
   let grassTiles: GrassTile[] = [];
   let grassAnchorTx = Number.NaN;
   let grassAnchorTy = Number.NaN;
-  let grassTime = 0;
+  // R / dispose: viento fresco (0); leftover sway de la vida anterior no filtra.
+  let grassTime = grassWindTimeAfterRestart();
 
   function rebuildGrassTiles(wx: number, wy: number): void {
     const tx = Math.floor(wx);
@@ -1615,7 +1617,7 @@ export function createWorldView(
     for (const t of grassTiles) {
       for (let b = 0; b < BLADES_PER_TILE; b++) {
         if (n >= max) break;
-        const pose = bladePoseAt(t.tx, t.ty, b, t.seed, grassTime);
+        const pose = bladePoseFromWindTime(t.tx, t.ty, b, t.seed, grassTime);
         grassDummy.position.set(pose.x, pose.y, pose.z);
         grassDummy.rotation.set(0, pose.yaw, 0);
         grassDummy.scale.set(1, pose.sy, 1);

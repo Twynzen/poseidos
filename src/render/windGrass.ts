@@ -193,6 +193,35 @@ export function bladeWind(
 }
 
 /**
+ * Offset/yaw de viento que lee applyGrassPoses (time fresco o vivo).
+ * leftover time de la vida anterior ≠ time 0.
+ */
+export function bladeWindFromTime(
+  time: number,
+  seed: number,
+): { dx: number; dz: number; dyaw: number } {
+  return bladeWind(time, seed);
+}
+
+/**
+ * R / softReset: tiempo de viento fresco (0).
+ * WorldView nace en 0; leftover sway de la vida anterior no filtra.
+ * F9 / enterGameOver / freeze death no assign — view.dispose + createWorldView.
+ */
+export function grassWindTimeAfterRestart(): number {
+  return 0;
+}
+
+/**
+ * Offset/yaw de viento fresco (time 0). leftover time no filtra.
+ */
+export function bladeWindAfterRestart(
+  seed: number,
+): { dx: number; dz: number; dyaw: number } {
+  return bladeWindFromTime(grassWindTimeAfterRestart(), seed);
+}
+
+/**
  * Pose final (base + viento) lista para setMatrixAt.
  */
 export function bladePoseAt(
@@ -203,7 +232,7 @@ export function bladePoseAt(
   time: number,
 ): BladePose {
   const base = bladeBasePose(tx, ty, bladeIndex, seed);
-  const wind = bladeWind(time, seed + bladeIndex * BLADE_WIND_SEED_STEP);
+  const wind = bladeWindFromTime(time, seed + bladeIndex * BLADE_WIND_SEED_STEP);
   return {
     x: base.x + wind.dx,
     y: base.y,
@@ -211,6 +240,37 @@ export function bladePoseAt(
     yaw: base.yaw + wind.dyaw,
     sy: base.sy,
   };
+}
+
+/**
+ * Pose que lee applyGrassPoses (time fresco o vivo).
+ */
+export function bladePoseFromWindTime(
+  tx: number,
+  ty: number,
+  bladeIndex: number,
+  seed: number,
+  time: number,
+): BladePose {
+  return bladePoseAt(tx, ty, bladeIndex, seed, time);
+}
+
+/**
+ * Pose de hoja al viento fresco (time 0). leftover time no filtra.
+ */
+export function bladePoseAfterRestart(
+  tx: number,
+  ty: number,
+  bladeIndex: number,
+  seed: number,
+): BladePose {
+  return bladePoseFromWindTime(
+    tx,
+    ty,
+    bladeIndex,
+    seed,
+    grassWindTimeAfterRestart(),
+  );
 }
 
 /**
