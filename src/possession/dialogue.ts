@@ -62,6 +62,29 @@ export function nextDialogueCloseHud(
 }
 
 /**
+ * HAS MUERTO / F9 load-muerto: T no aplica (se drena, no abre/cierra diálogo).
+ * Vivo (incl. F9 load-vivo): toggle panel, igual que hoy.
+ * No cambia copy ni gates; solo gate de input.
+ */
+export function talkInputApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no llama apply (panel igual).
+ * Vivo + wants → apply(). !wants → null.
+ */
+export function applyTalkInput<T>(
+  gameOver: boolean,
+  wants: boolean,
+  apply: () => T | null,
+): T | null {
+  if (!talkInputApplies(gameOver) || !wants) return null;
+  return apply();
+}
+
+/**
  * Calmar → ruega · Amenazar → demonio · Preguntar → lucidez · Ofrecer → ruega · Distraer → demonio.
  * Deltas calibrados para cruzar umbrales en ~2–3 interacciones.
  */

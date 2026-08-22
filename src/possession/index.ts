@@ -40,6 +40,8 @@ export {
   optionFor,
   dialogueOpenHudMsg,
   nextDialogueCloseHud,
+  talkInputApplies,
+  applyTalkInput,
   type DialogueIntent,
   type DialogueOption,
   type DialogueResult,
