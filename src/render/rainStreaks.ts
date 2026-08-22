@@ -216,6 +216,34 @@ export function rainStreakVzFromZ(vz: number): number {
   return vz;
 }
 
+/** Floor Y: wrap/respawn si la racha cae debajo (era 0.15). */
+export const RAIN_WRAP_BELOW = 0.15;
+
+/**
+ * ¿Wrap/respawn mid-fall? leftover Y < 0.15 de la vida anterior ≠ spawn fresco ([2, 8]).
+ */
+export function rainStreakNeedsWrap(y: number): boolean {
+  if (!Number.isFinite(y)) return false;
+  return y < RAIN_WRAP_BELOW;
+}
+
+/**
+ * Y de wrap/respawn mid-fall (phase fresco [0,1]).
+ * leftover wrap [2.2, 7.7] ≠ spawn fresco ([2, 8]).
+ */
+export function rainStreakYFromWrap(phase: number): number {
+  return 2.2 + clamp01(phase) * 5.5;
+}
+
+/**
+ * R / softReset: wrap/respawn fresco (no leftover mid-fall wrap).
+ * WorldView nace con rainStreakYAfterRestart (spawn); leftover wrap no filtra.
+ * Wrap mid-life lee rainStreakYFromWrap. F9 / enterGameOver / freeze death no assign.
+ */
+export function rainStreakYWrapAfterRestart(phase = 0): number {
+  return rainStreakYFromWrap(phase);
+}
+
 /** ¿Grupo oculto? Mismo umbral que syncRain (intensity ≤ RAIN_HIDE_BELOW). */
 export function rainStreaksHidden(intensity: number): boolean {
   return !Number.isFinite(intensity) || intensity <= RAIN_HIDE_BELOW;
