@@ -159,6 +159,28 @@ export function impactSparkLightDecayAfterRestart(): number {
   return impactSparkLightDecayFromLook(IMPACT_SPARK_LIGHT_DECAY_SPAWN);
 }
 
+/** Idle impact color. Ctor impactLight.color IMPACT_SPARK_LIGHT_COLOR 0xffef93 = fresco. Mid-life leftover ≠ fresco. */
+export const IMPACT_SPARK_LIGHT_COLOR_SPAWN = 0xffef93;
+
+/**
+ * Color que leería applyImpactSparkVisual (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle IMPACT_SPARK_LIGHT_COLOR 0xffef93).
+ * apply/tick no escribe color (ctor constant).
+ */
+export function impactSparkLightColorFromLook(color: number): number {
+  return color;
+}
+
+/**
+ * R / softReset: color fresco (idle IMPACT_SPARK_LIGHT_COLOR 0xffef93).
+ * WorldView nace impactLight.color AfterRestart; leftover mid-life no filtra.
+ * apply/tick no escribe color (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function impactSparkLightColorAfterRestart(): number {
+  return impactSparkLightColorFromLook(IMPACT_SPARK_LIGHT_COLOR_SPAWN);
+}
+
 /**
  * HAS MUERTO / F9 load-muerto: no avanzar el spark ni pintarlo.
  * Vivo (incl. F9 load-vivo): tick/intensity de hoy.
