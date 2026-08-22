@@ -216,6 +216,31 @@ export function noiseRingCountAfterRestart(): number {
   return noiseRingCountFromLook(NOISE_RING_COUNT_SPAWN);
 }
 
+/** Transparent del noise-ring mesh. Ctor mat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const NOISE_RING_TRANSPARENT = true;
+
+/** Idle noise-ring mesh transparent. Ctor mat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const NOISE_RING_TRANSPARENT_SPAWN = true;
+
+/**
+ * Transparent que leería spawn/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * spawn/tick no escriben transparent (ctor constant).
+ */
+export function noiseRingTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle true).
+ * WorldView nace mat.transparent AfterRestart; leftover mid-life no filtra.
+ * spawn/tick no escriben transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function noiseRingTransparentAfterRestart(): boolean {
+  return noiseRingTransparentFromLook(NOISE_RING_TRANSPARENT_SPAWN);
+}
+
 /** Ámbar door/loot. 0xe8b060 × 1.15/canal (r clamp) para leer de noche. */
 export const NOISE_RING_AMBER = 0xffca6e;
 
