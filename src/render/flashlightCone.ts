@@ -497,6 +497,28 @@ export function flashlightSpotIntensityAfterRestart(): number {
   return flashlightSpotIntensityFromLook(FLASHLIGHT_SPOT_INTENSITY_SPAWN);
 }
 
+/** Idle spot angle. Ctor torchSpot.angle flashlightSpotAngle() = fresco. Mid-life leftover ≠ fresco. */
+export const FLASHLIGHT_SPOT_ANGLE_SPAWN = flashlightSpotAngle();
+
+/**
+ * Angle que leería syncTorchLight (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle flashlightSpotAngle()).
+ * syncTorchLight no escribe angle (ctor constant).
+ */
+export function flashlightSpotAngleFromLook(angle: number): number {
+  return angle;
+}
+
+/**
+ * R / softReset: angle fresco (idle flashlightSpotAngle()).
+ * WorldView nace torchSpot.angle AfterRestart; leftover mid-life no filtra.
+ * syncTorchLight no escribe angle (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function flashlightSpotAngleAfterRestart(): number {
+  return flashlightSpotAngleFromLook(FLASHLIGHT_SPOT_ANGLE_SPAWN);
+}
+
 /** Idle cone visible. Ctor flashlightConeWedge.visible false = fresco. Vivo on ≠ boot. */
 export const FLASHLIGHT_CONE_VISIBLE_SPAWN = false;
 
