@@ -723,3 +723,28 @@ export function flashlightConeColorFromLook(color: number): number {
 export function flashlightConeColorAfterRestart(): number {
   return flashlightConeColorFromLook(FLASHLIGHT_WEDGE_COLOR_SPAWN);
 }
+
+/** VertexColors del flashlight cone mesh. Ctor coneMat.vertexColors true = fresco. Mid-life leftover ≠ fresco. */
+export const FLASHLIGHT_CONE_VERTEX_COLORS = true;
+
+/** Idle flashlight cone mesh vertexColors. Ctor coneMat.vertexColors true = fresco. Mid-life leftover ≠ fresco. */
+export const FLASHLIGHT_CONE_VERTEX_COLORS_SPAWN = true;
+
+/**
+ * VertexColors que leería syncTorchLight (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * syncTorchLight no escribe vertexColors (ctor constant).
+ */
+export function flashlightConeVertexColorsFromLook(vertexColors: boolean): boolean {
+  return vertexColors;
+}
+
+/**
+ * R / softReset: vertexColors fresco (idle true).
+ * WorldView nace coneMat.vertexColors AfterRestart; leftover mid-life no filtra.
+ * syncTorchLight no escribe vertexColors (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function flashlightConeVertexColorsAfterRestart(): boolean {
+  return flashlightConeVertexColorsFromLook(FLASHLIGHT_CONE_VERTEX_COLORS_SPAWN);
+}
