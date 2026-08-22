@@ -158,6 +158,31 @@ export function markerRingDepthWriteAfterRestart(): boolean {
   return markerRingDepthWriteFromLook(MARKER_RING_DEPTH_WRITE_SPAWN);
 }
 
+/** Side del marker-ring mesh. Ctor ringMat.side THREE.DoubleSide (2) = fresco. Mid-life leftover ≠ fresco. */
+export const MARKER_RING_SIDE = 2;
+
+/** Idle marker-ring mesh side. Ctor ringMat.side THREE.DoubleSide (2) = fresco. Mid-life leftover ≠ fresco. */
+export const MARKER_RING_SIDE_SPAWN = 2;
+
+/**
+ * Side que leería attach (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.DoubleSide / 2).
+ * attach no escribe side (ctor constant).
+ */
+export function markerRingSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.DoubleSide / 2).
+ * WorldView nace ringMat.side AfterRestart; leftover mid-life no filtra.
+ * attach no escribe side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function markerRingSideAfterRestart(): number {
+  return markerRingSideFromLook(MARKER_RING_SIDE_SPAWN);
+}
+
 /** Transparent del marker-icon mesh. Ctor iconMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
 export const MARKER_ICON_TRANSPARENT = true;
 
