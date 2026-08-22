@@ -190,6 +190,7 @@ import {
   resetAmbientPlayerAfterRestart,
   syncAmbientPlayer,
   createCombatPlayer,
+  resetCombatPlayerAfterRestart,
   playMelee,
   playHit,
   playGun,
@@ -547,6 +548,8 @@ export class Game {
     this.lastInvIndex = null;
     // R: kit fresco = slot 1; no filtrar 1–5/rueda de la vida anterior.
     this.hotbarSelected = hotbarSelectedAfterRestart();
+    // R: corta beep leftover (hit 100ms / gun / melee). Mute se queda.
+    resetCombatPlayerAfterRestart(this.combatPlayer);
     this.flashlightOn = false;
     this.session = new LocalLoopbackSession({
       playerX: this.player.x,
