@@ -2,15 +2,28 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
+import { createNeighborhood } from "../src/world/neighborhood";
 import {
+  BED_FOCUS_LOOK_X_SPAWN,
+  BED_FOCUS_LOOK_Z_SPAWN,
   BED_FOCUS_PULSE_AMP,
   BED_FOCUS_PULSE_SPEED,
   BED_FOCUS_REACH,
   BED_FOCUS_SCALE_FAR,
   BED_FOCUS_SCALE_NEAR,
   bedFocusApplies,
+  bedFocusDistAfterRestart,
+  bedFocusDistFromLook,
+  bedFocusElapsedAfterRestart,
+  bedFocusElapsedFromLook,
   bedFocusInReach,
+  bedFocusLookXAfterRestart,
+  bedFocusLookXFromLook,
+  bedFocusLookZAfterRestart,
+  bedFocusLookZFromLook,
   bedFocusMul,
+  bedFocusMulAfterRestart,
+  bedFocusMulFromLook,
   bedBadgeDiscScale,
   bedBadgeFontPx,
   bedBadgeLabel,
@@ -19,6 +32,8 @@ import {
   bedFocusPulse,
   bedFocusScale,
   bedRingVisible,
+  bedRingVisibleAfterRestart,
+  bedRingVisibleFromLook,
 } from "../src/render/bedFocus";
 
 describe("constantes", () => {
@@ -87,7 +102,7 @@ describe("constantes", () => {
       resolve(process.cwd(), "src/render/worldView.ts"),
       "utf8",
     );
-    expect(src).toContain("bedFocusMul(bestD, bedFocusElapsed, gameOver)");
+    expect(src).toContain("bedFocusMulFromLook(bestD, elapsed, gameOver)");
     expect(src).toContain("e.group.scale.setScalar(mul)");
   });
 });
@@ -213,5 +228,265 @@ describe("bedFocusApplies (HAS MUERTO / F9 load-muerto)", () => {
     expect(bedFocusApplies(false)).toBe(true);
     expect(bedRingVisible(0)).toBe(true);
     expect(bedFocusMul(0, elapsed)).toBeCloseTo(1.785375 * 1.066125, 10);
+  });
+});
+
+describe("bedFocusAfterRestart (R / softReset)", () => {
+  test("look fresco (spawn 24.5, 15.5); leftover ctor Three ring / dist 0 / origin / far no filtra", () => {
+    const barrio = createNeighborhood(48);
+    const beds: { x: number; y: number }[] = [];
+    barrio.map.forEach((tx, ty, tile) => {
+      if (tile.variant === "bed") beds.push({ x: tx + 0.5, y: ty + 0.5 });
+    });
+    expect(beds.length).toBeGreaterThan(0);
+
+    const bootWx = bedFocusLookXAfterRestart();
+    const bootWy = bedFocusLookZAfterRestart();
+    const bootElapsed = bedFocusElapsedAfterRestart();
+    expect(bootWx).toBe(bedFocusLookXFromLook(24.5));
+    expect(bootWy).toBe(bedFocusLookZFromLook(15.5));
+    expect(bootWx).toBe(BED_FOCUS_LOOK_X_SPAWN);
+    expect(bootWy).toBe(BED_FOCUS_LOOK_Z_SPAWN);
+    expect(bootWx).toBe(barrio.spawn.x);
+    expect(bootWy).toBe(barrio.spawn.y);
+    expect(bedFocusLookXAfterRestart(24.5)).toBe(bootWx);
+    expect(bedFocusLookZAfterRestart(15.5)).toBe(bootWy);
+    expect(bedFocusLookXAfterRestart(0)).toBe(bedFocusLookXFromLook(0));
+    expect(bedFocusLookZAfterRestart(40)).toBe(bedFocusLookZFromLook(40));
+    expect(bootElapsed).toBe(0);
+    expect(bootElapsed).toBe(bedFocusElapsedFromLook(0));
+
+    let closest = beds[0]!;
+    let bootDist = bedFocusDistAfterRestart(closest.x, closest.y);
+    for (const bed of beds) {
+      const d = bedFocusDistAfterRestart(bed.x, bed.y);
+      expect(d).toBeGreaterThan(BED_FOCUS_REACH);
+      expect(bedRingVisibleAfterRestart(d)).toBe(false);
+      expect(bedFocusMulAfterRestart(d)).toBe(1);
+      if (d < bootDist) {
+        closest = bed;
+        bootDist = d;
+      }
+    }
+    expect(bootDist).toBe(
+      bedFocusDistFromLook(24.5, 15.5, closest.x, closest.y),
+    );
+    expect(bootDist).toBeGreaterThan(BED_FOCUS_REACH);
+    const bootRing = bedRingVisibleAfterRestart(bootDist);
+    const bootMul = bedFocusMulAfterRestart(bootDist);
+    expect(bootRing).toBe(false);
+    expect(bootRing).toBe(bedRingVisibleFromLook(bootDist));
+    expect(bootMul).toBe(1);
+    expect(bootMul).toBe(bedFocusMulFromLook(bootDist, 0));
+
+    const leftoverCtorRing = true;
+    const leftoverCtorDist = 0;
+    const leftoverCtorScale = 1;
+    expect(leftoverCtorRing).not.toBe(bootRing);
+    expect(leftoverCtorDist).not.toBe(bootDist);
+    expect(bedRingVisible(leftoverCtorDist)).toBe(true);
+    expect(bedRingVisible(leftoverCtorDist)).not.toBe(bootRing);
+    expect(leftoverCtorScale).toBe(bootMul);
+    expect(bedFocusMul(leftoverCtorDist, 0)).toBe(1.785375);
+    expect(bedFocusMul(leftoverCtorDist, 0)).not.toBe(bootMul);
+
+    const leftoverOriginDist = bedFocusDistFromLook(0, 0, closest.x, closest.y);
+    expect(leftoverOriginDist).not.toBe(bootDist);
+    expect(bedFocusLookXFromLook(0)).toBe(0);
+    expect(bedFocusLookXFromLook(0)).not.toBe(bootWx);
+    expect(bedRingVisibleFromLook(leftoverOriginDist)).toBe(false);
+    expect(bedFocusMulFromLook(leftoverOriginDist, 0)).toBe(1);
+
+    const leftoverFarDist = bedFocusDistFromLook(40, 30, closest.x, closest.y);
+    expect(leftoverFarDist).not.toBe(bootDist);
+    expect(bedFocusLookXFromLook(40)).toBe(40);
+    expect(bedFocusLookZFromLook(30)).toBe(30);
+    expect(bedFocusLookXFromLook(40)).not.toBe(bootWx);
+    expect(bedFocusLookZFromLook(30)).not.toBe(bootWy);
+    expect(bedRingVisibleFromLook(leftoverFarDist)).toBe(false);
+    expect(bedFocusMulFromLook(leftoverFarDist, 0)).toBe(1);
+    expect(leftoverFarDist).not.toBe(
+      bedFocusDistAfterRestart(closest.x, closest.y),
+    );
+
+    const leftoverPulse = Math.PI / (2 * BED_FOCUS_PULSE_SPEED);
+    const leftoverMul = bedFocusMulFromLook(0, leftoverPulse);
+    expect(leftoverMul).toBeCloseTo(1.785375 * 1.066125, 10);
+    expect(leftoverMul).not.toBe(bootMul);
+    expect(leftoverMul).not.toBe(bedFocusMulAfterRestart(bootDist));
+
+    expect(bedFocusDistFromLook(24.5, 15.5, closest.x, closest.y)).toBe(
+      bootDist,
+    );
+    expect(bedFocusMulFromLook(bootDist, 0)).toBe(bootMul);
+    expect(bedFocusMulAfterRestart(bootDist, true)).toBe(1);
+    expect(bedRingVisibleAfterRestart(bootDist, true)).toBe(false);
+    expect(bedRingVisibleAfterRestart(leftoverCtorDist)).toBe(true);
+  });
+
+  test("vivo tick no usa el helper (pulso avanza con elapsed)", () => {
+    const barrio = createNeighborhood(48);
+    const beds: { x: number; y: number }[] = [];
+    barrio.map.forEach((tx, ty, tile) => {
+      if (tile.variant === "bed") beds.push({ x: tx + 0.5, y: ty + 0.5 });
+    });
+    const closest = beds.reduce((best, bed) => {
+      const d = bedFocusDistAfterRestart(bed.x, bed.y);
+      return d < best.d ? { x: bed.x, y: bed.y, d } : best;
+    }, { x: beds[0]!.x, y: beds[0]!.y, d: Infinity });
+    const bootDist = closest.d;
+    const bootMul = bedFocusMulAfterRestart(bootDist);
+    const bootElapsed = bedFocusElapsedAfterRestart();
+    const liveElapsed = bedFocusElapsedFromLook(
+      Math.PI / (2 * BED_FOCUS_PULSE_SPEED),
+    );
+    const liveMulNear = bedFocusMulFromLook(0, liveElapsed);
+    const liveLookX = bedFocusLookXFromLook(40);
+    const liveLookZ = bedFocusLookZFromLook(30);
+    const liveDist = bedFocusDistFromLook(40, 30, closest.x, closest.y);
+    expect(liveElapsed).not.toBe(bootElapsed);
+    expect(liveElapsed).not.toBe(bedFocusElapsedAfterRestart());
+    expect(liveMulNear).not.toBe(bootMul);
+    expect(liveMulNear).not.toBe(bedFocusMulAfterRestart(bootDist));
+    expect(liveLookX).toBe(40);
+    expect(liveLookZ).toBe(30);
+    expect(liveLookX).not.toBe(bedFocusLookXAfterRestart());
+    expect(liveLookZ).not.toBe(bedFocusLookZAfterRestart());
+    expect(liveDist).not.toBe(bootDist);
+    expect(liveDist).not.toBe(bedFocusDistAfterRestart(closest.x, closest.y));
+    expect(bedFocusMulFromLook(liveDist, liveElapsed)).toBe(1);
+    expect(bedRingVisibleFromLook(liveDist)).toBe(false);
+    expect(bedFocusLookXFromLook(24.5)).toBe(bedFocusLookXAfterRestart());
+    expect(bedFocusLookZFromLook(15.5)).toBe(bedFocusLookZAfterRestart());
+    expect(bedFocusMulFromLook(bootDist, 0)).toBe(bootMul);
+  });
+});
+
+describe("bed focus recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace bed focus fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const focusSrc = readFileSync(
+      resolve(process.cwd(), "src/render/bedFocus.ts"),
+      "utf8",
+    );
+    expect(focusSrc).toContain("bedFocusLookXAfterRestart(");
+    expect(focusSrc).toContain("bedFocusLookZAfterRestart(");
+    expect(focusSrc).toContain("bedFocusLookXFromLook(");
+    expect(focusSrc).toContain("bedFocusLookZFromLook(");
+    expect(focusSrc).toContain("bedFocusDistAfterRestart(");
+    expect(focusSrc).toContain("bedFocusDistFromLook(");
+    expect(focusSrc).toContain("bedFocusElapsedAfterRestart(");
+    expect(focusSrc).toContain("bedFocusElapsedFromLook(");
+    expect(focusSrc).toContain("bedFocusMulAfterRestart(");
+    expect(focusSrc).toContain("bedFocusMulFromLook(");
+    expect(focusSrc).toContain("bedRingVisibleAfterRestart(");
+    expect(focusSrc).toContain("bedRingVisibleFromLook(");
+    expect(focusSrc).toContain("BED_FOCUS_LOOK_X_SPAWN");
+    expect(focusSrc).toContain("BED_FOCUS_LOOK_Z_SPAWN");
+    expect(focusSrc).toMatch(
+      /bedFocusLookXAfterRestart\([\s\S]{0,200}bedFocusLookXFromLook\(/,
+    );
+    expect(focusSrc).toMatch(
+      /bedFocusLookZAfterRestart\([\s\S]{0,200}bedFocusLookZFromLook\(/,
+    );
+    expect(focusSrc).toMatch(
+      /bedFocusMulAfterRestart\([\s\S]{0,200}bedFocusMulFromLook\(/,
+    );
+    expect(focusSrc).toMatch(
+      /bedRingVisibleAfterRestart\([\s\S]{0,200}bedRingVisibleFromLook\(/,
+    );
+    expect(viewSrc).toContain("bedFocusLookXAfterRestart(");
+    expect(viewSrc).toContain("bedFocusLookZAfterRestart(");
+    expect(viewSrc).toContain("bedFocusElapsedAfterRestart(");
+    expect(viewSrc).toContain("bedFocusDistFromLook(");
+    expect(viewSrc).toContain("bedFocusMulFromLook(");
+    expect(viewSrc).toContain("bedRingVisibleFromLook(");
+    expect(viewSrc).toMatch(
+      /let bedFocusElapsed = bedFocusElapsedAfterRestart\(\)/,
+    );
+    expect(viewSrc).toMatch(
+      /applyBedFocusLook\(\s*bedFocusLookXAfterRestart\(\),\s*bedFocusLookZAfterRestart\(\),\s*bedFocusElapsed/,
+    );
+    expect(viewSrc).toMatch(
+      /const d = bedFocusDistFromLook\(\s*wx,\s*wy,\s*e\.x,\s*e\.y\)/,
+    );
+    expect(viewSrc).toMatch(
+      /const vis = bedRingVisibleFromLook\(\s*d,\s*gameOver\)/,
+    );
+    expect(viewSrc).toMatch(
+      /bedFocusMulFromLook\(\s*bestD,\s*elapsed,\s*gameOver\)/,
+    );
+    expect(viewSrc).toContain("applyBedFocusLook(");
+    expect(viewSrc).toMatch(
+      /syncBedFocus\(wx, wy, dt, gameOver = false\) \{[\s\S]{0,240}applyBedFocusLook\(wx, wy, bedFocusElapsed, gameOver\)/,
+    );
+    expect(viewSrc).not.toMatch(/let bedFocusElapsed = 0/);
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /syncInteractFocus\(dt = 0\): void \{[\s\S]{0,400}this\.view\.syncBedFocus\(/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.syncInteractFocus\(dt\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}bedFocusLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}bedFocusLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}bedFocusLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}bedFocusLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("bedFocusLookXAfterRestart(");
+    expect(gameSrc).not.toContain("bedFocusLookZAfterRestart(");
+    expect(gameSrc).not.toContain("bedFocusElapsedAfterRestart(");
+    expect(gameSrc).not.toContain("bedFocusMulAfterRestart(");
+    expect(gameSrc).not.toContain("bedRingVisibleAfterRestart(");
+    expect(gameSrc).not.toContain("bedFocusDistAfterRestart(");
+    expect(gameSrc).not.toContain("bedFocusLookXFromLook(");
+    expect(saveSrc).not.toContain("bedFocusLookXAfterRestart");
+    expect(saveSrc).not.toContain("bedFocusElapsedAfterRestart");
+    expect(saveSrc).not.toContain("bedFocusMulAfterRestart");
+    expect(saveSrc).not.toContain("bedFocusLookXFromLook");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
   });
 });
