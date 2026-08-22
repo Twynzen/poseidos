@@ -244,6 +244,7 @@ import {
   impactSparkPosYAfterRestart,
   impactSparkPosZAfterRestart,
   impactSparkPosZFromLook,
+  impactSparkLightDecayAfterRestart,
   tickImpactSpark as stepImpactSpark,
   triggerImpactSpark as startImpactSpark,
 } from "./impactSpark";
@@ -1544,7 +1545,7 @@ export function createWorldView(
     IMPACT_SPARK_LIGHT_COLOR,
     0,
     IMPACT_SPARK_LIGHT_DISTANCE,
-    IMPACT_SPARK_LIGHT_DECAY,
+    impactSparkLightDecayAfterRestart(),
   );
   impactLight.visible = impactSparkActiveAfterRestart();
   // R / dispose: pos fresco (idle 0 + TRACER_HEIGHT); leftover ctor origin 0,0 no filtra.

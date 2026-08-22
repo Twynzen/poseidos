@@ -137,6 +137,28 @@ export function impactSparkPosZAfterRestart(
   return impactSparkPosZFromLook(oz);
 }
 
+/** Idle impact decay. Ctor impactLight.decay IMPACT_SPARK_LIGHT_DECAY 1.74 = fresco. Mid-life leftover ≠ fresco. */
+export const IMPACT_SPARK_LIGHT_DECAY_SPAWN = 1.74;
+
+/**
+ * Decay que leería applyImpactSparkVisual (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle IMPACT_SPARK_LIGHT_DECAY).
+ * apply/tick no escribe decay (ctor constant).
+ */
+export function impactSparkLightDecayFromLook(decay: number): number {
+  return decay;
+}
+
+/**
+ * R / softReset: decay fresco (idle IMPACT_SPARK_LIGHT_DECAY).
+ * WorldView nace impactLight.decay AfterRestart; leftover mid-life no filtra.
+ * apply/tick no escribe decay (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function impactSparkLightDecayAfterRestart(): number {
+  return impactSparkLightDecayFromLook(IMPACT_SPARK_LIGHT_DECAY_SPAWN);
+}
+
 /**
  * HAS MUERTO / F9 load-muerto: no avanzar el spark ni pintarlo.
  * Vivo (incl. F9 load-vivo): tick/intensity de hoy.
