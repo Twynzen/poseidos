@@ -266,3 +266,25 @@ export function warmLightColorGAfterRestart(): number {
 export function warmLightColorBAfterRestart(): number {
   return warmLightColorBFromLook(WARM_LIGHT_COLOR_B_SPAWN);
 }
+
+/** Idle warm decay. Ctor warmLight.decay WARM_LIGHT_DECAY 1.74 = fresco. Mid-life leftover ≠ fresco. */
+export const WARM_LIGHT_DECAY_SPAWN = 1.74;
+
+/**
+ * Decay que leería syncWarmLight (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle WARM_LIGHT_DECAY).
+ * syncWarmLight no escribe decay (ctor constant).
+ */
+export function warmLightDecayFromLook(decay: number): number {
+  return decay;
+}
+
+/**
+ * R / softReset: decay fresco (idle WARM_LIGHT_DECAY).
+ * WorldView nace warmLight.decay AfterRestart; leftover mid-life no filtra.
+ * syncWarmLight no escribe decay (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function warmLightDecayAfterRestart(): number {
+  return warmLightDecayFromLook(WARM_LIGHT_DECAY_SPAWN);
+}
