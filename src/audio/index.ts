@@ -52,12 +52,16 @@ export {
   shouldPlayCombatSfx,
   combatBeepSpec,
   createCombatPlayer,
+  combatBeepsAfterRestart,
+  combatPlayerScheduled,
+  resetCombatPlayerAfterRestart,
   playMelee,
   playHit,
   playGun,
   playDryFire,
   type CombatSfxKind,
   type CombatBeepSpec,
+  type CombatVoice,
   type CombatPlayer,
 } from "./combatPlayer";
 

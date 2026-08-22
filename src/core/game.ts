@@ -190,6 +190,7 @@ import {
   resetAmbientPlayerAfterRestart,
   syncAmbientPlayer,
   createCombatPlayer,
+  resetCombatPlayerAfterRestart,
   playMelee,
   playHit,
   playGun,
@@ -540,6 +541,8 @@ export class Game {
     // R: pisadas frescas; no filtrar level/phase/prevPhase de la vida anterior. Mute se queda.
     resetFootstepsAfterRestart(this.footsteps);
     resetFootstepPlayerAfterRestart(this.footstepPlayer);
+    // R: corta beep leftover (hit 100ms / gun / melee). Mute se queda.
+    resetCombatPlayerAfterRestart(this.combatPlayer);
     this.gameOver = false;
     this.showInvDetail = false;
     this.lastInvUseSlot = null;
