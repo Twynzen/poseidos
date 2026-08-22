@@ -519,6 +519,28 @@ export function flashlightSpotAngleAfterRestart(): number {
   return flashlightSpotAngleFromLook(FLASHLIGHT_SPOT_ANGLE_SPAWN);
 }
 
+/** Idle spot penumbra. Ctor torchSpot.penumbra FLASHLIGHT_SPOT_PENUMBRA = fresco. Mid-life leftover ≠ fresco. */
+export const FLASHLIGHT_SPOT_PENUMBRA_SPAWN = FLASHLIGHT_SPOT_PENUMBRA;
+
+/**
+ * Penumbra que leería syncTorchLight (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle FLASHLIGHT_SPOT_PENUMBRA).
+ * syncTorchLight no escribe penumbra (ctor constant).
+ */
+export function flashlightSpotPenumbraFromLook(penumbra: number): number {
+  return penumbra;
+}
+
+/**
+ * R / softReset: penumbra fresco (idle FLASHLIGHT_SPOT_PENUMBRA).
+ * WorldView nace torchSpot.penumbra AfterRestart; leftover mid-life no filtra.
+ * syncTorchLight no escribe penumbra (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function flashlightSpotPenumbraAfterRestart(): number {
+  return flashlightSpotPenumbraFromLook(FLASHLIGHT_SPOT_PENUMBRA_SPAWN);
+}
+
 /** Idle cone visible. Ctor flashlightConeWedge.visible false = fresco. Vivo on ≠ boot. */
 export const FLASHLIGHT_CONE_VISIBLE_SPAWN = false;
 
