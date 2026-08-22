@@ -1,6 +1,10 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   createLocoBobState,
+  locoBobApplies,
   tickLocoBob,
   maxBobAmp,
   locoFreqHz,
@@ -319,5 +323,135 @@ describe("tickLocoBob", () => {
     const s = createLocoBobState(0);
     const out = tickLocoBob(s, { moving: true, sprinting: false }, 0.016);
     expect(out.phase).toBe(s.phase);
+  });
+});
+
+describe("locoBobApplies (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: no aplica; ya en reposo no-op; load-muerto no; vivo/load-vivo sí", () => {
+    expect(locoBobApplies(true)).toBe(false);
+    expect(locoBobApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(locoBobApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(locoBobApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver no avanza phase; zero offsets; vivo idle sí; dt<=0 no-op", () => {
+    const dead = createLocoBobState(0);
+    tickLocoBob(dead, { moving: false, sprinting: false }, 0.05, false);
+    const phase = dead.phase;
+    expect(phase).toBeGreaterThan(0);
+    const hidden = tickLocoBob(
+      dead,
+      { moving: false, sprinting: false },
+      0.05,
+      true,
+    );
+    expect(dead.phase).toBe(phase);
+    expect(hidden.bobY).toBe(0);
+    expect(hidden.leanZ).toBe(0);
+    expect(hidden.swayX).toBe(0);
+    expect(hidden.phase).toBe(phase);
+
+    const idle = createLocoBobState(0);
+    expect(
+      tickLocoBob(idle, { moving: false, sprinting: false }, 0.1, true),
+    ).toEqual({
+      bobY: 0,
+      leanZ: 0,
+      swayX: 0,
+      phase: 0,
+    });
+    expect(idle.phase).toBe(0);
+
+    const live = createLocoBobState(0);
+    let peak = 0;
+    let peakSway = 0;
+    for (let i = 0; i < 120; i++) {
+      const out = tickLocoBob(
+        live,
+        { moving: false, sprinting: false },
+        1 / 60,
+        false,
+      );
+      peak = Math.max(peak, Math.abs(out.bobY));
+      peakSway = Math.max(peakSway, Math.abs(out.swayX));
+    }
+    expect(live.phase).toBeGreaterThan(0);
+    expect(peak).toBeGreaterThan(IDLE_BOB_AMP * 0.5);
+    expect(peak).toBeLessThanOrEqual(IDLE_BOB_AMP + 1e-9);
+    expect(peakSway).toBeGreaterThan(IDLE_SWAY_AMP * 0.5);
+    expect(peakSway).toBeLessThanOrEqual(IDLE_SWAY_AMP + 1e-9);
+
+    const frozen = live.phase;
+    expect(
+      tickLocoBob(live, { moving: false, sprinting: false }, 0, false).phase,
+    ).toBe(frozen);
+    expect(
+      tickLocoBob(live, { moving: false, sprinting: false }, -1, false).phase,
+    ).toBe(frozen);
+    expect(
+      tickLocoBob(live, { moving: false, sprinting: false }, Number.NaN, false)
+        .phase,
+    ).toBe(frozen);
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto zeroan bob; vivo tickea; mixer death se queda", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("locoBobApplies(");
+    expect(src).toContain("this.view.hideLocoBob()");
+    expect(src).toMatch(
+      /syncLocoBobOverlay\([\s\S]{0,80}dt = 0[\s\S]{0,280}locoBobApplies\(\s*this\.gameOver/,
+    );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}this\.syncLocoBobOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}this\.syncLocoBobOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,4800}this\.syncLocoBobOverlay\(dt\)/,
+    );
+    expect(src).toMatch(
+      /this\.syncLocoBobOverlay\(dt\);\s*this\.syncHitLeanOverlay\(dt\);\s*\/\/ Mixer must keep ticking during freeze[\s\S]{0,160}this\.syncSwingPoseOverlay\(dt\);\s*this\.view\.tickPlayerLoco\(dt, false, false\)/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,4800}this\.view\.tickLocoBob\(dt/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+    expect(src).toMatch(
+      /Mixer must keep ticking during freeze[\s\S]{0,160}this\.view\.tickPlayerLoco\(dt, false, false\)/,
+    );
+
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain("locoBobApplies(");
+    expect(viewSrc).toContain("stepLocoBob(");
+    expect(viewSrc).toContain("hideLocoBob: hideBob");
+    expect(viewSrc).toContain("playerMixer.update(dt, currentRole(playerAnimator))");
+    expect(viewSrc).not.toContain(
+      "tickLocoBob(playerLoco, { moving, sprinting }, dt)",
+    );
   });
 });

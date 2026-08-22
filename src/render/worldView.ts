@@ -59,7 +59,9 @@ import {
 } from "./noiseRings";
 import {
   createLocoBobState,
-  tickLocoBob,
+  locoBobApplies,
+  tickLocoBob as stepLocoBob,
+  type LocoBobOutput,
 } from "./locoBob";
 import {
   createCharacterAnimator,
@@ -444,7 +446,7 @@ export interface WorldView {
   /**
    * Locomocion visual: silueta locoBob o mixer GLB (Idle/Walk/Run).
    * No mueve el root mundo — solo locoRoot local (bob) o mixer + yaw.
-   * Aplica last meleeSwing / hitLean overlay a rotation.x/z (tick aparte).
+   * Aplica last locoBob / meleeSwing / hitLean overlay (tick aparte).
    * Hit lean (recoil) overridea el swing mientras está activo.
    * Camera shake avanza en tickCameraShake (offset para followCamera).
    * Coloca el chevron de facing (siempre on).
@@ -457,6 +459,18 @@ export interface WorldView {
     faceX?: number,
     faceZ?: number,
   ): void;
+  /**
+   * Avanza el bob/sway procedural de silueta (fallback box).
+   * `gameOver`: HAS MUERTO / F9 load-muerto — skip tick + zero idle offsets.
+   */
+  tickLocoBob(
+    dt: number,
+    moving: boolean,
+    sprinting: boolean,
+    gameOver?: boolean,
+  ): void;
+  /** Quita bob leftover (HAS MUERTO / F9 load-muerto). Ya en reposo = no-op. */
+  hideLocoBob(): void;
   /**
    * Avanza el swing melee procedural (lean overlay).
    * `gameOver`: HAS MUERTO / F9 load-muerto — skip tick + reset overlay pose.
@@ -790,6 +804,12 @@ export function createWorldView(
     pitch: 0,
     yawBias: 0,
     active: false,
+  };
+  let locoBobOut: LocoBobOutput = {
+    bobY: 0,
+    leanZ: 0,
+    swayX: 0,
+    phase: 0,
   };
   /** Roles mixer-agnosticos; GLB opcional via candidates (Soldier first). */
   const playerAnimator = createCharacterAnimator();
@@ -1189,6 +1209,35 @@ export function createWorldView(
       return;
     }
     hitLeanOut = stepHitLean(playerHitLean, dt, gameOver);
+  }
+
+  function applyLocoBobOffsets(out: LocoBobOutput): void {
+    if (playerUsesGltfVisual && playerMixer) {
+      playerLocoRoot.position.y = 0;
+      return;
+    }
+    const pose = hitLeanOut.active ? hitLeanOut : meleeSwingOut;
+    playerLocoRoot.position.y = out.bobY;
+    playerLocoRoot.rotation.z = out.leanZ + pose.yawBias;
+    playerLocoRoot.rotation.x = out.swayX + pose.pitch;
+  }
+
+  function tickBob(
+    dt: number,
+    moving: boolean,
+    sprinting: boolean,
+    gameOver = false,
+  ): void {
+    if (!locoBobApplies(gameOver)) {
+      hideBob();
+      return;
+    }
+    locoBobOut = stepLocoBob(playerLoco, { moving, sprinting }, dt, gameOver);
+  }
+
+  function hideBob(): void {
+    locoBobOut = { bobY: 0, leanZ: 0, swayX: 0, phase: playerLoco.phase };
+    applyLocoBobOffsets(locoBobOut);
   }
 
   function hideLean(): void {
@@ -1837,7 +1886,7 @@ export function createWorldView(
         playerMixer.update(dt, currentRole(playerAnimator));
         return;
       }
-      const out = tickLocoBob(playerLoco, { moving, sprinting }, dt);
+      const out = locoBobOut;
       playerLocoRoot.position.y = out.bobY;
       playerLocoRoot.rotation.z = out.leanZ + pose.yawBias;
       playerLocoRoot.rotation.x = out.swayX + pose.pitch;
@@ -1858,6 +1907,8 @@ export function createWorldView(
     triggerMuzzleFlash() {
       startMuzzleFlash(playerMuzzle);
     },
+    tickLocoBob: tickBob,
+    hideLocoBob: hideBob,
     tickMeleeSwing: tickSwing,
     hideMeleeSwing: hideSwing,
     tickHitLean: tickLean,

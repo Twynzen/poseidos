@@ -58,6 +58,16 @@ export function createLocoBobState(phase = 0): LocoBobState {
   return { phase: Number.isFinite(phase) ? phase : 0 };
 }
 
+/**
+ * HAS MUERTO / F9 load-muerto: no avanzar el bob ni aplicar idle/walk offsets.
+ * Vivo (incl. F9 load-vivo): tick/pose de hoy.
+ * Ya en reposo = no-op; gameOver no inventa bob.
+ */
+export function locoBobApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
 function paramsFor(input: LocoBobInput): {
   freq: number;
   bobAmp: number;
@@ -98,12 +108,17 @@ function speedScale(input: LocoBobInput): number {
 /**
  * Avanza phase y devuelve offsets puros (deterministas para tests).
  * Mutates `state.phase`.
+ * gameOver → skip tick / zero idle offsets; no inventa bob.
  */
 export function tickLocoBob(
   state: LocoBobState,
   input: LocoBobInput,
   dt: number,
+  gameOver = false,
 ): LocoBobOutput {
+  if (!locoBobApplies(gameOver)) {
+    return { bobY: 0, leanZ: 0, swayX: 0, phase: state.phase };
+  }
   const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
   const p = paramsFor(input);
   const scale = speedScale(input);
