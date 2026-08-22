@@ -14,8 +14,8 @@ import {
 import {
   FACING_CHEVRON_HW,
   FACING_CHEVRON_LEN,
-  FACING_CHEVRON_OPACITY,
   facingChevronColorAfterRestart,
+  facingChevronOpacityAfterRestart,
   facingChevronOffset,
   facingChevronOffsetXAfterRestart,
   facingChevronOffsetXFromLook,
@@ -1421,7 +1421,7 @@ export function createWorldView(
   const chevronMat = new THREE.MeshBasicMaterial({
     color: facingChevronColorAfterRestart(),
     transparent: true,
-    opacity: FACING_CHEVRON_OPACITY,
+    opacity: facingChevronOpacityAfterRestart(),
     side: THREE.DoubleSide,
     depthWrite: false,
   });
