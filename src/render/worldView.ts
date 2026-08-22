@@ -650,6 +650,31 @@ export function playerHeadRoughnessAfterRestart(): number {
   return playerHeadRoughnessFromLook(PLAYER_HEAD_ROUGHNESS_SPAWN);
 }
 
+/** Metalness del player-head mesh. Ctor playerHeadMat.metalness: 0 = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_HEAD_METALNESS = 0;
+
+/** Idle player-head mesh metalness. Ctor playerHeadMat.metalness: 0 = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_HEAD_METALNESS_SPAWN = 0;
+
+/**
+ * Metalness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0).
+ * attach/tick no escriben metalness (ctor constant).
+ */
+export function playerHeadMetalnessFromLook(value: number): number {
+  return value;
+}
+
+/**
+ * R / softReset: metalness fresco (idle 0).
+ * WorldView nace playerHeadMat.metalness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben metalness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function playerHeadMetalnessAfterRestart(): number {
+  return playerHeadMetalnessFromLook(PLAYER_HEAD_METALNESS_SPAWN);
+}
+
 /** Amenaza muda: rojo oscuro. 0x6b1a1a × 1.15/canal para leerse de noche. */
 export const HOSTILE_COLOR = 0x7b1e1e;
 
@@ -1979,6 +2004,8 @@ export function createWorldView(
     color: playerHeadColorAfterRestart(),
     // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
     roughness: playerHeadRoughnessAfterRestart(),
+    // R / dispose: metalness fresco (idle); leftover mid-life metalness de la vida anterior no filtra.
+    metalness: playerHeadMetalnessAfterRestart(),
     // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
     emissive: playerHeadEmissiveAfterRestart(),
     // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
