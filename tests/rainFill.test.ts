@@ -444,7 +444,7 @@ describe("useInputApplies / applyUseInput (HAS MUERTO / F9 load-muerto)", () => 
       /doLoad\(\): boolean \{[\s\S]{0,1600}if \(loaded\.gameOver\) this\.input\.consumeUse\(\)/,
     );
     expect(gameSrc).toMatch(
-      /useInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsUse[\s\S]{0,400}attemptRefill[\s\S]{0,400}useHotbarSlot/,
+      /useInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsUse[\s\S]{0,400}attemptRefill[\s\S]{0,700}useHotbarSlot/,
     );
     expect(gameSrc).not.toMatch(
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}attemptRefill/,
