@@ -137,3 +137,26 @@ export function attemptRefill(
   }
   return { ok: true };
 }
+
+/**
+ * HAS MUERTO / F9 load-muerto: Q no aplica (se drena, no usa ni refill).
+ * Vivo (incl. F9 load-vivo): refill bajo lluvia outdoor o usa el slot, igual que hoy.
+ * No cambia reglas de consume/refill; solo gate de input.
+ */
+export function useInputApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no llama apply (inventario / needs iguales).
+ * Vivo + wants → apply(). !wants → null.
+ */
+export function applyUseInput<T>(
+  gameOver: boolean,
+  wants: boolean,
+  apply: () => T | null,
+): T | null {
+  if (!useInputApplies(gameOver) || !wants) return null;
+  return apply();
+}
