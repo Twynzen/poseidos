@@ -1,14 +1,21 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   HostileSim,
   defaultHostileSpawns,
   defaultPossessedSpawns,
+  loadAliveRuntime,
+  SPAWN_GRACE_SECONDS,
 } from "../src/ai";
 import {
   CONTROLS_HELP,
   GAME_OVER_LINE,
+  applyHelpInput,
   formatHudDebugTokens,
   formatHudStatus,
+  helpInputApplies,
+  nextShowHelp,
   formatPacifyHud,
   formatSpeedBumpHud,
   formatMoodBiasHud,
@@ -878,5 +885,127 @@ describe("death → R HUD vivo (mudos/poseídos, sin HAS MUERTO)", () => {
     expect(liveOpen).toContain("cargado");
     expect(liveOpen).toContain("diálogo poss-a");
     expect(liveOpen).not.toContain("HAS MUERTO");
+  });
+});
+
+describe("helpInputApplies / applyHelpInput / nextShowHelp (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: F1 no aplica; vivo / load-vivo sí", () => {
+    expect(helpInputApplies(true)).toBe(false);
+    expect(helpInputApplies(false)).toBe(true);
+
+    expect(nextShowHelp(true, true, true)).toBe(true);
+    expect(nextShowHelp(true, false, true)).toBe(false);
+    expect(nextShowHelp(true, true, false)).toBe(true);
+    expect(nextShowHelp(true, false, false)).toBe(false);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(helpInputApplies(deadRt.gameOver)).toBe(false);
+    expect(nextShowHelp(deadRt.gameOver, true, true)).toBe(true);
+    expect(nextShowHelp(deadRt.gameOver, false, true)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(helpInputApplies(liveRt.gameOver)).toBe(true);
+    expect(nextShowHelp(liveRt.gameOver, false, true)).toBe(true);
+    expect(nextShowHelp(liveRt.gameOver, true, true)).toBe(false);
+    expect(nextShowHelp(liveRt.gameOver, true, false)).toBe(true);
+    expect(nextShowHelp(false, false, true)).toBe(true);
+    expect(nextShowHelp(false, true, true)).toBe(false);
+    expect(nextShowHelp(false, true, false)).toBe(true);
+  });
+
+  test("gameOver + wantsToggle no flippea showHelp; vivo F1 togglea", () => {
+    let deadOpen = true;
+    expect(
+      applyHelpInput(true, true, () => {
+        deadOpen = !deadOpen;
+        return deadOpen;
+      }),
+    ).toBeNull();
+    expect(deadOpen).toBe(true);
+    expect(nextShowHelp(true, true, true)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    let deadClosed = false;
+    expect(
+      applyHelpInput(deadRt.gameOver, true, () => {
+        deadClosed = !deadClosed;
+        return deadClosed;
+      }),
+    ).toBeNull();
+    expect(deadClosed).toBe(false);
+    expect(nextShowHelp(deadRt.gameOver, false, true)).toBe(false);
+
+    let live = false;
+    const opened = applyHelpInput(false, true, () => {
+      live = !live;
+      return live;
+    });
+    expect(opened).toBe(true);
+    expect(live).toBe(true);
+    expect(
+      applyHelpInput(false, false, () => {
+        live = !live;
+        return live;
+      }),
+    ).toBeNull();
+    expect(live).toBe(true);
+
+    const liveRt = loadAliveRuntime(true);
+    const closed = applyHelpInput(liveRt.gameOver, true, () => {
+      live = !live;
+      return live;
+    });
+    expect(closed).toBe(false);
+    expect(live).toBe(false);
+    expect(nextShowHelp(false, false, true)).toBe(true);
+    expect(nextShowHelp(false, true, true)).toBe(false);
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto drenan F1 sin flip; vivo gatea", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("helpInputApplies(");
+    expect(gameSrc).toContain("nextShowHelp(");
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeHelp\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2800}consumeHelp\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,3200}if \(loaded\.gameOver\) this\.input\.consumeHelp\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /helpInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsHelp[\s\S]{0,200}nextShowHelp/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}helpInputApplies/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}helpInputApplies/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}nextShowHelp/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}nextShowHelp/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
   });
 });

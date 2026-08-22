@@ -240,3 +240,40 @@ export function formatHudStatus(input: HudStatusInput): string {
   }
   return status;
 }
+
+/**
+ * HAS MUERTO / F9 load-muerto: F1 no aplica (se drena, showHelp no flippea).
+ * Vivo (incl. F9 load-vivo): F1 togglea ayuda, igual que hoy.
+ * No esconde el muro; solo gate de input. gameOver no inventa restore.
+ */
+export function helpInputApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no llama apply (flag igual).
+ * Vivo + wants → apply(). !wants → null.
+ */
+export function applyHelpInput<T>(
+  gameOver: boolean,
+  wants: boolean,
+  apply: () => T | null,
+): T | null {
+  if (!helpInputApplies(gameOver) || !wants) return null;
+  return apply();
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: current sin cambio (abierto queda abierto, cerrado queda cerrado).
+ * Vivo + wantsToggle → flip. !wantsToggle → current. No inventa HUD copy.
+ */
+export function nextShowHelp(
+  gameOver: boolean,
+  current: boolean,
+  wantsToggle: boolean,
+): boolean {
+  if (!helpInputApplies(gameOver)) return current;
+  if (wantsToggle) return !current;
+  return current;
+}
