@@ -188,3 +188,28 @@ export function facingChevronTransparentFromLook(transparent: boolean): boolean 
 export function facingChevronTransparentAfterRestart(): boolean {
   return facingChevronTransparentFromLook(FACING_CHEVRON_TRANSPARENT_SPAWN);
 }
+
+/** DepthWrite del chevron mesh. Ctor chevronMat.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const FACING_CHEVRON_DEPTH_WRITE = false;
+
+/** Idle chevron mesh depthWrite. Ctor chevronMat.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const FACING_CHEVRON_DEPTH_WRITE_SPAWN = false;
+
+/**
+ * DepthWrite que leería place/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * place/tick no escribe depthWrite (ctor constant).
+ */
+export function facingChevronDepthWriteFromLook(depthWrite: boolean): boolean {
+  return depthWrite;
+}
+
+/**
+ * R / softReset: depthWrite fresco (idle false).
+ * WorldView nace chevronMat.depthWrite AfterRestart; leftover mid-life no filtra.
+ * place/tick no escribe depthWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function facingChevronDepthWriteAfterRestart(): boolean {
+  return facingChevronDepthWriteFromLook(FACING_CHEVRON_DEPTH_WRITE_SPAWN);
+}

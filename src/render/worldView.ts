@@ -15,6 +15,7 @@ import {
   FACING_CHEVRON_HW,
   FACING_CHEVRON_LEN,
   facingChevronColorAfterRestart,
+  facingChevronDepthWriteAfterRestart,
   facingChevronOpacityAfterRestart,
   facingChevronTransparentAfterRestart,
   facingChevronOffset,
@@ -1448,7 +1449,8 @@ export function createWorldView(
     transparent: facingChevronTransparentAfterRestart(),
     opacity: facingChevronOpacityAfterRestart(),
     side: THREE.DoubleSide,
-    depthWrite: false,
+    // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
+    depthWrite: facingChevronDepthWriteAfterRestart(),
   });
   const chevronMesh = new THREE.Mesh(chevronGeo, chevronMat);
   chevronMesh.renderOrder = 8;
