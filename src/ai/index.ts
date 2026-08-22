@@ -3,6 +3,7 @@ export {
   defaultHostileSpawns,
   defaultPossessedSpawns,
   SPAWN_GRACE_SECONDS,
+  spawnGraceAfterRestart,
   tickSpawnGrace,
   hostileDamageAllowed,
   loadAliveRuntime,

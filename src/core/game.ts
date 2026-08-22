@@ -69,6 +69,7 @@ import {
   defaultHostileSpawns,
   defaultPossessedSpawns,
   SPAWN_GRACE_SECONDS,
+  spawnGraceAfterRestart,
   tickSpawnGrace,
   hostileDamageAllowed,
   loadAliveRuntime,
@@ -568,6 +569,8 @@ export class Game {
     // R: cámara nueva = ISO_FRUSTUM; no filtrar el zoom de la vida anterior.
     this.isoFrustum = isoFrustumAfterRestart();
     this.resize();
+    // R: kit fresco = gracia de spawn; leftover 0 de la vida anterior no filtra.
+    this.spawnGrace = spawnGraceAfterRestart();
     // R: corta beep leftover (heartbeat sine 80ms). Mute se queda.
     resetHeartbeatPlayerAfterRestart(this.heartbeatPlayer);
     // R: corta beep leftover (door 90ms / loot 70ms / use 80ms). Mute se queda.

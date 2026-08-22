@@ -491,6 +491,15 @@ export function defaultPossessedSpawns(): Array<{
 /** Segundos sin daño touch tras spawnThreats / reinicio / F9 load-vivo. */
 export const SPAWN_GRACE_SECONDS = 6;
 
+/**
+ * R / softReset: kit fresco, gracia de spawn.
+ * Game.spawnGrace debe coincidir (leftover 0 de la vida anterior no filtra).
+ * F9 load no usa esto — restaura loaded.spawnGrace.
+ */
+export function spawnGraceAfterRestart(): number {
+  return SPAWN_GRACE_SECONDS;
+}
+
 /** Baja la gracia de spawn con dt (nunca negativa). */
 export function tickSpawnGrace(spawnGrace: number, dt: number): number {
   if (spawnGrace <= 0) return 0;
