@@ -1065,6 +1065,31 @@ export function furnitureRoughnessAfterRestart(): number {
   return furnitureRoughnessFromLook(FURNITURE_ROUGHNESS_SPAWN);
 }
 
+/** Metalness del furniture mesh. Ctor furnitureMat.metalness: 0 = fresco. Mid-life leftover ≠ fresco. */
+export const FURNITURE_METALNESS = 0;
+
+/** Idle furniture mesh metalness. Ctor furnitureMat.metalness: 0 = fresco. Mid-life leftover ≠ fresco. */
+export const FURNITURE_METALNESS_SPAWN = 0;
+
+/**
+ * Metalness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0).
+ * attach/tick no escriben metalness (ctor constant).
+ */
+export function furnitureMetalnessFromLook(metalness: number): number {
+  return metalness;
+}
+
+/**
+ * R / softReset: metalness fresco (idle 0).
+ * WorldView nace furnitureMat.metalness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben metalness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function furnitureMetalnessAfterRestart(): number {
+  return furnitureMetalnessFromLook(FURNITURE_METALNESS_SPAWN);
+}
+
 /** Roughness del bed mesh. Ctor bedMat.roughness: 0.85 = fresco. Mid-life leftover ≠ fresco. */
 export const BED_ROUGHNESS = 0.85;
 
@@ -1614,6 +1639,8 @@ export function createWorldView(
     color: applyNightGroundLift(FURNITURE_COLOR, lastDaylight),
     // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
     roughness: furnitureRoughnessAfterRestart(),
+    // R / dispose: metalness fresco (idle); leftover mid-life metalness de la vida anterior no filtra.
+    metalness: furnitureMetalnessAfterRestart(),
   });
   /** Cama: más baja y ancha que furniture genérico (reuse geo/mat). */
   const bedGeo = new THREE.BoxGeometry(1.0, BED_HEIGHT, BED_DEPTH);
