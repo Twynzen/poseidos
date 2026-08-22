@@ -98,7 +98,11 @@ export {
   shouldPlayHeartbeatSfx,
   heartbeatBeepSpec,
   createHeartbeatPlayer,
+  heartbeatBeepsAfterRestart,
+  heartbeatPlayerScheduled,
+  resetHeartbeatPlayerAfterRestart,
   playHeartbeat,
   type HeartbeatBeepSpec,
+  type HeartbeatVoice,
   type HeartbeatPlayer,
 } from "./heartbeatPlayer";
