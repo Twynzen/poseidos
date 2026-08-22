@@ -1383,6 +1383,31 @@ export function wallBaseRoughnessAfterRestart(): number {
   return wallBaseRoughnessFromLook(WALL_BASE_ROUGHNESS_SPAWN);
 }
 
+/** Metalness del wall-base mesh. Ctor wallBaseMat.metalness: 0 = fresco. Mid-life leftover ≠ fresco. */
+export const WALL_BASE_METALNESS = 0;
+
+/** Idle wall-base mesh metalness. Ctor wallBaseMat.metalness: 0 = fresco. Mid-life leftover ≠ fresco. */
+export const WALL_BASE_METALNESS_SPAWN = 0;
+
+/**
+ * Metalness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0).
+ * attach/tick no escriben metalness (ctor constant).
+ */
+export function wallBaseMetalnessFromLook(value: number): number {
+  return value;
+}
+
+/**
+ * R / softReset: metalness fresco (idle 0).
+ * WorldView nace wallBaseMat.metalness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben metalness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function wallBaseMetalnessAfterRestart(): number {
+  return wallBaseMetalnessFromLook(WALL_BASE_METALNESS_SPAWN);
+}
+
 /** Roughness del barricade mesh. Ctor barricadeMat.roughness: 0.75 = fresco. Mid-life leftover ≠ fresco. */
 export const BARRICADE_ROUGHNESS = 0.75;
 
@@ -1829,6 +1854,8 @@ export function createWorldView(
     color: applyNightGroundLift(WALL_BASE_COLOR, lastDaylight),
     // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
     roughness: wallBaseRoughnessAfterRestart(),
+    // R / dispose: metalness fresco (idle); leftover mid-life metalness de la vida anterior no filtra.
+    metalness: wallBaseMetalnessAfterRestart(),
   });
   const barricadeMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(BARRICADE_COLOR, lastDaylight),
