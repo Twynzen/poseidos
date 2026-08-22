@@ -277,6 +277,7 @@ import {
   fogColorAfterRestart,
   fogOpacityAfterRestart,
   fogRotXAfterRestart,
+  fogRotYAfterRestart,
   fogYAfterRestart,
   nightAmbientIntensity,
   nightSunIntensity,
@@ -3107,6 +3108,8 @@ function addTileMesh(
   fog.name = "fog";
   // R / dispose: rot X fresco (idle); leftover mid-life rot de la vida anterior no filtra.
   fog.rotation.x = fogRotXAfterRestart();
+  // R / dispose: rot Y fresco (idle); leftover mid-life rot Y de la vida anterior no filtra.
+  fog.rotation.y = fogRotYAfterRestart();
   // R / dispose: Y fresco (idle); leftover mid-life Y de la vida anterior no filtra.
   fog.position.set(x + 0.5, fogYAfterRestart(), y + 0.5);
   fog.visible = false;
