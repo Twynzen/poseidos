@@ -85,6 +85,29 @@ export function applyTalkInput<T>(
 }
 
 /**
+ * HAS MUERTO / F9 load-muerto: Esc no aplica (se drena, no cierra diálogo).
+ * Vivo (incl. F9 load-vivo): cierra panel, igual que hoy.
+ * No cambia copy ni gates; solo gate de input.
+ */
+export function cancelInputApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no llama apply (panel igual).
+ * Vivo + wants → apply(). !wants → null.
+ */
+export function applyCancelInput<T>(
+  gameOver: boolean,
+  wants: boolean,
+  apply: () => T | null,
+): T | null {
+  if (!cancelInputApplies(gameOver) || !wants) return null;
+  return apply();
+}
+
+/**
  * Calmar → ruega · Amenazar → demonio · Preguntar → lucidez · Ofrecer → ruega · Distraer → demonio.
  * Deltas calibrados para cruzar umbrales en ~2–3 interacciones.
  */
