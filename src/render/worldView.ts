@@ -44,6 +44,7 @@ import {
   flashlightConeColorAfterRestart,
   flashlightConeVertexColorsAfterRestart,
   flashlightConeSideAfterRestart,
+  flashlightConeBlendingAfterRestart,
   flashlightConeOffsetXFromLook,
   flashlightConeOffsetZFromLook,
   flashlightConeTip,
@@ -1545,7 +1546,8 @@ export function createWorldView(
     side: flashlightConeSideAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: flashlightConeDepthWriteAfterRestart(),
-    blending: THREE.AdditiveBlending,
+    // R / dispose: blending fresco (idle); leftover mid-life blending de la vida anterior no filtra.
+    blending: flashlightConeBlendingAfterRestart(),
   });
   const flashlightConeWedge = new THREE.Mesh(coneGeo, coneMat);
   flashlightConeWedge.name = "flashlightConeWedge";
