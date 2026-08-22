@@ -626,3 +626,28 @@ export function flashlightConeOpacityFromLook(opacity: number): number {
 export function flashlightConeOpacityAfterRestart(): number {
   return flashlightConeOpacityFromLook(FLASHLIGHT_CONE_OPACITY_SPAWN);
 }
+
+/** DepthWrite del flashlight cone mesh. Ctor coneMat.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const FLASHLIGHT_CONE_DEPTH_WRITE = false;
+
+/** Idle flashlight cone mesh depthWrite. Ctor coneMat.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const FLASHLIGHT_CONE_DEPTH_WRITE_SPAWN = false;
+
+/**
+ * DepthWrite que leería syncTorchLight (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * syncTorchLight no escribe depthWrite (ctor constant).
+ */
+export function flashlightConeDepthWriteFromLook(depthWrite: boolean): boolean {
+  return depthWrite;
+}
+
+/**
+ * R / softReset: depthWrite fresco (idle false).
+ * WorldView nace coneMat.depthWrite AfterRestart; leftover mid-life no filtra.
+ * syncTorchLight no escribe depthWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function flashlightConeDepthWriteAfterRestart(): boolean {
+  return flashlightConeDepthWriteFromLook(FLASHLIGHT_CONE_DEPTH_WRITE_SPAWN);
+}
