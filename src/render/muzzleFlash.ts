@@ -269,6 +269,31 @@ export function muzzleFlashTransparentAfterRestart(): boolean {
   return muzzleFlashTransparentFromLook(MUZZLE_FLASH_TRANSPARENT_SPAWN);
 }
 
+/** Blending del muzzle flash mesh. Ctor muzzleMat.blending THREE.AdditiveBlending (2) = fresco. Mid-life leftover ≠ fresco. */
+export const MUZZLE_FLASH_BLENDING = 2;
+
+/** Idle muzzle flash mesh blending. Ctor muzzleMat.blending THREE.AdditiveBlending (2) = fresco. Mid-life leftover ≠ fresco. */
+export const MUZZLE_FLASH_BLENDING_SPAWN = 2;
+
+/**
+ * Blending que leería applyMuzzleFlashVisual (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.AdditiveBlending / 2).
+ * apply/tick no escribe blending (ctor constant).
+ */
+export function muzzleFlashBlendingFromLook(blending: number): number {
+  return blending;
+}
+
+/**
+ * R / softReset: blending fresco (idle THREE.AdditiveBlending / 2).
+ * WorldView nace muzzleMat.blending AfterRestart; leftover mid-life no filtra.
+ * apply/tick no escribe blending (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function muzzleFlashBlendingAfterRestart(): number {
+  return muzzleFlashBlendingFromLook(MUZZLE_FLASH_BLENDING_SPAWN);
+}
+
 /**
  * HAS MUERTO / F9 load-muerto: no avanzar el flash ni pintarlo.
  * Vivo (incl. F9 load-vivo): tick/intensity de hoy.
