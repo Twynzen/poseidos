@@ -2,18 +2,27 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
+import { createNeighborhood } from "../src/world/neighborhood";
 import {
   DEFAULT_TRACER_TTL,
+  TRACER_COUNT_SPAWN,
   TRACER_HEIGHT,
+  TRACER_OPACITY_SPAWN,
   TRACER_TTL_MAX,
   TRACER_TTL_MIN,
   TRACER_WIDTH,
   aimAlongFacing,
   clampTracerTtl,
   tickTracerAge,
+  tracerActiveAfterRestart,
+  tracerActiveFromLook,
+  tracerCountAfterRestart,
+  tracerCountFromLook,
   tracerLength,
   tracerMidpoint,
   tracerOpacity,
+  tracerOpacityAfterRestart,
+  tracerOpacityFromLook,
   tracerOverlayApplies,
   tracerProgress,
   tracerYaw,
@@ -162,5 +171,188 @@ describe("tracerOverlayApplies (HAS MUERTO / F9 load-muerto)", () => {
     expect(viewSrc).toContain("tracerOverlayApplies(");
     expect(viewSrc).toContain("tickTracerAge(");
     expect(viewSrc).toContain("hideTracers: clearTracers");
+  });
+});
+
+describe("tracerAfterRestart (R / softReset)", () => {
+  test("tracer fresco (idle opacity 0 + pool empty); leftover ctor Three opacity 1 / count leftover no filtra", () => {
+    const barrio = createNeighborhood(48);
+    expect(barrio.spawn.x).toBe(24.5);
+    expect(barrio.spawn.y).toBe(15.5);
+
+    const bootI = tracerOpacityAfterRestart();
+    const bootA = tracerActiveAfterRestart();
+    const bootN = tracerCountAfterRestart();
+    expect(bootI).toBe(tracerOpacityFromLook(0));
+    expect(bootA).toBe(tracerActiveFromLook(false));
+    expect(bootN).toBe(tracerCountFromLook(0));
+    expect(bootI).toBe(0);
+    expect(bootA).toBe(false);
+    expect(bootN).toBe(0);
+    expect(bootI).toBe(TRACER_OPACITY_SPAWN);
+    expect(bootN).toBe(TRACER_COUNT_SPAWN);
+    expect(tracerOpacityAfterRestart()).toBe(bootI);
+    expect(tracerCountAfterRestart()).toBe(bootN);
+
+    const leftoverCtorOpacity = 1;
+    const leftoverCtorCount = 1;
+    expect(leftoverCtorOpacity).not.toBe(bootI);
+    expect(leftoverCtorCount).not.toBe(bootN);
+    expect(tracerOpacityFromLook(1)).toBe(leftoverCtorOpacity);
+    expect(tracerOpacityFromLook(1)).not.toBe(bootI);
+    expect(tracerCountFromLook(1)).toBe(leftoverCtorCount);
+    expect(tracerCountFromLook(1)).not.toBe(bootN);
+    expect(tracerOpacity(0, DEFAULT_TRACER_TTL)).toBe(leftoverCtorOpacity);
+    expect(tracerOpacity(0, DEFAULT_TRACER_TTL)).not.toBe(bootI);
+
+    const leftoverFarX = 40;
+    const leftoverFarZ = 30;
+    expect(leftoverFarX).not.toBe(barrio.spawn.x);
+    expect(leftoverFarZ).not.toBe(barrio.spawn.y);
+    expect(leftoverFarX).not.toBe(24.5);
+    expect(leftoverFarZ).not.toBe(15.5);
+
+    expect(tracerOpacityFromLook(0)).toBe(bootI);
+    expect(tracerActiveFromLook(false)).toBe(bootA);
+    expect(tracerCountFromLook(0)).toBe(bootN);
+    expect(tracerActiveFromLook(true)).not.toBe(bootA);
+  });
+
+  test("vivo tick no usa el helper (opacity avanza con look)", () => {
+    const bootI = tracerOpacityAfterRestart();
+    const bootA = tracerActiveAfterRestart();
+    const bootN = tracerCountAfterRestart();
+    const liveI = tracerOpacityFromLook(tracerOpacity(0, DEFAULT_TRACER_TTL));
+    const liveA = tracerActiveFromLook(true);
+    const liveN = tracerCountFromLook(1);
+    const liveMid = tracerOpacityFromLook(
+      tracerOpacity(DEFAULT_TRACER_TTL / 2, DEFAULT_TRACER_TTL),
+    );
+    expect(liveI).toBe(1);
+    expect(liveA).toBe(true);
+    expect(liveN).toBe(1);
+    expect(liveMid).toBeCloseTo(0.5, 5);
+    expect(liveI).not.toBe(bootI);
+    expect(liveA).not.toBe(bootA);
+    expect(liveN).not.toBe(bootN);
+    expect(liveMid).not.toBe(bootI);
+    expect(liveI).not.toBe(tracerOpacityAfterRestart());
+    expect(liveA).not.toBe(tracerActiveAfterRestart());
+    expect(liveN).not.toBe(tracerCountAfterRestart());
+    expect(liveN).toBeGreaterThan(bootN);
+
+    expect(tracerOpacityFromLook(0)).toBe(bootI);
+    expect(tracerActiveFromLook(false)).toBe(bootA);
+    expect(tracerCountFromLook(0)).toBe(bootN);
+    expect(tracerOpacityFromLook(1)).toBe(1);
+    expect(tracerCountFromLook(1)).toBe(1);
+  });
+});
+
+describe("tracer recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace tracer fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const tracerSrc = readFileSync(
+      resolve(process.cwd(), "src/render/tracers.ts"),
+      "utf8",
+    );
+    expect(tracerSrc).toContain("tracerOpacityAfterRestart(");
+    expect(tracerSrc).toContain("tracerActiveAfterRestart(");
+    expect(tracerSrc).toContain("tracerCountAfterRestart(");
+    expect(tracerSrc).toContain("tracerOpacityFromLook(");
+    expect(tracerSrc).toContain("tracerActiveFromLook(");
+    expect(tracerSrc).toContain("tracerCountFromLook(");
+    expect(tracerSrc).toContain("TRACER_OPACITY_SPAWN");
+    expect(tracerSrc).toContain("TRACER_COUNT_SPAWN");
+    expect(tracerSrc).toMatch(
+      /tracerOpacityAfterRestart\([\s\S]{0,200}tracerOpacityFromLook\(/,
+    );
+    expect(tracerSrc).toMatch(
+      /tracerCountAfterRestart\([\s\S]{0,200}tracerCountFromLook\(/,
+    );
+    expect(viewSrc).toContain("tracerOpacityAfterRestart(");
+    expect(viewSrc).toContain("tracerCountAfterRestart(");
+    expect(viewSrc).toContain("tracerOpacityFromLook(");
+    expect(viewSrc).toMatch(
+      /opacity:\s*tracerOpacityAfterRestart\(\)/,
+    );
+    expect(viewSrc).toMatch(
+      /liveTracers: LiveTracer\[\] = new Array\(tracerCountAfterRestart\(\)\)/,
+    );
+    expect(viewSrc).toContain(
+      "mat.opacity = tracerOpacityFromLook(tracerOpacity(0, life))",
+    );
+    expect(viewSrc).toContain(
+      "const op = tracerOpacityFromLook(tracerOpacity(t.age, t.ttl))",
+    );
+    expect(viewSrc).toMatch(
+      /TRACER_COLOR,[\s\S]{0,200}opacity:\s*tracerOpacityAfterRestart\(\)/,
+    );
+    expect(viewSrc).not.toMatch(
+      /TRACER_COLOR,[\s\S]{0,200}opacity:\s*1,/,
+    );
+    expect(viewSrc).not.toMatch(
+      /hideTracers: clearTracers[\s\S]{0,80}tracerOpacityAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}tracerOpacityAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}tracerOpacityAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}tracerOpacityAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}tracerOpacityAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("tracerOpacityAfterRestart(");
+    expect(gameSrc).not.toContain("tracerActiveAfterRestart(");
+    expect(gameSrc).not.toContain("tracerCountAfterRestart(");
+    expect(gameSrc).not.toContain("tracerOpacityFromLook(");
+    expect(gameSrc).not.toContain("tracerActiveFromLook(");
+    expect(gameSrc).not.toContain("tracerCountFromLook(");
+    expect(saveSrc).not.toContain("tracerOpacityAfterRestart");
+    expect(saveSrc).not.toContain("tracerCountAfterRestart");
+    expect(saveSrc).not.toContain("tracerOpacityFromLook");
+    expect(saveSrc).not.toContain("tracerCountFromLook");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
   });
 });

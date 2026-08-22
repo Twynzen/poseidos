@@ -66,6 +66,60 @@ export function tracerOpacity(age: number, ttl: number): number {
   return 1 - tracerProgress(age, ttl);
 }
 
+/** Idle tracer opacity. Pool empty = 0. Three default 1 = leftover. */
+export const TRACER_OPACITY_SPAWN = 0;
+/** Idle tracer count. Ctor pool empty = fresco. Mid-life count leftover ≠ 0. */
+export const TRACER_COUNT_SPAWN = 0;
+
+/**
+ * Opacity que lee spawn/tick (look fresco o vivo).
+ * leftover ctor Three opacity 1 / mid-fade ≠ fresco (idle 0).
+ */
+export function tracerOpacityFromLook(opacity: number): number {
+  return opacity;
+}
+
+/**
+ * Active/visible que lee spawn (look fresco o vivo).
+ * leftover mid-life line ≠ fresco (pool empty).
+ */
+export function tracerActiveFromLook(active: boolean): boolean {
+  return active;
+}
+
+/**
+ * Count del pool que nace empty (look fresco o vivo).
+ * leftover mid-life count ≠ fresco (0).
+ */
+export function tracerCountFromLook(count: number): number {
+  return count;
+}
+
+/**
+ * R / softReset: opacity fresco (idle 0).
+ * WorldView nace tracerMatBase AfterRestart; leftover ctor Three 1 no filtra.
+ * spawn/tick lee tracerOpacityFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function tracerOpacityAfterRestart(): number {
+  return tracerOpacityFromLook(TRACER_OPACITY_SPAWN);
+}
+
+/**
+ * R / softReset: active fresco (false).
+ * leftover mid-life line no filtra.
+ */
+export function tracerActiveAfterRestart(): boolean {
+  return tracerActiveFromLook(false);
+}
+
+/**
+ * R / softReset: count fresco (pool empty).
+ * WorldView nace `new Array(tracerCountAfterRestart())`. leftover mid-life count no filtra.
+ */
+export function tracerCountAfterRestart(): number {
+  return tracerCountFromLook(TRACER_COUNT_SPAWN);
+}
+
 /** Longitud del segmento (mínimo epsilon para evitar NaN en escala). */
 export function tracerLength(from: TracerPoint, to: TracerPoint): number {
   return Math.max(0.05, Math.hypot(to.x - from.x, to.y - from.y));
