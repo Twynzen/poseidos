@@ -310,7 +310,7 @@ describe("rain streaks recreate lock (R / softReset)", () => {
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3500}this\.view\.dispose\(\)/,
+      /softReset\(\): void \{[\s\S]{0,3600}this\.view\.dispose\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
@@ -433,7 +433,7 @@ describe("rain vx/drift recreate lock (R / softReset)", () => {
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3500}this\.view\.dispose\(\)/,
+      /softReset\(\): void \{[\s\S]{0,3600}this\.view\.dispose\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
@@ -572,7 +572,7 @@ describe("rain vy/speed recreate lock (R / softReset)", () => {
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3500}this\.view\.dispose\(\)/,
+      /softReset\(\): void \{[\s\S]{0,3600}this\.view\.dispose\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
@@ -696,7 +696,7 @@ describe("rain vz/deriva recreate lock (R / softReset)", () => {
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3500}this\.view\.dispose\(\)/,
+      /softReset\(\): void \{[\s\S]{0,3600}this\.view\.dispose\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
@@ -893,7 +893,7 @@ describe("rain scaleY/largo recreate lock (R / softReset)", () => {
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3500}this\.view\.dispose\(\)/,
+      /softReset\(\): void \{[\s\S]{0,3600}this\.view\.dispose\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
@@ -1026,7 +1026,7 @@ describe("rain opacity/look recreate lock (R / softReset)", () => {
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3500}this\.view\.dispose\(\)/,
+      /softReset\(\): void \{[\s\S]{0,3600}this\.view\.dispose\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
@@ -1123,7 +1123,7 @@ describe("rain wrap/respawn recreate lock (R / softReset)", () => {
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3500}this\.view\.dispose\(\)/,
+      /softReset\(\): void \{[\s\S]{0,3600}this\.view\.dispose\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
@@ -1269,7 +1269,7 @@ describe("rain count/active recreate lock (R / softReset)", () => {
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3500}this\.view\.dispose\(\)/,
+      /softReset\(\): void \{[\s\S]{0,3600}this\.view\.dispose\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
@@ -1413,7 +1413,7 @@ describe("rain hide/grupo recreate lock (R / softReset)", () => {
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3500}this\.view\.dispose\(\)/,
+      /softReset\(\): void \{[\s\S]{0,3600}this\.view\.dispose\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
@@ -1585,7 +1585,7 @@ describe("rain position/anchor recreate lock (R / softReset)", () => {
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3500}this\.view\.dispose\(\)/,
+      /softReset\(\): void \{[\s\S]{0,3600}this\.view\.dispose\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,

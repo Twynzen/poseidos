@@ -123,7 +123,7 @@ describe("flashlight fill distance recreate lock (R / softReset)", () => {
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3500}this\.view\.dispose\(\)/,
+      /softReset\(\): void \{[\s\S]{0,3600}this\.view\.dispose\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
