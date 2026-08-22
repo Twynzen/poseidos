@@ -81,6 +81,7 @@ import {
 import { tileKey } from "../world/los";
 import { NoiseBus, type NoiseEvent } from "../world/noise";
 import {
+  lastRunRingAgeAfterRestart,
   noiseRingApplies,
   shouldShowNoiseRing,
   shouldSpawnNoiseRing,
@@ -523,6 +524,8 @@ export class Game {
     this.gates = new DialogueBehaviorGates();
     this.dialogue = new DialogueSession();
     this.noise = new NoiseBus();
+    // R: kit fresco = nunca sprintó; no filtrar RUN_NOISE_RING_MIN_AGE de la vida anterior.
+    this.lastRunRingAgeSec = lastRunRingAgeAfterRestart();
     this.spawnThreats();
     this.clock = new GameClock(DEFAULT_DAY_LENGTH_SEC);
     this.weather = new WeatherSystem({ initial: "drizzle" });

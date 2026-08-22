@@ -63,6 +63,15 @@ export function runNoiseRingReady(lastAge: number | null | undefined): boolean {
 }
 
 /**
+ * R / softReset: kit fresco, nunca sprintó.
+ * Game.lastRunRingAgeSec debe coincidir (un sprint <0.3s previo no filtra).
+ * F9 load no usa esto — la edad persiste (misma carrera).
+ */
+export function lastRunRingAgeAfterRestart(): number | null {
+  return null;
+}
+
+/**
  * ¿Spawnear anillo visual? Walk (y kinds no visibles) no.
  * Run además exige cooldown; door/loot/barricade/attack/gun no se throttlean.
  */

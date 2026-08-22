@@ -12,6 +12,7 @@ import {
   RUN_NOISE_RING_MIN_AGE,
   applyNoiseRingTick,
   createNoiseRing,
+  lastRunRingAgeAfterRestart,
   noiseRingApplies,
   ringColorHex,
   ringOpacity,
@@ -313,5 +314,93 @@ describe("noiseRingApplies (HAS MUERTO / F9 load-muerto)", () => {
     expect(viewSrc).toContain("noiseRingApplies(");
     expect(viewSrc).toContain("applyNoiseRingTick(");
     expect(viewSrc).toContain("hideNoiseRings: clearNoiseRings");
+  });
+});
+
+describe("lastRunRingAgeAfterRestart (R / softReset)", () => {
+  test("reinicio → null; edad previa no filtra", () => {
+    expect(lastRunRingAgeAfterRestart()).toBeNull();
+    expect(shouldSpawnNoiseRing("run", lastRunRingAgeAfterRestart())).toBe(
+      true,
+    );
+    expect(runNoiseRingReady(lastRunRingAgeAfterRestart())).toBe(true);
+
+    let current: number | null = 0;
+    expect(shouldSpawnNoiseRing("run", current)).toBe(false);
+    current = lastRunRingAgeAfterRestart();
+    expect(current).toBeNull();
+    expect(current).not.toBe(0);
+    expect(shouldSpawnNoiseRing("run", current)).toBe(true);
+
+    current = 0.2;
+    expect(shouldSpawnNoiseRing("run", current)).toBe(false);
+    current = lastRunRingAgeAfterRestart();
+    expect(current).toBeNull();
+    expect(current).not.toBe(0.2);
+    expect(shouldSpawnNoiseRing("run", current)).toBe(true);
+
+    current = 0.30275;
+    expect(runNoiseRingReady(current)).toBe(false);
+    current = lastRunRingAgeAfterRestart();
+    expect(runNoiseRingReady(current)).toBe(true);
+  });
+
+  test("vivo sprint no usa el helper (shouldSpawnNoiseRing igual que hoy)", () => {
+    expect(shouldSpawnNoiseRing("run")).toBe(true);
+    expect(shouldSpawnNoiseRing("run", null)).toBe(true);
+    expect(shouldSpawnNoiseRing("run", 0)).toBe(false);
+    expect(shouldSpawnNoiseRing("run", 0.2)).toBe(false);
+    expect(shouldSpawnNoiseRing("run", 0.30275)).toBe(false);
+    expect(shouldSpawnNoiseRing("run", 0.30276)).toBe(true);
+    expect(shouldSpawnNoiseRing("run", 0.348)).toBe(true);
+    expect(shouldSpawnNoiseRing("run", 0)).not.toBe(
+      shouldSpawnNoiseRing("run", lastRunRingAgeAfterRestart()),
+    );
+    expect(shouldSpawnNoiseRing("walk", lastRunRingAgeAfterRestart())).toBe(
+      false,
+    );
+    expect(shouldSpawnNoiseRing("door", 0)).toBe(true);
+    expect(shouldSpawnNoiseRing("gun", 0)).toBe(true);
+  });
+
+  test("Game softReset asigna helper; F9 load no toca age; freeze drena R/F9/M", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("lastRunRingAgeAfterRestart(");
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,1600}this\.lastRunRingAgeSec = lastRunRingAgeAfterRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.noise = new NoiseBus\(\);[\s\S]{0,200}this\.lastRunRingAgeSec = lastRunRingAgeAfterRestart\(\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}lastRunRingAgeAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}this\.lastRunRingAgeSec\s*=/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2000}lastRunRingAgeAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2000}this\.lastRunRingAgeSec\s*=/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}lastRunRingAgeAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}this\.lastRunRingAgeSec\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
   });
 });
