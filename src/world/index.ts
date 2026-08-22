@@ -41,6 +41,8 @@ export {
   isIndoor,
   warmLightAnchor,
   warmLightIntensity,
+  warmLightFromClock,
+  warmLightAfterRestart,
   INDOOR_RADIUS,
   INDOOR_SOLID_THRESHOLD,
   type WarmLightAnchor,

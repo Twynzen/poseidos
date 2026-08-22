@@ -4,6 +4,7 @@
  * outdoor = calle abierta con pocos muros cercanos.
  */
 
+import { clockAfterRestart } from "../core/clock";
 import type { TileMap } from "./tilemap";
 
 /** Radio Chebyshev para muestrear vecindario. */
@@ -79,4 +80,23 @@ export function warmLightIntensity(indoor: boolean, daylight: number): number {
   // daylight 0.08 noche … 1 mediodía; arranca a ~0.45
   const night = Math.max(0, 1 - daylight / 0.45);
   return Math.min(1, night * night);
+}
+
+/**
+ * Intensidad warm que lee syncLighting (clock fresco o vivo).
+ * Outdoor / día → 0; noche indoor → night².
+ */
+export function warmLightFromClock(
+  indoor: boolean,
+  clock: { daylight: number },
+): number {
+  return warmLightIntensity(indoor, clock.daylight);
+}
+
+/**
+ * R / softReset: luz cálida del clock fresco (medianoche).
+ * leftover noon indoor no filtra. F9 / enterGameOver / freeze no assign.
+ */
+export function warmLightAfterRestart(indoor: boolean): number {
+  return warmLightFromClock(indoor, clockAfterRestart());
 }

@@ -232,7 +232,7 @@ import {
 import {
   isIndoor,
   warmLightAnchor,
-  warmLightIntensity,
+  warmLightFromClock,
 } from "../world/indoor";
 import {
   WeatherSystem,
@@ -597,6 +597,7 @@ export class Game {
     this.syncHostileView();
     this.syncSpeechOverlay();
     this.syncDialoguePanel();
+    // R: sky/fog/warm del clock fresco; leftover noon / storm-night no filtra.
     this.syncLighting();
     this.view.followCamera(this.player.x, this.player.y);
     // R: pintar HUD vivo ya (no esperar 0.25s del freeze path).
@@ -658,7 +659,7 @@ export class Game {
   private syncLighting(): void {
     this.view.syncDayNight(this.clock);
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
-    const inten = warmLightIntensity(indoor, this.clock.daylight);
+    const inten = warmLightFromClock(indoor, this.clock);
     const anchor = warmLightAnchor(this.map, this.player.x, this.player.y);
     this.view.syncWarmLight(anchor.x, anchor.y, inten);
     const has = hasFlashlight(this.player.inventory);
