@@ -56,6 +56,8 @@ export {
   barricadeFailMessage,
   tryBuildBarricade,
   attemptBuildBarricade,
+  buildInputApplies,
+  applyBuildInput,
   tryCraftBandage,
   craftFullMessage,
   craftInputApplies,
