@@ -1043,9 +1043,9 @@ describe("resetInventoryPanelAfterRestart (R / softReset)", () => {
     const closeFn = invSrc.match(/if \(!view\.open\) \{[\s\S]*?return;\s*\}/);
     expect(closeFn?.[0]).toBeTruthy();
     expect(closeFn![0]).toMatch(/panel\.hidden = true/);
-    expect(closeFn![0]).not.toMatch(/resetAfterRestart/);
-    expect(closeFn![0]).not.toMatch(/endDrag/);
-    expect(closeFn![0]).not.toMatch(/inv-slot-dragging/);
+    expect(closeFn![0]).not.toMatch(/resetAfterRestart\s*\(/);
+    expect(closeFn![0]).not.toMatch(/endDrag\s*\(/);
+    expect(closeFn![0]).not.toMatch(/classList\.(?:add|remove)/);
 
     const gameSrc = readFileSync(
       resolve(process.cwd(), "src/core/game.ts"),

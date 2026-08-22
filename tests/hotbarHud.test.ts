@@ -644,9 +644,9 @@ describe("resetHotbarHudAfterRestart (R / softReset)", () => {
     const hideFn = hudSrc.match(/hide\(\) \{[\s\S]*?\n    \},/);
     expect(hideFn?.[0]).toBeTruthy();
     expect(hideFn![0]).toMatch(/bar\.hidden = true/);
-    expect(hideFn![0]).not.toMatch(/resetAfterRestart/);
-    expect(hideFn![0]).not.toMatch(/endDrag/);
-    expect(hideFn![0]).not.toMatch(/hotbar-dragging/);
+    expect(hideFn![0]).not.toMatch(/resetAfterRestart\s*\(/);
+    expect(hideFn![0]).not.toMatch(/endDrag\s*\(/);
+    expect(hideFn![0]).not.toMatch(/classList\.(?:add|remove)/);
     expect(hudSrc).toMatch(
       /hide\(\): void;\s*[\s\S]{0,400}resetAfterRestart\(\): void;/,
     );
