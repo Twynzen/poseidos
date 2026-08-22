@@ -389,6 +389,10 @@ import {
   warmLightVisibleFromLook,
   warmLightYAfterRestart,
   warmLightYFromLook,
+  warmLightColorGAfterRestart,
+  warmLightColorGFromLook,
+  warmLightColorBAfterRestart,
+  warmLightColorBFromLook,
 } from "../world/indoor";
 import type { GameClock } from "../core/clock";
 import {
@@ -830,9 +834,10 @@ export function createWorldView(
 
   // Pool cálido indoor de noche (landscapes / chess board light).
   const warmLight = new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY);
-  // R / dispose: warm fresco (idle origin 0,0 / Y 1.7825 / visible false / intensity 0 / distance BASE 7.475); leftover ctor 1.6 / ctor 7.5 / mid-life no filtra.
+  // R / dispose: warm fresco (idle origin 0,0 / Y 1.7825 / visible false / intensity 0 / distance BASE 7.475 / color RGB 1 / 0.759 / 0.437); leftover ctor 1.6 / ctor 7.5 / ctor 0xffca81 / mid-life no filtra.
   warmLight.position.set(warmLightOriginXAfterRestart(), warmLightYAfterRestart(), warmLightOriginZAfterRestart());
   warmLight.visible = warmLightVisibleAfterRestart();
+  warmLight.color.setRGB(1, warmLightColorGAfterRestart(), warmLightColorBAfterRestart());
   scene.add(warmLight);
 
   // Linterna: PointLight fill + SpotLight al facing (separada de warm / muzzle).
@@ -2560,7 +2565,7 @@ export function createWorldView(
       warmLight.position.set(warmLightOriginXFromLook(wx), warmLightYFromLook(WARM_LIGHT_Y), warmLightOriginZFromLook(wy));
       warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS);
       // Tinte un poco más ámbar cuando está fuerte.
-      warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN);
+      warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN));
     },
     syncTorchLight(wx, wy, intensity) {
       const i = Math.max(0, intensity);

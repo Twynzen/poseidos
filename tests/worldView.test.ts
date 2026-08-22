@@ -1857,7 +1857,7 @@ describe("worldView warm light amber G gain", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_B = 0.437");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).not.toMatch(/export const WARM_LIGHT_AMBER_G_GAIN = 0\.08/);
@@ -1995,7 +1995,7 @@ describe("worldView warm light amber B", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).not.toMatch(/export const WARM_LIGHT_AMBER_B = 0\.38/);
@@ -2134,7 +2134,7 @@ describe("worldView warm light amber B gain", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/export const WARM_LIGHT_AMBER_B_GAIN = 0\.1[^\d]/);
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
@@ -2271,7 +2271,7 @@ describe("worldView warm light amber G", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_B = 0.437");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).not.toMatch(/export const WARM_LIGHT_AMBER_G = 0\.66/);
@@ -2412,7 +2412,7 @@ describe("worldView warm light visible eps", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -2556,7 +2556,7 @@ describe("worldView warm light decay", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -2700,7 +2700,7 @@ describe("worldView flashlight fill decay", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -2857,7 +2857,7 @@ describe("worldView flashlight spot decay", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -3014,7 +3014,7 @@ describe("worldView muzzle light decay", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -3185,7 +3185,7 @@ describe("worldView impact spark light decay", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -3375,7 +3375,7 @@ describe("worldView tracer flash decay", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -3554,7 +3554,7 @@ describe("worldView tracer flash intensity", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -3736,7 +3736,7 @@ describe("worldView tracer flash distance", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -3920,7 +3920,7 @@ describe("worldView tracer flash Y offset", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -4121,7 +4121,7 @@ describe("worldView flashlight spot target Y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -4325,7 +4325,7 @@ describe("worldView muzzle forward", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -4534,7 +4534,7 @@ describe("worldView facing chevron Y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -4878,7 +4878,7 @@ describe("worldView facing chevron tilt", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -5220,7 +5220,7 @@ describe("worldView noise ring Y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -5562,7 +5562,7 @@ describe("worldView marker ring Y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -5904,7 +5904,7 @@ describe("worldView marker icon Y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -6246,7 +6246,7 @@ describe("worldView marker icon size", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -6588,7 +6588,7 @@ describe("worldView marker badge radius", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -6930,7 +6930,7 @@ describe("worldView marker badge tilt", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -7272,7 +7272,7 @@ describe("worldView player body base Y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -7614,7 +7614,7 @@ describe("worldView player head base Y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -7956,7 +7956,7 @@ describe("worldView hostile body base Y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -8298,7 +8298,7 @@ describe("worldView hostile head base Y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -8640,7 +8640,7 @@ describe("worldView hostile mute XZ scale", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -8982,7 +8982,7 @@ describe("worldView hostile body width", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -9344,7 +9344,7 @@ describe("worldView hostile body height", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -9706,7 +9706,7 @@ describe("worldView hostile body depth", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -10063,7 +10063,7 @@ describe("worldView hostile head size", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -10428,7 +10428,7 @@ describe("worldView player head size", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -10787,7 +10787,7 @@ describe("worldView player body width", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -11146,7 +11146,7 @@ describe("worldView player body height", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -11505,7 +11505,7 @@ describe("worldView player body depth", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -11875,7 +11875,7 @@ describe("worldView wall height", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -12251,7 +12251,7 @@ describe("worldView wall base Y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -12642,7 +12642,7 @@ describe("worldView door height", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -13045,7 +13045,7 @@ describe("worldView door base Y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -13455,7 +13455,7 @@ describe("worldView door depth", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -13875,7 +13875,7 @@ describe("worldView bed height", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -14301,7 +14301,7 @@ describe("worldView bed base Y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -14734,7 +14734,7 @@ describe("worldView bed depth", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -15177,7 +15177,7 @@ describe("worldView furniture height", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -15626,7 +15626,7 @@ describe("worldView furniture xz", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -16081,7 +16081,7 @@ describe("worldView furniture base y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -16555,7 +16555,7 @@ describe("worldView barricade height", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -17031,7 +17031,7 @@ describe("worldView barricade width", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -17542,7 +17542,7 @@ describe("worldView barricade depth", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -18055,7 +18055,7 @@ describe("worldView barricade plank y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -18570,7 +18570,7 @@ describe("worldView barricade cross y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -19087,7 +19087,7 @@ describe("worldView barricade cross scale y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -19606,7 +19606,7 @@ describe("worldView barricade cross scale x", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -20127,7 +20127,7 @@ describe("worldView barricade cross scale z", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -20650,7 +20650,7 @@ describe("worldView door open x", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -21175,7 +21175,7 @@ describe("worldView barricade plank rot y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
@@ -21702,7 +21702,7 @@ describe("worldView barricade cross rot y", () => {
     expect(src).toContain("export const WARM_LIGHT_AMBER_G_GAIN = 0.092");
     expect(src).toContain("export const WARM_LIGHT_AMBER_G = 0.759");
     expect(src).toContain(
-      "warmLight.color.setRGB(1, WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN, WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN)",
+      "warmLight.color.setRGB(1, warmLightColorGFromLook(WARM_LIGHT_AMBER_G + i * WARM_LIGHT_AMBER_G_GAIN), warmLightColorBFromLook(WARM_LIGHT_AMBER_B + i * WARM_LIGHT_AMBER_B_GAIN))",
     );
     expect(src).not.toMatch(/WARM_LIGHT_AMBER_B \+ i \* 0\.1/);
     expect(src).toContain("export const WARM_LIGHT_DISTANCE_GAIN = 2.875");
