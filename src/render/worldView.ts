@@ -55,7 +55,13 @@ import {
   NOISE_RING_INNER,
   applyNoiseRingTick,
   createNoiseRing,
+  noiseRingActiveAfterRestart,
   noiseRingApplies,
+  noiseRingCountAfterRestart,
+  noiseRingOpacityAfterRestart,
+  noiseRingOpacityFromLook,
+  noiseRingScaleAfterRestart,
+  noiseRingScaleFromLook,
   ringColorHex,
   ringOpacity,
   ringScale,
@@ -1813,17 +1819,21 @@ export function createWorldView(
     mat: THREE.MeshBasicMaterial;
     state: NoiseRingState | null;
   }
-  const noiseRingPool: PooledNoiseRing[] = [];
+  // R / dispose: pool fresco (empty); leftover mid-life count no filtra.
+  const noiseRingPool: PooledNoiseRing[] = new Array(noiseRingCountAfterRestart());
   for (let i = 0; i < NOISE_RING_POOL; i++) {
+    const s = noiseRingScaleAfterRestart();
     const mat = new THREE.MeshBasicMaterial({
       color: 0xe8e8f0,
       transparent: true,
-      opacity: 0,
+      // R / dispose: opacity fresco (idle 0); leftover mid-life no filtra.
+      opacity: noiseRingOpacityAfterRestart(),
       depthWrite: false,
       side: THREE.DoubleSide,
     });
     const mesh = new THREE.Mesh(noiseRingGeo, mat);
-    mesh.visible = false;
+    mesh.visible = noiseRingActiveAfterRestart();
+    mesh.scale.set(s, 1, s);
     mesh.position.y = NOISE_RING_Y;
     scene.add(mesh);
     noiseRingPool.push({ mesh, mat, state: null });
@@ -1849,8 +1859,8 @@ export function createWorldView(
     }
     slot.state = state;
     slot.mat.color.setHex(ringColorHex(state.kind));
-    slot.mat.opacity = ringOpacity(state);
-    const s = Math.max(0.05, state.radius * ringScale(state));
+    slot.mat.opacity = noiseRingOpacityFromLook(ringOpacity(state));
+    const s = Math.max(0.05, state.radius * noiseRingScaleFromLook(ringScale(state)));
     slot.mesh.scale.set(s, 1, s);
     slot.mesh.position.set(state.x, NOISE_RING_Y, state.y);
     slot.mesh.visible = true;
@@ -1870,9 +1880,9 @@ export function createWorldView(
         p.mat.opacity = 0;
         continue;
       }
-      const s = Math.max(0.05, p.state.radius * ringScale(p.state));
+      const s = Math.max(0.05, p.state.radius * noiseRingScaleFromLook(ringScale(p.state)));
       p.mesh.scale.set(s, 1, s);
-      p.mat.opacity = ringOpacity(p.state);
+      p.mat.opacity = noiseRingOpacityFromLook(ringOpacity(p.state));
     }
   }
 
