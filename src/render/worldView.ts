@@ -1856,6 +1856,31 @@ export function wallEmissiveAfterRestart(): number {
   return wallEmissiveFromLook(WALL_EMISSIVE_SPAWN);
 }
 
+/** Intensidad del wall mesh. Ctor wallMat.emissiveIntensity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const WALL_EMISSIVE_INTENSITY = 1;
+
+/** Idle wall mesh emissiveIntensity. Ctor wallMat.emissiveIntensity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const WALL_EMISSIVE_INTENSITY_SPAWN = 1;
+
+/**
+ * Intensidad que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ */
+export function wallEmissiveIntensityFromLook(intensity: number): number {
+  return intensity;
+}
+
+/**
+ * R / softReset: intensity fresco (idle 1).
+ * WorldView nace wallMat.emissiveIntensity AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function wallEmissiveIntensityAfterRestart(): number {
+  return wallEmissiveIntensityFromLook(WALL_EMISSIVE_INTENSITY_SPAWN);
+}
+
 /** Roughness del wall-base mesh. Ctor wallBaseMat.roughness: 1 = fresco. Mid-life leftover ≠ fresco. */
 export const WALL_BASE_ROUGHNESS = 1;
 
@@ -2497,6 +2522,8 @@ export function createWorldView(
     metalness: wallMetalnessAfterRestart(),
     // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
     emissive: wallEmissiveAfterRestart(),
+    // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
+    emissiveIntensity: wallEmissiveIntensityAfterRestart(),
   });
   const wallBaseMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(WALL_BASE_COLOR, lastDaylight),
