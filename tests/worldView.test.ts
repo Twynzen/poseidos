@@ -1038,8 +1038,8 @@ describe("worldView flashlight fill Y", () => {
       "utf8",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_Y = 1\.35/);
     expect(src).not.toMatch(/torchLight\.position\.set\(0, 1\.35, 0\)/);
     expect(src).not.toMatch(/torchLight\.position\.set\(wx, 1\.35, wy\)/);
@@ -1123,8 +1123,8 @@ describe("worldView flashlight spot Y", () => {
     expect(src).not.toMatch(/torchSpot\.position\.set\(0, 1\.55, 0\)/);
     expect(src).not.toMatch(/torchSpot\.position\.set\(wx, 1\.55, wy\)/);
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const WARM_LIGHT_Y = 1.7825");
     expect(src).toContain("warmLight.position.set(wx, WARM_LIGHT_Y, wy)");
     expect(src).not.toMatch(/warmLight\.position\.set\(wx, 1\.55, wy\)/);
@@ -1225,8 +1225,8 @@ describe("worldView flashlight spot distance extra", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const WARM_LIGHT_Y = 1.7825");
     expect(src).toContain("warmLight.position.set(wx, WARM_LIGHT_Y, wy)");
     expect(src).not.toMatch(/warmLight\.position\.set\(wx, 1\.55, wy\)/);
@@ -1324,8 +1324,8 @@ describe("worldView flashlight spot distance gain", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const WARM_LIGHT_Y = 1.7825");
     expect(src).toContain("warmLight.position.set(wx, WARM_LIGHT_Y, wy)");
     expect(src).not.toMatch(/warmLight\.position\.set\(wx, 1\.55, wy\)/);
@@ -1430,8 +1430,8 @@ describe("worldView warm light intensity mul", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -1540,8 +1540,8 @@ describe("worldView warm light Y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -1651,8 +1651,8 @@ describe("worldView warm light distance base", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -1763,8 +1763,8 @@ describe("worldView warm light distance gain", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -1899,8 +1899,8 @@ describe("worldView warm light amber G gain", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -2037,8 +2037,8 @@ describe("worldView warm light amber B", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -2173,8 +2173,8 @@ describe("worldView warm light amber B gain", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -2313,8 +2313,8 @@ describe("worldView warm light amber G", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -2448,8 +2448,8 @@ describe("worldView warm light visible eps", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -2588,8 +2588,8 @@ describe("worldView warm light decay", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -2736,8 +2736,8 @@ describe("worldView flashlight fill decay", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -2888,8 +2888,8 @@ describe("worldView flashlight spot decay", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -3045,8 +3045,8 @@ describe("worldView muzzle light decay", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -3216,8 +3216,8 @@ describe("worldView impact spark light decay", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -3406,8 +3406,8 @@ describe("worldView tracer flash decay", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -3585,8 +3585,8 @@ describe("worldView tracer flash intensity", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -3767,8 +3767,8 @@ describe("worldView tracer flash distance", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -3955,8 +3955,8 @@ describe("worldView tracer flash Y offset", () => {
     expect(src).not.toMatch(/torchSpot\.target\.position\.set\(wx \+ tip\.x, 0\.12, wy \+ tip\.z\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_TARGET_Y = 0\.12/);
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -4150,8 +4150,8 @@ describe("worldView flashlight spot target Y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -4353,8 +4353,8 @@ describe("worldView muzzle forward", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -4561,8 +4561,8 @@ describe("worldView facing chevron Y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -4904,8 +4904,8 @@ describe("worldView facing chevron tilt", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -5245,8 +5245,8 @@ describe("worldView noise ring Y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -5586,8 +5586,8 @@ describe("worldView marker ring Y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -5927,8 +5927,8 @@ describe("worldView marker icon Y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -6268,8 +6268,8 @@ describe("worldView marker icon size", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -6609,8 +6609,8 @@ describe("worldView marker badge radius", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -6950,8 +6950,8 @@ describe("worldView marker badge tilt", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -7291,8 +7291,8 @@ describe("worldView player body base Y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -7632,8 +7632,8 @@ describe("worldView player head base Y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -7973,8 +7973,8 @@ describe("worldView hostile body base Y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -8314,8 +8314,8 @@ describe("worldView hostile head base Y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -8655,8 +8655,8 @@ describe("worldView hostile mute XZ scale", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -8996,8 +8996,8 @@ describe("worldView hostile body width", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -9357,8 +9357,8 @@ describe("worldView hostile body height", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -9718,8 +9718,8 @@ describe("worldView hostile body depth", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -10074,8 +10074,8 @@ describe("worldView hostile head size", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -10438,8 +10438,8 @@ describe("worldView player head size", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -10796,8 +10796,8 @@ describe("worldView player body width", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -11154,8 +11154,8 @@ describe("worldView player body height", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -11512,8 +11512,8 @@ describe("worldView player body depth", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -11881,8 +11881,8 @@ describe("worldView wall height", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -12256,8 +12256,8 @@ describe("worldView wall base Y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -12646,8 +12646,8 @@ describe("worldView door height", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -13048,8 +13048,8 @@ describe("worldView door base Y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -13457,8 +13457,8 @@ describe("worldView door depth", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -13876,8 +13876,8 @@ describe("worldView bed height", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -14301,8 +14301,8 @@ describe("worldView bed base Y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -14733,8 +14733,8 @@ describe("worldView bed depth", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -15175,8 +15175,8 @@ describe("worldView furniture height", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -15623,8 +15623,8 @@ describe("worldView furniture xz", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -16077,8 +16077,8 @@ describe("worldView furniture base y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -16550,8 +16550,8 @@ describe("worldView barricade height", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -17025,8 +17025,8 @@ describe("worldView barricade width", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -17535,8 +17535,8 @@ describe("worldView barricade depth", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -18047,8 +18047,8 @@ describe("worldView barricade plank y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -18561,8 +18561,8 @@ describe("worldView barricade cross y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -19077,8 +19077,8 @@ describe("worldView barricade cross scale y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -19595,8 +19595,8 @@ describe("worldView barricade cross scale x", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -20115,8 +20115,8 @@ describe("worldView barricade cross scale z", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -20637,8 +20637,8 @@ describe("worldView door open x", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -21161,8 +21161,8 @@ describe("worldView barricade plank rot y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
@@ -21687,8 +21687,8 @@ describe("worldView barricade cross rot y", () => {
     expect(src).toContain("torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0)");
     expect(src).toContain("torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy)");
     expect(src).toContain("export const FLASHLIGHT_FILL_Y = 1.5525");
-    expect(src).toContain("torchLight.position.set(0, FLASHLIGHT_FILL_Y, 0)");
-    expect(src).toContain("torchLight.position.set(wx, FLASHLIGHT_FILL_Y, wy)");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXAfterRestart(), FLASHLIGHT_FILL_Y, flashlightFillOriginZAfterRestart())");
+    expect(src).toContain("torchLight.position.set(flashlightFillOriginXFromLook(wx), FLASHLIGHT_FILL_Y, flashlightFillOriginZFromLook(wy))");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(

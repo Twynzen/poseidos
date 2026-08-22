@@ -249,3 +249,64 @@ export function flashlightConeOffsetZAfterRestart(): number {
     flashlightConeTip(flashlightConeYawAfterRestart()).z,
   );
 }
+
+/** Idle fill origin X. Ctor torchLight position.x 0 + visible false = fresco. Mid-life leftover ≠ 0. */
+export const FLASHLIGHT_FILL_ORIGIN_X_SPAWN = 0;
+
+/** Idle fill origin Z. Ctor torchLight position.z 0 + visible false = fresco. Mid-life leftover ≠ 0. */
+export const FLASHLIGHT_FILL_ORIGIN_Z_SPAWN = 0;
+
+/** Idle fill visible. Ctor torchLight.visible false = fresco. Vivo on ≠ boot. */
+export const FLASHLIGHT_FILL_VISIBLE_SPAWN = false;
+
+/**
+ * Origin X que lee syncTorchLight (look fresco o vivo).
+ * leftover mid-life / far 40 ≠ fresco (idle 0).
+ */
+export function flashlightFillOriginXFromLook(x: number): number {
+  return x;
+}
+
+/**
+ * Origin Z que lee syncTorchLight (look fresco o vivo).
+ * leftover mid-life / far 30 ≠ fresco (idle 0).
+ */
+export function flashlightFillOriginZFromLook(z: number): number {
+  return z;
+}
+
+/**
+ * Visible que lee syncTorchLight (look fresco o vivo).
+ * leftover mid-life on ≠ fresco (idle false).
+ */
+export function flashlightFillVisibleFromLook(visible: boolean): boolean {
+  return visible;
+}
+
+/**
+ * R / softReset: origin X fresco (idle 0).
+ * WorldView nace torchLight.position.x AfterRestart; leftover mid-life / far no filtra.
+ * syncTorchLight lee flashlightFillOriginXFromLook.
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function flashlightFillOriginXAfterRestart(): number {
+  return flashlightFillOriginXFromLook(FLASHLIGHT_FILL_ORIGIN_X_SPAWN);
+}
+
+/**
+ * R / softReset: origin Z fresco (idle 0).
+ * WorldView nace torchLight.position.z AfterRestart; leftover mid-life / far no filtra.
+ * syncTorchLight lee flashlightFillOriginZFromLook.
+ */
+export function flashlightFillOriginZAfterRestart(): number {
+  return flashlightFillOriginZFromLook(FLASHLIGHT_FILL_ORIGIN_Z_SPAWN);
+}
+
+/**
+ * R / softReset: visible fresco (idle false).
+ * WorldView nace torchLight.visible AfterRestart; leftover mid-life on no filtra.
+ * syncTorchLight lee flashlightFillVisibleFromLook.
+ */
+export function flashlightFillVisibleAfterRestart(): boolean {
+  return flashlightFillVisibleFromLook(FLASHLIGHT_FILL_VISIBLE_SPAWN);
+}
