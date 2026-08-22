@@ -3,6 +3,7 @@
  * Lee `inv.slots[0..4]` y rellena vacíos; no muta el inventario (salvo swap).
  * `hotbarIndexFromKey` mapea Digit/Numpad 1–5 → índice; el bind vive en Input.
  * `stepHotbarIndex` cicla con rueda (wrap 0..4).
+ * `hotbarSelectedAfterRestart` → 0 (R / kit fresco; F9 no).
  * Clic en slot: HotbarHud.consumeClick → Game.hotbarSelected.
  * Doble clic: HotbarHud.consumeDblClick → Game.useHotbarSlot (usar / lluvia).
  * Clic derecho: HotbarHud.consumeInspect → Game selecciona + toast (no consume).
@@ -140,6 +141,15 @@ export function nextHotbarSelected(
 ): number {
   if (!hotbarInputApplies(gameOver)) return current;
   return proposed;
+}
+
+/**
+ * R / softReset: kit fresco, highlight en slot 1 (índice 0 = water_bottle).
+ * Game.hotbarSelected debe coincidir (1–5/rueda de la vida anterior no filtra).
+ * F9 load no usa esto — la selección persiste (mismo inventario).
+ */
+export function hotbarSelectedAfterRestart(): number {
+  return 0;
 }
 
 /**
