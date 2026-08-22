@@ -172,7 +172,8 @@ import {
   RAIN_STREAK_LENGTH_DAY,
   RAIN_STREAK_WIDTH,
   rainActiveCount,
-  rainStreakOpacity,
+  rainStreakOpacityAfterRestart,
+  rainStreakOpacityFromLook,
   rainStreakScaleY,
   rainStreaksHidden,
   rainStreakNeedsWrap,
@@ -1498,7 +1499,8 @@ export function createWorldView(
   const rainMat = new THREE.MeshBasicMaterial({
     color: RAIN_COLOR,
     transparent: true,
-    opacity: 0.45,
+    // R / dispose: opacity fresco (look); leftover mid-life de la vida anterior no filtra.
+    opacity: rainStreakOpacityAfterRestart(),
     depthWrite: false,
   });
   const rainGroup = new THREE.Group();
@@ -1552,7 +1554,8 @@ export function createWorldView(
       return;
     }
     rainGroup.visible = true;
-    const op = rainStreakOpacity(i, daylight);
+    // R / dispose: look fresco; leftover mid-life opacity de la vida anterior no filtra.
+    const op = rainStreakOpacityFromLook(i, daylight);
     const active = rainActiveCount(i, daylight);
     const sy = rainStreakScaleY(daylight);
     for (let n = 0; n < rainDrops.length; n++) {
