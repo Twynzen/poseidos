@@ -651,3 +651,28 @@ export function flashlightConeDepthWriteFromLook(depthWrite: boolean): boolean {
 export function flashlightConeDepthWriteAfterRestart(): boolean {
   return flashlightConeDepthWriteFromLook(FLASHLIGHT_CONE_DEPTH_WRITE_SPAWN);
 }
+
+/** Transparent del flashlight cone mesh. Ctor coneMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const FLASHLIGHT_CONE_TRANSPARENT = true;
+
+/** Idle flashlight cone mesh transparent. Ctor coneMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const FLASHLIGHT_CONE_TRANSPARENT_SPAWN = true;
+
+/**
+ * Transparent que leería syncTorchLight (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * syncTorchLight no escribe transparent (ctor constant).
+ */
+export function flashlightConeTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle true).
+ * WorldView nace coneMat.transparent AfterRestart; leftover mid-life no filtra.
+ * syncTorchLight no escribe transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function flashlightConeTransparentAfterRestart(): boolean {
+  return flashlightConeTransparentFromLook(FLASHLIGHT_CONE_TRANSPARENT_SPAWN);
+}
