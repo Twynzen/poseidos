@@ -241,6 +241,31 @@ export function noiseRingTransparentAfterRestart(): boolean {
   return noiseRingTransparentFromLook(NOISE_RING_TRANSPARENT_SPAWN);
 }
 
+/** DepthWrite del noise-ring mesh. Ctor mat.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const NOISE_RING_DEPTH_WRITE = false;
+
+/** Idle noise-ring mesh depthWrite. Ctor mat.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const NOISE_RING_DEPTH_WRITE_SPAWN = false;
+
+/**
+ * DepthWrite que leería spawn/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * spawn/tick no escriben depthWrite (ctor constant).
+ */
+export function noiseRingDepthWriteFromLook(depthWrite: boolean): boolean {
+  return depthWrite;
+}
+
+/**
+ * R / softReset: depthWrite fresco (idle false).
+ * WorldView nace mat.depthWrite AfterRestart; leftover mid-life no filtra.
+ * spawn/tick no escriben depthWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function noiseRingDepthWriteAfterRestart(): boolean {
+  return noiseRingDepthWriteFromLook(NOISE_RING_DEPTH_WRITE_SPAWN);
+}
+
 /** Ámbar door/loot. 0xe8b060 × 1.15/canal (r clamp) para leer de noche. */
 export const NOISE_RING_AMBER = 0xffca6e;
 
