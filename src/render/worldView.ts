@@ -173,6 +173,10 @@ import {
   RAIN_STREAK_WIDTH,
   rainActiveCountAfterRestart,
   rainActiveCountFromLook,
+  rainAnchorXAfterRestart,
+  rainAnchorXFromLook,
+  rainAnchorZAfterRestart,
+  rainAnchorZFromLook,
   rainStreakOpacityAfterRestart,
   rainStreakOpacityFromLook,
   rainStreakScaleYAfterRestart,
@@ -1509,6 +1513,12 @@ export function createWorldView(
   const rainGroup = new THREE.Group();
   // R / dispose: grupo fresco (drizzle visible); leftover mid-life hide no filtra.
   rainGroup.visible = !rainStreaksHiddenAfterRestart();
+  // R / dispose: pos fresco (spawn); leftover mid-life origin 0,0 no filtra.
+  rainGroup.position.set(
+    rainAnchorXAfterRestart(),
+    0,
+    rainAnchorZAfterRestart(),
+  );
   scene.add(rainGroup);
   interface RainDrop {
     mesh: THREE.Mesh;
@@ -1543,8 +1553,8 @@ export function createWorldView(
       y,
     });
   }
-  let rainAnchorX = 0;
-  let rainAnchorZ = 0;
+  let rainAnchorX = rainAnchorXAfterRestart();
+  let rainAnchorZ = rainAnchorZAfterRestart();
 
   function syncRain(
     wx: number,
@@ -1554,9 +1564,13 @@ export function createWorldView(
     daylight = 1,
   ): void {
     const i = Math.max(0, Math.min(1, intensity));
-    rainAnchorX = wx;
-    rainAnchorZ = wy;
-    rainGroup.position.set(wx, 0, wy);
+    rainAnchorX = rainAnchorXFromLook(wx);
+    rainAnchorZ = rainAnchorZFromLook(wy);
+    rainGroup.position.set(
+      rainAnchorXFromLook(wx),
+      0,
+      rainAnchorZFromLook(wy),
+    );
     if (rainStreaksHiddenFromLook(i)) {
       rainGroup.visible = false;
       return;
