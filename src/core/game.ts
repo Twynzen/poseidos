@@ -541,7 +541,7 @@ export class Game {
     resetAmbientAfterRestart(this.ambient);
     // R: voices a 0; no rampa leftover. Mute se queda.
     resetAmbientPlayerAfterRestart(this.ambientPlayer);
-    // R: pisadas frescas; no filtrar level/phase/prevPhase de la vida anterior. Mute se queda.
+    // R: pisadas frescas + corta beep leftover (sine 45ms). Mute se queda.
     resetFootstepsAfterRestart(this.footsteps);
     resetFootstepPlayerAfterRestart(this.footstepPlayer);
     this.gameOver = false;
