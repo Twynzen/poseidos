@@ -300,3 +300,12 @@ export function nextShowHelp(
 export function hudAccAfterRestart(): number {
   return 0;
 }
+
+/**
+ * R / softReset: lastLootMsg del kit fresco (`reinicio`).
+ * Game.lastLootMsg debe coincidir (leftover death / `sin objetivo` / descansaste no filtra).
+ * F9 load no usa esto — pisa `cargado`. enterGameOver / freeze death no assign.
+ */
+export function lastLootMsgAfterRestart(): string {
+  return "reinicio";
+}

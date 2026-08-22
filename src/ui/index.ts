@@ -81,6 +81,7 @@ export {
   applyHelpInput,
   nextShowHelp,
   hudAccAfterRestart,
+  lastLootMsgAfterRestart,
   resolveGameOverCause,
   isKeepableDeathCause,
   formatPacifyHud,
