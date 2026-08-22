@@ -308,6 +308,31 @@ export function markerIconSideAfterRestart(): number {
   return markerIconSideFromLook(MARKER_ICON_SIDE_SPAWN);
 }
 
+/** Side del marker-badge mesh. Ctor badgeMat.side THREE.DoubleSide (2) = fresco. Mid-life leftover ≠ fresco. */
+export const MARKER_BADGE_SIDE = 2;
+
+/** Idle marker-badge mesh side. Ctor badgeMat.side THREE.DoubleSide (2) = fresco. Mid-life leftover ≠ fresco. */
+export const MARKER_BADGE_SIDE_SPAWN = 2;
+
+/**
+ * Side que leería attach (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.DoubleSide / 2).
+ * attach no escribe side (ctor constant).
+ */
+export function markerBadgeSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.DoubleSide / 2).
+ * WorldView nace badgeMat.side AfterRestart; leftover mid-life no filtra.
+ * attach no escribe side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function markerBadgeSideAfterRestart(): number {
+  return markerBadgeSideFromLook(MARKER_BADGE_SIDE_SPAWN);
+}
+
 /** Altura world del floatBadge mute (2.3 × 1.15, misma banda door/bed/loot; queda por encima del Soldier 1.5). */
 export const muteBadgeY = 2.645;
 
