@@ -126,3 +126,26 @@ export function attemptCook(
   }
   return { ok: true };
 }
+
+/**
+ * HAS MUERTO / F9 load-muerto: H no aplica (se drena, no cocina).
+ * Vivo (incl. F9 load-vivo): canned_food → hot_meal, igual que hoy.
+ * No cambia receta indoor/furniture ni rollback dest-lleno; solo gate de input.
+ */
+export function cookInputApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no llama apply (inventario igual).
+ * Vivo + wants → apply(). !wants → null.
+ */
+export function applyCookInput<T>(
+  gameOver: boolean,
+  wants: boolean,
+  apply: () => T | null,
+): T | null {
+  if (!cookInputApplies(gameOver) || !wants) return null;
+  return apply();
+}

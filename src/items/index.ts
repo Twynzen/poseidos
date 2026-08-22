@@ -88,6 +88,8 @@ export {
   cookFullMessage,
   tryCook,
   attemptCook,
+  cookInputApplies,
+  applyCookInput,
   type CookFailReason,
   type CookAttempt,
   type CookFail,
