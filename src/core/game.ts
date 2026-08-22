@@ -541,8 +541,6 @@ export class Game {
     // R: pisadas frescas; no filtrar level/phase/prevPhase de la vida anterior. Mute se queda.
     resetFootstepsAfterRestart(this.footsteps);
     resetFootstepPlayerAfterRestart(this.footstepPlayer);
-    // R: corta beep leftover (hit 100ms / gun / melee). Mute se queda.
-    resetCombatPlayerAfterRestart(this.combatPlayer);
     this.gameOver = false;
     this.showInvDetail = false;
     this.lastInvUseSlot = null;
@@ -550,6 +548,8 @@ export class Game {
     this.lastInvIndex = null;
     // R: kit fresco = slot 1; no filtrar 1–5/rueda de la vida anterior.
     this.hotbarSelected = hotbarSelectedAfterRestart();
+    // R: corta beep leftover (hit 100ms / gun / melee). Mute se queda.
+    resetCombatPlayerAfterRestart(this.combatPlayer);
     this.flashlightOn = false;
     this.session = new LocalLoopbackSession({
       playerX: this.player.x,

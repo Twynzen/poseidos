@@ -207,7 +207,7 @@ describe("resetCombatPlayerAfterRestart (R / softReset)", () => {
       /softReset\(\): void \{[\s\S]{0,2800}resetCombatPlayerAfterRestart\(this\.combatPlayer\)/,
     );
     expect(gameSrc).toMatch(
-      /resetFootstepPlayerAfterRestart\(this\.footstepPlayer\);[\s\S]{0,240}resetCombatPlayerAfterRestart\(this\.combatPlayer\)/,
+      /this\.hotbarSelected = hotbarSelectedAfterRestart\(\);[\s\S]{0,240}resetCombatPlayerAfterRestart\(this\.combatPlayer\)/,
     );
     expect(gameSrc).not.toMatch(
       /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}resetCombatPlayerAfterRestart/,
