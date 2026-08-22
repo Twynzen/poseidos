@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import {
   markerBadgeOpacity,
+  markerIconColorAfterRestart,
   markerIconDepthWriteAfterRestart,
   markerIconOpacityAfterRestart,
   markerIconTransparentAfterRestart,
@@ -2989,7 +2990,8 @@ function attachRoleMarkers(
         ? shared.bedLetterMap
         : null;
   const iconMat = new THREE.MeshBasicMaterial({
-    color: 0xffffff,
+    // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
+    color: markerIconColorAfterRestart(),
     ...(letterMap ? { map: letterMap } : {}),
     // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
     transparent: markerIconTransparentAfterRestart(),
