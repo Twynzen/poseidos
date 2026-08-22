@@ -81,6 +81,31 @@ export function grassRoughnessAfterRestart(): number {
   return grassRoughnessFromLook(GRASS_ROUGHNESS_SPAWN);
 }
 
+/** Metalness del césped instanced. Ctor grassMat.metalness 0 = fresco. Mid-life leftover ≠ fresco. */
+export const GRASS_METALNESS = 0;
+
+/** Idle grass mesh metalness. Ctor grassMat.metalness 0 = fresco. Mid-life leftover ≠ fresco. */
+export const GRASS_METALNESS_SPAWN = 0;
+
+/**
+ * Metalness que leería applyGrassPoses (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0).
+ * applyGrassPoses / color.setHex no escribe metalness (ctor constant).
+ */
+export function grassMetalnessFromLook(metalness: number): number {
+  return metalness;
+}
+
+/**
+ * R / softReset: metalness fresco (idle 0).
+ * WorldView nace grassMat.metalness AfterRestart; leftover mid-life no filtra.
+ * applyGrassPoses / color.setHex no escribe metalness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function grassMetalnessAfterRestart(): number {
+  return grassMetalnessFromLook(GRASS_METALNESS_SPAWN);
+}
+
 export interface GrassTile {
   tx: number;
   ty: number;
