@@ -3061,7 +3061,7 @@ describe("worldView muzzle light decay", () => {
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93");
     expect(src).toContain("new THREE.PointLight(\n    impactSparkLightColorAfterRestart(),");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -3151,7 +3151,7 @@ describe("worldView impact spark light decay", () => {
       "utf8",
     );
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -3341,7 +3341,7 @@ describe("worldView tracer flash decay", () => {
     expect(src).not.toMatch(/t\.flash\.intensity = 2\.4 \* op/);
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -3520,7 +3520,7 @@ describe("worldView tracer flash intensity", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -3702,7 +3702,7 @@ describe("worldView tracer flash distance", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -3886,7 +3886,7 @@ describe("worldView tracer flash Y offset", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -4087,7 +4087,7 @@ describe("worldView flashlight spot target Y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -4291,7 +4291,7 @@ describe("worldView muzzle forward", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -4500,7 +4500,7 @@ describe("worldView facing chevron Y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -4844,7 +4844,7 @@ describe("worldView facing chevron tilt", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -5186,7 +5186,7 @@ describe("worldView noise ring Y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -5528,7 +5528,7 @@ describe("worldView marker ring Y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -5870,7 +5870,7 @@ describe("worldView marker icon Y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -6212,7 +6212,7 @@ describe("worldView marker icon size", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -6554,7 +6554,7 @@ describe("worldView marker badge radius", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -6896,7 +6896,7 @@ describe("worldView marker badge tilt", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -7238,7 +7238,7 @@ describe("worldView player body base Y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -7580,7 +7580,7 @@ describe("worldView player head base Y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -7922,7 +7922,7 @@ describe("worldView hostile body base Y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -8264,7 +8264,7 @@ describe("worldView hostile head base Y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -8606,7 +8606,7 @@ describe("worldView hostile mute XZ scale", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -8948,7 +8948,7 @@ describe("worldView hostile body width", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -9310,7 +9310,7 @@ describe("worldView hostile body height", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -9672,7 +9672,7 @@ describe("worldView hostile body depth", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -10029,7 +10029,7 @@ describe("worldView hostile head size", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -10394,7 +10394,7 @@ describe("worldView player head size", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -10753,7 +10753,7 @@ describe("worldView player body width", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -11112,7 +11112,7 @@ describe("worldView player body height", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -11471,7 +11471,7 @@ describe("worldView player body depth", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -11841,7 +11841,7 @@ describe("worldView wall height", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -12217,7 +12217,7 @@ describe("worldView wall base Y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -12608,7 +12608,7 @@ describe("worldView door height", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -13011,7 +13011,7 @@ describe("worldView door base Y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -13421,7 +13421,7 @@ describe("worldView door depth", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -13841,7 +13841,7 @@ describe("worldView bed height", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -14267,7 +14267,7 @@ describe("worldView bed base Y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -14700,7 +14700,7 @@ describe("worldView bed depth", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -15143,7 +15143,7 @@ describe("worldView furniture height", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -15592,7 +15592,7 @@ describe("worldView furniture xz", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -16047,7 +16047,7 @@ describe("worldView furniture base y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -16521,7 +16521,7 @@ describe("worldView barricade height", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -16997,7 +16997,7 @@ describe("worldView barricade width", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -17508,7 +17508,7 @@ describe("worldView barricade depth", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -18021,7 +18021,7 @@ describe("worldView barricade plank y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -18536,7 +18536,7 @@ describe("worldView barricade cross y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -19053,7 +19053,7 @@ describe("worldView barricade cross scale y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -19572,7 +19572,7 @@ describe("worldView barricade cross scale x", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -20093,7 +20093,7 @@ describe("worldView barricade cross scale z", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -20616,7 +20616,7 @@ describe("worldView door open x", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -21141,7 +21141,7 @@ describe("worldView barricade plank rot y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");
@@ -21668,7 +21668,7 @@ describe("worldView barricade cross rot y", () => {
     expect(src).toContain("export const TRACER_FLASH_DECAY = 1.74");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
     expect(src).toContain("export const IMPACT_SPARK_LIGHT_DECAY = 1.74");
-    expect(src).toContain("IMPACT_SPARK_LIGHT_DISTANCE,\n    impactSparkLightDecayAfterRestart(),");
+    expect(src).toContain("impactSparkLightDistanceAfterRestart(),\n    impactSparkLightDecayAfterRestart(),");
     expect(src).not.toMatch(/IMPACT_SPARK_LIGHT_DISTANCE,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const IMPACT_SPARK_LIGHT_DECAY = 2/);
     expect(src).toContain("const IMPACT_SPARK_LIGHT_DISTANCE = 1.8");

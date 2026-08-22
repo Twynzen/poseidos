@@ -181,6 +181,28 @@ export function impactSparkLightColorAfterRestart(): number {
   return impactSparkLightColorFromLook(IMPACT_SPARK_LIGHT_COLOR_SPAWN);
 }
 
+/** Idle impact distance. Ctor impactLight.distance IMPACT_SPARK_LIGHT_DISTANCE 1.8 = fresco. Mid-life leftover ≠ fresco. */
+export const IMPACT_SPARK_LIGHT_DISTANCE_SPAWN = 1.8;
+
+/**
+ * Distance que leería applyImpactSparkVisual (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle IMPACT_SPARK_LIGHT_DISTANCE 1.8).
+ * apply/tick no escribe distance (ctor constant).
+ */
+export function impactSparkLightDistanceFromLook(distance: number): number {
+  return distance;
+}
+
+/**
+ * R / softReset: distance fresco (idle IMPACT_SPARK_LIGHT_DISTANCE 1.8).
+ * WorldView nace impactLight.distance AfterRestart; leftover mid-life no filtra.
+ * apply/tick no escribe distance (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function impactSparkLightDistanceAfterRestart(): number {
+  return impactSparkLightDistanceFromLook(IMPACT_SPARK_LIGHT_DISTANCE_SPAWN);
+}
+
 /**
  * HAS MUERTO / F9 load-muerto: no avanzar el spark ni pintarlo.
  * Vivo (incl. F9 load-vivo): tick/intensity de hoy.
