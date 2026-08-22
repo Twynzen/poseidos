@@ -608,6 +608,32 @@ export function possessedHeadColorAfterRestart(): number {
 
 /** Emisivo de la silueta fallback poseída (cabeza). 0x2a1040 × 1.15/canal para leerse de noche. */
 export const POSSESSED_HEAD_EMISSIVE = 0x30124a;
+
+/** Emisivo del possessed head mesh. Ctor possessedHeadMat.emissive: POSSESSED_HEAD_EMISSIVE = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_MESH_EMISSIVE = 0x30124a;
+
+/** Idle possessed head mesh emissive. Ctor possessedHeadMat.emissive: POSSESSED_HEAD_EMISSIVE = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_EMISSIVE_SPAWN = 0x30124a;
+
+/**
+ * Emisivo que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle POSSESSED_HEAD_EMISSIVE 0x30124a).
+ * attach/tick no escriben emissive (ctor constant).
+ */
+export function possessedHeadEmissiveFromLook(emissive: number): number {
+  return emissive;
+}
+
+/**
+ * R / softReset: emissive fresco (idle POSSESSED_HEAD_EMISSIVE 0x30124a).
+ * WorldView nace possessedHeadMat.emissive AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben emissive (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function possessedHeadEmissiveAfterRestart(): number {
+  return possessedHeadEmissiveFromLook(POSSESSED_HEAD_EMISSIVE_SPAWN);
+}
+
 /** Color del pool cálido indoor de noche. 0xffb070 × 1.15/canal (r clamp) para leerse de noche. */
 export const WARM_LIGHT_COLOR = 0xffca81;
 /** Multiplicador de intensidad del PointLight cálido indoor. 1.55 × 1.15 para leerse un poco más fuerte de noche. */
@@ -2005,7 +2031,8 @@ export function createWorldView(
   const possessedHeadMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
     color: possessedHeadColorAfterRestart(),
-    emissive: POSSESSED_HEAD_EMISSIVE,
+    // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
+    emissive: possessedHeadEmissiveAfterRestart(),
     emissiveIntensity: 0.7,
     roughness: 0.45,
   });
