@@ -998,6 +998,31 @@ export function possessedHeadRoughnessAfterRestart(): number {
   return possessedHeadRoughnessFromLook(POSSESSED_HEAD_ROUGHNESS_SPAWN);
 }
 
+/** Metalness del possessed head mesh. Ctor possessedHeadMat.metalness: 0 = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_METALNESS = 0;
+
+/** Idle possessed head mesh metalness. Ctor possessedHeadMat.metalness: 0 = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_METALNESS_SPAWN = 0;
+
+/**
+ * Metalness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0).
+ * attach/tick no escriben metalness (ctor constant).
+ */
+export function possessedHeadMetalnessFromLook(value: number): number {
+  return value;
+}
+
+/**
+ * R / softReset: metalness fresco (idle 0).
+ * WorldView nace possessedHeadMat.metalness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben metalness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function possessedHeadMetalnessAfterRestart(): number {
+  return possessedHeadMetalnessFromLook(POSSESSED_HEAD_METALNESS_SPAWN);
+}
+
 /** Color del pool cálido indoor de noche. 0xffb070 × 1.15/canal (r clamp) para leerse de noche. */
 export const WARM_LIGHT_COLOR = 0xffca81;
 /** Multiplicador de intensidad del PointLight cálido indoor. 1.55 × 1.15 para leerse un poco más fuerte de noche. */
@@ -2922,6 +2947,8 @@ export function createWorldView(
     emissiveIntensity: possessedHeadEmissiveIntensityAfterRestart(),
     // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
     roughness: possessedHeadRoughnessAfterRestart(),
+    // R / dispose: metalness fresco (idle); leftover mid-life metalness de la vida anterior no filtra.
+    metalness: possessedHeadMetalnessAfterRestart(),
   });
   const hostileMeshes = new Map<string, THREE.Object3D>();
   const hostileKinds = new Map<string, "mute" | "possessed">();
