@@ -544,6 +544,31 @@ export function playerBodyMetalnessAfterRestart(): number {
   return playerBodyMetalnessFromLook(PLAYER_BODY_METALNESS_SPAWN);
 }
 
+/** Emisivo del player-body mesh. Ctor playerBodyMat.emissive: 0x000000 = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_BODY_EMISSIVE = 0x000000;
+
+/** Idle player-body mesh emissive. Ctor playerBodyMat.emissive: 0x000000 = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_BODY_EMISSIVE_SPAWN = 0x000000;
+
+/**
+ * Emisivo que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0x000000).
+ * attach/tick no escriben emissive (ctor constant).
+ */
+export function playerBodyEmissiveFromLook(emissive: number): number {
+  return emissive;
+}
+
+/**
+ * R / softReset: emissive fresco (idle 0x000000).
+ * WorldView nace playerBodyMat.emissive AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben emissive (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function playerBodyEmissiveAfterRestart(): number {
+  return playerBodyEmissiveFromLook(PLAYER_BODY_EMISSIVE_SPAWN);
+}
+
 /** Color de la silueta fallback (cabeza). 0x7eb6ef × 1.15/canal (b clamp) para leerse de noche. */
 export const PLAYER_HEAD_COLOR = 0x91d1ff;
 
@@ -2073,6 +2098,8 @@ export function createWorldView(
     roughness: playerBodyRoughnessAfterRestart(),
     // R / dispose: metalness fresco (idle); leftover mid-life metalness de la vida anterior no filtra.
     metalness: playerBodyMetalnessAfterRestart(),
+    // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
+    emissive: playerBodyEmissiveAfterRestart(),
   });
   const playerHeadMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
