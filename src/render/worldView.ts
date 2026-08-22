@@ -17,6 +17,7 @@ import {
   FACING_CHEVRON_LEN,
   FACING_CHEVRON_OPACITY,
   facingChevronOffset,
+  facingChevronVisible,
 } from "./facingChevron";
 import {
   FLASHLIGHT_CONE_HALF_WIDTH,
@@ -453,7 +454,7 @@ export interface WorldView {
    * Aplica last locoBob / meleeSwing / hitLean overlay (tick aparte).
    * Hit lean (recoil) overridea el swing mientras está activo.
    * Camera shake avanza en tickCameraShake (offset para followCamera).
-   * Coloca el chevron de facing (siempre on).
+   * Coloca el chevron de facing (visible via facingChevronVisible).
    * faceX/faceZ: ejes de facing (x,z Three / mapa); opcional.
    */
   tickPlayerLoco(
@@ -475,6 +476,10 @@ export interface WorldView {
   ): void;
   /** Quita bob leftover (HAS MUERTO / F9 load-muerto). Ya en reposo = no-op. */
   hideLocoBob(): void;
+  /** Muestra el chevron de facing (vivo / F9 load-vivo). */
+  showFacingChevron(): void;
+  /** Quita chevron leftover (HAS MUERTO / F9 load-muerto). Ya oculto = no-op. */
+  hideFacingChevron(): void;
   /**
    * Avanza el swing melee procedural (lean overlay).
    * `gameOver`: HAS MUERTO / F9 load-muerto — skip tick + reset overlay pose.
@@ -1030,7 +1035,7 @@ export function createWorldView(
   muzzleLight.visible = false;
   playerMesh.add(muzzleMesh, muzzleLight);
 
-  // Chevron de facing: triángulo plano unlit (siempre visible; sin luz extra).
+  // Chevron de facing: triángulo plano unlit (visible via helper; sin luz extra).
   // Dist/len/hw/color/opacity desde facingChevron knobs; oro HUD; tilt iso.
   const chevronGeo = new THREE.BufferGeometry();
   chevronGeo.setAttribute(
@@ -1053,15 +1058,26 @@ export function createWorldView(
   });
   const chevronMesh = new THREE.Mesh(chevronGeo, chevronMat);
   chevronMesh.renderOrder = 8;
-  chevronMesh.visible = true;
+  chevronMesh.visible = facingChevronVisible(false);
   playerMesh.add(chevronMesh);
+
+  function applyFacingChevronVisible(gameOver = false): void {
+    chevronMesh.visible = facingChevronVisible(gameOver);
+  }
 
   function placeFacingChevron(): void {
     const { x, z } = facingChevronOffset(playerGltfYaw);
     chevronMesh.position.set(x, CHEVRON_Y, z);
     chevronMesh.rotation.y = playerGltfYaw;
     chevronMesh.rotation.x = CHEVRON_TILT;
-    chevronMesh.visible = true;
+  }
+
+  function showFacingChevron(): void {
+    applyFacingChevronVisible(false);
+  }
+
+  function hideFacingChevron(): void {
+    applyFacingChevronVisible(true);
   }
   placeFacingChevron();
 
@@ -1915,6 +1931,8 @@ export function createWorldView(
     },
     tickLocoBob: tickBob,
     hideLocoBob: hideBob,
+    showFacingChevron,
+    hideFacingChevron,
     tickMeleeSwing: tickSwing,
     hideMeleeSwing: hideSwing,
     tickHitLean: tickLean,

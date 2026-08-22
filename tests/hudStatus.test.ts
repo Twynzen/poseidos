@@ -979,7 +979,7 @@ describe("helpInputApplies / applyHelpInput / nextShowHelp (HAS MUERTO / F9 load
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeHelp\(\)/,
     );
     expect(gameSrc).toMatch(
-      /enterGameOver\(\): void \{[\s\S]{0,2800}consumeHelp\(\)/,
+      /enterGameOver\(\): void \{[\s\S]{0,3000}consumeHelp\(\)/,
     );
     expect(gameSrc).toMatch(
       /doLoad\(\): boolean \{[\s\S]{0,3200}if \(loaded\.gameOver\) this\.input\.consumeHelp\(\)/,

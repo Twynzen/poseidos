@@ -35,6 +35,16 @@ export interface FacingChevronOffset {
  * yaw 0 → +Z. `dist` opcional (default FACING_CHEVRON_DIST).
  * Yaw/dist no finitos → yaw 0 / dist default (offset siempre finito).
  */
+/**
+ * HAS MUERTO / F9 load-muerto: ocultar el cue de facing (no tapa el cadáver).
+ * Vivo (incl. F9 load-vivo): visible de hoy.
+ * Ya oculto = no-op; gameOver no inventa chevron.
+ */
+export function facingChevronVisible(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
 export function facingChevronOffset(
   yaw: number,
   dist: number = FACING_CHEVRON_DIST,
