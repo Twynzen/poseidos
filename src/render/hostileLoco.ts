@@ -18,6 +18,25 @@ export const HOSTILE_LOCO_RUN_SPEED = 3.5;
 export const HOSTILE_LOCO_BOB_AMP = 0;
 
 /**
+ * HAS MUERTO / F9 load-muerto: no avanzar mixer Idle de mute/poseído.
+ * Vivo (incl. F9 load-vivo): mixer/dt de hoy.
+ * No esconde meshes; solo gate de dt. gameOver no inventa hide.
+ */
+export function hostileIdleApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * dt que llega al mixer Idle. gameOver → 0 (no avanza clip).
+ * dt no finito / ≤0 → 0 (igual que un tick vacío).
+ */
+export function hostileMixerDt(dt: number, gameOver = false): number {
+  if (!hostileIdleApplies(gameOver)) return 0;
+  return Number.isFinite(dt) && dt > 0 ? dt : 0;
+}
+
+/**
  * Clasifica idle/walk/run desde desplazamiento horizontal y dt.
  * - hypot(dx,dz) ≤ IDLE_DIST → idle
  * - dt≤0 / no finito → idle (primer frame / tick inválido)

@@ -80,7 +80,11 @@ import {
 } from "./characterManifest";
 import { ISO_FRUSTUM } from "./cameraConfig";
 import { HOSTILE_VISUAL_SCALE, hostileYaw } from "./hostileFigure";
-import { hostileLocoFromDelta } from "./hostileLoco";
+import {
+  hostileIdleApplies,
+  hostileLocoFromDelta,
+  hostileMixerDt,
+} from "./hostileLoco";
 import { playerGltfYawFromMove } from "./playerFacing";
 import { applySurvivorLook } from "./survivorLook";
 import { applyPossessedLook } from "./possessedLook";
@@ -532,6 +536,7 @@ export interface WorldView {
   /**
    * Sync meshes de hostiles. `visible` respeta FOV del player (no ver through walls).
    * `dt` avanza loco Idle/Walk/Run de mute/poseído GLB (mapa y → Three z).
+   * `gameOver`: HAS MUERTO / F9 load-muerto — skip mixer Idle (dt 0; no hide meshes).
    */
   syncHostiles(
     entities: ReadonlyArray<{
@@ -545,6 +550,7 @@ export interface WorldView {
       faceZ?: number;
     }>,
     dt?: number,
+    gameOver?: boolean,
   ): void;
   syncDoor(tx: number, ty: number, open: boolean): void;
   /** Reconstruye mesh de un tile (p.ej. tras colocar barricada). */
@@ -1926,9 +1932,9 @@ export function createWorldView(
       setAction(playerAnimator, null);
       playerMixer?.syncFromAnimator(currentRole(playerAnimator));
     },
-    syncHostiles(entities, dt = 0) {
+    syncHostiles(entities, dt = 0, gameOver = false) {
       const seen = new Set<string>();
-      const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
+      const safeDt = hostileMixerDt(dt, gameOver);
       for (const e of entities) {
         seen.add(e.id);
         const kind = e.kind ?? "mute";
@@ -1972,21 +1978,24 @@ export function createWorldView(
         }
 
         // Mute/poseído GLB: Idle/Walk/Run vía delta mapa (y → z). Boxes = fallback.
+        // gameOver: skip mixer.update (dt 0); meshes / visible / yaw se quedan.
         const mixer = hostileMixers.get(e.id);
         const anim = hostileAnimators.get(e.id);
         if (mixer && anim) {
-          const last = hostileLastMapPos.get(e.id);
-          let loco: ReturnType<typeof hostileLocoFromDelta> = "idle";
-          if (last) {
-            // dx/dz: mapa x→x, mapa y→Three z
-            loco = hostileLocoFromDelta(e.x - last.x, e.y - last.y, safeDt);
+          if (hostileIdleApplies(gameOver)) {
+            const last = hostileLastMapPos.get(e.id);
+            let loco: ReturnType<typeof hostileLocoFromDelta> = "idle";
+            if (last) {
+              // dx/dz: mapa x→x, mapa y→Three z
+              loco = hostileLocoFromDelta(e.x - last.x, e.y - last.y, safeDt);
+            }
+            setLocomotion(anim, {
+              moving: loco !== "idle",
+              sprinting: loco === "run",
+            });
+            tickCharacterAnimator(anim, safeDt);
+            mixer.update(safeDt, currentRole(anim));
           }
-          setLocomotion(anim, {
-            moving: loco !== "idle",
-            sprinting: loco === "run",
-          });
-          tickCharacterAnimator(anim, safeDt);
-          mixer.update(safeDt, currentRole(anim));
           hostileLastMapPos.set(e.id, { x: e.x, y: e.y });
         }
       }
