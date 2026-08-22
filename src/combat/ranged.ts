@@ -137,3 +137,26 @@ export function aimAlongFacing(
   return { x: x + fx * r, y: y + fy * r };
 }
 
+/**
+ * HAS MUERTO / F9 load-muerto: X no aplica (se drena, no dispara).
+ * Vivo (incl. F9 load-vivo): pistola + ammo, igual que hoy.
+ * No cambia armas/munición ni ruido; solo gate de input.
+ */
+export function shootInputApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no llama apply (ammo igual).
+ * Vivo + wants → apply(). !wants → null.
+ */
+export function applyShootInput<T>(
+  gameOver: boolean,
+  wants: boolean,
+  apply: () => T | null,
+): T | null {
+  if (!shootInputApplies(gameOver) || !wants) return null;
+  return apply();
+}
+

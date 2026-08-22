@@ -21,6 +21,8 @@ export {
   consumeAmmo,
   pickRangedTarget,
   aimAlongFacing,
+  shootInputApplies,
+  applyShootInput,
   type RangedTarget,
   type RangedPick,
   type RangedReady,

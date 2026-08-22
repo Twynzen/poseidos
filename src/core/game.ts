@@ -66,7 +66,7 @@ import {
   hostileDamageAllowed,
   loadAliveRuntime,
 } from "../ai";
-import { tryApplyTouchKnockback } from "../combat";
+import { tryApplyTouchKnockback, shootInputApplies } from "../combat";
 import { tileKey } from "../world/los";
 import { NoiseBus, type NoiseEvent } from "../world/noise";
 import { shouldShowNoiseRing, shouldSpawnNoiseRing } from "../render/noiseRings";
@@ -444,11 +444,12 @@ export class Game {
     if (!hasFlashlight(this.player.inventory)) this.flashlightOn = false;
     this.noise.clear();
     this.refreshViewAfterLoad();
-    // Drain U / Q / C / H fuera del bloque close/loot: no tira ni consume ni craftea ni cocina leftover; no estira regex de hide.
+    // Drain U / Q / C / H / X fuera del bloque close/loot: no tira ni consume ni craftea ni cocina ni dispara leftover; no estira regex de hide.
     if (loaded.gameOver) this.input.consumeDrop();
     if (loaded.gameOver) this.input.consumeUse();
     if (loaded.gameOver) this.input.consumeCraft();
     if (loaded.gameOver) this.input.consumeCook();
+    if (loaded.gameOver) this.input.consumeShoot();
     this.lastLootMsg = "cargado";
     this.refreshHud(true);
     return true;
@@ -868,13 +869,14 @@ export class Game {
     // FOV ya en radio base: ocultar mudos/poseídos del anillo +4 linterna.
     this.syncHostileView();
     this.syncLighting();
-    // Drain G/E/F / U / Q / C / H al final: no loot/puerta/drop/use/craft/cook; no empuja ventanas de scan del hide.
+    // Drain G/E/F / U / Q / C / H / X al final: no loot/puerta/drop/use/craft/cook/shoot; no empuja ventanas de scan del hide.
     this.input.consumeLoot();
     this.input.consumeInteract();
     this.input.consumeDrop();
     this.input.consumeUse();
     this.input.consumeCraft();
     this.input.consumeCook();
+    this.input.consumeShoot();
   }
 
 
@@ -1163,7 +1165,7 @@ export class Game {
         this.lastLootMsg = muteHudMsg(toggleAmbientMute(this.ambient));
         this.hudAcc = 1;
       }
-      // Drain L / G / E / F / U / Q / C / H; HAS MUERTO no togglea ni lootea / abre puertas / tira / usa / craftea / cocina.
+      // Drain L / G / E / F / U / Q / C / H / X; HAS MUERTO no togglea ni lootea / abre puertas / tira / usa / craftea / cocina / dispara.
       this.input.consumeFlashlightToggle();
       this.input.consumeLoot();
       this.input.consumeInteract();
@@ -1171,6 +1173,7 @@ export class Game {
       this.input.consumeUse();
       this.input.consumeCraft();
       this.input.consumeCook();
+      this.input.consumeShoot();
       this.input.endFrame();
       this.syncAmbient(dt);
       this.syncHeartbeat(dt);
@@ -1320,7 +1323,8 @@ export class Game {
       }
     }
 
-    if (this.input.consumeShoot()) {
+    const wantsShoot = this.input.consumeShoot();
+    if (shootInputApplies(this.gameOver) && wantsShoot) {
       const shot = this.player.tryShoot(this.hostiles, this.map);
       if (shot.kind === "fail") {
         this.lastLootMsg = shot.message;
