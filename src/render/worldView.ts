@@ -170,7 +170,13 @@ import {
 import {
   bladePoseFromWindTime,
   BLADE_COLOR,
-  collectGrassTiles,
+  grassAnchorTxAfterRestart,
+  grassAnchorTxFromLook,
+  grassAnchorTyAfterRestart,
+  grassAnchorTyFromLook,
+  grassTilesAfterRestart,
+  grassTilesFromLook,
+  grassVisibleFromCount,
   grassWindTimeAfterRestart,
   GRASS_RADIUS,
   MAX_GRASS_INSTANCES,
@@ -1642,25 +1648,26 @@ export function createWorldView(
   const grassMesh = new THREE.InstancedMesh(grassGeo, grassMat, MAX_GRASS_INSTANCES);
   grassMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   grassMesh.frustumCulled = false;
-  grassMesh.count = 0;
-  grassMesh.visible = false;
   scene.add(grassMesh);
   const grassDummy = new THREE.Object3D();
-  let grassTiles: GrassTile[] = [];
-  let grassAnchorTx = Number.NaN;
-  let grassAnchorTy = Number.NaN;
+  // R / dispose: tiles fresco (spawn); leftover empty / NaN / far no filtra.
+  let grassTiles: GrassTile[] = grassTilesAfterRestart(
+    (x, y) => map.getTile(x, y)?.kind,
+  );
+  let grassAnchorTx = grassAnchorTxAfterRestart();
+  let grassAnchorTy = grassAnchorTyAfterRestart();
   // R / dispose: viento fresco (0); leftover sway de la vida anterior no filtra.
   let grassTime = grassWindTimeAfterRestart();
 
   function rebuildGrassTiles(wx: number, wy: number): void {
-    const tx = Math.floor(wx);
-    const ty = Math.floor(wy);
+    const tx = grassAnchorTxFromLook(wx);
+    const ty = grassAnchorTyFromLook(wy);
     if (tx === grassAnchorTx && ty === grassAnchorTy) return;
     grassAnchorTx = tx;
     grassAnchorTy = ty;
-    grassTiles = collectGrassTiles(
-      tx,
-      ty,
+    grassTiles = grassTilesFromLook(
+      wx,
+      wy,
       (x, y) => map.getTile(x, y)?.kind,
       GRASS_RADIUS,
     );
@@ -1684,8 +1691,11 @@ export function createWorldView(
     }
     grassMesh.count = n;
     grassMesh.instanceMatrix.needsUpdate = true;
-    grassMesh.visible = n > 0;
+    grassMesh.visible = grassVisibleFromCount(n);
   }
+
+  // R / dispose: count/visible fresco (spawn outdoor); leftover ctor 0 / hide no filtra.
+  applyGrassPoses();
 
   function syncGrass(wx: number, wy: number, dt = 0.016): void {
     grassTime = tickGrassWindTime(grassTime, dt);
