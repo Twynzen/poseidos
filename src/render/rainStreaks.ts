@@ -283,6 +283,46 @@ export function rainStreaksHiddenAfterRestart(intensity = 0.4): boolean {
   return rainStreaksHiddenFromLook(intensity);
 }
 
+/** Spawn barrio (neighborhood 24.5, 15.5). Origin 0,0 = leftover Three default. */
+export const RAIN_ANCHOR_X_SPAWN = 24.5;
+export const RAIN_ANCHOR_Z_SPAWN = 15.5;
+
+/**
+ * Origin X que lee syncRain (wx fresco o vivo).
+ * leftover mid-life (ctor 0 / far origin) ≠ pos fresco (spawn 24.5).
+ */
+export function rainAnchorXFromLook(wx: number): number {
+  return wx;
+}
+
+/**
+ * Origin Z que lee syncRain (wy fresco o vivo).
+ * leftover mid-life (ctor 0 / far origin) ≠ pos fresco (spawn 15.5).
+ */
+export function rainAnchorZFromLook(wz: number): number {
+  return wz;
+}
+
+/**
+ * R / softReset: origin X fresco (spawn 24.5).
+ * WorldView nace `rainAnchorX` / `rainGroup.position.x = rainAnchorXAfterRestart`;
+ * leftover mid-life origin no filtra.
+ * syncRain lee rainAnchorXFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function rainAnchorXAfterRestart(wx = RAIN_ANCHOR_X_SPAWN): number {
+  return rainAnchorXFromLook(wx);
+}
+
+/**
+ * R / softReset: origin Z fresco (spawn 15.5).
+ * WorldView nace `rainAnchorZ` / `rainGroup.position.z = rainAnchorZAfterRestart`;
+ * leftover mid-life origin no filtra.
+ * syncRain lee rainAnchorZFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function rainAnchorZAfterRestart(wz = RAIN_ANCHOR_Z_SPAWN): number {
+  return rainAnchorZFromLook(wz);
+}
+
 /** Opacidad: 0.3345925 + i×0.68439375; noche suma +0.39675 × nightMix. */
 export function rainStreakOpacity(intensity: number, daylight: number): number {
   const i = clamp01(intensity);

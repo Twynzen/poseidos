@@ -5,6 +5,8 @@ import {
   RAIN_ACTIVE_BASE,
   RAIN_ACTIVE_GAIN,
   RAIN_ACTIVE_MIN,
+  RAIN_ANCHOR_X_SPAWN,
+  RAIN_ANCHOR_Z_SPAWN,
   RAIN_COLOR,
   RAIN_COUNT,
   RAIN_HIDE_BELOW,
@@ -19,6 +21,10 @@ import {
   rainActiveCount,
   rainActiveCountAfterRestart,
   rainActiveCountFromLook,
+  rainAnchorXAfterRestart,
+  rainAnchorXFromLook,
+  rainAnchorZAfterRestart,
+  rainAnchorZFromLook,
   rainNightMix,
   rainStreakLength,
   rainStreakNeedsWrap,
@@ -51,6 +57,7 @@ import {
 } from "../src/render/rainStreaks";
 import { GameClock } from "../src/core/clock";
 import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
+import { createNeighborhood } from "../src/world/neighborhood";
 
 describe("constantes", () => {
   test("count 47, width 0.04959375, largo día 0.727375 / noche 1.09503, color 0xdeffff", () => {
@@ -1433,6 +1440,182 @@ describe("rain hide/grupo recreate lock (R / softReset)", () => {
     expect(gameSrc).not.toContain("rainStreaksHiddenFromLook(");
     expect(saveSrc).not.toContain("rainStreaksHiddenAfterRestart");
     expect(saveSrc).not.toContain("rainStreaksHiddenFromLook");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+  });
+});
+
+describe("rainAnchorAfterRestart (R / softReset)", () => {
+  test("pos fresco (spawn 24.5, 15.5); leftover mid-life origin no filtra", () => {
+    const bootX = rainAnchorXAfterRestart();
+    const bootZ = rainAnchorZAfterRestart();
+    const barrio = createNeighborhood(48);
+    expect(bootX).toBe(rainAnchorXFromLook(24.5));
+    expect(bootZ).toBe(rainAnchorZFromLook(15.5));
+    expect(bootX).toBe(RAIN_ANCHOR_X_SPAWN);
+    expect(bootZ).toBe(RAIN_ANCHOR_Z_SPAWN);
+    expect(bootX).toBe(barrio.spawn.x);
+    expect(bootZ).toBe(barrio.spawn.y);
+    expect(rainAnchorXAfterRestart(24.5)).toBe(bootX);
+    expect(rainAnchorZAfterRestart(15.5)).toBe(bootZ);
+    expect(rainAnchorXAfterRestart(0)).toBe(rainAnchorXFromLook(0));
+    expect(rainAnchorZAfterRestart(40)).toBe(rainAnchorZFromLook(40));
+
+    const leftoverCtorX = 0;
+    const leftoverCtorZ = 0;
+    expect(leftoverCtorX).not.toBe(bootX);
+    expect(leftoverCtorZ).not.toBe(bootZ);
+    expect(leftoverCtorX).toBe(0);
+    expect(leftoverCtorZ).toBe(0);
+    expect(rainAnchorXFromLook(24.5)).not.toBe(leftoverCtorX);
+    expect(rainAnchorZFromLook(15.5)).not.toBe(leftoverCtorZ);
+
+    const leftoverFarX = rainAnchorXFromLook(40);
+    const leftoverFarZ = rainAnchorZFromLook(30);
+    expect(leftoverFarX).toBe(40);
+    expect(leftoverFarZ).toBe(30);
+    expect(leftoverFarX).not.toBe(bootX);
+    expect(leftoverFarZ).not.toBe(bootZ);
+    expect(leftoverFarX).not.toBe(rainAnchorXAfterRestart());
+    expect(leftoverFarZ).not.toBe(rainAnchorZAfterRestart());
+
+    const leftoverOrigin = rainAnchorXFromLook(0);
+    expect(leftoverOrigin).toBe(0);
+    expect(leftoverOrigin).not.toBe(rainAnchorXAfterRestart());
+
+    expect(rainAnchorXFromLook(24.5)).toBe(bootX);
+    expect(rainAnchorZFromLook(15.5)).toBe(bootZ);
+    expect(rainStreakYFromFall(4.4, 10, 0.2, 1, true)).toBe(4.4);
+    expect(tickRainStreakY(4.4, 10, 0.2, 1, true)).toBe(4.4);
+  });
+
+  test("vivo tick no usa el helper (origin avanza con player)", () => {
+    const bootX = rainAnchorXAfterRestart();
+    const bootZ = rainAnchorZAfterRestart();
+    const liveX = rainAnchorXFromLook(40);
+    const liveZ = rainAnchorZFromLook(30);
+    expect(liveX).toBe(40);
+    expect(liveZ).toBe(30);
+    expect(liveX).not.toBe(bootX);
+    expect(liveZ).not.toBe(bootZ);
+    expect(liveX).not.toBe(rainAnchorXAfterRestart());
+    expect(liveZ).not.toBe(rainAnchorZAfterRestart());
+    expect(liveX).toBeGreaterThan(bootX);
+    expect(liveZ).toBeGreaterThan(bootZ);
+
+    expect(rainAnchorXFromLook(24.5)).toBe(bootX);
+    expect(rainAnchorZFromLook(15.5)).toBe(bootZ);
+    expect(rainAnchorXFromLook(0)).toBe(0);
+  });
+});
+
+describe("rain position/anchor recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace rain pos fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const rainSrc = readFileSync(
+      resolve(process.cwd(), "src/render/rainStreaks.ts"),
+      "utf8",
+    );
+    expect(rainSrc).toContain("rainAnchorXAfterRestart(");
+    expect(rainSrc).toContain("rainAnchorZAfterRestart(");
+    expect(rainSrc).toContain("rainAnchorXFromLook(");
+    expect(rainSrc).toContain("rainAnchorZFromLook(");
+    expect(rainSrc).toContain("RAIN_ANCHOR_X_SPAWN");
+    expect(rainSrc).toContain("RAIN_ANCHOR_Z_SPAWN");
+    expect(rainSrc).toMatch(
+      /rainAnchorXAfterRestart\([\s\S]{0,200}rainAnchorXFromLook\(/,
+    );
+    expect(rainSrc).toMatch(
+      /rainAnchorZAfterRestart\([\s\S]{0,200}rainAnchorZFromLook\(/,
+    );
+    expect(viewSrc).toContain("rainAnchorXAfterRestart(");
+    expect(viewSrc).toContain("rainAnchorZAfterRestart(");
+    expect(viewSrc).toContain("rainAnchorXFromLook(");
+    expect(viewSrc).toContain("rainAnchorZFromLook(");
+    expect(viewSrc).toMatch(
+      /rainGroup\.position\.set\(\s*rainAnchorXAfterRestart\(\s*\),\s*0,\s*rainAnchorZAfterRestart\(\s*\)/,
+    );
+    expect(viewSrc).toMatch(
+      /let rainAnchorX = rainAnchorXAfterRestart\(\s*\)/,
+    );
+    expect(viewSrc).toMatch(
+      /let rainAnchorZ = rainAnchorZAfterRestart\(\s*\)/,
+    );
+    expect(viewSrc).toMatch(
+      /rainAnchorX = rainAnchorXFromLook\(\s*wx\)/,
+    );
+    expect(viewSrc).toMatch(
+      /rainAnchorZ = rainAnchorZFromLook\(\s*wy\)/,
+    );
+    expect(viewSrc).toMatch(
+      /rainGroup\.position\.set\(\s*rainAnchorXFromLook\(\s*wx\),\s*0,\s*rainAnchorZFromLook\(\s*wy\)/,
+    );
+    expect(viewSrc).toContain("rainStreakYFromFall(");
+    expect(viewSrc).not.toMatch(/let rainAnchorX = 0/);
+    expect(viewSrc).not.toMatch(/let rainAnchorZ = 0/);
+    expect(viewSrc).not.toContain("rainGroup.position.set(wx, 0, wy)");
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /syncRainVisual\(dt = 0\): void \{[\s\S]{0,360}rainVisualApplies\(\s*this\.gameOver\) \? dt : 0/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.syncRainVisual\(dt\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}rainAnchorXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}rainAnchorXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}rainAnchorXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}rainAnchorXAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("rainAnchorXAfterRestart(");
+    expect(gameSrc).not.toContain("rainAnchorZAfterRestart(");
+    expect(gameSrc).not.toContain("rainAnchorXFromLook(");
+    expect(gameSrc).not.toContain("rainAnchorZFromLook(");
+    expect(saveSrc).not.toContain("rainAnchorXAfterRestart");
+    expect(saveSrc).not.toContain("rainAnchorZAfterRestart");
+    expect(saveSrc).not.toContain("rainAnchorXFromLook");
+    expect(saveSrc).not.toContain("rainAnchorZFromLook");
     expect(gameSrc).not.toMatch(
       /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
     );
