@@ -89,6 +89,7 @@ import {
   dialogueOpenHudMsg,
   nextDialogueCloseHud,
   talkInputApplies,
+  cancelInputApplies,
   StubLlmBridge,
   type DialogueIntent,
   type GateTag,
@@ -456,7 +457,7 @@ export class Game {
     if (!hasFlashlight(this.player.inventory)) this.flashlightOn = false;
     this.noise.clear();
     this.refreshViewAfterLoad();
-    // Drain U / Q / C / H / X / Space/V / Z / B / T fuera del bloque close/loot: no tira ni consume ni craftea ni cocina ni dispara ni golpea ni duerme ni coloca ni abre diálogo leftover; no estira regex de hide.
+    // Drain U / Q / C / H / X / Space/V / Z / B / T / Esc fuera del bloque close/loot: no tira ni consume ni craftea ni cocina ni dispara ni golpea ni duerme ni coloca ni abre ni cierra diálogo leftover; no estira regex de hide.
     if (loaded.gameOver) this.input.consumeDrop();
     if (loaded.gameOver) this.input.consumeUse();
     if (loaded.gameOver) this.input.consumeCraft();
@@ -466,6 +467,7 @@ export class Game {
     if (loaded.gameOver) this.input.consumeSleep();
     if (loaded.gameOver) this.input.consumeBuild();
     if (loaded.gameOver) this.input.consumeTalk();
+    if (loaded.gameOver) this.input.consumeCancel();
     this.lastLootMsg = "cargado";
     this.refreshHud(true);
     return true;
@@ -885,7 +887,7 @@ export class Game {
     // FOV ya en radio base: ocultar mudos/poseídos del anillo +4 linterna.
     this.syncHostileView();
     this.syncLighting();
-    // Drain G/E/F / U / Q / C / H / X / Space/V / Z / B / T al final: no loot/puerta/drop/use/craft/cook/shoot/melee/sleep/build/diálogo; no empuja ventanas de scan del hide.
+    // Drain G/E/F / U / Q / C / H / X / Space/V / Z / B / T / Esc al final: no loot/puerta/drop/use/craft/cook/shoot/melee/sleep/build/diálogo; no empuja ventanas de scan del hide.
     this.input.consumeLoot();
     this.input.consumeInteract();
     this.input.consumeDrop();
@@ -897,6 +899,7 @@ export class Game {
     this.input.consumeSleep();
     this.input.consumeBuild();
     this.input.consumeTalk();
+    this.input.consumeCancel();
   }
 
 
@@ -1185,7 +1188,7 @@ export class Game {
         this.lastLootMsg = muteHudMsg(toggleAmbientMute(this.ambient));
         this.hudAcc = 1;
       }
-      // Drain L / G / E / F / U / Q / C / H / X / Space/V / Z / B / T; HAS MUERTO no togglea ni lootea / abre puertas / tira / usa / craftea / cocina / dispara / golpea / duerme / coloca / abre diálogo.
+      // Drain L / G / E / F / U / Q / C / H / X / Space/V / Z / B / T / Esc; HAS MUERTO no togglea ni lootea / abre puertas / tira / usa / craftea / cocina / dispara / golpea / duerme / coloca / abre ni cierra diálogo.
       this.input.consumeFlashlightToggle();
       this.input.consumeLoot();
       this.input.consumeInteract();
@@ -1198,6 +1201,7 @@ export class Game {
       this.input.consumeSleep();
       this.input.consumeBuild();
       this.input.consumeTalk();
+      this.input.consumeCancel();
       this.input.endFrame();
       this.syncAmbient(dt);
       this.syncHeartbeat(dt);
@@ -1634,7 +1638,8 @@ export class Game {
     if (talkInputApplies(this.gameOver) && wantsTalk) {
       this.tryToggleDialogue();
     }
-    if (this.input.consumeCancel()) {
+    const wantsCancel = this.input.consumeCancel();
+    if (cancelInputApplies(this.gameOver) && wantsCancel) {
       const next = nextDialogueCloseHud(this.dialogue.open, this.lastLootMsg);
       if (next.closed) {
         this.dialogue.close();

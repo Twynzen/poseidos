@@ -42,6 +42,8 @@ export {
   nextDialogueCloseHud,
   talkInputApplies,
   applyTalkInput,
+  cancelInputApplies,
+  applyCancelInput,
   type DialogueIntent,
   type DialogueOption,
   type DialogueResult,

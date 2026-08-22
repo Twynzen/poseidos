@@ -17,6 +17,8 @@ import {
   nextDialogueCloseHud,
   talkInputApplies,
   applyTalkInput,
+  cancelInputApplies,
+  applyCancelInput,
   ShortMemory,
   formatMemorySummary,
   MEMORY_SUMMARY_MAX_LEN,
@@ -502,7 +504,7 @@ describe("nextDialogueCloseHud (T / Esc / validate HUD)", () => {
       /if \(this\.dialogue\.open\) \{[\s\S]{0,280}nextDialogueCloseHud\(true, this\.lastLootMsg\)[\s\S]{0,220}this\.hudAcc = 1/,
     );
     expect(src).toMatch(
-      /consumeCancel\(\)\) \{[\s\S]{0,280}nextDialogueCloseHud\(this\.dialogue\.open, this\.lastLootMsg\)[\s\S]{0,80}if \(next\.closed\) \{[\s\S]{0,280}this\.hudAcc = 1/,
+      /cancelInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsCancel[\s\S]{0,200}nextDialogueCloseHud\(this\.dialogue\.open, this\.lastLootMsg\)[\s\S]{0,80}if \(next\.closed\) \{[\s\S]{0,280}this\.hudAcc = 1/,
     );
     expect(src).toMatch(
       /this\.dialogue\.validate\([\s\S]{0,180}if \(!this\.dialogue\.open\) \{[\s\S]{0,200}nextDialogueCloseHud\(true, this\.lastLootMsg\)[\s\S]{0,200}this\.hudAcc = 1/,
@@ -526,7 +528,7 @@ describe("nextDialogueCloseHud (T / Esc / validate HUD)", () => {
       /this\.syncSpeechOverlay\(\);\s*this\.syncDialoguePanel\(\);[\s\S]{0,80}this\.hudAcc \+= dt/,
     );
     expect((src.match(/consumeTalk\(\)/g) ?? []).length).toBe(4);
-    expect((src.match(/consumeCancel\(\)/g) ?? []).length).toBe(1);
+    expect((src.match(/consumeCancel\(\)/g) ?? []).length).toBe(4);
     expect((src.match(/closeDialogueOnGameOver\(\)/g) ?? []).length).toBe(4);
     expect(src).not.toMatch(/tryToggleDialogue\(\)[\s\S]{0,900}lootToast/);
     expect(src).not.toMatch(/consumeCancel\(\)[\s\S]{0,400}lootToast/);
@@ -632,6 +634,112 @@ describe("talkInputApplies / applyTalkInput (HAS MUERTO / F9 load-muerto)", () =
     );
     expect(gameSrc).not.toMatch(
       /enterGameOver\(\): void \{[\s\S]{0,800}tryToggleDialogue/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+  });
+});
+
+describe("cancelInputApplies / applyCancelInput (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: Esc no aplica; vivo / load-vivo sí", () => {
+    expect(cancelInputApplies(true)).toBe(false);
+    expect(cancelInputApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(cancelInputApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(cancelInputApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver + wantsCancel no cierra diálogo; vivo Esc cierra", () => {
+    const deadClosed = new DialogueSession();
+    expect(
+      applyCancelInput(true, true, () => {
+        deadClosed.close();
+        return deadClosed;
+      }),
+    ).toBeNull();
+    expect(deadClosed.open).toBe(false);
+    expect(deadClosed.target).toBeNull();
+
+    const deadRt = loadAliveRuntime(false);
+    expect(
+      applyCancelInput(deadRt.gameOver, true, () => {
+        deadClosed.close();
+        return deadClosed;
+      }),
+    ).toBeNull();
+    expect(deadClosed.open).toBe(false);
+
+    const deadOpen = new DialogueSession();
+    deadOpen.begin("poss-a");
+    expect(
+      applyCancelInput(true, true, () => {
+        deadOpen.close();
+        return deadOpen;
+      }),
+    ).toBeNull();
+    expect(deadOpen.open).toBe(true);
+    expect(deadOpen.target).toBe("poss-a");
+
+    const live = new DialogueSession();
+    live.begin("poss-a");
+    const closed = applyCancelInput(false, true, () => {
+      live.close();
+      return live;
+    });
+    expect(closed?.open).toBe(false);
+    expect(live.target).toBeNull();
+    expect(
+      applyCancelInput(false, false, () => {
+        live.begin("poss-a");
+        return live;
+      }),
+    ).toBeNull();
+    expect(live.open).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    const liveOpen = new DialogueSession();
+    liveOpen.begin("poss-a");
+    const closedLive = applyCancelInput(liveRt.gameOver, true, () => {
+      liveOpen.close();
+      return liveOpen;
+    });
+    expect(closedLive?.open).toBe(false);
+    expect(liveOpen.target).toBeNull();
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto drenan Esc sin apply; vivo gatea", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("cancelInputApplies(");
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeCancel\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2600}consumeCancel\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,3000}if \(loaded\.gameOver\) this\.input\.consumeCancel\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /cancelInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsCancel[\s\S]{0,200}nextDialogueCloseHud/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}cancelInputApplies/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}cancelInputApplies/,
     );
     expect(gameSrc).toMatch(
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
