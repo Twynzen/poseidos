@@ -462,6 +462,31 @@ export function fogScaleXAfterRestart(): number {
   return fogScaleXFromLook(FOG_SCALE_X_SPAWN);
 }
 
+/** Scale Y del fog de tiles fuera de LOS. Ctor fog.scale.y 1 = fresco. Mid-life leftover ≠ fresco. */
+export const FOG_SCALE_Y = 1;
+
+/** Idle fog mesh scale Y. Ctor fog.scale.y 1 = fresco. Mid-life leftover ≠ fresco. */
+export const FOG_SCALE_Y_SPAWN = 1;
+
+/**
+ * Scale Y que leería chunk/FOV (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * chunk/FOV no escribe scale (ctor constant).
+ */
+export function fogScaleYFromLook(scaleY: number): number {
+  return scaleY;
+}
+
+/**
+ * R / softReset: scale Y fresco (idle 1).
+ * WorldView nace fog.scale.y AfterRestart; leftover mid-life no filtra.
+ * chunk/FOV no escribe scale (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function fogScaleYAfterRestart(): number {
+  return fogScaleYFromLook(FOG_SCALE_Y_SPAWN);
+}
+
 function clamp01(v: number): number {
   return Math.max(0, Math.min(1, v));
 }
