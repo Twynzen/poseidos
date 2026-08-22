@@ -266,9 +266,12 @@ import {
   bedBadgeLabel,
   bedBadgeLetterScale,
   bedBadgeY,
-  bedFocusMul,
-  bedRingVisible,
-  BED_FOCUS_REACH,
+  bedFocusDistFromLook,
+  bedFocusElapsedAfterRestart,
+  bedFocusLookXAfterRestart,
+  bedFocusLookZAfterRestart,
+  bedFocusMulFromLook,
+  bedRingVisibleFromLook,
 } from "./bedFocus";
 import type { TileMap } from "../world/tilemap";
 import type { Tile } from "../world/tile";
@@ -1169,7 +1172,8 @@ export function createWorldView(
     y: number;
   }
   const bedMarkerGroups: BedMarkerEntry[] = [];
-  let bedFocusElapsed = 0;
+  // R / dispose: elapsed fresco (0); leftover mid-pulse de la vida anterior no filtra.
+  let bedFocusElapsed = bedFocusElapsedAfterRestart();
   map.forEach((tx, ty, tile) => {
     if (tile.variant !== "bed") return;
     const group = new THREE.Group();
@@ -1181,6 +1185,39 @@ export function createWorldView(
     scene.add(group);
     bedMarkerGroups.push({ group, x, y });
   });
+
+  function applyBedFocusLook(
+    wx: number,
+    wy: number,
+    elapsed: number,
+    gameOver = false,
+  ): void {
+    let best = -1;
+    let bestD = Infinity;
+    for (let i = 0; i < bedMarkerGroups.length; i++) {
+      const e = bedMarkerGroups[i]!;
+      const d = bedFocusDistFromLook(wx, wy, e.x, e.y);
+      const vis = bedRingVisibleFromLook(d, gameOver);
+      setInteractRingVisible(e.group, vis);
+      if (vis && d < bestD) {
+        bestD = d;
+        best = i;
+      }
+    }
+    for (let i = 0; i < bedMarkerGroups.length; i++) {
+      const e = bedMarkerGroups[i]!;
+      const mul =
+        i === best ? bedFocusMulFromLook(bestD, elapsed, gameOver) : 1;
+      e.group.scale.setScalar(mul);
+    }
+  }
+
+  // R / dispose: look fresco (spawn); leftover Three ring visible / dist 0 no filtra.
+  applyBedFocusLook(
+    bedFocusLookXAfterRestart(),
+    bedFocusLookZAfterRestart(),
+    bedFocusElapsed,
+  );
 
   // Muzzle flash: esfera aditiva (radio MUZZLE_FLASH_RADIUS) + PointLight (reutilizable).
   const MUZZLE_LIGHT_DISTANCE = 2.6;
@@ -2026,24 +2063,7 @@ export function createWorldView(
     syncBedFocus(wx, wy, dt, gameOver = false) {
       const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
       bedFocusElapsed += safeDt;
-      let best = -1;
-      let bestD = Infinity;
-      for (let i = 0; i < bedMarkerGroups.length; i++) {
-        const e = bedMarkerGroups[i]!;
-        const d = Math.hypot(wx - e.x, wy - e.y);
-        const vis = bedRingVisible(d, BED_FOCUS_REACH, gameOver);
-        setInteractRingVisible(e.group, vis);
-        if (vis && d < bestD) {
-          bestD = d;
-          best = i;
-        }
-      }
-      for (let i = 0; i < bedMarkerGroups.length; i++) {
-        const e = bedMarkerGroups[i]!;
-        const mul =
-          i === best ? bedFocusMul(bestD, bedFocusElapsed, gameOver) : 1;
-        e.group.scale.setScalar(mul);
-      }
+      applyBedFocusLook(wx, wy, bedFocusElapsed, gameOver);
     },
     tickPlayerLoco(dt, moving, sprinting, faceX, faceZ) {
       setLocomotion(playerAnimator, { moving, sprinting });

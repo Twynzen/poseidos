@@ -91,3 +91,142 @@ export function bedRingVisible(
   }
   return dist <= reach;
 }
+
+/** Spawn barrio (neighborhood 24.5, 15.5). Three default ring visible / scale 1 = leftover. */
+export const BED_FOCUS_LOOK_X_SPAWN = 24.5;
+export const BED_FOCUS_LOOK_Z_SPAWN = 15.5;
+
+/**
+ * Look X que lee syncBedFocus (wx fresco o vivo).
+ * leftover mid-life (ctor origin 0 / far 40) ≠ look fresco (spawn 24.5).
+ */
+export function bedFocusLookXFromLook(wx: number): number {
+  return wx;
+}
+
+/**
+ * Look Z que lee syncBedFocus (wy fresco o vivo).
+ * leftover mid-life (ctor origin 0 / far 30) ≠ look fresco (spawn 15.5).
+ */
+export function bedFocusLookZFromLook(wy: number): number {
+  return wy;
+}
+
+/**
+ * Distancia look→cama que lee syncBedFocus (look fresco o vivo).
+ * leftover ctor hypot(0, bed) / far / dist 0 ≠ dist fresco (spawn).
+ */
+export function bedFocusDistFromLook(
+  wx: number,
+  wy: number,
+  mx: number,
+  my: number,
+): number {
+  return Math.hypot(
+    bedFocusLookXFromLook(wx) - mx,
+    bedFocusLookZFromLook(wy) - my,
+  );
+}
+
+/**
+ * Pulso elapsed que lee syncBedFocus (elapsed fresco o vivo).
+ * leftover mid-life (π/2 phase) ≠ elapsed fresco (0).
+ */
+export function bedFocusElapsedFromLook(elapsed: number): number {
+  return Number.isFinite(elapsed) ? elapsed : 0;
+}
+
+/**
+ * Mul que lee syncBedFocus (look fresco o vivo).
+ * leftover ctor scale 1 / mid-pulse ≠ mul fresco (spawn + elapsed 0).
+ */
+export function bedFocusMulFromLook(
+  dist: number,
+  elapsed: number,
+  gameOver = false,
+): number {
+  return bedFocusMul(dist, bedFocusElapsedFromLook(elapsed), gameOver);
+}
+
+/**
+ * Anillo que lee syncBedFocus (look fresco o vivo).
+ * leftover ctor Three visible / dist 0 ≠ anillo fresco (solo reach).
+ */
+export function bedRingVisibleFromLook(
+  dist: number,
+  gameOver = false,
+): boolean {
+  return bedRingVisible(dist, BED_FOCUS_REACH, gameOver);
+}
+
+/**
+ * R / softReset: look X fresco (spawn 24.5).
+ * WorldView nace applyBedFocusLook(bedFocusLookXAfterRestart(), …);
+ * leftover ctor origin 0 / Three ring visible no filtra.
+ * syncBedFocus lee bedFocusLookXFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function bedFocusLookXAfterRestart(
+  wx = BED_FOCUS_LOOK_X_SPAWN,
+): number {
+  return bedFocusLookXFromLook(wx);
+}
+
+/**
+ * R / softReset: look Z fresco (spawn 15.5).
+ * WorldView nace applyBedFocusLook(…, bedFocusLookZAfterRestart(), …);
+ * leftover ctor origin 0 no filtra.
+ */
+export function bedFocusLookZAfterRestart(
+  wy = BED_FOCUS_LOOK_Z_SPAWN,
+): number {
+  return bedFocusLookZFromLook(wy);
+}
+
+/**
+ * R / softReset: elapsed fresco (0).
+ * WorldView nace `bedFocusElapsed = bedFocusElapsedAfterRestart()`;
+ * leftover mid-pulse de la vida anterior no filtra.
+ */
+export function bedFocusElapsedAfterRestart(): number {
+  return bedFocusElapsedFromLook(0);
+}
+
+/**
+ * R / softReset: mul fresco (spawn + elapsed 0).
+ * leftover ctor scale 1 / mid-pulse no filtra.
+ */
+export function bedFocusMulAfterRestart(
+  dist: number,
+  gameOver = false,
+): number {
+  return bedFocusMulFromLook(dist, bedFocusElapsedAfterRestart(), gameOver);
+}
+
+/**
+ * R / softReset: anillo fresco (solo reach desde spawn).
+ * leftover ctor Three visible / dist 0 no filtra.
+ */
+export function bedRingVisibleAfterRestart(
+  dist: number,
+  gameOver = false,
+): boolean {
+  return bedRingVisibleFromLook(dist, gameOver);
+}
+
+/**
+ * R / softReset: dist fresco (cama vs spawn).
+ * leftover ctor origin 0,0 / dist 0 / far 40,30 no filtra.
+ */
+export function bedFocusDistAfterRestart(
+  mx: number,
+  my: number,
+  wx = BED_FOCUS_LOOK_X_SPAWN,
+  wy = BED_FOCUS_LOOK_Z_SPAWN,
+): number {
+  return bedFocusDistFromLook(
+    bedFocusLookXAfterRestart(wx),
+    bedFocusLookZAfterRestart(wy),
+    mx,
+    my,
+  );
+}
