@@ -109,6 +109,8 @@ import {
   lootFloaterVisible,
   createInventoryPanel,
   inventoryPanelVisible,
+  inventoryToggleApplies,
+  nextShowInvDetail,
   hotbarSlots,
   hotbarInspectLabel,
   inventoryInspectLabel,
@@ -457,7 +459,7 @@ export class Game {
     if (!hasFlashlight(this.player.inventory)) this.flashlightOn = false;
     this.noise.clear();
     this.refreshViewAfterLoad();
-    // Drain U / Q / C / H / X / Space/V / Z / B / T / Esc fuera del bloque close/loot: no tira ni consume ni craftea ni cocina ni dispara ni golpea ni duerme ni coloca ni abre ni cierra diálogo leftover; no estira regex de hide.
+    // Drain U / Q / C / H / X / Space/V / Z / B / T / Esc / I fuera del bloque close/loot: no tira ni consume ni craftea ni cocina ni dispara ni golpea ni duerme ni coloca ni abre ni cierra diálogo ni togglea inventario leftover; no estira regex de hide.
     if (loaded.gameOver) this.input.consumeDrop();
     if (loaded.gameOver) this.input.consumeUse();
     if (loaded.gameOver) this.input.consumeCraft();
@@ -468,6 +470,7 @@ export class Game {
     if (loaded.gameOver) this.input.consumeBuild();
     if (loaded.gameOver) this.input.consumeTalk();
     if (loaded.gameOver) this.input.consumeCancel();
+    if (loaded.gameOver) this.input.consumeInventoryToggle();
     this.lastLootMsg = "cargado";
     this.refreshHud(true);
     return true;
@@ -887,7 +890,7 @@ export class Game {
     // FOV ya en radio base: ocultar mudos/poseídos del anillo +4 linterna.
     this.syncHostileView();
     this.syncLighting();
-    // Drain G/E/F / U / Q / C / H / X / Space/V / Z / B / T / Esc al final: no loot/puerta/drop/use/craft/cook/shoot/melee/sleep/build/diálogo; no empuja ventanas de scan del hide.
+    // Drain G/E/F / U / Q / C / H / X / Space/V / Z / B / T / Esc / I al final: no loot/puerta/drop/use/craft/cook/shoot/melee/sleep/build/diálogo/inventario; no empuja ventanas de scan del hide.
     this.input.consumeLoot();
     this.input.consumeInteract();
     this.input.consumeDrop();
@@ -900,6 +903,7 @@ export class Game {
     this.input.consumeBuild();
     this.input.consumeTalk();
     this.input.consumeCancel();
+    this.input.consumeInventoryToggle();
   }
 
 
@@ -1188,7 +1192,7 @@ export class Game {
         this.lastLootMsg = muteHudMsg(toggleAmbientMute(this.ambient));
         this.hudAcc = 1;
       }
-      // Drain L / G / E / F / U / Q / C / H / X / Space/V / Z / B / T / Esc; HAS MUERTO no togglea ni lootea / abre puertas / tira / usa / craftea / cocina / dispara / golpea / duerme / coloca / abre ni cierra diálogo.
+      // Drain L / G / E / F / U / Q / C / H / X / Space/V / Z / B / T / Esc / I; HAS MUERTO no togglea ni lootea / abre puertas / tira / usa / craftea / cocina / dispara / golpea / duerme / coloca / abre ni cierra diálogo ni inventario.
       this.input.consumeFlashlightToggle();
       this.input.consumeLoot();
       this.input.consumeInteract();
@@ -1202,6 +1206,7 @@ export class Game {
       this.input.consumeBuild();
       this.input.consumeTalk();
       this.input.consumeCancel();
+      this.input.consumeInventoryToggle();
       this.input.endFrame();
       this.syncAmbient(dt);
       this.syncHeartbeat(dt);
@@ -1558,8 +1563,13 @@ export class Game {
         this.useHotbarSlot(this.hotbarSelected);
       }
     }
-    if (this.input.consumeInventoryToggle()) {
-      this.showInvDetail = !this.showInvDetail;
+    const wantsInv = this.input.consumeInventoryToggle();
+    if (inventoryToggleApplies(this.gameOver) && wantsInv) {
+      this.showInvDetail = nextShowInvDetail(
+        this.gameOver,
+        this.showInvDetail,
+        true,
+      );
       if (!this.showInvDetail) this.lastInvIndex = null;
       this.hudAcc = 1;
     }
