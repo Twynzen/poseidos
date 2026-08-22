@@ -198,6 +198,20 @@ export function isKeepableDeathCause(msg: string | undefined | null): boolean {
 }
 
 /**
+ * Día/noche HUD desde GameClock. `noche` si isNight; phasePct = floor(phase*100).
+ * R / clock fresco (elapsed 0) → noche (0%). Leftover mediodía → día (~50%).
+ */
+export function formatHudDayNight(
+  isNight: boolean,
+  phase: number,
+): { modo: "día" | "noche"; phasePct: number } {
+  return {
+    modo: isNight ? "noche" : "día",
+    phasePct: Math.floor(phase * 100),
+  };
+}
+
+/**
  * Formato compacto por defecto (sin muro WASD ni dump tile/chunks/fov).
  * Con showHelp: CONTROLS_HELP + línea de estado (debug tokens) + F1 cerrar.
  * Con gameOver: mensaje de muerte (HAS MUERTO una sola vez).
