@@ -251,6 +251,7 @@ import {
   impactSparkPosZFromLook,
   impactSparkLightColorAfterRestart,
   impactSparkLightDecayAfterRestart,
+  impactSparkLightDistanceAfterRestart,
   tickImpactSpark as stepImpactSpark,
   triggerImpactSpark as startImpactSpark,
 } from "./impactSpark";
@@ -461,6 +462,8 @@ export const IMPACT_SPARK_COLOR = 0xffef93;
 export const IMPACT_SPARK_LIGHT_COLOR = 0xffef93;
 /** Decay del PointLight de impacto. 2 × 0.87 para caer un poco más lento de noche. */
 export const IMPACT_SPARK_LIGHT_DECAY = 1.74;
+/** Distancia del PointLight de impacto. Ctor = fresco idle; apply escribe intensity, no distance. */
+export const IMPACT_SPARK_LIGHT_DISTANCE = 1.8;
 /** Color de la malla del tracer. 0xffe8a0 × 1.15/canal (r/g clamp) para leerse de noche. */
 export const TRACER_COLOR = 0xffffb8;
 /** Color del PointLight del flash del tracer. 0xffc060 × 1.15/canal (r clamp) para leerse de noche. */
@@ -1535,7 +1538,6 @@ export function createWorldView(
   });
 
   // Impact spark: esfera aditiva unlit (radio IMPACT_SPARK_RADIUS) + PointLight (reutilizable).
-  const IMPACT_SPARK_LIGHT_DISTANCE = 1.8;
   const impactGeo = new THREE.SphereGeometry(IMPACT_SPARK_RADIUS, 10, 8);
   const impactMat = new THREE.MeshBasicMaterial({
     color: IMPACT_SPARK_COLOR,
@@ -1551,7 +1553,7 @@ export function createWorldView(
   const impactLight = new THREE.PointLight(
     impactSparkLightColorAfterRestart(),
     0,
-    IMPACT_SPARK_LIGHT_DISTANCE,
+    impactSparkLightDistanceAfterRestart(),
     impactSparkLightDecayAfterRestart(),
   );
   impactLight.visible = impactSparkActiveAfterRestart();
