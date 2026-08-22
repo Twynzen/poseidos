@@ -676,3 +676,28 @@ export function flashlightConeTransparentFromLook(transparent: boolean): boolean
 export function flashlightConeTransparentAfterRestart(): boolean {
   return flashlightConeTransparentFromLook(FLASHLIGHT_CONE_TRANSPARENT_SPAWN);
 }
+
+/** renderOrder del flashlight cone mesh. Ctor flashlightConeWedge.renderOrder 7 = fresco. Mid-life leftover ≠ fresco. */
+export const FLASHLIGHT_CONE_RENDER_ORDER = 7;
+
+/** Idle flashlight cone mesh renderOrder. Ctor flashlightConeWedge.renderOrder 7 = fresco. Mid-life leftover ≠ fresco. */
+export const FLASHLIGHT_CONE_RENDER_ORDER_SPAWN = 7;
+
+/**
+ * renderOrder que leería syncTorchLight (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 7).
+ * syncTorchLight no escribe renderOrder (ctor constant).
+ */
+export function flashlightConeRenderOrderFromLook(renderOrder: number): number {
+  return renderOrder;
+}
+
+/**
+ * R / softReset: renderOrder fresco (idle 7).
+ * WorldView nace flashlightConeWedge.renderOrder AfterRestart; leftover mid-life no filtra.
+ * syncTorchLight no escribe renderOrder (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function flashlightConeRenderOrderAfterRestart(): number {
+  return flashlightConeRenderOrderFromLook(FLASHLIGHT_CONE_RENDER_ORDER_SPAWN);
+}
