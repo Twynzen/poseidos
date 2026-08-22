@@ -80,6 +80,7 @@ import {
   TRACER_WIDTH,
   clampTracerTtl,
   tickTracerAge,
+  tracerColorAfterRestart,
   tracerCountAfterRestart,
   tracerFlashColorAfterRestart,
   tracerFlashDecayAfterRestart,
@@ -1839,7 +1840,7 @@ export function createWorldView(
   // Tracers de disparo (línea fina + flash puntual en hocico).
   const tracerGeo = new THREE.BoxGeometry(1, 1, 1);
   const tracerMatBase = new THREE.MeshBasicMaterial({
-    color: TRACER_COLOR,
+    color: tracerColorAfterRestart(),
     transparent: true,
     // R / dispose: opacity fresco (idle); leftover ctor Three 1 no filtra.
     opacity: tracerOpacityAfterRestart(),
