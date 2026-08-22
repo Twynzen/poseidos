@@ -98,6 +98,8 @@ export {
   refillFullMessage,
   tryRefillFromRain,
   attemptRefill,
+  useInputApplies,
+  applyUseInput,
   type RefillFailReason,
   type RefillAttempt,
   type RefillFail,

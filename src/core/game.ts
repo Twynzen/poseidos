@@ -38,6 +38,7 @@ import {
   nextFlashlightOn,
   lootInputApplies,
   dropInputApplies,
+  useInputApplies,
   getItemDef,
   splitStack,
   mergeStack,
@@ -441,8 +442,9 @@ export class Game {
     if (!hasFlashlight(this.player.inventory)) this.flashlightOn = false;
     this.noise.clear();
     this.refreshViewAfterLoad();
-    // Drain U fuera del bloque close/loot: no tira leftover; no estira regex de hide.
+    // Drain U / Q fuera del bloque close/loot: no tira ni consume leftover; no estira regex de hide.
     if (loaded.gameOver) this.input.consumeDrop();
+    if (loaded.gameOver) this.input.consumeUse();
     this.lastLootMsg = "cargado";
     this.refreshHud(true);
     return true;
@@ -862,10 +864,11 @@ export class Game {
     // FOV ya en radio base: ocultar mudos/poseídos del anillo +4 linterna.
     this.syncHostileView();
     this.syncLighting();
-    // Drain G/E/F / U al final: no loot/puerta/drop; no empuja ventanas de scan del hide.
+    // Drain G/E/F / U / Q al final: no loot/puerta/drop/use; no empuja ventanas de scan del hide.
     this.input.consumeLoot();
     this.input.consumeInteract();
     this.input.consumeDrop();
+    this.input.consumeUse();
   }
 
 
@@ -1154,11 +1157,12 @@ export class Game {
         this.lastLootMsg = muteHudMsg(toggleAmbientMute(this.ambient));
         this.hudAcc = 1;
       }
-      // Drain L / G / E / F / U; HAS MUERTO no togglea ni lootea / abre puertas / tira.
+      // Drain L / G / E / F / U / Q; HAS MUERTO no togglea ni lootea / abre puertas / tira / usa.
       this.input.consumeFlashlightToggle();
       this.input.consumeLoot();
       this.input.consumeInteract();
       this.input.consumeDrop();
+      this.input.consumeUse();
       this.input.endFrame();
       this.syncAmbient(dt);
       this.syncHeartbeat(dt);
@@ -1486,7 +1490,8 @@ export class Game {
       this.lastInvIndex = mergeIdx;
       this.toastMerge(mergeIdx);
     }
-    if (this.input.consumeUse()) {
+    const wantsUse = this.input.consumeUse();
+    if (useInputApplies(this.gameOver) && wantsUse) {
       const outdoor = !isIndoor(this.map, this.player.x, this.player.y);
       if (
         canRefillFromRain(

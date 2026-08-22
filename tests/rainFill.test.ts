@@ -1,8 +1,12 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import { PlayerSim } from "../src/actors/player";
 import { NEEDS_RELIEF } from "../src/actors/needs";
 import {
   addItem,
+  applyUseInput,
   attemptRefill,
   canRefillFromRain,
   createInventory,
@@ -13,6 +17,7 @@ import {
   refillFailMessage,
   refillFullMessage,
   tryRefillFromRain,
+  useInputApplies,
 } from "../src/items";
 import {
   applySave,
@@ -328,5 +333,133 @@ describe("empty_bottle save roundtrip", () => {
     };
     applySave(world2, loaded!);
     expect(inventorySummary(world2.player.inventory)).toContain("vacía");
+  });
+});
+
+describe("useInputApplies / applyUseInput (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: Q no aplica; vivo / load-vivo sí", () => {
+    expect(useInputApplies(true)).toBe(false);
+    expect(useInputApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(useInputApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(useInputApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver + wantsUse no muta inventario ni needs; vivo Q usa o refill", () => {
+    const deadInv = createInventory(8, 20, [
+      { id: "canned_food", qty: 1 },
+      { id: "water_bottle", qty: 1 },
+    ]);
+    const deadPlayer = new PlayerSim(
+      { x: 0, y: 0 },
+      { hunger: 40, thirst: 55, fatigue: 10 },
+      deadInv,
+    );
+    const beforeInv = deadPlayer.inventory.slots.map((s) => ({ ...s }));
+    const beforeNeeds = { ...deadPlayer.needs };
+    const blockedRefill = createInventory(8, 20, [{ id: "empty_bottle", qty: 1 }]);
+
+    expect(
+      applyUseInput(true, true, () => deadPlayer.tryConsumeAt(0)),
+    ).toBeNull();
+    expect(
+      applyUseInput(true, true, () =>
+        tryRefillFromRain(true, true, blockedRefill) ? "refill" : null,
+      ),
+    ).toBeNull();
+    expect(deadPlayer.inventory.slots).toEqual(beforeInv);
+    expect(deadPlayer.needs).toEqual(beforeNeeds);
+    expect(blockedRefill.slots[0]?.id).toBe("empty_bottle");
+
+    const deadRt = loadAliveRuntime(false);
+    expect(
+      applyUseInput(deadRt.gameOver, true, () => deadPlayer.tryConsumeAt(1)),
+    ).toBeNull();
+    expect(deadPlayer.inventory.slots).toEqual(beforeInv);
+    expect(deadPlayer.needs).toEqual(beforeNeeds);
+
+    const liveFood = new PlayerSim(
+      { x: 0, y: 0 },
+      { hunger: 40, thirst: 55, fatigue: 10 },
+      createInventory(8, 20, [{ id: "canned_food", qty: 1 }]),
+    );
+    expect(
+      applyUseInput(false, true, () => liveFood.tryConsumeAt(0)),
+    ).toBe("food");
+    expect(findSlot(liveFood.inventory, "canned_food")).toBe(-1);
+    expect(liveFood.needs.hunger).toBeCloseTo(40 - NEEDS_RELIEF.eat, 5);
+    expect(
+      applyUseInput(false, false, () => liveFood.tryConsume("food")),
+    ).toBeNull();
+
+    const liveDrink = new PlayerSim(
+      { x: 0, y: 0 },
+      { hunger: 40, thirst: 70, fatigue: 10 },
+      createInventory(8, 20, [{ id: "water_bottle", qty: 1 }]),
+    );
+    const liveRt = loadAliveRuntime(true);
+    expect(
+      applyUseInput(liveRt.gameOver, true, () => liveDrink.tryConsumeAt(0)),
+    ).toBe("drink");
+    expect(liveDrink.inventory.slots[0]?.id).toBe("empty_bottle");
+    expect(liveDrink.needs.thirst).toBeCloseTo(70 - NEEDS_RELIEF.drink, 5);
+
+    const refillInv = createInventory(8, 20, [{ id: "empty_bottle", qty: 1 }]);
+    expect(
+      applyUseInput(false, true, () =>
+        tryRefillFromRain(true, true, refillInv) ? "refill" : null,
+      ),
+    ).toBe("refill");
+    expect(refillInv.slots[0]?.id).toBe("water_bottle");
+    expect(
+      applyUseInput(true, true, () =>
+        tryRefillFromRain(true, true, refillInv) ? "refill" : null,
+      ),
+    ).toBeNull();
+    expect(refillInv.slots[0]?.id).toBe("water_bottle");
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto drenan Q sin use/refill; vivo gatea", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("useInputApplies(");
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeUse\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,1600}consumeUse\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,1600}if \(loaded\.gameOver\) this\.input\.consumeUse\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /useInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsUse[\s\S]{0,400}attemptRefill[\s\S]{0,700}useHotbarSlot/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}attemptRefill/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}useHotbarSlot/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}attemptRefill/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}useHotbarSlot/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeRestOrRestart\(\)/,
+    );
   });
 });
