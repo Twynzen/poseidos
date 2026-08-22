@@ -84,6 +84,7 @@ import { tracerOverlayApplies } from "../render/tracers";
 import { rainVisualApplies } from "../render/rainStreaks";
 import { grassVisualApplies } from "../render/windGrass";
 import { muzzleFlashApplies } from "../render/muzzleFlash";
+import { impactSparkApplies } from "../render/impactSpark";
 import { lootFloaterLabel } from "../render/lootFloater";
 import {
   SpeechDirector,
@@ -570,6 +571,8 @@ export class Game {
     this.syncGrassVisual();
     // Load-muerto: muzzle leftover off (load-vivo dt=0, igual que hoy).
     this.syncMuzzleFlashOverlay();
+    // Load-muerto: impact leftover off (load-vivo dt=0, igual que hoy).
+    this.syncImpactSparkOverlay();
     this.view.followCamera(this.player.x, this.player.y);
   }
 
@@ -939,6 +942,8 @@ export class Game {
     this.syncGrassVisual();
     // Muzzle leftover: hide ya (no esperar el freeze tick).
     this.syncMuzzleFlashOverlay();
+    // Impact leftover: hide ya (no esperar el freeze tick).
+    this.syncImpactSparkOverlay();
     // Drain G/E/F / U / Q / C / H / X / Space/V / Z / B / T / Esc / I / F1 / +/- / F5 al final: no loot/puerta/drop/use/craft/cook/shoot/melee/sleep/build/diálogo/inventario/ayuda/zoom/save; no empuja ventanas de scan del hide.
     this.input.consumeLoot();
     this.input.consumeInteract();
@@ -1274,6 +1279,7 @@ export class Game {
       // Mixer must keep ticking during freeze so death LoopOnce can play/clamp.
       this.view.tickPlayerLoco(dt, false, false);
       this.syncMuzzleFlashOverlay(dt);
+      this.syncImpactSparkOverlay(dt);
       this.renderer.render(this.view.scene, this.view.camera);
       this.syncHelpHud();
       this.syncSpeechOverlay();
@@ -1372,6 +1378,7 @@ export class Game {
       this.syncInteractFocus(dt);
       this.view.tickPlayerLoco(dt, false, false);
       this.syncMuzzleFlashOverlay(dt);
+      this.syncImpactSparkOverlay(dt);
       this.renderer.render(this.view.scene, this.view.camera);
       this.refreshHud(true);
       return;
@@ -1770,6 +1777,7 @@ export class Game {
       this.view.tickPlayerLoco(dt, moving, sprint, ax.x, ax.z);
     }
     this.syncMuzzleFlashOverlay(dt);
+    this.syncImpactSparkOverlay(dt);
     this.syncHostileView(dt);
     this.syncAmbient(dt);
     this.syncHeartbeat(dt);
@@ -1848,6 +1856,15 @@ export class Game {
   private syncMuzzleFlashOverlay(dt = 0): void {
     if (muzzleFlashApplies(this.gameOver)) this.view.tickMuzzleFlash(dt);
     else this.view.hideMuzzleFlash();
+  }
+
+  /**
+   * Spark de impacto: gameOver → skip tick + hide mesh/luz.
+   * Vivo (incl. F9 load-vivo): tick de hoy. Ya oculto = no-op.
+   */
+  private syncImpactSparkOverlay(dt = 0): void {
+    if (impactSparkApplies(this.gameOver)) this.view.tickImpactSpark(dt);
+    else this.view.hideImpactSpark();
   }
 
   /**

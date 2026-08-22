@@ -120,7 +120,8 @@ import {
   IMPACT_SPARK_LIGHT_PEAK,
   IMPACT_SPARK_RADIUS,
   createImpactSpark,
-  tickImpactSpark,
+  impactSparkApplies,
+  tickImpactSpark as stepImpactSpark,
   triggerImpactSpark as startImpactSpark,
 } from "./impactSpark";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
@@ -476,6 +477,13 @@ export interface WorldView {
    * Esfera aditiva unlit + PointLight en (x, TRACER_HEIGHT, y); hide si idle.
    */
   triggerImpactSpark(x: number, y: number): void;
+  /**
+   * Avanza el spark de impacto (esfera + PointLight).
+   * `gameOver`: HAS MUERTO / F9 load-muerto — skip tick + hide mesh/luz.
+   */
+  tickImpactSpark(dt: number, gameOver?: boolean): void;
+  /** Quita spark leftover (HAS MUERTO / F9 load-muerto). Ya oculto = no-op. */
+  hideImpactSpark(): void;
   /**
    * Limpia one-shot (incluida death sticky) y resync mixer a loco.
    * softReset (R) y load-alive.
@@ -1090,6 +1098,28 @@ export function createWorldView(
     impactLight.intensity = out.active
       ? IMPACT_SPARK_LIGHT_PEAK * out.intensity
       : 0;
+  }
+
+  function tickImpact(dt: number, gameOver = false): void {
+    if (!impactSparkApplies(gameOver)) {
+      applyImpactSparkVisual({
+        intensity: 0,
+        active: false,
+        x: impactSpark.x,
+        y: impactSpark.y,
+      });
+      return;
+    }
+    applyImpactSparkVisual(stepImpactSpark(impactSpark, dt, gameOver));
+  }
+
+  function hideImpact(): void {
+    applyImpactSparkVisual({
+      intensity: 0,
+      active: false,
+      x: impactSpark.x,
+      y: impactSpark.y,
+    });
   }
 
   const hostileGeo = new THREE.BoxGeometry(HOSTILE_BODY_WIDTH, HOSTILE_BODY_HEIGHT, HOSTILE_BODY_DEPTH);
@@ -1713,7 +1743,6 @@ export function createWorldView(
         if (yaw !== null) playerGltfYaw = yaw;
       }
       placeFacingChevron();
-      applyImpactSparkVisual(tickImpactSpark(impactSpark, dt));
       const pose = lean.active ? lean : swing;
       if (playerUsesGltfVisual && playerMixer) {
         playerLocoRoot.position.y = 0;
@@ -1749,6 +1778,8 @@ export function createWorldView(
     triggerImpactSpark(x, y) {
       startImpactSpark(impactSpark, x, y);
     },
+    tickImpactSpark: tickImpact,
+    hideImpactSpark: hideImpact,
     clearPlayerAction() {
       setAction(playerAnimator, null);
       playerMixer?.syncFromAnimator(currentRole(playerAnimator));
