@@ -2,15 +2,28 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
+import { createNeighborhood } from "../src/world/neighborhood";
 import {
+  DOOR_FOCUS_LOOK_X_SPAWN,
+  DOOR_FOCUS_LOOK_Z_SPAWN,
   DOOR_FOCUS_PULSE_AMP,
   DOOR_FOCUS_PULSE_SPEED,
   DOOR_FOCUS_REACH,
   DOOR_FOCUS_SCALE_FAR,
   DOOR_FOCUS_SCALE_NEAR,
   doorFocusApplies,
+  doorFocusDistAfterRestart,
+  doorFocusDistFromLook,
+  doorFocusElapsedAfterRestart,
+  doorFocusElapsedFromLook,
   doorFocusInReach,
+  doorFocusLookXAfterRestart,
+  doorFocusLookXFromLook,
+  doorFocusLookZAfterRestart,
+  doorFocusLookZFromLook,
   doorFocusMul,
+  doorFocusMulAfterRestart,
+  doorFocusMulFromLook,
   doorBadgeDiscScale,
   doorBadgeFontPx,
   doorBadgeLabel,
@@ -19,6 +32,8 @@ import {
   doorFocusPulse,
   doorFocusScale,
   doorRingVisible,
+  doorRingVisibleAfterRestart,
+  doorRingVisibleFromLook,
 } from "../src/render/doorFocus";
 
 describe("constantes", () => {
@@ -87,7 +102,7 @@ describe("constantes", () => {
       resolve(process.cwd(), "src/render/worldView.ts"),
       "utf8",
     );
-    expect(src).toContain("doorFocusMul(bestD, doorFocusElapsed, gameOver)");
+    expect(src).toContain("doorFocusMulFromLook(bestD, elapsed, gameOver)");
     expect(src).toContain("e.group.scale.setScalar(mul)");
   });
 });
@@ -225,5 +240,266 @@ describe("doorFocusApplies (HAS MUERTO / F9 load-muerto)", () => {
     expect(doorFocusApplies(false)).toBe(true);
     expect(doorRingVisible(false, 0)).toBe(true);
     expect(doorFocusMul(0, elapsed)).toBeCloseTo(1.785375 * 1.066125, 10);
+  });
+});
+
+describe("doorFocusAfterRestart (R / softReset)", () => {
+  test("look fresco (spawn 24.5, 15.5); leftover ctor Three ring / dist 0 / origin / far no filtra", () => {
+    const barrio = createNeighborhood(48);
+    const doors: { x: number; y: number }[] = [];
+    barrio.map.forEach((tx, ty, tile) => {
+      if (tile.kind === "door") doors.push({ x: tx + 0.5, y: ty + 0.5 });
+    });
+    expect(doors.length).toBeGreaterThan(0);
+
+    const bootWx = doorFocusLookXAfterRestart();
+    const bootWy = doorFocusLookZAfterRestart();
+    const bootElapsed = doorFocusElapsedAfterRestart();
+    expect(bootWx).toBe(doorFocusLookXFromLook(24.5));
+    expect(bootWy).toBe(doorFocusLookZFromLook(15.5));
+    expect(bootWx).toBe(DOOR_FOCUS_LOOK_X_SPAWN);
+    expect(bootWy).toBe(DOOR_FOCUS_LOOK_Z_SPAWN);
+    expect(bootWx).toBe(barrio.spawn.x);
+    expect(bootWy).toBe(barrio.spawn.y);
+    expect(doorFocusLookXAfterRestart(24.5)).toBe(bootWx);
+    expect(doorFocusLookZAfterRestart(15.5)).toBe(bootWy);
+    expect(doorFocusLookXAfterRestart(0)).toBe(doorFocusLookXFromLook(0));
+    expect(doorFocusLookZAfterRestart(40)).toBe(doorFocusLookZFromLook(40));
+    expect(bootElapsed).toBe(0);
+    expect(bootElapsed).toBe(doorFocusElapsedFromLook(0));
+
+    let closest = doors[0]!;
+    let bootDist = doorFocusDistAfterRestart(closest.x, closest.y);
+    for (const door of doors) {
+      const d = doorFocusDistAfterRestart(door.x, door.y);
+      expect(d).toBeGreaterThan(DOOR_FOCUS_REACH);
+      expect(doorRingVisibleAfterRestart(false, d)).toBe(false);
+      expect(doorRingVisibleAfterRestart(true, d)).toBe(false);
+      expect(doorFocusMulAfterRestart(d)).toBe(1);
+      if (d < bootDist) {
+        closest = door;
+        bootDist = d;
+      }
+    }
+    expect(bootDist).toBe(
+      doorFocusDistFromLook(24.5, 15.5, closest.x, closest.y),
+    );
+    expect(bootDist).toBeGreaterThan(DOOR_FOCUS_REACH);
+    const bootRing = doorRingVisibleAfterRestart(false, bootDist);
+    const bootMul = doorFocusMulAfterRestart(bootDist);
+    expect(bootRing).toBe(false);
+    expect(bootRing).toBe(doorRingVisibleFromLook(false, bootDist));
+    expect(bootMul).toBe(1);
+    expect(bootMul).toBe(doorFocusMulFromLook(bootDist, 0));
+
+    const leftoverCtorRing = true;
+    const leftoverCtorDist = 0;
+    const leftoverCtorScale = 1;
+    expect(leftoverCtorRing).not.toBe(bootRing);
+    expect(leftoverCtorDist).not.toBe(bootDist);
+    expect(doorRingVisible(false, leftoverCtorDist)).toBe(true);
+    expect(doorRingVisible(false, leftoverCtorDist)).not.toBe(bootRing);
+    expect(leftoverCtorScale).toBe(bootMul);
+    expect(doorFocusMul(leftoverCtorDist, 0)).toBe(1.785375);
+    expect(doorFocusMul(leftoverCtorDist, 0)).not.toBe(bootMul);
+
+    const leftoverOriginDist = doorFocusDistFromLook(0, 0, closest.x, closest.y);
+    expect(leftoverOriginDist).not.toBe(bootDist);
+    expect(doorFocusLookXFromLook(0)).toBe(0);
+    expect(doorFocusLookXFromLook(0)).not.toBe(bootWx);
+    expect(doorRingVisibleFromLook(false, leftoverOriginDist)).toBe(false);
+    expect(doorFocusMulFromLook(leftoverOriginDist, 0)).toBe(1);
+
+    const leftoverFarDist = doorFocusDistFromLook(40, 30, closest.x, closest.y);
+    expect(leftoverFarDist).not.toBe(bootDist);
+    expect(doorFocusLookXFromLook(40)).toBe(40);
+    expect(doorFocusLookZFromLook(30)).toBe(30);
+    expect(doorFocusLookXFromLook(40)).not.toBe(bootWx);
+    expect(doorFocusLookZFromLook(30)).not.toBe(bootWy);
+    expect(doorRingVisibleFromLook(false, leftoverFarDist)).toBe(false);
+    expect(doorFocusMulFromLook(leftoverFarDist, 0)).toBe(1);
+    expect(leftoverFarDist).not.toBe(
+      doorFocusDistAfterRestart(closest.x, closest.y),
+    );
+
+    const leftoverPulse = Math.PI / (2 * DOOR_FOCUS_PULSE_SPEED);
+    const leftoverMul = doorFocusMulFromLook(0, leftoverPulse);
+    expect(leftoverMul).toBeCloseTo(1.785375 * 1.066125, 10);
+    expect(leftoverMul).not.toBe(bootMul);
+    expect(leftoverMul).not.toBe(doorFocusMulAfterRestart(bootDist));
+
+    expect(doorFocusDistFromLook(24.5, 15.5, closest.x, closest.y)).toBe(
+      bootDist,
+    );
+    expect(doorFocusMulFromLook(bootDist, 0)).toBe(bootMul);
+    expect(doorFocusMulAfterRestart(bootDist, true)).toBe(1);
+    expect(doorRingVisibleAfterRestart(false, bootDist, true)).toBe(false);
+    expect(doorRingVisibleAfterRestart(false, leftoverCtorDist)).toBe(true);
+  });
+
+  test("vivo tick no usa el helper (pulso avanza con elapsed)", () => {
+    const barrio = createNeighborhood(48);
+    const doors: { x: number; y: number }[] = [];
+    barrio.map.forEach((tx, ty, tile) => {
+      if (tile.kind === "door") doors.push({ x: tx + 0.5, y: ty + 0.5 });
+    });
+    const closest = doors.reduce((best, door) => {
+      const d = doorFocusDistAfterRestart(door.x, door.y);
+      return d < best.d ? { x: door.x, y: door.y, d } : best;
+    }, { x: doors[0]!.x, y: doors[0]!.y, d: Infinity });
+    const bootDist = closest.d;
+    const bootMul = doorFocusMulAfterRestart(bootDist);
+    const bootElapsed = doorFocusElapsedAfterRestart();
+    const liveElapsed = doorFocusElapsedFromLook(
+      Math.PI / (2 * DOOR_FOCUS_PULSE_SPEED),
+    );
+    const liveMulNear = doorFocusMulFromLook(0, liveElapsed);
+    const liveLookX = doorFocusLookXFromLook(40);
+    const liveLookZ = doorFocusLookZFromLook(30);
+    const liveDist = doorFocusDistFromLook(40, 30, closest.x, closest.y);
+    expect(liveElapsed).not.toBe(bootElapsed);
+    expect(liveElapsed).not.toBe(doorFocusElapsedAfterRestart());
+    expect(liveMulNear).not.toBe(bootMul);
+    expect(liveMulNear).not.toBe(doorFocusMulAfterRestart(bootDist));
+    expect(liveLookX).toBe(40);
+    expect(liveLookZ).toBe(30);
+    expect(liveLookX).not.toBe(doorFocusLookXAfterRestart());
+    expect(liveLookZ).not.toBe(doorFocusLookZAfterRestart());
+    expect(liveDist).not.toBe(bootDist);
+    expect(liveDist).not.toBe(doorFocusDistAfterRestart(closest.x, closest.y));
+    expect(doorFocusMulFromLook(liveDist, liveElapsed)).toBe(1);
+    expect(doorRingVisibleFromLook(false, liveDist)).toBe(false);
+    expect(doorFocusLookXFromLook(24.5)).toBe(doorFocusLookXAfterRestart());
+    expect(doorFocusLookZFromLook(15.5)).toBe(doorFocusLookZAfterRestart());
+    expect(doorFocusMulFromLook(bootDist, 0)).toBe(bootMul);
+  });
+});
+
+describe("door focus recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace door focus fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const focusSrc = readFileSync(
+      resolve(process.cwd(), "src/render/doorFocus.ts"),
+      "utf8",
+    );
+    expect(focusSrc).toContain("doorFocusLookXAfterRestart(");
+    expect(focusSrc).toContain("doorFocusLookZAfterRestart(");
+    expect(focusSrc).toContain("doorFocusLookXFromLook(");
+    expect(focusSrc).toContain("doorFocusLookZFromLook(");
+    expect(focusSrc).toContain("doorFocusDistAfterRestart(");
+    expect(focusSrc).toContain("doorFocusDistFromLook(");
+    expect(focusSrc).toContain("doorFocusElapsedAfterRestart(");
+    expect(focusSrc).toContain("doorFocusElapsedFromLook(");
+    expect(focusSrc).toContain("doorFocusMulAfterRestart(");
+    expect(focusSrc).toContain("doorFocusMulFromLook(");
+    expect(focusSrc).toContain("doorRingVisibleAfterRestart(");
+    expect(focusSrc).toContain("doorRingVisibleFromLook(");
+    expect(focusSrc).toContain("DOOR_FOCUS_LOOK_X_SPAWN");
+    expect(focusSrc).toContain("DOOR_FOCUS_LOOK_Z_SPAWN");
+    expect(focusSrc).toMatch(
+      /doorFocusLookXAfterRestart\([\s\S]{0,200}doorFocusLookXFromLook\(/,
+    );
+    expect(focusSrc).toMatch(
+      /doorFocusLookZAfterRestart\([\s\S]{0,200}doorFocusLookZFromLook\(/,
+    );
+    expect(focusSrc).toMatch(
+      /doorFocusMulAfterRestart\([\s\S]{0,200}doorFocusMulFromLook\(/,
+    );
+    expect(focusSrc).toMatch(
+      /doorRingVisibleAfterRestart\([\s\S]{0,200}doorRingVisibleFromLook\(/,
+    );
+    expect(viewSrc).toContain("doorFocusLookXAfterRestart(");
+    expect(viewSrc).toContain("doorFocusLookZAfterRestart(");
+    expect(viewSrc).toContain("doorFocusElapsedAfterRestart(");
+    expect(viewSrc).toContain("doorFocusDistFromLook(");
+    expect(viewSrc).toContain("doorFocusMulFromLook(");
+    expect(viewSrc).toContain("doorRingVisibleFromLook(");
+    expect(viewSrc).toMatch(
+      /let doorFocusElapsed = doorFocusElapsedAfterRestart\(\)/,
+    );
+    expect(viewSrc).toMatch(
+      /applyDoorFocusLook\(\s*doorFocusLookXAfterRestart\(\),\s*doorFocusLookZAfterRestart\(\),\s*doorFocusElapsed/,
+    );
+    expect(viewSrc).toMatch(
+      /const d = doorFocusDistFromLook\(\s*wx,\s*wy,\s*e\.x,\s*e\.y\)/,
+    );
+    expect(viewSrc).toMatch(
+      /const vis = doorRingVisibleFromLook\(\s*open,\s*d,\s*gameOver\)/,
+    );
+    expect(viewSrc).toMatch(
+      /doorFocusMulFromLook\(\s*bestD,\s*elapsed,\s*gameOver\)/,
+    );
+    expect(viewSrc).toContain("applyDoorFocusLook(");
+    expect(viewSrc).toMatch(
+      /syncDoorFocus\(wx, wy, dt, gameOver = false\) \{[\s\S]{0,240}applyDoorFocusLook\(wx, wy, doorFocusElapsed, gameOver\)/,
+    );
+    expect(viewSrc).not.toMatch(/let doorFocusElapsed = 0/);
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /syncInteractFocus\(dt = 0\): void \{[\s\S]{0,400}this\.view\.syncDoorFocus\(/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.syncInteractFocus\(dt\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}doorFocusLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}doorFocusLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}doorFocusLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}doorFocusLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("doorFocusLookXAfterRestart(");
+    expect(gameSrc).not.toContain("doorFocusLookZAfterRestart(");
+    expect(gameSrc).not.toContain("doorFocusElapsedAfterRestart(");
+    expect(gameSrc).not.toContain("doorFocusMulAfterRestart(");
+    expect(gameSrc).not.toContain("doorRingVisibleAfterRestart(");
+    expect(gameSrc).not.toContain("doorFocusDistAfterRestart(");
+    expect(gameSrc).not.toContain("doorFocusLookXFromLook(");
+    expect(saveSrc).not.toContain("doorFocusLookXAfterRestart");
+    expect(saveSrc).not.toContain("doorFocusElapsedAfterRestart");
+    expect(saveSrc).not.toContain("doorFocusMulAfterRestart");
+    expect(saveSrc).not.toContain("doorFocusLookXFromLook");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
   });
 });

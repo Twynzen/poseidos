@@ -96,3 +96,144 @@ export function doorRingVisible(
   }
   return dist <= reach;
 }
+
+/** Spawn barrio (neighborhood 24.5, 15.5). Three default ring visible / scale 1 = leftover. */
+export const DOOR_FOCUS_LOOK_X_SPAWN = 24.5;
+export const DOOR_FOCUS_LOOK_Z_SPAWN = 15.5;
+
+/**
+ * Look X que lee syncDoorFocus (wx fresco o vivo).
+ * leftover mid-life (ctor origin 0 / far 40) ≠ look fresco (spawn 24.5).
+ */
+export function doorFocusLookXFromLook(wx: number): number {
+  return wx;
+}
+
+/**
+ * Look Z que lee syncDoorFocus (wy fresco o vivo).
+ * leftover mid-life (ctor origin 0 / far 30) ≠ look fresco (spawn 15.5).
+ */
+export function doorFocusLookZFromLook(wy: number): number {
+  return wy;
+}
+
+/**
+ * Distancia look→puerta que lee syncDoorFocus (look fresco o vivo).
+ * leftover ctor hypot(0, door) / far / dist 0 ≠ dist fresco (spawn).
+ */
+export function doorFocusDistFromLook(
+  wx: number,
+  wy: number,
+  mx: number,
+  my: number,
+): number {
+  return Math.hypot(
+    doorFocusLookXFromLook(wx) - mx,
+    doorFocusLookZFromLook(wy) - my,
+  );
+}
+
+/**
+ * Pulso elapsed que lee syncDoorFocus (elapsed fresco o vivo).
+ * leftover mid-life (π/2 phase) ≠ elapsed fresco (0).
+ */
+export function doorFocusElapsedFromLook(elapsed: number): number {
+  return Number.isFinite(elapsed) ? elapsed : 0;
+}
+
+/**
+ * Mul que lee syncDoorFocus (look fresco o vivo).
+ * leftover ctor scale 1 / mid-pulse ≠ mul fresco (spawn + elapsed 0).
+ */
+export function doorFocusMulFromLook(
+  dist: number,
+  elapsed: number,
+  gameOver = false,
+): number {
+  return doorFocusMul(dist, doorFocusElapsedFromLook(elapsed), gameOver);
+}
+
+/**
+ * Anillo que lee syncDoorFocus (look fresco o vivo).
+ * leftover ctor Three visible / dist 0 ≠ anillo fresco (solo reach).
+ */
+export function doorRingVisibleFromLook(
+  open: boolean,
+  dist: number,
+  gameOver = false,
+): boolean {
+  return doorRingVisible(open, dist, DOOR_FOCUS_REACH, gameOver);
+}
+
+/**
+ * R / softReset: look X fresco (spawn 24.5).
+ * WorldView nace applyDoorFocusLook(doorFocusLookXAfterRestart(), …);
+ * leftover ctor origin 0 / Three ring visible no filtra.
+ * syncDoorFocus lee doorFocusLookXFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function doorFocusLookXAfterRestart(
+  wx = DOOR_FOCUS_LOOK_X_SPAWN,
+): number {
+  return doorFocusLookXFromLook(wx);
+}
+
+/**
+ * R / softReset: look Z fresco (spawn 15.5).
+ * WorldView nace applyDoorFocusLook(…, doorFocusLookZAfterRestart(), …);
+ * leftover ctor origin 0 no filtra.
+ */
+export function doorFocusLookZAfterRestart(
+  wy = DOOR_FOCUS_LOOK_Z_SPAWN,
+): number {
+  return doorFocusLookZFromLook(wy);
+}
+
+/**
+ * R / softReset: elapsed fresco (0).
+ * WorldView nace `doorFocusElapsed = doorFocusElapsedAfterRestart()`;
+ * leftover mid-pulse de la vida anterior no filtra.
+ */
+export function doorFocusElapsedAfterRestart(): number {
+  return doorFocusElapsedFromLook(0);
+}
+
+/**
+ * R / softReset: mul fresco (spawn + elapsed 0).
+ * leftover ctor scale 1 / mid-pulse no filtra.
+ */
+export function doorFocusMulAfterRestart(
+  dist: number,
+  gameOver = false,
+): number {
+  return doorFocusMulFromLook(dist, doorFocusElapsedAfterRestart(), gameOver);
+}
+
+/**
+ * R / softReset: anillo fresco (solo reach desde spawn).
+ * leftover ctor Three visible / dist 0 no filtra.
+ */
+export function doorRingVisibleAfterRestart(
+  open: boolean,
+  dist: number,
+  gameOver = false,
+): boolean {
+  return doorRingVisibleFromLook(open, dist, gameOver);
+}
+
+/**
+ * R / softReset: dist fresco (puerta vs spawn).
+ * leftover ctor origin 0,0 / dist 0 / far 40,30 no filtra.
+ */
+export function doorFocusDistAfterRestart(
+  mx: number,
+  my: number,
+  wx = DOOR_FOCUS_LOOK_X_SPAWN,
+  wy = DOOR_FOCUS_LOOK_Z_SPAWN,
+): number {
+  return doorFocusDistFromLook(
+    doorFocusLookXAfterRestart(wx),
+    doorFocusLookZAfterRestart(wy),
+    mx,
+    my,
+  );
+}
