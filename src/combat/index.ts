@@ -6,6 +6,8 @@ export {
   BARE_HANDS,
   pickMeleeTarget,
   resolveMeleeWeapon,
+  meleeInputApplies,
+  applyMeleeInput,
   type MeleeTarget,
   type MeleePick,
   type MeleeWeaponChoice,
