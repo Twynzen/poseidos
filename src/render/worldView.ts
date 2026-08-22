@@ -598,6 +598,31 @@ export function playerHeadEmissiveIntensityAfterRestart(): number {
   return playerHeadEmissiveIntensityFromLook(PLAYER_HEAD_EMISSIVE_INTENSITY_SPAWN);
 }
 
+/** Roughness del player head mesh. Ctor playerHeadMat.roughness: 0.4 = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_HEAD_MESH_ROUGHNESS = 0.4;
+
+/** Idle player head mesh roughness. Ctor playerHeadMat.roughness: 0.4 = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_HEAD_ROUGHNESS_SPAWN = 0.4;
+
+/**
+ * Roughness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0.4).
+ * attach/tick no escriben roughness (ctor constant).
+ */
+export function playerHeadRoughnessFromLook(roughness: number): number {
+  return roughness;
+}
+
+/**
+ * R / softReset: roughness fresco (idle 0.4).
+ * WorldView nace playerHeadMat.roughness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben roughness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function playerHeadRoughnessAfterRestart(): number {
+  return playerHeadRoughnessFromLook(PLAYER_HEAD_ROUGHNESS_SPAWN);
+}
+
 /** Amenaza muda: rojo oscuro. 0x6b1a1a × 1.15/canal para leerse de noche. */
 export const HOSTILE_COLOR = 0x7b1e1e;
 
@@ -1334,7 +1359,8 @@ export function createWorldView(
   const playerHeadMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
     color: playerHeadColorAfterRestart(),
-    roughness: 0.4,
+    // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
+    roughness: playerHeadRoughnessAfterRestart(),
     // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
     emissive: playerHeadEmissiveAfterRestart(),
     // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
