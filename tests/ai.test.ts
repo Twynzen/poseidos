@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { makeDoor, makeFloor, makeWall } from "../src/world/tile";
 import { TileMap } from "../src/world/tilemap";
@@ -6,6 +8,7 @@ import {
   defaultHostileSpawns,
   defaultPossessedSpawns,
   SPAWN_GRACE_SECONDS,
+  spawnGraceAfterRestart,
   tickSpawnGrace,
   hostileDamageAllowed,
   loadAliveRuntime,
@@ -450,5 +453,98 @@ describe("F9 load-alive (clip death + gracia)", () => {
     }
     expect(player.health).toBe(MAX_HEALTH);
     expect(player.alive).toBe(true);
+  });
+});
+
+describe("spawnGraceAfterRestart (R / softReset)", () => {
+  test("reinicio → gracia del ctor; leftover 0 no filtra", () => {
+    expect(spawnGraceAfterRestart()).toBe(SPAWN_GRACE_SECONDS);
+    expect(spawnGraceAfterRestart()).toBe(6);
+
+    let current = 0;
+    expect(hostileDamageAllowed(current)).toBe(true);
+    current = spawnGraceAfterRestart();
+    expect(current).toBe(SPAWN_GRACE_SECONDS);
+    expect(current).not.toBe(0);
+    expect(hostileDamageAllowed(current)).toBe(false);
+
+    current = tickSpawnGrace(SPAWN_GRACE_SECONDS, 10);
+    expect(current).toBe(0);
+    expect(hostileDamageAllowed(current)).toBe(true);
+    current = spawnGraceAfterRestart();
+    expect(current).toBe(SPAWN_GRACE_SECONDS);
+    expect(current).not.toBe(0);
+    expect(hostileDamageAllowed(current)).toBe(false);
+
+    current = tickSpawnGrace(SPAWN_GRACE_SECONDS, 4);
+    expect(current).toBeCloseTo(2);
+    current = spawnGraceAfterRestart();
+    expect(current).toBe(SPAWN_GRACE_SECONDS);
+    expect(hostileDamageAllowed(current)).toBe(false);
+  });
+
+  test("vivo tick no usa el helper (tickSpawnGrace / hostileDamageAllowed igual que hoy)", () => {
+    expect(tickSpawnGrace(6, 1)).toBeCloseTo(5);
+    expect(tickSpawnGrace(0.2, 0.5)).toBe(0);
+    expect(tickSpawnGrace(0, 1)).toBe(0);
+    expect(tickSpawnGrace(SPAWN_GRACE_SECONDS, 10)).toBe(0);
+    expect(hostileDamageAllowed(SPAWN_GRACE_SECONDS)).toBe(false);
+    expect(hostileDamageAllowed(0.1)).toBe(false);
+    expect(hostileDamageAllowed(0)).toBe(true);
+    expect(hostileDamageAllowed(spawnGraceAfterRestart())).toBe(false);
+    expect(hostileDamageAllowed(0)).not.toBe(
+      hostileDamageAllowed(spawnGraceAfterRestart()),
+    );
+    expect(tickSpawnGrace(0, 1)).not.toBe(spawnGraceAfterRestart());
+  });
+
+  test("Game softReset usa helper; F9 load assign loaded; freeze no inventa gracia", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("spawnGraceAfterRestart(");
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,1600}this\.spawnGrace = spawnGraceAfterRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /lastRunRingAgeAfterRestart\(\);[\s\S]{0,200}this\.spawnThreats\(\);[\s\S]{0,200}this\.spawnGrace = spawnGraceAfterRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /spawnThreats\(\): void \{[\s\S]{0,800}this\.spawnGrace = SPAWN_GRACE_SECONDS/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2000}this\.spawnGrace = loaded\.spawnGrace/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2000}spawnGraceAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}spawnGraceAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}this\.spawnGrace\s*=/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}spawnGraceAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}this\.spawnGrace\s*=/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}spawnGraceAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}this\.spawnGrace\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
   });
 });
