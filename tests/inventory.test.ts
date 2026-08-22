@@ -1,6 +1,10 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   addItem,
+  applyLootInput,
   CONTAINER_REACH,
   ContainerRegistry,
   containerHasLoot,
@@ -17,6 +21,7 @@ import {
   LOOT_KITCHEN,
   LOOT_CABINET,
   LOOT_SHED,
+  lootInputApplies,
   removeFromSlot,
   rollLoot,
   totalWeight,
@@ -30,7 +35,8 @@ import {
   INVENTORY_EMPTY_MSG,
 } from "../src/items";
 import { createNeighborhood } from "../src/world/neighborhood";
-import { isWalkable, makeFurniture, blocksSight } from "../src/world/tile";
+import { isWalkable, makeDoor, makeFloor, makeFurniture, blocksSight } from "../src/world/tile";
+import { TileMap } from "../src/world/tilemap";
 import { PlayerSim } from "../src/actors/player";
 import { NEEDS_RELIEF } from "../src/actors/needs";
 
@@ -578,6 +584,156 @@ describe("PlayerSim loot + consume", () => {
     facingX.facingX = 1;
     facingX.facingY = 0;
     expect(facingX.tryLoot(piles())?.id).toBe("wood");
+  });
+});
+
+describe("lootInputApplies / applyLootInput (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: G/E/F no aplican; vivo / load-vivo sí", () => {
+    expect(lootInputApplies(true)).toBe(false);
+    expect(lootInputApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(lootInputApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(lootInputApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver + wantsLoot no muta inventario; vivo G / Shift+G sí", () => {
+    const box = createWorldContainer("box", 2, 2, "cocina", [
+      { id: "canned_food", qty: 2 },
+      { id: "ammo", qty: 4 },
+    ]);
+    const reg = new ContainerRegistry([box]);
+    const deadPlayer = new PlayerSim(
+      { x: 2.4, y: 2.3 },
+      undefined,
+      createInventory(8, 20),
+    );
+    const beforeInv = deadPlayer.inventory.slots.map((s) => ({ ...s }));
+    const beforeBox = box.inv.slots.map((s) => ({ ...s }));
+
+    expect(
+      applyLootInput(true, true, () => deadPlayer.tryLoot(reg)),
+    ).toBeNull();
+    expect(
+      applyLootInput(true, true, () => deadPlayer.tryLootStack(reg)),
+    ).toBeNull();
+    expect(deadPlayer.inventory.slots).toEqual(beforeInv);
+    expect(box.inv.slots).toEqual(beforeBox);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(
+      applyLootInput(deadRt.gameOver, true, () => deadPlayer.tryLoot(reg)),
+    ).toBeNull();
+    expect(box.inv.slots).toEqual(beforeBox);
+
+    const livePlayer = new PlayerSim(
+      { x: 2.4, y: 2.3 },
+      undefined,
+      createInventory(8, 20),
+    );
+    expect(
+      applyLootInput(false, true, () => livePlayer.tryLoot(reg)),
+    ).toEqual({ id: "canned_food", qty: 1 });
+    expect(livePlayer.inventory.slots[0]).toEqual({
+      id: "canned_food",
+      qty: 1,
+    });
+    expect(box.inv.slots[0]?.qty).toBe(1);
+    expect(applyLootInput(false, false, () => livePlayer.tryLoot(reg))).toBeNull();
+    expect(box.inv.slots[0]?.qty).toBe(1);
+
+    const stackBox = createWorldContainer("pila", 2, 2, "pila", [
+      { id: "ammo", qty: 4 },
+    ]);
+    const stackReg = new ContainerRegistry([stackBox]);
+    const stackPlayer = new PlayerSim(
+      { x: 2.4, y: 2.3 },
+      undefined,
+      createInventory(8, 20),
+    );
+    const liveRt = loadAliveRuntime(true);
+    expect(
+      applyLootInput(liveRt.gameOver, true, () =>
+        stackPlayer.tryLootStack(stackReg),
+      ),
+    ).toEqual({ id: "ammo", qty: 4 });
+    expect(stackPlayer.inventory.slots[0]).toEqual({ id: "ammo", qty: 4 });
+    expect(stackBox.inv.slots).toHaveLength(0);
+  });
+
+  test("gameOver + wantsInteract no togglea puerta; vivo E/F sí", () => {
+    const map = new TileMap(10, 10, makeFloor);
+    map.set(5, 5, makeDoor(false));
+    const deadPlayer = new PlayerSim({ x: 5.4, y: 5.2 });
+    expect(
+      applyLootInput(true, true, () => deadPlayer.tryToggleDoor(map)),
+    ).toBeNull();
+    expect(map.get(5, 5)?.open).toBe(false);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(
+      applyLootInput(deadRt.gameOver, true, () => deadPlayer.tryToggleDoor(map)),
+    ).toBeNull();
+    expect(map.get(5, 5)?.open).toBe(false);
+
+    const livePlayer = new PlayerSim({ x: 5.4, y: 5.2 });
+    expect(
+      applyLootInput(false, true, () => livePlayer.tryToggleDoor(map)),
+    ).toEqual({ x: 5, y: 5, open: true });
+    expect(map.get(5, 5)?.open).toBe(true);
+    expect(
+      applyLootInput(false, false, () => livePlayer.tryToggleDoor(map)),
+    ).toBeNull();
+    expect(map.get(5, 5)?.open).toBe(true);
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto drenan G/E/F sin loot/puerta; vivo gatea", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("lootInputApplies(");
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeLoot\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeInteract\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,400}consumeLoot\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,400}consumeInteract\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}if \(loaded\.gameOver\) \{[\s\S]{0,200}consumeLoot\(\);[\s\S]{0,80}consumeInteract\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /lootInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsInteract[\s\S]{0,200}tryToggleDoor/,
+    );
+    expect(gameSrc).toMatch(
+      /lootInputApplies\(\s*this\.gameOver[\s\S]{0,80}loot[\s\S]{0,200}tryLoot/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}tryLoot/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}tryToggleDoor/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}tryLoot/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}tryToggleDoor/,
+    );
   });
 });
 

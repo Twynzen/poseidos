@@ -31,6 +31,8 @@ export {
   LOOT_SHED,
   rollLoot,
   fixedLoot,
+  lootInputApplies,
+  applyLootInput,
   type LootEntry,
 } from "./loot";
 export {

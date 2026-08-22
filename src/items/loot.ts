@@ -1,5 +1,6 @@
 /**
  * Loot tables simples (chance + min/max) → stacks.
+ * G/E/F input gate (ver input.consumeLoot / consumeInteract / game.ts).
  */
 
 import type { ItemId } from "./defs";
@@ -68,4 +69,27 @@ export function rollLoot(
 /** Loot fijo (sin RNG) — útil para demo/tests. */
 export function fixedLoot(stacks: ItemStack[]): ItemStack[] {
   return stacks.map((s) => ({ id: s.id, qty: s.qty }));
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: G / E / F no aplican (se drenan, no loot/puerta).
+ * Vivo (incl. F9 load-vivo): loot 1 / stack / puerta / loot contextual, igual que hoy.
+ * No despawnea pilas ni cambia tablas; solo gate de input.
+ */
+export function lootInputApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no llama apply (inventario / puerta iguales).
+ * Vivo + wants → apply(). !wants → null.
+ */
+export function applyLootInput<T>(
+  gameOver: boolean,
+  wants: boolean,
+  apply: () => T | null,
+): T | null {
+  if (!lootInputApplies(gameOver) || !wants) return null;
+  return apply();
 }
