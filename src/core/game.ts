@@ -841,10 +841,8 @@ export class Game {
   private enterGameOver(): void {
     if (this.gameOver) return;
     this.gameOver = true;
-    // Drain L / G / E / F; no assign flashlightOn ni loot/puerta.
+    // Drain L; no assign flashlightOn (R / load-vivo sin restore inventado).
     this.input.consumeFlashlightToggle();
-    this.input.consumeLoot();
-    this.input.consumeInteract();
     this.closeDialogueOnGameOver();
     // formatHudStatus already paints HAS MUERTO. Keep combate/hambre-sed; drop leftover.
     if (!isKeepableDeathCause(this.lastLootMsg)) {
@@ -861,6 +859,9 @@ export class Game {
     // FOV ya en radio base: ocultar mudos/poseídos del anillo +4 linterna.
     this.syncHostileView();
     this.syncLighting();
+    // Drain G/E/F al final: no loot/puerta; no empuja ventanas de scan del hide.
+    this.input.consumeLoot();
+    this.input.consumeInteract();
   }
 
 
