@@ -41,6 +41,7 @@ import {
   flashlightConeVisible,
   flashlightConeOpacityAfterRestart,
   flashlightConeOpacityFromLook,
+  flashlightConeDepthWriteAfterRestart,
   flashlightConeVisibleAfterRestart,
   flashlightConeVisibleFromLook,
   flashlightConeYawAfterRestart,
@@ -1516,7 +1517,8 @@ export function createWorldView(
     // R / dispose: cone opacity fresco (idle 0); leftover ctor BASE / mid-life no filtra.
     opacity: flashlightConeOpacityAfterRestart(),
     side: THREE.DoubleSide,
-    depthWrite: false,
+    // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
+    depthWrite: flashlightConeDepthWriteAfterRestart(),
     blending: THREE.AdditiveBlending,
   });
   const flashlightConeWedge = new THREE.Mesh(coneGeo, coneMat);
