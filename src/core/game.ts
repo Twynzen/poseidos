@@ -234,7 +234,13 @@ import {
   warmLightAnchor,
   warmLightIntensity,
 } from "../world/indoor";
-import { WeatherSystem, rainNeedsMult } from "../world/weather";
+import {
+  WeatherSystem,
+  rainNeedsMult,
+  rainVisualIntensity,
+  weatherAfterRestart,
+  weatherHudRaining,
+} from "../world/weather";
 import {
   LocalLoopbackSession,
   publishHostBarricades,
@@ -543,7 +549,8 @@ export class Game {
     this.spawnThreats();
     // R: reloj fresco (DEFAULT_DAY_LENGTH, elapsed 0); leftover NOC/DIA no filtra.
     this.clock = clockAfterRestart();
-    this.weather = new WeatherSystem({ initial: "drizzle" });
+    // R: clima fresco (drizzle boot); leftover rain/phase no filtra.
+    this.weather = weatherAfterRestart();
     // R: mix fresco; no filtrar night/indoor/threat de la vida anterior. Mute se queda.
     resetAmbientAfterRestart(this.ambient);
     // R: voices a 0; no rampa leftover. Mute se queda.
@@ -670,8 +677,7 @@ export class Game {
    */
   private syncRainVisual(dt = 0): void {
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
-    const inten =
-      indoor || !this.weather.isRaining ? 0 : this.weather.intensity;
+    const inten = rainVisualIntensity(this.weather, indoor);
     this.view.syncRain(
       this.player.x,
       this.player.y,
@@ -2250,7 +2256,7 @@ export class Game {
         ? "safehouse cama"
         : "safehouse"
       : undefined;
-    const raining = this.weather.isRaining && !indoor;
+    const raining = weatherHudRaining(this.weather, indoor);
     const flashlight =
       this.flashlightOn && hasFlashlight(this.player.inventory);
 
