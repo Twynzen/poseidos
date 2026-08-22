@@ -105,8 +105,9 @@ import {
   triggerHitLean,
 } from "./hitLean";
 import {
+  cameraShakeApplies,
   createCameraShakeState,
-  tickCameraShake,
+  tickCameraShake as stepCameraShake,
   triggerCameraShake,
   type CameraShakeOutput,
 } from "./cameraShake";
@@ -443,7 +444,7 @@ export interface WorldView {
    * No mueve el root mundo — solo locoRoot local (bob) o mixer + yaw.
    * Aplica last meleeSwing overlay a rotation.x/z (tick aparte).
    * Hit lean (recoil) overridea el swing mientras está activo.
-   * Avanza camera shake (offset para followCamera).
+   * Camera shake avanza en tickCameraShake (offset para followCamera).
    * Coloca el chevron de facing (siempre on).
    * faceX/faceZ: ejes de facing (x,z Three / mapa); opcional.
    */
@@ -461,6 +462,13 @@ export interface WorldView {
   tickMeleeSwing(dt: number, gameOver?: boolean): void;
   /** Quita lean leftover (HAS MUERTO / F9 load-muerto). Ya en reposo = no-op. */
   hideMeleeSwing(): void;
+  /**
+   * Avanza el camera shake (offset XZ para followCamera).
+   * `gameOver`: HAS MUERTO / F9 load-muerto — skip tick + zero offset.
+   */
+  tickCameraShake(dt: number, gameOver?: boolean): void;
+  /** Quita offset leftover (HAS MUERTO / F9 load-muerto). Ya en reposo = no-op. */
+  hideCameraShake(): void;
   /**
    * One-shot de vista: melee/disparo ok → primary-attack; toque hostil → hit;
    * game-over → death. setAction + mixer sync (no-op si el GLB no tiene el clip).
@@ -1156,6 +1164,18 @@ export function createWorldView(
     applySwingOverlayPose(meleeSwingOut);
   }
 
+  function tickShake(dt: number, gameOver = false): void {
+    if (!cameraShakeApplies(gameOver)) {
+      hideShake();
+      return;
+    }
+    cameraShakeOut = stepCameraShake(playerCameraShake, dt, gameOver);
+  }
+
+  function hideShake(): void {
+    cameraShakeOut = { offsetX: 0, offsetZ: 0, active: false };
+  }
+
   const hostileGeo = new THREE.BoxGeometry(HOSTILE_BODY_WIDTH, HOSTILE_BODY_HEIGHT, HOSTILE_BODY_DEPTH);
   const hostileHeadGeo = new THREE.BoxGeometry(HOSTILE_HEAD_SIZE, HOSTILE_HEAD_SIZE, HOSTILE_HEAD_SIZE);
   const hostileMat = new THREE.MeshStandardMaterial({
@@ -1771,7 +1791,6 @@ export function createWorldView(
       tickCharacterAnimator(playerAnimator, dt);
       const swing = meleeSwingOut;
       const lean = tickHitLean(playerHitLean, dt);
-      cameraShakeOut = tickCameraShake(playerCameraShake, dt);
       if (faceX != null && faceZ != null) {
         const yaw = playerGltfYawFromMove(faceX, faceZ);
         if (yaw !== null) playerGltfYaw = yaw;
@@ -1809,6 +1828,8 @@ export function createWorldView(
     },
     tickMeleeSwing: tickSwing,
     hideMeleeSwing: hideSwing,
+    tickCameraShake: tickShake,
+    hideCameraShake: hideShake,
     tickMuzzleFlash: tickMuzzle,
     hideMuzzleFlash: hideMuzzle,
     triggerImpactSpark(x, y) {

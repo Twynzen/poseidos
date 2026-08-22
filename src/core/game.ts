@@ -86,6 +86,7 @@ import { grassVisualApplies } from "../render/windGrass";
 import { muzzleFlashApplies } from "../render/muzzleFlash";
 import { impactSparkApplies } from "../render/impactSpark";
 import { swingPoseApplies } from "../render/meleeSwing";
+import { cameraShakeApplies } from "../render/cameraShake";
 import { lootFloaterLabel } from "../render/lootFloater";
 import {
   SpeechDirector,
@@ -576,6 +577,8 @@ export class Game {
     this.syncImpactSparkOverlay();
     // Load-muerto: swing overlay leftover off (load-vivo dt=0, igual que hoy).
     this.syncSwingPoseOverlay();
+    // Load-muerto: camera shake leftover off (load-vivo dt=0, igual que hoy).
+    this.syncCameraShakeOverlay();
     this.view.followCamera(this.player.x, this.player.y);
   }
 
@@ -949,6 +952,8 @@ export class Game {
     this.syncImpactSparkOverlay();
     // Swing leftover: reset overlay pose ya (no esperar el freeze tick).
     this.syncSwingPoseOverlay();
+    // Camera shake leftover: zero offset ya (no esperar el freeze tick).
+    this.syncCameraShakeOverlay();
     // Drain G/E/F / U / Q / C / H / X / Space/V / Z / B / T / Esc / I / F1 / +/- / F5 al final: no loot/puerta/drop/use/craft/cook/shoot/melee/sleep/build/diálogo/inventario/ayuda/zoom/save; no empuja ventanas de scan del hide.
     this.input.consumeLoot();
     this.input.consumeInteract();
@@ -1286,6 +1291,7 @@ export class Game {
       this.view.tickPlayerLoco(dt, false, false);
       this.syncMuzzleFlashOverlay(dt);
       this.syncImpactSparkOverlay(dt);
+      this.syncCameraShakeOverlay(dt);
       this.renderer.render(this.view.scene, this.view.camera);
       this.syncHelpHud();
       this.syncSpeechOverlay();
@@ -1386,6 +1392,7 @@ export class Game {
       this.view.tickPlayerLoco(dt, false, false);
       this.syncMuzzleFlashOverlay(dt);
       this.syncImpactSparkOverlay(dt);
+      this.syncCameraShakeOverlay(dt);
       this.renderer.render(this.view.scene, this.view.camera);
       this.refreshHud(true);
       return;
@@ -1786,6 +1793,7 @@ export class Game {
     }
     this.syncMuzzleFlashOverlay(dt);
     this.syncImpactSparkOverlay(dt);
+    this.syncCameraShakeOverlay(dt);
     this.syncHostileView(dt);
     this.syncAmbient(dt);
     this.syncHeartbeat(dt);
@@ -1882,6 +1890,19 @@ export class Game {
   private syncSwingPoseOverlay(dt = 0): void {
     if (swingPoseApplies(this.gameOver)) this.view.tickMeleeSwing(dt);
     else this.view.hideMeleeSwing();
+  }
+
+  /**
+   * Camera shake: gameOver → skip tick + zero offset + followCamera.
+   * Vivo (incl. F9 load-vivo): tick de hoy (followCamera aplica el offset).
+   * Ya en reposo = no-op.
+   */
+  private syncCameraShakeOverlay(dt = 0): void {
+    if (cameraShakeApplies(this.gameOver)) this.view.tickCameraShake(dt);
+    else {
+      this.view.hideCameraShake();
+      this.view.followCamera(this.player.x, this.player.y);
+    }
   }
 
   /**

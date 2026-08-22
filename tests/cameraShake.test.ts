@@ -1,8 +1,12 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   CAMERA_SHAKE_AMP,
   CAMERA_SHAKE_DURATION,
   CAMERA_SHAKE_FREQ,
+  cameraShakeApplies,
   createCameraShakeState,
   tickCameraShake,
   triggerCameraShake,
@@ -183,5 +187,109 @@ describe("create / trigger / tick", () => {
     expect(s.dirZ).toBeCloseTo(0, 10);
     const out = tickCameraShake(s, CAMERA_SHAKE_DURATION / 4);
     expect(out.offsetX).toBeCloseTo(expectedMag(0.25), 10);
+  });
+});
+
+describe("cameraShakeApplies (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: no aplica; ya en reposo no-op; load-muerto no; vivo/load-vivo sí", () => {
+    expect(cameraShakeApplies(true)).toBe(false);
+    expect(cameraShakeApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(cameraShakeApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(cameraShakeApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver no avanza age; zero offset; vivo sí; dt<=0 no-op", () => {
+    const dead = createCameraShakeState();
+    triggerCameraShake(dead, () => 0);
+    tickCameraShake(dead, 0.05, false);
+    const age = dead.age;
+    const hidden = tickCameraShake(dead, 0.05, true);
+    expect(dead.age).toBe(age);
+    expect(hidden.active).toBe(false);
+    expect(hidden.offsetX).toBe(0);
+    expect(hidden.offsetZ).toBe(0);
+
+    const idle = createCameraShakeState();
+    expect(tickCameraShake(idle, 0.1, true)).toEqual({
+      offsetX: 0,
+      offsetZ: 0,
+      active: false,
+    });
+    expect(idle.active).toBe(false);
+    expect(idle.age).toBe(0);
+
+    const live = createCameraShakeState();
+    triggerCameraShake(live, () => 0);
+    const out = tickCameraShake(live, CAMERA_SHAKE_DURATION / 4, false);
+    expect(out.active).toBe(true);
+    expect(out.offsetX).toBeCloseTo(expectedMag(0.25), 10);
+    expect(out.offsetZ).toBeCloseTo(0, 10);
+    expect(live.age).toBeCloseTo(CAMERA_SHAKE_DURATION / 4, 10);
+
+    expect(tickCameraShake(live, 0, false).active).toBe(true);
+    expect(live.age).toBeCloseTo(CAMERA_SHAKE_DURATION / 4, 10);
+    expect(tickCameraShake(live, -1, false).active).toBe(true);
+    expect(live.age).toBeCloseTo(CAMERA_SHAKE_DURATION / 4, 10);
+    expect(tickCameraShake(live, Number.NaN, false).active).toBe(true);
+    expect(live.age).toBeCloseTo(CAMERA_SHAKE_DURATION / 4, 10);
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto zeroan shake; vivo tickea; mixer death se queda", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("cameraShakeApplies(");
+    expect(src).toContain("this.view.hideCameraShake()");
+    expect(src).toMatch(
+      /syncCameraShakeOverlay\(dt = 0\): void \{[\s\S]{0,320}cameraShakeApplies\(\s*this\.gameOver/,
+    );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2200}this\.syncCameraShakeOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2200}this\.syncCameraShakeOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,4600}this\.syncCameraShakeOverlay\(dt\)/,
+    );
+    expect(src).toMatch(
+      /this\.view\.tickPlayerLoco\(dt, false, false\);\s*this\.syncMuzzleFlashOverlay\(dt\);\s*this\.syncImpactSparkOverlay\(dt\);\s*this\.syncCameraShakeOverlay\(dt\)/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,4600}this\.view\.tickCameraShake\(dt\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+    expect(src).toMatch(
+      /Mixer must keep ticking during freeze[\s\S]{0,160}this\.view\.tickPlayerLoco\(dt, false, false\)/,
+    );
+
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain("cameraShakeApplies(");
+    expect(viewSrc).toContain("stepCameraShake(");
+    expect(viewSrc).toContain("hideCameraShake: hideShake");
+    expect(viewSrc).toContain("playerMixer.update(dt, currentRole(playerAnimator))");
+    expect(viewSrc).not.toContain("tickCameraShake(playerCameraShake, dt)");
   });
 });
