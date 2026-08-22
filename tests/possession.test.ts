@@ -15,6 +15,8 @@ import {
   DialogueSession,
   dialogueOpenHudMsg,
   nextDialogueCloseHud,
+  talkInputApplies,
+  applyTalkInput,
   ShortMemory,
   formatMemorySummary,
   MEMORY_SUMMARY_MAX_LEN,
@@ -523,7 +525,7 @@ describe("nextDialogueCloseHud (T / Esc / validate HUD)", () => {
     expect(src).toMatch(
       /this\.syncSpeechOverlay\(\);\s*this\.syncDialoguePanel\(\);[\s\S]{0,80}this\.hudAcc \+= dt/,
     );
-    expect((src.match(/consumeTalk\(\)/g) ?? []).length).toBe(1);
+    expect((src.match(/consumeTalk\(\)/g) ?? []).length).toBe(4);
     expect((src.match(/consumeCancel\(\)/g) ?? []).length).toBe(1);
     expect((src.match(/closeDialogueOnGameOver\(\)/g) ?? []).length).toBe(4);
     expect(src).not.toMatch(/tryToggleDialogue\(\)[\s\S]{0,900}lootToast/);
@@ -531,6 +533,109 @@ describe("nextDialogueCloseHud (T / Esc / validate HUD)", () => {
     expect(src).not.toMatch(/dialogue\.validate\([\s\S]{0,400}lootToast/);
     expect(src).not.toMatch(/enterGameOver\(\)[\s\S]{0,400}lootToast/);
     expect(src).not.toMatch(/doLoad\(\)[\s\S]{0,500}lootToast/);
+  });
+});
+
+describe("talkInputApplies / applyTalkInput (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: T no aplica; vivo / load-vivo sí", () => {
+    expect(talkInputApplies(true)).toBe(false);
+    expect(talkInputApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(talkInputApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(talkInputApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver + wantsTalk no abre ni cierra diálogo; vivo T togglea", () => {
+    const deadClosed = new DialogueSession();
+    expect(
+      applyTalkInput(true, true, () => {
+        deadClosed.begin("poss-a");
+        return deadClosed;
+      }),
+    ).toBeNull();
+    expect(deadClosed.open).toBe(false);
+    expect(deadClosed.target).toBeNull();
+
+    const deadRt = loadAliveRuntime(false);
+    expect(
+      applyTalkInput(deadRt.gameOver, true, () => {
+        deadClosed.begin("poss-a");
+        return deadClosed;
+      }),
+    ).toBeNull();
+    expect(deadClosed.open).toBe(false);
+
+    const deadOpen = new DialogueSession();
+    deadOpen.begin("poss-a");
+    expect(
+      applyTalkInput(true, true, () => {
+        deadOpen.close();
+        return deadOpen;
+      }),
+    ).toBeNull();
+    expect(deadOpen.open).toBe(true);
+    expect(deadOpen.target).toBe("poss-a");
+
+    const live = new DialogueSession();
+    const opened = applyTalkInput(false, true, () => {
+      live.begin("poss-a");
+      return live;
+    });
+    expect(opened?.open).toBe(true);
+    expect(opened?.target).toBe("poss-a");
+    expect(
+      applyTalkInput(false, false, () => {
+        live.close();
+        return live;
+      }),
+    ).toBeNull();
+    expect(live.open).toBe(true);
+
+    const liveRt = loadAliveRuntime(true);
+    const closed = applyTalkInput(liveRt.gameOver, true, () => {
+      live.close();
+      return live;
+    });
+    expect(closed?.open).toBe(false);
+    expect(live.target).toBeNull();
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto drenan T sin toggle; vivo gatea", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("talkInputApplies(");
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeTalk\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2600}consumeTalk\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,3000}if \(loaded\.gameOver\) this\.input\.consumeTalk\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /talkInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsTalk[\s\S]{0,200}tryToggleDialogue/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}tryToggleDialogue/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}tryToggleDialogue/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
   });
 });
 
