@@ -826,7 +826,7 @@ describe("worldView flashlight fill", () => {
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).not.toMatch(/new THREE\.PointLight\(0xb0d0ff/);
@@ -895,12 +895,12 @@ describe("worldView flashlight fill distance", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).not.toMatch(/torchLight\.distance = 7 \+ i \* 3\.5/);
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
@@ -967,12 +967,12 @@ describe("worldView flashlight fill distance gain", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DISTANCE_GAIN = 3\.5/);
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
@@ -1046,11 +1046,11 @@ describe("worldView flashlight fill Y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
@@ -1136,11 +1136,11 @@ describe("worldView flashlight spot Y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
@@ -1238,11 +1238,11 @@ describe("worldView flashlight spot distance extra", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
@@ -1337,11 +1337,11 @@ describe("worldView flashlight spot distance gain", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
@@ -1435,11 +1435,11 @@ describe("worldView warm light intensity mul", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
@@ -1545,11 +1545,11 @@ describe("worldView warm light Y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
@@ -1656,11 +1656,11 @@ describe("worldView warm light distance base", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
@@ -1768,11 +1768,11 @@ describe("worldView warm light distance gain", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
@@ -1904,11 +1904,11 @@ describe("worldView warm light amber G gain", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
@@ -2042,11 +2042,11 @@ describe("worldView warm light amber B", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
@@ -2178,11 +2178,11 @@ describe("worldView warm light amber B gain", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
@@ -2318,11 +2318,11 @@ describe("worldView warm light amber G", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
@@ -2453,11 +2453,11 @@ describe("worldView warm light visible eps", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
@@ -2593,11 +2593,11 @@ describe("worldView warm light decay", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
     expect(src).toContain("export const TRACER_FLASH_COLOR = 0xffdd6e");
@@ -2685,7 +2685,7 @@ describe("worldView flashlight fill decay", () => {
       "utf8",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -2741,7 +2741,7 @@ describe("worldView flashlight fill decay", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -2837,7 +2837,7 @@ describe("worldView flashlight spot decay", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const MUZZLE_LIGHT_DECAY = 1.74");
@@ -2893,7 +2893,7 @@ describe("worldView flashlight spot decay", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -2999,7 +2999,7 @@ describe("worldView muzzle light decay", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -3050,7 +3050,7 @@ describe("worldView muzzle light decay", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -3170,7 +3170,7 @@ describe("worldView impact spark light decay", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -3221,7 +3221,7 @@ describe("worldView impact spark light decay", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -3360,7 +3360,7 @@ describe("worldView tracer flash decay", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -3411,7 +3411,7 @@ describe("worldView tracer flash decay", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -3539,7 +3539,7 @@ describe("worldView tracer flash intensity", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -3590,7 +3590,7 @@ describe("worldView tracer flash intensity", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -3721,7 +3721,7 @@ describe("worldView tracer flash distance", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -3772,7 +3772,7 @@ describe("worldView tracer flash distance", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -3905,7 +3905,7 @@ describe("worldView tracer flash Y offset", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -3961,7 +3961,7 @@ describe("worldView tracer flash Y offset", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -4106,7 +4106,7 @@ describe("worldView flashlight spot target Y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -4157,7 +4157,7 @@ describe("worldView flashlight spot target Y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -4310,7 +4310,7 @@ describe("worldView muzzle forward", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -4361,7 +4361,7 @@ describe("worldView muzzle forward", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -4519,7 +4519,7 @@ describe("worldView facing chevron Y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -4570,7 +4570,7 @@ describe("worldView facing chevron Y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -4863,7 +4863,7 @@ describe("worldView facing chevron tilt", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -4914,7 +4914,7 @@ describe("worldView facing chevron tilt", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -5205,7 +5205,7 @@ describe("worldView noise ring Y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -5256,7 +5256,7 @@ describe("worldView noise ring Y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -5547,7 +5547,7 @@ describe("worldView marker ring Y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -5598,7 +5598,7 @@ describe("worldView marker ring Y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -5889,7 +5889,7 @@ describe("worldView marker icon Y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -5940,7 +5940,7 @@ describe("worldView marker icon Y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -6231,7 +6231,7 @@ describe("worldView marker icon size", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -6282,7 +6282,7 @@ describe("worldView marker icon size", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -6573,7 +6573,7 @@ describe("worldView marker badge radius", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -6624,7 +6624,7 @@ describe("worldView marker badge radius", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -6915,7 +6915,7 @@ describe("worldView marker badge tilt", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -6966,7 +6966,7 @@ describe("worldView marker badge tilt", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -7257,7 +7257,7 @@ describe("worldView player body base Y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -7308,7 +7308,7 @@ describe("worldView player body base Y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -7599,7 +7599,7 @@ describe("worldView player head base Y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -7650,7 +7650,7 @@ describe("worldView player head base Y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -7941,7 +7941,7 @@ describe("worldView hostile body base Y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -7992,7 +7992,7 @@ describe("worldView hostile body base Y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -8283,7 +8283,7 @@ describe("worldView hostile head base Y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -8334,7 +8334,7 @@ describe("worldView hostile head base Y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -8625,7 +8625,7 @@ describe("worldView hostile mute XZ scale", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -8676,7 +8676,7 @@ describe("worldView hostile mute XZ scale", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -8967,7 +8967,7 @@ describe("worldView hostile body width", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -9018,7 +9018,7 @@ describe("worldView hostile body width", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -9329,7 +9329,7 @@ describe("worldView hostile body height", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -9380,7 +9380,7 @@ describe("worldView hostile body height", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -9691,7 +9691,7 @@ describe("worldView hostile body depth", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -9742,7 +9742,7 @@ describe("worldView hostile body depth", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -10048,7 +10048,7 @@ describe("worldView hostile head size", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -10099,7 +10099,7 @@ describe("worldView hostile head size", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -10413,7 +10413,7 @@ describe("worldView player head size", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -10464,7 +10464,7 @@ describe("worldView player head size", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -10772,7 +10772,7 @@ describe("worldView player body width", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -10823,7 +10823,7 @@ describe("worldView player body width", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -11131,7 +11131,7 @@ describe("worldView player body height", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -11182,7 +11182,7 @@ describe("worldView player body height", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -11490,7 +11490,7 @@ describe("worldView player body depth", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -11541,7 +11541,7 @@ describe("worldView player body depth", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -11860,7 +11860,7 @@ describe("worldView wall height", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -11911,7 +11911,7 @@ describe("worldView wall height", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -12236,7 +12236,7 @@ describe("worldView wall base Y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -12287,7 +12287,7 @@ describe("worldView wall base Y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -12627,7 +12627,7 @@ describe("worldView door height", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -12678,7 +12678,7 @@ describe("worldView door height", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -13030,7 +13030,7 @@ describe("worldView door base Y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -13081,7 +13081,7 @@ describe("worldView door base Y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -13440,7 +13440,7 @@ describe("worldView door depth", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -13491,7 +13491,7 @@ describe("worldView door depth", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -13860,7 +13860,7 @@ describe("worldView bed height", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -13911,7 +13911,7 @@ describe("worldView bed height", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -14286,7 +14286,7 @@ describe("worldView bed base Y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -14337,7 +14337,7 @@ describe("worldView bed base Y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -14719,7 +14719,7 @@ describe("worldView bed depth", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -14770,7 +14770,7 @@ describe("worldView bed depth", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -15162,7 +15162,7 @@ describe("worldView furniture height", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -15213,7 +15213,7 @@ describe("worldView furniture height", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -15611,7 +15611,7 @@ describe("worldView furniture xz", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -15662,7 +15662,7 @@ describe("worldView furniture xz", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -16066,7 +16066,7 @@ describe("worldView furniture base y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -16117,7 +16117,7 @@ describe("worldView furniture base y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -16540,7 +16540,7 @@ describe("worldView barricade height", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -16591,7 +16591,7 @@ describe("worldView barricade height", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -17016,7 +17016,7 @@ describe("worldView barricade width", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -17067,7 +17067,7 @@ describe("worldView barricade width", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -17527,7 +17527,7 @@ describe("worldView barricade depth", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -17578,7 +17578,7 @@ describe("worldView barricade depth", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -18040,7 +18040,7 @@ describe("worldView barricade plank y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -18091,7 +18091,7 @@ describe("worldView barricade plank y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -18555,7 +18555,7 @@ describe("worldView barricade cross y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -18606,7 +18606,7 @@ describe("worldView barricade cross y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -19072,7 +19072,7 @@ describe("worldView barricade cross scale y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -19123,7 +19123,7 @@ describe("worldView barricade cross scale y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -19591,7 +19591,7 @@ describe("worldView barricade cross scale x", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -19642,7 +19642,7 @@ describe("worldView barricade cross scale x", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -20112,7 +20112,7 @@ describe("worldView barricade cross scale z", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -20163,7 +20163,7 @@ describe("worldView barricade cross scale z", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -20635,7 +20635,7 @@ describe("worldView door open x", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -20686,7 +20686,7 @@ describe("worldView door open x", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -21160,7 +21160,7 @@ describe("worldView barricade plank rot y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -21211,7 +21211,7 @@ describe("worldView barricade plank rot y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");
@@ -21687,7 +21687,7 @@ describe("worldView barricade cross rot y", () => {
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("FLASHLIGHT_CONE_LENGTH + 2.4");
     expect(src).toContain("export const FLASHLIGHT_FILL_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, 10, FLASHLIGHT_FILL_DECAY)");
+    expect(src).toContain("new THREE.PointLight(FLASHLIGHT_FILL_COLOR, 0, flashlightFillDistanceAfterRestart(), FLASHLIGHT_FILL_DECAY)");
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
@@ -21738,7 +21738,7 @@ describe("worldView barricade cross rot y", () => {
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_GAIN = 4.025");
     expect(src).toContain("export const FLASHLIGHT_FILL_DISTANCE_BASE = 8.05");
     expect(src).toContain(
-      "torchLight.distance = FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN",
+      "torchLight.distance = flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(src).toContain("export const FLASHLIGHT_FILL_COLOR = 0xcaefff");
     expect(src).toContain("torchLight.color.setHex(FLASHLIGHT_FILL_COLOR)");

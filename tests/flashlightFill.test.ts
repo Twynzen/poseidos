@@ -110,12 +110,15 @@ describe("torch fill recreate lock (R / softReset)", () => {
     expect(coneSrc).toContain("flashlightFillOriginXAfterRestart(");
     expect(coneSrc).toContain("flashlightFillOriginZAfterRestart(");
     expect(coneSrc).toContain("flashlightFillVisibleAfterRestart(");
+    expect(coneSrc).toContain("flashlightFillDistanceAfterRestart(");
     expect(coneSrc).toContain("flashlightFillOriginXFromLook(");
     expect(coneSrc).toContain("flashlightFillOriginZFromLook(");
     expect(coneSrc).toContain("flashlightFillVisibleFromLook(");
+    expect(coneSrc).toContain("flashlightFillDistanceFromLook(");
     expect(coneSrc).toContain("FLASHLIGHT_FILL_ORIGIN_X_SPAWN");
     expect(coneSrc).toContain("FLASHLIGHT_FILL_ORIGIN_Z_SPAWN");
     expect(coneSrc).toContain("FLASHLIGHT_FILL_VISIBLE_SPAWN");
+    expect(coneSrc).toContain("FLASHLIGHT_FILL_DISTANCE_SPAWN");
     expect(coneSrc).toMatch(
       /flashlightFillOriginXAfterRestart\([\s\S]{0,200}flashlightFillOriginXFromLook\(/,
     );
@@ -125,18 +128,27 @@ describe("torch fill recreate lock (R / softReset)", () => {
     expect(coneSrc).toMatch(
       /flashlightFillVisibleAfterRestart\([\s\S]{0,200}flashlightFillVisibleFromLook\(/,
     );
+    expect(coneSrc).toMatch(
+      /flashlightFillDistanceAfterRestart\([\s\S]{0,200}flashlightFillDistanceFromLook\(/,
+    );
     expect(viewSrc).toContain("flashlightFillOriginXAfterRestart(");
     expect(viewSrc).toContain("flashlightFillOriginZAfterRestart(");
     expect(viewSrc).toContain("flashlightFillVisibleAfterRestart(");
     expect(viewSrc).toContain("flashlightFillOriginXFromLook(");
     expect(viewSrc).toContain("flashlightFillOriginZFromLook(");
     expect(viewSrc).toContain("flashlightFillVisibleFromLook(");
+    expect(viewSrc).toContain("flashlightFillDistanceAfterRestart(");
+    expect(viewSrc).toContain("flashlightFillDistanceFromLook(");
     expect(viewSrc).toContain("flashlightFillOriginXAfterRestart()");
     expect(viewSrc).toContain("flashlightFillOriginZAfterRestart()");
     expect(viewSrc).toContain("flashlightFillVisibleAfterRestart()");
+    expect(viewSrc).toContain("flashlightFillDistanceAfterRestart()");
     expect(viewSrc).toContain("flashlightFillOriginXFromLook(wx)");
     expect(viewSrc).toContain("flashlightFillOriginZFromLook(wy)");
     expect(viewSrc).toContain("flashlightFillVisibleFromLook(on)");
+    expect(viewSrc).toContain(
+      "flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
+    );
     expect(viewSrc).not.toMatch(
       /function hide\(\): void \{[\s\S]{0,200}flashlightFillOriginXAfterRestart/,
     );

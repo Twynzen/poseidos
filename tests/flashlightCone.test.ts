@@ -475,11 +475,13 @@ describe("flashlight cone recreate lock (R / softReset)", () => {
     expect(coneSrc).toContain("flashlightConeOffsetZAfterRestart(");
     expect(coneSrc).toContain("flashlightConeVisibleAfterRestart(");
     expect(coneSrc).toContain("flashlightConeOpacityAfterRestart(");
+    expect(coneSrc).toContain("flashlightFillDistanceAfterRestart(");
     expect(coneSrc).toContain("flashlightConeYawFromLook(");
     expect(coneSrc).toContain("flashlightConeOffsetXFromLook(");
     expect(coneSrc).toContain("flashlightConeOffsetZFromLook(");
     expect(coneSrc).toContain("flashlightConeVisibleFromLook(");
     expect(coneSrc).toContain("flashlightConeOpacityFromLook(");
+    expect(coneSrc).toContain("flashlightFillDistanceFromLook(");
     expect(coneSrc).toContain("FLASHLIGHT_CONE_YAW_SPAWN");
     expect(coneSrc).toMatch(
       /flashlightConeYawAfterRestart\([\s\S]{0,200}flashlightConeYawFromLook\(/,
@@ -501,6 +503,10 @@ describe("flashlight cone recreate lock (R / softReset)", () => {
     expect(viewSrc).toContain("flashlightConeOpacityAfterRestart()");
     expect(viewSrc).toContain(
       "flashlightConeOpacityFromLook(flashlightWedgeOpacity(i))",
+    );
+    expect(viewSrc).toContain("flashlightFillDistanceAfterRestart()");
+    expect(viewSrc).toContain(
+      "flashlightFillDistanceFromLook(FLASHLIGHT_FILL_DISTANCE_BASE + i * FLASHLIGHT_FILL_DISTANCE_GAIN)",
     );
     expect(viewSrc).toContain("flashlightConeYawAfterRestart()");
     expect(viewSrc).toContain("flashlightConeYawFromLook(playerGltfYaw)");
