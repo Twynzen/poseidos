@@ -2062,6 +2062,31 @@ export function barricadeEmissiveAfterRestart(): number {
   return barricadeEmissiveFromLook(BARRICADE_EMISSIVE_SPAWN);
 }
 
+/** Intensidad del barricade mesh. Ctor barricadeMat.emissiveIntensity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_EMISSIVE_INTENSITY = 1;
+
+/** Idle barricade mesh emissiveIntensity. Ctor barricadeMat.emissiveIntensity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_EMISSIVE_INTENSITY_SPAWN = 1;
+
+/**
+ * Intensidad que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ */
+export function barricadeEmissiveIntensityFromLook(intensity: number): number {
+  return intensity;
+}
+
+/**
+ * R / softReset: intensity fresco (idle 1).
+ * WorldView nace barricadeMat.emissiveIntensity AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function barricadeEmissiveIntensityAfterRestart(): number {
+  return barricadeEmissiveIntensityFromLook(BARRICADE_EMISSIVE_INTENSITY_SPAWN);
+}
+
 /** Roughness del barricade-edge mesh. Ctor barricadeEdgeMat.roughness: 0.9 = fresco. Mid-life leftover ≠ fresco. */
 export const BARRICADE_EDGE_ROUGHNESS = 0.9;
 
@@ -2569,6 +2594,8 @@ export function createWorldView(
     metalness: barricadeMetalnessAfterRestart(),
     // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
     emissive: barricadeEmissiveAfterRestart(),
+    // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
+    emissiveIntensity: barricadeEmissiveIntensityAfterRestart(),
   });
   const barricadeEdgeMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(BARRICADE_EDGE, lastDaylight),
