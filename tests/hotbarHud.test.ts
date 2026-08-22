@@ -619,6 +619,76 @@ describe("resetHotbarHudAfterRestart (R / softReset)", () => {
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
     );
   });
+
+  test("hide() no llama resetAfterRestart ni endDrag (death paint se queda)", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const hud = createHotbarHud(root);
+    hud.sync(hotbarSlots(createStarterInventory()), 0);
+
+    pointerOnSlot(root, 2, "pointerdown");
+    expect(slotAt(root, 2).classList.contains("hotbar-dragging")).toBe(true);
+    expect(slotAt(root, 2).style.cursor).toBe("grabbing");
+    hud.hide();
+    expect(slotAt(root, 2).classList.contains("hotbar-dragging")).toBe(true);
+    expect(slotAt(root, 2).style.cursor).toBe("grabbing");
+    expect(slotAt(root, 2).classList.contains("hotbar-dragging")).not.toBe(
+      hotbarHudDraggingAfterRestart(),
+    );
+    hud.dispose();
+
+    const hudSrc = readFileSync(
+      resolve(process.cwd(), "src/ui/hotbarHud.ts"),
+      "utf8",
+    );
+    const hideFn = hudSrc.match(/hide\(\) \{[\s\S]*?\n    \},/);
+    expect(hideFn?.[0]).toBeTruthy();
+    expect(hideFn![0]).toMatch(/bar\.hidden = true/);
+    expect(hideFn![0]).not.toMatch(/resetAfterRestart\s*\(/);
+    expect(hideFn![0]).not.toMatch(/endDrag\s*\(/);
+    expect(hideFn![0]).not.toMatch(/classList\.(?:add|remove)/);
+    expect(hudSrc).toMatch(
+      /hide\(\): void;\s*[\s\S]{0,400}resetAfterRestart\(\): void;/,
+    );
+
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).not.toMatch(
+      /syncHotbarHud\(\): void \{[\s\S]{0,280}resetHotbarHudAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /this\.hotbarHud\.hide\(\);[\s\S]{0,80}resetHotbarHudAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(!hotbarHudVisible\(this\.gameOver, true\)\) \{\s*this\.hotbarHud\.hide\(\);\s*return;/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}resetHotbarHudAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}resetHotbarHudAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,3600}resetHotbarHudAfterRestart\(this\.hotbarHud\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}resetHotbarHudAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+  });
 });
 
 describe("createHotbarHud hide (HAS MUERTO)", () => {

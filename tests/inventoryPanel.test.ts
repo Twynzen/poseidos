@@ -1012,4 +1012,71 @@ describe("resetInventoryPanelAfterRestart (R / softReset)", () => {
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
     );
   });
+
+  test("sync(open:false) no llama resetAfterRestart ni endDrag (death paint se queda)", () => {
+    root = document.createElement("div");
+    document.body.appendChild(root);
+    const panel = createInventoryPanel(root);
+    const inv = createInventory(8, 20, [
+      { id: "scrap", qty: 1 },
+      { id: "water_bottle", qty: 1 },
+    ]);
+    const data = buildInventoryPanelData(inv);
+    panel.sync({ open: true, data });
+
+    pointerOnRow(root, 0, "pointerdown");
+    expect(root.querySelector(".inv-slot-dragging")).toBeTruthy();
+    expect(
+      (root.querySelector(".inv-slot-dragging") as HTMLElement).style.cursor,
+    ).toBe("grabbing");
+    panel.sync({ open: false, data });
+    expect(root.querySelector(".inv-slot-dragging")).toBeTruthy();
+    expect(
+      (root.querySelector(".inv-slot-dragging") as HTMLElement).style.cursor,
+    ).toBe("grabbing");
+    panel.dispose();
+
+    const invSrc = readFileSync(
+      resolve(process.cwd(), "src/ui/inventory.ts"),
+      "utf8",
+    );
+    const closeFn = invSrc.match(/if \(!view\.open\) \{[\s\S]*?return;\s*\}/);
+    expect(closeFn?.[0]).toBeTruthy();
+    expect(closeFn![0]).toMatch(/panel\.hidden = true/);
+    expect(closeFn![0]).not.toMatch(/resetAfterRestart\s*\(/);
+    expect(closeFn![0]).not.toMatch(/endDrag\s*\(/);
+    expect(closeFn![0]).not.toMatch(/classList\.(?:add|remove)/);
+
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).not.toMatch(
+      /syncInventoryPanel\(\): void \{[\s\S]{0,400}resetInventoryPanelAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}resetInventoryPanelAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}resetInventoryPanelAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,3600}resetInventoryPanelAfterRestart\(this\.inventoryPanel\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}resetInventoryPanelAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+  });
 });
