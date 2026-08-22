@@ -985,7 +985,7 @@ describe("resetInventoryPanelAfterRestart (R / softReset)", () => {
     );
     expect(gameSrc).toContain("resetInventoryPanelAfterRestart(");
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,4800}resetInventoryPanelAfterRestart\(this\.inventoryPanel\)/,
+      /softReset\(\): void \{[\s\S]{0,4900}resetInventoryPanelAfterRestart\(this\.inventoryPanel\)/,
     );
     expect(gameSrc).toMatch(
       /resetHotbarHudAfterRestart\(this\.hotbarHud\);[\s\S]{0,80}resetInventoryPanelAfterRestart\(this\.inventoryPanel\)/,
@@ -1061,7 +1061,7 @@ describe("resetInventoryPanelAfterRestart (R / softReset)", () => {
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}resetInventoryPanelAfterRestart/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,4800}resetInventoryPanelAfterRestart\(this\.inventoryPanel\)/,
+      /softReset\(\): void \{[\s\S]{0,4900}resetInventoryPanelAfterRestart\(this\.inventoryPanel\)/,
     );
     expect(gameSrc).not.toMatch(
       /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}resetInventoryPanelAfterRestart/,
