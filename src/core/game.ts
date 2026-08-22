@@ -36,6 +36,7 @@ import {
   torchLightIntensity,
   flashlightToggleApplies,
   nextFlashlightOn,
+  lootInputApplies,
   getItemDef,
   splitStack,
   mergeStack,
@@ -433,6 +434,8 @@ export class Game {
     if (loaded.gameOver) {
       this.input.consumeFlashlightToggle();
       this.closeDialogueOnGameOver();
+      this.input.consumeLoot();
+      this.input.consumeInteract();
     }
     if (!hasFlashlight(this.player.inventory)) this.flashlightOn = false;
     this.noise.clear();
@@ -856,6 +859,9 @@ export class Game {
     // FOV ya en radio base: ocultar mudos/poseídos del anillo +4 linterna.
     this.syncHostileView();
     this.syncLighting();
+    // Drain G/E/F al final: no loot/puerta; no empuja ventanas de scan del hide.
+    this.input.consumeLoot();
+    this.input.consumeInteract();
   }
 
 
@@ -1144,8 +1150,10 @@ export class Game {
         this.lastLootMsg = muteHudMsg(toggleAmbientMute(this.ambient));
         this.hudAcc = 1;
       }
-      // Drain L; HAS MUERTO no togglea flashlightOn (no leak al R / primer tick vivo).
+      // Drain L / G / E / F; HAS MUERTO no togglea ni lootea / abre puertas.
       this.input.consumeFlashlightToggle();
+      this.input.consumeLoot();
+      this.input.consumeInteract();
       this.input.endFrame();
       this.syncAmbient(dt);
       this.syncHeartbeat(dt);
@@ -1332,7 +1340,8 @@ export class Game {
       }
     }
 
-    if (this.input.consumeInteract()) {
+    const wantsInteract = this.input.consumeInteract();
+    if (lootInputApplies(this.gameOver) && wantsInteract) {
       const result = this.player.tryToggleDoor(this.map);
       if (result) {
         playDoor(this.interactPlayer, this.ambient.muted);
@@ -1356,7 +1365,7 @@ export class Game {
       }
     }
     const loot = this.input.consumeLoot();
-    if (loot) {
+    if (lootInputApplies(this.gameOver) && loot) {
       const taken = loot.whole
         ? this.player.tryLootStack(this.containers)
         : this.player.tryLoot(this.containers);
