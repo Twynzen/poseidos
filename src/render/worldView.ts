@@ -523,6 +523,32 @@ export function playerHeadColorAfterRestart(): number {
 export const PLAYER_HEAD_EMISSIVE = 0x122537;
 /** Amenaza muda: rojo oscuro. 0x6b1a1a × 1.15/canal para leerse de noche. */
 export const HOSTILE_COLOR = 0x7b1e1e;
+
+/** Color del hostile mesh. Ctor hostileMat.color: HOSTILE_COLOR = fresco. Mid-life leftover ≠ fresco. */
+export const HOSTILE_MESH_COLOR = 0x7b1e1e;
+
+/** Idle hostile mesh color. Ctor hostileMat.color: HOSTILE_COLOR = fresco. Mid-life leftover ≠ fresco. */
+export const HOSTILE_COLOR_SPAWN = 0x7b1e1e;
+
+/**
+ * Color que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle HOSTILE_COLOR 0x7b1e1e).
+ * attach/tick no escriben color (ctor constant).
+ */
+export function hostileColorFromLook(color: number): number {
+  return color;
+}
+
+/**
+ * R / softReset: color fresco (idle HOSTILE_COLOR 0x7b1e1e).
+ * WorldView nace hostileMat.color AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben color (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function hostileColorAfterRestart(): number {
+  return hostileColorFromLook(HOSTILE_COLOR_SPAWN);
+}
+
 /** Poseído: púrpura enfermo. 0x5a2d6b × 1.15/canal para leerse de noche. */
 export const POSSESSED_COLOR = 0x68347b;
 const POSSESSED_EMISSIVE = 0x1e0925;
@@ -1913,7 +1939,8 @@ export function createWorldView(
   const hostileGeo = new THREE.BoxGeometry(HOSTILE_BODY_WIDTH, HOSTILE_BODY_HEIGHT, HOSTILE_BODY_DEPTH);
   const hostileHeadGeo = new THREE.BoxGeometry(HOSTILE_HEAD_SIZE, HOSTILE_HEAD_SIZE, HOSTILE_HEAD_SIZE);
   const hostileMat = new THREE.MeshStandardMaterial({
-    color: HOSTILE_COLOR,
+    // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
+    color: hostileColorAfterRestart(),
     roughness: 0.55,
   });
   const possessedMat = new THREE.MeshStandardMaterial({
