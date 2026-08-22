@@ -577,7 +577,7 @@ export class Game {
     this.syncHitFlashOverlay();
     this.syncInventoryPanel();
     this.lastLootMsg = lastLootMsgAfterRestart();
-    // R: WorldView nuevo = grassTime 0 + rain Y fresco; leftover sway/caída no filtra.
+    // R: WorldView nuevo = grassTime 0 + rain Y/vx fresco; leftover sway/caída/viento no filtra.
     this.view.dispose();
     this.view = createWorldView(this.map, this.containers);
     // R: cámara nueva = ISO_FRUSTUM; no filtrar el zoom de la vida anterior.

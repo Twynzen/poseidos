@@ -21,6 +21,9 @@ import {
   rainStreakOpacity,
   rainStreakScaleY,
   rainStreaksHidden,
+  rainStreakVxAfterRestart,
+  rainStreakVxFromDrift,
+  rainStreakVxFromPhase,
   rainStreakYAfterRestart,
   rainStreakYFromFall,
   rainStreakYFromPhase,
@@ -201,9 +204,10 @@ describe("rainVisualApplies (HAS MUERTO / F9 load-muerto)", () => {
       "utf8",
     );
     expect(viewSrc).toContain("rainStreakYFromFall(");
-    expect(viewSrc).toContain("tickRainStreakVx(");
+    expect(viewSrc).toContain("rainStreakVxFromDrift(");
     expect(viewSrc).not.toContain("d.y -= d.vy * dt");
     expect(viewSrc).not.toContain("d.y = tickRainStreakY(");
+    expect(viewSrc).not.toContain("d.vx = tickRainStreakVx(");
   });
 });
 
@@ -276,7 +280,7 @@ describe("rain streaks recreate lock (R / softReset)", () => {
     expect(viewSrc).toMatch(
       /if \(dt > 0\) \{[\s\S]{0,80}d\.y = rainStreakYFromFall\(\s*d\.y,\s*d\.vy,\s*dt,\s*i\)/,
     );
-    expect(viewSrc).toContain("tickRainStreakVx(");
+    expect(viewSrc).toContain("rainStreakVxFromDrift(");
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
     );
@@ -307,6 +311,129 @@ describe("rain streaks recreate lock (R / softReset)", () => {
     expect(gameSrc).not.toContain("rainStreakYAfterRestart(");
     expect(saveSrc).not.toContain("rainStreakYAfterRestart");
     expect(saveSrc).not.toContain("rainStreakYFromFall");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+  });
+});
+
+describe("rainStreakVxAfterRestart (R / softReset)", () => {
+  test("viento fresco (spawn); leftover mid-drift no filtra", () => {
+    const boot = rainStreakVxAfterRestart(0.4);
+    expect(boot).toBe(rainStreakVxFromPhase(0.4));
+    expect(boot).toBe((0.4 - 0.5) * 14);
+    expect(boot).toBe(-1.4);
+    expect(rainStreakVxAfterRestart(0)).toBe(-7);
+    expect(rainStreakVxAfterRestart(1)).toBe(7);
+    expect(rainStreakVxAfterRestart()).toBe(-7);
+    expect(boot).toBe(tickRainStreakVx(boot, 0, false));
+
+    const leftoverVx = 20;
+    expect(leftoverVx).toBeGreaterThan(7);
+    expect(leftoverVx).not.toBe(boot);
+    expect(rainStreakVxFromDrift(leftoverVx, 0.2, true)).toBe(leftoverVx);
+    expect(rainStreakVxFromDrift(leftoverVx, 0.2, true)).not.toBe(boot);
+    expect(tickRainStreakVx(leftoverVx, 0.2, true)).toBe(leftoverVx);
+
+    const leftoverDrift = rainStreakVxFromDrift(boot, 5, false);
+    expect(leftoverDrift).toBe(tickRainStreakVx(boot, 5, false));
+    expect(leftoverDrift).toBe(boot + 5 * 0.4);
+    expect(leftoverDrift).toBe(0.6);
+    expect(leftoverDrift).not.toBe(rainStreakVxAfterRestart(0.4));
+    expect(leftoverDrift).not.toBe(boot);
+  });
+
+  test("vivo tick no usa el helper (vx avanza)", () => {
+    const boot = rainStreakVxAfterRestart(0.4);
+    const live = rainStreakVxFromDrift(boot, 0.2, false);
+    expect(live).toBeCloseTo(boot + 0.2 * 0.4, 10);
+    expect(live).not.toBe(rainStreakVxAfterRestart(0.4));
+    expect(live).toBeGreaterThan(boot);
+    expect(rainStreakVxFromDrift(live, 0.1, false)).not.toBe(
+      rainStreakVxAfterRestart(0.4),
+    );
+  });
+});
+
+describe("rain vx/drift recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace rain vx fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const rainSrc = readFileSync(
+      resolve(process.cwd(), "src/render/rainStreaks.ts"),
+      "utf8",
+    );
+    expect(rainSrc).toContain("rainStreakVxAfterRestart(");
+    expect(rainSrc).toContain("rainStreakVxFromPhase(");
+    expect(rainSrc).toContain("rainStreakVxFromDrift(");
+    expect(rainSrc).toMatch(
+      /rainStreakVxFromDrift\([\s\S]{0,200}tickRainStreakVx\(/,
+    );
+    expect(viewSrc).toContain("rainStreakVxAfterRestart(");
+    expect(viewSrc).toContain("rainStreakVxFromDrift(");
+    expect(viewSrc).toMatch(
+      /const vx = rainStreakVxAfterRestart\(\s*Math\.random\(\)\)/,
+    );
+    expect(viewSrc).toMatch(
+      /if \(dt > 0\) \{[\s\S]{0,360}d\.vx = rainStreakVxFromDrift\(\s*d\.vx,\s*dt\)/,
+    );
+    expect(viewSrc).toContain("rainStreakYFromFall(");
+    expect(viewSrc).not.toContain("d.vx = tickRainStreakVx(");
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /syncRainVisual\(dt = 0\): void \{[\s\S]{0,360}rainVisualApplies\(\s*this\.gameOver\) \? dt : 0/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.syncRainVisual\(dt\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}rainStreakVxAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}rainStreakVxAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}rainStreakVxAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}rainStreakVxAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("rainStreakVxAfterRestart(");
+    expect(saveSrc).not.toContain("rainStreakVxAfterRestart");
+    expect(saveSrc).not.toContain("rainStreakVxFromDrift");
     expect(gameSrc).not.toMatch(
       /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
     );
