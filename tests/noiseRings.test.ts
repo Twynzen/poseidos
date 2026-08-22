@@ -2,18 +2,30 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
+import { createNeighborhood } from "../src/world/neighborhood";
 import {
   DEFAULT_NOISE_RING_LIFE,
   NOISE_RING_AMBER,
   NOISE_RING_COMBAT,
+  NOISE_RING_COUNT_SPAWN,
   NOISE_RING_INNER,
+  NOISE_RING_OPACITY_SPAWN,
   NOISE_RING_RUN,
+  NOISE_RING_SCALE_SPAWN,
   NOISE_RING_WIDTH,
   RUN_NOISE_RING_MIN_AGE,
   applyNoiseRingTick,
   createNoiseRing,
   lastRunRingAgeAfterRestart,
+  noiseRingActiveAfterRestart,
+  noiseRingActiveFromLook,
   noiseRingApplies,
+  noiseRingCountAfterRestart,
+  noiseRingCountFromLook,
+  noiseRingOpacityAfterRestart,
+  noiseRingOpacityFromLook,
+  noiseRingScaleAfterRestart,
+  noiseRingScaleFromLook,
   ringColorHex,
   ringOpacity,
   ringProgress,
@@ -392,6 +404,212 @@ describe("lastRunRingAgeAfterRestart (R / softReset)", () => {
     );
     expect(gameSrc).not.toMatch(
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}this\.lastRunRingAgeSec\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+  });
+});
+
+describe("noiseRingAfterRestart (R / softReset)", () => {
+  test("ring fresco (idle opacity/scale 0 + pool empty); leftover mid-life / far 40,30 no filtra", () => {
+    const barrio = createNeighborhood(48);
+    expect(barrio.spawn.x).toBe(24.5);
+    expect(barrio.spawn.y).toBe(15.5);
+
+    const bootI = noiseRingOpacityAfterRestart();
+    const bootS = noiseRingScaleAfterRestart();
+    const bootA = noiseRingActiveAfterRestart();
+    const bootN = noiseRingCountAfterRestart();
+    expect(bootI).toBe(noiseRingOpacityFromLook(0));
+    expect(bootS).toBe(noiseRingScaleFromLook(0));
+    expect(bootA).toBe(noiseRingActiveFromLook(false));
+    expect(bootN).toBe(noiseRingCountFromLook(0));
+    expect(bootI).toBe(0);
+    expect(bootS).toBe(0);
+    expect(bootA).toBe(false);
+    expect(bootN).toBe(0);
+    expect(bootI).toBe(NOISE_RING_OPACITY_SPAWN);
+    expect(bootS).toBe(NOISE_RING_SCALE_SPAWN);
+    expect(bootN).toBe(NOISE_RING_COUNT_SPAWN);
+    expect(noiseRingOpacityAfterRestart()).toBe(bootI);
+    expect(noiseRingScaleAfterRestart()).toBe(bootS);
+    expect(noiseRingActiveAfterRestart()).toBe(bootA);
+    expect(noiseRingCountAfterRestart()).toBe(bootN);
+
+    const leftover = createNoiseRing({ x: 40, y: 30, radius: 6, kind: "run", life: 1 });
+    leftover.age = 0.5;
+    const leftoverMidI = ringOpacity(leftover);
+    const leftoverMidS = ringScale(leftover);
+    expect(leftoverMidI).toBeCloseTo(0.5, 5);
+    expect(leftoverMidS).toBeCloseTo(0.75, 5);
+    expect(leftoverMidI).not.toBe(bootI);
+    expect(leftoverMidS).not.toBe(bootS);
+    expect(noiseRingOpacityFromLook(leftoverMidI)).toBe(leftoverMidI);
+    expect(noiseRingOpacityFromLook(leftoverMidI)).not.toBe(bootI);
+    expect(noiseRingScaleFromLook(leftoverMidS)).toBe(leftoverMidS);
+    expect(noiseRingScaleFromLook(leftoverMidS)).not.toBe(bootS);
+    expect(noiseRingActiveFromLook(true)).not.toBe(bootA);
+    expect(noiseRingCountFromLook(1)).not.toBe(bootN);
+
+    const leftoverFarX = leftover.x;
+    const leftoverFarZ = leftover.y;
+    expect(leftoverFarX).not.toBe(barrio.spawn.x);
+    expect(leftoverFarZ).not.toBe(barrio.spawn.y);
+    expect(leftoverFarX).not.toBe(24.5);
+    expect(leftoverFarZ).not.toBe(15.5);
+    expect(leftoverFarX).toBe(40);
+    expect(leftoverFarZ).toBe(30);
+
+    expect(noiseRingOpacityFromLook(0)).toBe(bootI);
+    expect(noiseRingScaleFromLook(0)).toBe(bootS);
+    expect(noiseRingActiveFromLook(false)).toBe(bootA);
+    expect(noiseRingCountFromLook(0)).toBe(bootN);
+  });
+
+  test("vivo tick no usa el helper (opacity/scale avanzan con look)", () => {
+    const bootI = noiseRingOpacityAfterRestart();
+    const bootS = noiseRingScaleAfterRestart();
+    const bootA = noiseRingActiveAfterRestart();
+    const bootN = noiseRingCountAfterRestart();
+    const live = createNoiseRing({ x: 24.5, y: 15.5, radius: 6, kind: "run", life: 1 });
+    expect(applyNoiseRingTick(live, 0.5, false)).toBe(true);
+    const liveI = noiseRingOpacityFromLook(ringOpacity(live));
+    const liveS = noiseRingScaleFromLook(ringScale(live));
+    const liveA = noiseRingActiveFromLook(true);
+    const liveN = noiseRingCountFromLook(1);
+    expect(liveI).toBeCloseTo(0.5, 5);
+    expect(liveS).toBeCloseTo(0.75, 5);
+    expect(liveA).toBe(true);
+    expect(liveN).toBe(1);
+    expect(liveI).not.toBe(bootI);
+    expect(liveS).not.toBe(bootS);
+    expect(liveA).not.toBe(bootA);
+    expect(liveN).not.toBe(bootN);
+    expect(liveI).not.toBe(noiseRingOpacityAfterRestart());
+    expect(liveS).not.toBe(noiseRingScaleAfterRestart());
+    expect(liveA).not.toBe(noiseRingActiveAfterRestart());
+    expect(liveN).not.toBe(noiseRingCountAfterRestart());
+    expect(liveN).toBeGreaterThan(bootN);
+
+    expect(noiseRingOpacityFromLook(0)).toBe(bootI);
+    expect(noiseRingScaleFromLook(0)).toBe(bootS);
+    expect(noiseRingActiveFromLook(false)).toBe(bootA);
+    expect(noiseRingCountFromLook(0)).toBe(bootN);
+    expect(noiseRingOpacityFromLook(0.5)).toBe(0.5);
+    expect(noiseRingScaleFromLook(0.75)).toBe(0.75);
+    expect(noiseRingCountFromLook(1)).toBe(1);
+  });
+});
+
+describe("noise rings recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace ring fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const ringSrc = readFileSync(
+      resolve(process.cwd(), "src/render/noiseRings.ts"),
+      "utf8",
+    );
+    expect(ringSrc).toContain("noiseRingOpacityAfterRestart(");
+    expect(ringSrc).toContain("noiseRingScaleAfterRestart(");
+    expect(ringSrc).toContain("noiseRingActiveAfterRestart(");
+    expect(ringSrc).toContain("noiseRingCountAfterRestart(");
+    expect(ringSrc).toContain("noiseRingOpacityFromLook(");
+    expect(ringSrc).toContain("noiseRingScaleFromLook(");
+    expect(ringSrc).toContain("noiseRingActiveFromLook(");
+    expect(ringSrc).toContain("noiseRingCountFromLook(");
+    expect(ringSrc).toContain("NOISE_RING_OPACITY_SPAWN");
+    expect(ringSrc).toContain("NOISE_RING_SCALE_SPAWN");
+    expect(ringSrc).toContain("NOISE_RING_COUNT_SPAWN");
+    expect(ringSrc).toMatch(
+      /noiseRingOpacityAfterRestart\([\s\S]{0,200}noiseRingOpacityFromLook\(/,
+    );
+    expect(ringSrc).toMatch(
+      /noiseRingScaleAfterRestart\([\s\S]{0,200}noiseRingScaleFromLook\(/,
+    );
+    expect(viewSrc).toContain("noiseRingOpacityAfterRestart(");
+    expect(viewSrc).toContain("noiseRingScaleAfterRestart(");
+    expect(viewSrc).toContain("noiseRingActiveAfterRestart(");
+    expect(viewSrc).toContain("noiseRingCountAfterRestart(");
+    expect(viewSrc).toContain("noiseRingOpacityFromLook(");
+    expect(viewSrc).toContain("noiseRingScaleFromLook(");
+    expect(viewSrc).toMatch(
+      /opacity:\s*noiseRingOpacityAfterRestart\(\)/,
+    );
+    expect(viewSrc).toMatch(
+      /noiseRingPool: PooledNoiseRing\[\] = new Array\(noiseRingCountAfterRestart\(\)\)/,
+    );
+    expect(viewSrc).toContain("mesh.visible = noiseRingActiveAfterRestart()");
+    expect(viewSrc).toContain("mesh.scale.set(s, 1, s)");
+    expect(viewSrc).toContain(
+      "slot.mat.opacity = noiseRingOpacityFromLook(ringOpacity(state))",
+    );
+    expect(viewSrc).toContain(
+      "p.mat.opacity = noiseRingOpacityFromLook(ringOpacity(p.state))",
+    );
+    expect(viewSrc).toContain("noiseRingScaleFromLook(ringScale(state))");
+    expect(viewSrc).toContain("noiseRingScaleFromLook(ringScale(p.state))");
+    expect(viewSrc).not.toMatch(
+      /hideNoiseRings: clearNoiseRings[\s\S]{0,80}noiseRingOpacityAfterRestart/,
+    );
+    expect(viewSrc).not.toMatch(
+      /function clearNoiseRings\(\): void \{[\s\S]{0,200}noiseRingOpacityAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}noiseRingOpacityAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}noiseRingOpacityAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}noiseRingOpacityAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}noiseRingOpacityAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("noiseRingOpacityAfterRestart(");
+    expect(gameSrc).not.toContain("noiseRingScaleAfterRestart(");
+    expect(gameSrc).not.toContain("noiseRingActiveAfterRestart(");
+    expect(gameSrc).not.toContain("noiseRingCountAfterRestart(");
+    expect(gameSrc).not.toContain("noiseRingOpacityFromLook(");
+    expect(gameSrc).not.toContain("noiseRingScaleFromLook(");
+    expect(saveSrc).not.toContain("noiseRingOpacityAfterRestart");
+    expect(saveSrc).not.toContain("noiseRingScaleAfterRestart");
+    expect(saveSrc).not.toContain("noiseRingOpacityFromLook");
+    expect(saveSrc).not.toContain("noiseRingScaleFromLook");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
     );
     expect(gameSrc).toMatch(
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,

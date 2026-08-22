@@ -143,6 +143,79 @@ export function ringOpacity(r: NoiseRingState): number {
   return 1 - ringProgress(r);
 }
 
+/** Idle ring opacity. Ctor pool opacity 0 = fresco. Mid-life leftover ≠ 0. */
+export const NOISE_RING_OPACITY_SPAWN = 0;
+/** Idle ring scale. Ctor hidden / age 0 scale 0 = fresco. Mid-life leftover ≠ 0. */
+export const NOISE_RING_SCALE_SPAWN = 0;
+/** Idle ring count. Ctor pool empty (state null) = fresco. Mid-life count leftover ≠ 0. */
+export const NOISE_RING_COUNT_SPAWN = 0;
+
+/**
+ * Opacity que lee spawn/tick (look fresco o vivo).
+ * leftover mid-life fade ≠ fresco (idle 0).
+ */
+export function noiseRingOpacityFromLook(opacity: number): number {
+  return opacity;
+}
+
+/**
+ * Scale que lee spawn/tick (look fresco o vivo).
+ * leftover mid-life expand ≠ fresco (idle 0).
+ */
+export function noiseRingScaleFromLook(scale: number): number {
+  return scale;
+}
+
+/**
+ * Active/visible que lee spawn (look fresco o vivo).
+ * leftover mid-life ring ≠ fresco (pool empty).
+ */
+export function noiseRingActiveFromLook(active: boolean): boolean {
+  return active;
+}
+
+/**
+ * Count del pool activo que nace empty (look fresco o vivo).
+ * leftover mid-life count ≠ fresco (0).
+ */
+export function noiseRingCountFromLook(count: number): number {
+  return count;
+}
+
+/**
+ * R / softReset: opacity fresco (idle 0).
+ * WorldView nace mat AfterRestart; leftover mid-life no filtra.
+ * spawn/tick lee noiseRingOpacityFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function noiseRingOpacityAfterRestart(): number {
+  return noiseRingOpacityFromLook(NOISE_RING_OPACITY_SPAWN);
+}
+
+/**
+ * R / softReset: scale fresco (idle 0).
+ * WorldView nace mesh.scale AfterRestart; leftover mid-life no filtra.
+ * spawn/tick lee noiseRingScaleFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function noiseRingScaleAfterRestart(): number {
+  return noiseRingScaleFromLook(NOISE_RING_SCALE_SPAWN);
+}
+
+/**
+ * R / softReset: active fresco (false).
+ * leftover mid-life ring no filtra.
+ */
+export function noiseRingActiveAfterRestart(): boolean {
+  return noiseRingActiveFromLook(false);
+}
+
+/**
+ * R / softReset: count fresco (pool empty).
+ * leftover mid-life count no filtra.
+ */
+export function noiseRingCountAfterRestart(): number {
+  return noiseRingCountFromLook(NOISE_RING_COUNT_SPAWN);
+}
+
 /** Ámbar door/loot. 0xe8b060 × 1.15/canal (r clamp) para leer de noche. */
 export const NOISE_RING_AMBER = 0xffca6e;
 
