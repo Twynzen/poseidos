@@ -1,10 +1,15 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   addItem,
+  applyCookInput,
   attemptCook,
   canCookHere,
   cookFailMessage,
   cookFullMessage,
+  cookInputApplies,
   createInventory,
   diagnoseCook,
   getItemDef,
@@ -210,6 +215,135 @@ describe("cookFullMessage", () => {
   test("bad_place sigue no puedes cocinar aquí", () => {
     expect(cookFailMessage("bad_place")).toBe("no puedes cocinar aquí");
     expect(cookFailMessage("bad_place")).not.toBe(refillFailMessage("inv_full"));
+  });
+});
+
+describe("cookInputApplies / applyCookInput (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: H no aplica; vivo / load-vivo sí", () => {
+    expect(cookInputApplies(true)).toBe(false);
+    expect(cookInputApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(cookInputApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(cookInputApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver + wantsCook no muta inventario; vivo H cocina y dest-lleno toastea", () => {
+    const map = room();
+    const deadInv = createInventory(8, 20);
+    addItem(deadInv, "canned_food", 2);
+    const beforeDead = deadInv.slots.map((s) => ({ ...s }));
+
+    expect(
+      applyCookInput(true, true, () =>
+        tryCook(map, deadInv, 6.5, 7.2) ? true : null,
+      ),
+    ).toBeNull();
+    expect(deadInv.slots).toEqual(beforeDead);
+    expect(deadInv.slots.find((s) => s.id === "canned_food")?.qty).toBe(2);
+    expect(deadInv.slots.find((s) => s.id === "hot_meal")).toBeUndefined();
+
+    const deadRt = loadAliveRuntime(false);
+    expect(
+      applyCookInput(deadRt.gameOver, true, () =>
+        attemptCook(map, deadInv, 6.5, 7.2),
+      ),
+    ).toBeNull();
+    expect(deadInv.slots).toEqual(beforeDead);
+
+    const liveInv = createInventory(8, 20);
+    addItem(liveInv, "canned_food", 2);
+    expect(
+      applyCookInput(false, true, () => attemptCook(map, liveInv, 6.5, 7.2)),
+    ).toEqual({ ok: true });
+    expect(liveInv.slots.find((s) => s.id === "hot_meal")?.qty).toBe(1);
+    expect(liveInv.slots.find((s) => s.id === "canned_food")?.qty).toBe(1);
+    expect(
+      applyCookInput(false, false, () => attemptCook(map, liveInv, 6.5, 7.2)),
+    ).toBeNull();
+    expect(liveInv.slots.find((s) => s.id === "canned_food")?.qty).toBe(1);
+
+    const liveRt = loadAliveRuntime(true);
+    const again = createInventory(8, 20);
+    addItem(again, "canned_food", 1);
+    expect(
+      applyCookInput(liveRt.gameOver, true, () =>
+        attemptCook(map, again, 6.5, 7.2),
+      ),
+    ).toEqual({ ok: true });
+    expect(again.slots.find((s) => s.id === "hot_meal")?.qty).toBe(1);
+    expect(again.slots.find((s) => s.id === "canned_food")).toBeUndefined();
+
+    const fullInv = createInventory(1, 20);
+    addItem(fullInv, "canned_food", 2);
+    const beforeFull = fullInv.slots.map((s) => ({ ...s }));
+    const full = applyCookInput(false, true, () =>
+      attemptCook(map, fullInv, 6.5, 7.2),
+    );
+    expect(full?.ok).toBe(false);
+    if (full && !full.ok) {
+      expect(full.reason).toBe("inv_full");
+      expect(full.message).toBe("inventario lleno");
+      expect(full.message).toBe(refillFailMessage("inv_full"));
+    }
+    expect(fullInv.slots).toEqual(beforeFull);
+    expect(fullInv.slots.find((s) => s.id === "canned_food")?.qty).toBe(2);
+    expect(fullInv.slots.find((s) => s.id === "hot_meal")).toBeUndefined();
+    expect(cookFullMessage(0)).toBe("inventario lleno");
+
+    const deadPlayer = new PlayerSim(
+      { x: 6.5, y: 7.2 },
+      undefined,
+      createInventory(8, 20, [{ id: "canned_food", qty: 1 }]),
+    );
+    const beforePlayer = deadPlayer.inventory.slots.map((s) => ({ ...s }));
+    expect(
+      applyCookInput(true, true, () => deadPlayer.tryCook(map)),
+    ).toBeNull();
+    expect(deadPlayer.inventory.slots).toEqual(beforePlayer);
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto drenan H sin cook; vivo gatea", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("cookInputApplies(");
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeCook\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,1800}consumeCook\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,1800}if \(loaded\.gameOver\) this\.input\.consumeCook\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /cookInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsCook[\s\S]{0,200}tryCook/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}tryCook/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}attemptCook/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}tryCook/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}attemptCook/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeRestOrRestart\(\)/,
+    );
   });
 });
 

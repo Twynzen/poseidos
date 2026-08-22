@@ -40,6 +40,7 @@ import {
   dropInputApplies,
   useInputApplies,
   craftInputApplies,
+  cookInputApplies,
   getItemDef,
   splitStack,
   mergeStack,
@@ -443,10 +444,11 @@ export class Game {
     if (!hasFlashlight(this.player.inventory)) this.flashlightOn = false;
     this.noise.clear();
     this.refreshViewAfterLoad();
-    // Drain U / Q / C fuera del bloque close/loot: no tira ni consume ni craftea leftover; no estira regex de hide.
+    // Drain U / Q / C / H fuera del bloque close/loot: no tira ni consume ni craftea ni cocina leftover; no estira regex de hide.
     if (loaded.gameOver) this.input.consumeDrop();
     if (loaded.gameOver) this.input.consumeUse();
     if (loaded.gameOver) this.input.consumeCraft();
+    if (loaded.gameOver) this.input.consumeCook();
     this.lastLootMsg = "cargado";
     this.refreshHud(true);
     return true;
@@ -866,12 +868,13 @@ export class Game {
     // FOV ya en radio base: ocultar mudos/poseídos del anillo +4 linterna.
     this.syncHostileView();
     this.syncLighting();
-    // Drain G/E/F / U / Q / C al final: no loot/puerta/drop/use/craft; no empuja ventanas de scan del hide.
+    // Drain G/E/F / U / Q / C / H al final: no loot/puerta/drop/use/craft/cook; no empuja ventanas de scan del hide.
     this.input.consumeLoot();
     this.input.consumeInteract();
     this.input.consumeDrop();
     this.input.consumeUse();
     this.input.consumeCraft();
+    this.input.consumeCook();
   }
 
 
@@ -1160,13 +1163,14 @@ export class Game {
         this.lastLootMsg = muteHudMsg(toggleAmbientMute(this.ambient));
         this.hudAcc = 1;
       }
-      // Drain L / G / E / F / U / Q / C; HAS MUERTO no togglea ni lootea / abre puertas / tira / usa / craftea.
+      // Drain L / G / E / F / U / Q / C / H; HAS MUERTO no togglea ni lootea / abre puertas / tira / usa / craftea / cocina.
       this.input.consumeFlashlightToggle();
       this.input.consumeLoot();
       this.input.consumeInteract();
       this.input.consumeDrop();
       this.input.consumeUse();
       this.input.consumeCraft();
+      this.input.consumeCook();
       this.input.endFrame();
       this.syncAmbient(dt);
       this.syncHeartbeat(dt);
@@ -1580,7 +1584,8 @@ export class Game {
         this.hudAcc = 1;
       }
     }
-    if (this.input.consumeCook()) {
+    const wantsCook = this.input.consumeCook();
+    if (cookInputApplies(this.gameOver) && wantsCook) {
       const cooked = this.player.tryCook(this.map);
       if (cooked?.ok) {
         this.lastLootMsg = "cocinaste un plato caliente";
