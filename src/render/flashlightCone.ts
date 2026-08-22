@@ -773,3 +773,28 @@ export function flashlightConeSideFromLook(side: number): number {
 export function flashlightConeSideAfterRestart(): number {
   return flashlightConeSideFromLook(FLASHLIGHT_CONE_SIDE_SPAWN);
 }
+
+/** Blending del flashlight cone mesh. Ctor coneMat.blending THREE.AdditiveBlending (2) = fresco. Mid-life leftover ≠ fresco. */
+export const FLASHLIGHT_CONE_BLENDING = 2;
+
+/** Idle flashlight cone mesh blending. Ctor coneMat.blending THREE.AdditiveBlending (2) = fresco. Mid-life leftover ≠ fresco. */
+export const FLASHLIGHT_CONE_BLENDING_SPAWN = 2;
+
+/**
+ * Blending que leería syncTorchLight (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.AdditiveBlending / 2).
+ * syncTorchLight no escribe blending (ctor constant).
+ */
+export function flashlightConeBlendingFromLook(blending: number): number {
+  return blending;
+}
+
+/**
+ * R / softReset: blending fresco (idle THREE.AdditiveBlending / 2).
+ * WorldView nace coneMat.blending AfterRestart; leftover mid-life no filtra.
+ * syncTorchLight no escribe blending (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function flashlightConeBlendingAfterRestart(): number {
+  return flashlightConeBlendingFromLook(FLASHLIGHT_CONE_BLENDING_SPAWN);
+}
