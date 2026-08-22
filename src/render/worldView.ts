@@ -112,7 +112,8 @@ import {
   MUZZLE_FLASH_RADIUS,
   MUZZLE_LIGHT_PEAK,
   createMuzzleFlash,
-  tickMuzzleFlash,
+  muzzleFlashApplies,
+  tickMuzzleFlash as stepMuzzleFlash,
   triggerMuzzleFlash as startMuzzleFlash,
 } from "./muzzleFlash";
 import {
@@ -460,9 +461,16 @@ export interface WorldView {
   triggerPlayerAction(role: PlayerOneShotRole): void;
   /**
    * Flash de hocico al disparar (hit y miss). Re-triggerable.
-   * Esfera aditiva + PointLight; avanza en tickPlayerLoco.
+   * Esfera aditiva + PointLight; avanza en tickMuzzleFlash.
    */
   triggerMuzzleFlash(): void;
+  /**
+   * Avanza el flash de hocico (esfera + PointLight).
+   * `gameOver`: HAS MUERTO / F9 load-muerto — skip tick + hide mesh/luz.
+   */
+  tickMuzzleFlash(dt: number, gameOver?: boolean): void;
+  /** Quita flash leftover (HAS MUERTO / F9 load-muerto). Ya oculto = no-op. */
+  hideMuzzleFlash(): void;
   /**
    * Spark de impacto al extremo del tracer (hit y miss). Re-triggerable.
    * Esfera aditiva unlit + PointLight en (x, TRACER_HEIGHT, y); hide si idle.
@@ -1033,6 +1041,18 @@ export function createWorldView(
     muzzleLight.visible = out.active;
     muzzleMat.opacity = out.intensity;
     muzzleLight.intensity = out.active ? MUZZLE_LIGHT_PEAK * out.intensity : 0;
+  }
+
+  function tickMuzzle(dt: number, gameOver = false): void {
+    if (!muzzleFlashApplies(gameOver)) {
+      applyMuzzleFlashVisual({ intensity: 0, active: false });
+      return;
+    }
+    applyMuzzleFlashVisual(stepMuzzleFlash(playerMuzzle, dt, gameOver));
+  }
+
+  function hideMuzzle(): void {
+    applyMuzzleFlashVisual({ intensity: 0, active: false });
   }
 
   // Impact spark: esfera aditiva unlit (radio IMPACT_SPARK_RADIUS) + PointLight (reutilizable).
@@ -1693,7 +1713,6 @@ export function createWorldView(
         if (yaw !== null) playerGltfYaw = yaw;
       }
       placeFacingChevron();
-      applyMuzzleFlashVisual(tickMuzzleFlash(playerMuzzle, dt));
       applyImpactSparkVisual(tickImpactSpark(impactSpark, dt));
       const pose = lean.active ? lean : swing;
       if (playerUsesGltfVisual && playerMixer) {
@@ -1725,6 +1744,8 @@ export function createWorldView(
     triggerMuzzleFlash() {
       startMuzzleFlash(playerMuzzle);
     },
+    tickMuzzleFlash: tickMuzzle,
+    hideMuzzleFlash: hideMuzzle,
     triggerImpactSpark(x, y) {
       startImpactSpark(impactSpark, x, y);
     },

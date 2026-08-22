@@ -83,6 +83,7 @@ import {
 import { tracerOverlayApplies } from "../render/tracers";
 import { rainVisualApplies } from "../render/rainStreaks";
 import { grassVisualApplies } from "../render/windGrass";
+import { muzzleFlashApplies } from "../render/muzzleFlash";
 import { lootFloaterLabel } from "../render/lootFloater";
 import {
   SpeechDirector,
@@ -567,6 +568,8 @@ export class Game {
     // Load-muerto: rain/grass leftover freeze (load-vivo dt=0, igual que hoy).
     this.syncRainVisual();
     this.syncGrassVisual();
+    // Load-muerto: muzzle leftover off (load-vivo dt=0, igual que hoy).
+    this.syncMuzzleFlashOverlay();
     this.view.followCamera(this.player.x, this.player.y);
   }
 
@@ -934,6 +937,8 @@ export class Game {
     // Rain/grass leftover: freeze streaks/viento ya (no hide weather).
     this.syncRainVisual();
     this.syncGrassVisual();
+    // Muzzle leftover: hide ya (no esperar el freeze tick).
+    this.syncMuzzleFlashOverlay();
     // Drain G/E/F / U / Q / C / H / X / Space/V / Z / B / T / Esc / I / F1 / +/- / F5 al final: no loot/puerta/drop/use/craft/cook/shoot/melee/sleep/build/diálogo/inventario/ayuda/zoom/save; no empuja ventanas de scan del hide.
     this.input.consumeLoot();
     this.input.consumeInteract();
@@ -1268,6 +1273,7 @@ export class Game {
       this.syncInteractFocus(dt);
       // Mixer must keep ticking during freeze so death LoopOnce can play/clamp.
       this.view.tickPlayerLoco(dt, false, false);
+      this.syncMuzzleFlashOverlay(dt);
       this.renderer.render(this.view.scene, this.view.camera);
       this.syncHelpHud();
       this.syncSpeechOverlay();
@@ -1365,6 +1371,7 @@ export class Game {
       this.view.syncPlayer(this.player.x, this.player.y);
       this.syncInteractFocus(dt);
       this.view.tickPlayerLoco(dt, false, false);
+      this.syncMuzzleFlashOverlay(dt);
       this.renderer.render(this.view.scene, this.view.camera);
       this.refreshHud(true);
       return;
@@ -1762,6 +1769,7 @@ export class Game {
       // en player para melee / barricada / disparo.
       this.view.tickPlayerLoco(dt, moving, sprint, ax.x, ax.z);
     }
+    this.syncMuzzleFlashOverlay(dt);
     this.syncHostileView(dt);
     this.syncAmbient(dt);
     this.syncHeartbeat(dt);
@@ -1831,6 +1839,15 @@ export class Game {
       if (d > CONTAINER_REACH) continue;
       this.view.addLootMarker(c.id, c.x, c.y, c.name, c.inv);
     }
+  }
+
+  /**
+   * Flash de hocico: gameOver → skip tick + hide mesh/luz.
+   * Vivo (incl. F9 load-vivo): tick de hoy. Ya oculto = no-op.
+   */
+  private syncMuzzleFlashOverlay(dt = 0): void {
+    if (muzzleFlashApplies(this.gameOver)) this.view.tickMuzzleFlash(dt);
+    else this.view.hideMuzzleFlash();
   }
 
   /**
