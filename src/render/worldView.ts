@@ -275,6 +275,7 @@ import {
 import {
   atmosphereFromClock,
   fogColorAfterRestart,
+  fogOpacityAfterRestart,
   nightAmbientIntensity,
   nightSunIntensity,
 } from "./fogAtmosphere";
@@ -952,7 +953,8 @@ export function createWorldView(
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
     color: fogColorAfterRestart(),
     transparent: true,
-    opacity: 0.92,
+    // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
+    opacity: fogOpacityAfterRestart(),
     depthWrite: false,
   });
 
