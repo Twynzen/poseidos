@@ -231,6 +231,7 @@ import {
   muzzleFlashPosZFromLook,
   muzzleLightColorAfterRestart,
   muzzleLightDecayAfterRestart,
+  muzzleLightDistanceAfterRestart,
   tickMuzzleFlash as stepMuzzleFlash,
   triggerMuzzleFlash as startMuzzleFlash,
 } from "./muzzleFlash";
@@ -451,6 +452,8 @@ export const MUZZLE_FLASH_COLOR = 0xffffdd;
 export const MUZZLE_LIGHT_COLOR = 0xffffb8;
 /** Decay del PointLight de hocico. 2 × 0.87 para caer un poco más lento de noche. */
 export const MUZZLE_LIGHT_DECAY = 1.74;
+/** Distancia del PointLight de hocico. Ctor = fresco idle; apply escribe intensity, no distance. */
+export const MUZZLE_LIGHT_DISTANCE = 2.6;
 /** Color de la esfera aditiva de impacto. 0xffd080 × 1.15/canal (r clamp) para leerse de noche. */
 export const IMPACT_SPARK_COLOR = 0xffef93;
 /** Color del PointLight de impacto. 0xffd080 × 1.15/canal (r clamp) para leerse de noche. */
@@ -1362,7 +1365,6 @@ export function createWorldView(
   );
 
   // Muzzle flash: esfera aditiva (radio MUZZLE_FLASH_RADIUS) + PointLight (reutilizable).
-  const MUZZLE_LIGHT_DISTANCE = 2.6;
   const muzzleGeo = new THREE.SphereGeometry(MUZZLE_FLASH_RADIUS, 10, 8);
   const muzzleMat = new THREE.MeshBasicMaterial({
     color: MUZZLE_FLASH_COLOR,
@@ -1378,7 +1380,7 @@ export function createWorldView(
   const muzzleLight = new THREE.PointLight(
     muzzleLightColorAfterRestart(),
     0,
-    MUZZLE_LIGHT_DISTANCE,
+    muzzleLightDistanceAfterRestart(),
     muzzleLightDecayAfterRestart(),
   );
   muzzleLight.visible = muzzleFlashActiveAfterRestart();
