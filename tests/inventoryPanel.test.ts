@@ -850,7 +850,7 @@ describe("inventoryToggleApplies / applyInventoryToggle / nextShowInvDetail (HAS
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeInventoryToggle\(\)/,
     );
     expect(gameSrc).toMatch(
-      /enterGameOver\(\): void \{[\s\S]{0,2600}consumeInventoryToggle\(\)/,
+      /enterGameOver\(\): void \{[\s\S]{0,2800}consumeInventoryToggle\(\)/,
     );
     expect(gameSrc).toMatch(
       /doLoad\(\): boolean \{[\s\S]{0,3000}if \(loaded\.gameOver\) this\.input\.consumeInventoryToggle\(\)/,

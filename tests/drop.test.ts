@@ -540,7 +540,7 @@ describe("dropInputApplies / applyDropInput (HAS MUERTO / F9 load-muerto)", () =
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeDrop\(\)/,
     );
     expect(gameSrc).toMatch(
-      /enterGameOver\(\): void \{[\s\S]{0,2200}consumeDrop\(\)/,
+      /enterGameOver\(\): void \{[\s\S]{0,2400}consumeDrop\(\)/,
     );
     expect(gameSrc).toMatch(
       /doLoad\(\): boolean \{[\s\S]{0,1400}if \(loaded\.gameOver\) this\.input\.consumeDrop\(\)/,

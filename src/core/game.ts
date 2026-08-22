@@ -89,6 +89,7 @@ import { swingPoseApplies } from "../render/meleeSwing";
 import { cameraShakeApplies } from "../render/cameraShake";
 import { hitLeanApplies } from "../render/hitLean";
 import { locoBobApplies } from "../render/locoBob";
+import { facingChevronVisible } from "../render/facingChevron";
 import { hostileIdleApplies } from "../render/hostileLoco";
 import { lootFloaterLabel } from "../render/lootFloater";
 import {
@@ -590,6 +591,8 @@ export class Game {
     this.syncCameraShakeOverlay();
     // Load-muerto: ambient leftover freeze (load-vivo dt=0, igual que hoy).
     this.syncAmbient();
+    // Load-muerto: chevron leftover off (load-vivo helper=true, igual que hoy).
+    this.syncFacingChevron();
     this.view.followCamera(this.player.x, this.player.y);
   }
 
@@ -977,6 +980,8 @@ export class Game {
     this.syncCameraShakeOverlay();
     // Ambient leftover: freeze threatPhase/lerp ya (no mute).
     this.syncAmbient();
+    // Facing chevron leftover: hide ya (no esperar el freeze tick).
+    this.syncFacingChevron();
     // Drain G/E/F / U / Q / C / H / X / Space/V / Z / B / T / Esc / I / F1 / +/- / F5 al final: no loot/puerta/drop/use/craft/cook/shoot/melee/sleep/build/diálogo/inventario/ayuda/zoom/save; no empuja ventanas de scan del hide.
     this.input.consumeLoot();
     this.input.consumeInteract();
@@ -1317,6 +1322,7 @@ export class Game {
       this.syncMuzzleFlashOverlay(dt);
       this.syncImpactSparkOverlay(dt);
       this.syncCameraShakeOverlay(dt);
+      this.syncFacingChevron();
       this.renderer.render(this.view.scene, this.view.camera);
       this.syncHelpHud();
       this.syncSpeechOverlay();
@@ -1420,6 +1426,7 @@ export class Game {
       this.syncMuzzleFlashOverlay(dt);
       this.syncImpactSparkOverlay(dt);
       this.syncCameraShakeOverlay(dt);
+      this.syncFacingChevron();
       this.renderer.render(this.view.scene, this.view.camera);
       this.refreshHud(true);
       return;
@@ -1823,6 +1830,7 @@ export class Game {
     this.syncMuzzleFlashOverlay(dt);
     this.syncImpactSparkOverlay(dt);
     this.syncCameraShakeOverlay(dt);
+    this.syncFacingChevron();
     this.syncHostileView(dt);
     this.syncAmbient(dt);
     this.syncHeartbeat(dt);
@@ -1928,6 +1936,15 @@ export class Game {
   private syncHitLeanOverlay(dt = 0): void {
     if (hitLeanApplies(this.gameOver)) this.view.tickHitLean(dt);
     else this.view.hideHitLean();
+  }
+
+  /**
+   * Chevron de facing: gameOver → hide mesh.
+   * Vivo (incl. F9 load-vivo): visible de hoy. Ya oculto = no-op.
+   */
+  private syncFacingChevron(): void {
+    if (facingChevronVisible(this.gameOver)) this.view.showFacingChevron();
+    else this.view.hideFacingChevron();
   }
 
   /**

@@ -1,4 +1,7 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   FACING_CHEVRON_COLOR,
   FACING_CHEVRON_DIST,
@@ -7,6 +10,7 @@ import {
   FACING_CHEVRON_OPACITY,
   FACING_CHEVRON_YAW_OFFSET,
   facingChevronOffset,
+  facingChevronVisible,
 } from "../src/render/facingChevron";
 
 describe("constantes", () => {
@@ -106,5 +110,72 @@ describe("facingChevronOffset", () => {
     expect(Number.isFinite(inf.x)).toBe(true);
     expect(Number.isFinite(inf.z)).toBe(true);
     expect(inf.x).toBeCloseTo(FACING_CHEVRON_DIST, 10);
+  });
+});
+
+describe("facingChevronVisible (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: hidden; ya oculto no-op; load-muerto no; vivo/load-vivo sí", () => {
+    expect(facingChevronVisible(true)).toBe(false);
+    expect(facingChevronVisible(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(facingChevronVisible(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(facingChevronVisible(liveRt.gameOver)).toBe(true);
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto ocultan chevron; vivo usa helper; mixer death se queda", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("facingChevronVisible(");
+    expect(src).toContain("this.view.hideFacingChevron()");
+    expect(src).toMatch(
+      /syncFacingChevron\(\): void \{[\s\S]{0,280}facingChevronVisible\(\s*this\.gameOver/,
+    );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2600}this\.syncFacingChevron\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}this\.syncFacingChevron\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,4200}this\.syncFacingChevron\(\)/,
+    );
+    expect(src).toMatch(
+      /this\.view\.tickPlayerLoco\(dt, false, false\);[\s\S]{0,280}this\.syncFacingChevron\(\)/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+    expect(src).toMatch(
+      /Mixer must keep ticking during freeze[\s\S]{0,160}this\.view\.tickPlayerLoco\(dt, false, false\)/,
+    );
+
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain("facingChevronVisible(");
+    expect(viewSrc).toContain("hideFacingChevron");
+    expect(viewSrc).toContain("showFacingChevron");
+    expect(viewSrc).toContain("playerMixer.update(dt, currentRole(playerAnimator))");
+    expect(viewSrc).not.toMatch(
+      /function placeFacingChevron\(\): void \{[\s\S]{0,240}chevronMesh\.visible = true/,
+    );
   });
 });

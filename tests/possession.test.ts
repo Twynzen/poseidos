@@ -621,7 +621,7 @@ describe("talkInputApplies / applyTalkInput (HAS MUERTO / F9 load-muerto)", () =
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeTalk\(\)/,
     );
     expect(gameSrc).toMatch(
-      /enterGameOver\(\): void \{[\s\S]{0,2600}consumeTalk\(\)/,
+      /enterGameOver\(\): void \{[\s\S]{0,2800}consumeTalk\(\)/,
     );
     expect(gameSrc).toMatch(
       /doLoad\(\): boolean \{[\s\S]{0,3000}if \(loaded\.gameOver\) this\.input\.consumeTalk\(\)/,
@@ -727,7 +727,7 @@ describe("cancelInputApplies / applyCancelInput (HAS MUERTO / F9 load-muerto)", 
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeCancel\(\)/,
     );
     expect(gameSrc).toMatch(
-      /enterGameOver\(\): void \{[\s\S]{0,2600}consumeCancel\(\)/,
+      /enterGameOver\(\): void \{[\s\S]{0,2800}consumeCancel\(\)/,
     );
     expect(gameSrc).toMatch(
       /doLoad\(\): boolean \{[\s\S]{0,3000}if \(loaded\.gameOver\) this\.input\.consumeCancel\(\)/,

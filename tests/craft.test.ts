@@ -275,7 +275,7 @@ describe("buildInputApplies / applyBuildInput (HAS MUERTO / F9 load-muerto)", ()
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3000}consumeBuild\(\)/,
     );
     expect(gameSrc).toMatch(
-      /enterGameOver\(\): void \{[\s\S]{0,2400}consumeBuild\(\)/,
+      /enterGameOver\(\): void \{[\s\S]{0,2600}consumeBuild\(\)/,
     );
     expect(gameSrc).toMatch(
       /doLoad\(\): boolean \{[\s\S]{0,2800}if \(loaded\.gameOver\) this\.input\.consumeBuild\(\)/,
@@ -510,7 +510,7 @@ describe("craftInputApplies / applyCraftInput (HAS MUERTO / F9 load-muerto)", ()
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeCraft\(\)/,
     );
     expect(gameSrc).toMatch(
-      /enterGameOver\(\): void \{[\s\S]{0,2400}consumeCraft\(\)/,
+      /enterGameOver\(\): void \{[\s\S]{0,2600}consumeCraft\(\)/,
     );
     expect(gameSrc).toMatch(
       /doLoad\(\): boolean \{[\s\S]{0,1800}if \(loaded\.gameOver\) this\.input\.consumeCraft\(\)/,
