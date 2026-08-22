@@ -142,7 +142,16 @@ import {
   MUZZLE_FLASH_RADIUS,
   MUZZLE_LIGHT_PEAK,
   createMuzzleFlash,
+  muzzleFlashActiveAfterRestart,
+  muzzleFlashActiveFromLook,
   muzzleFlashApplies,
+  muzzleFlashIntensityAfterRestart,
+  muzzleFlashIntensityFromLook,
+  muzzleFlashPosXAfterRestart,
+  muzzleFlashPosXFromLook,
+  muzzleFlashPosYAfterRestart,
+  muzzleFlashPosZAfterRestart,
+  muzzleFlashPosZFromLook,
   tickMuzzleFlash as stepMuzzleFlash,
   triggerMuzzleFlash as startMuzzleFlash,
 } from "./muzzleFlash";
@@ -1236,19 +1245,32 @@ export function createWorldView(
   const muzzleMat = new THREE.MeshBasicMaterial({
     color: MUZZLE_FLASH_COLOR,
     transparent: true,
-    opacity: 1,
+    // R / dispose: opacity fresco (inactive); leftover ctor Three 1 no filtra.
+    opacity: muzzleFlashIntensityAfterRestart(),
     depthWrite: false,
     blending: THREE.AdditiveBlending,
   });
   const muzzleMesh = new THREE.Mesh(muzzleGeo, muzzleMat);
-  muzzleMesh.visible = false;
+  // R / dispose: hidden fresco; leftover mid-flash visible no filtra.
+  muzzleMesh.visible = muzzleFlashActiveAfterRestart();
   const muzzleLight = new THREE.PointLight(
     MUZZLE_LIGHT_COLOR,
     0,
     MUZZLE_LIGHT_DISTANCE,
     MUZZLE_LIGHT_DECAY,
   );
-  muzzleLight.visible = false;
+  muzzleLight.visible = muzzleFlashActiveAfterRestart();
+  // R / dispose: pos fresco (spawn yaw 0); leftover ctor origin 0,0 no filtra.
+  muzzleMesh.position.set(
+    muzzleFlashPosXAfterRestart(),
+    muzzleFlashPosYAfterRestart(),
+    muzzleFlashPosZAfterRestart(),
+  );
+  muzzleLight.position.set(
+    muzzleFlashPosXAfterRestart(),
+    muzzleFlashPosYAfterRestart(),
+    muzzleFlashPosZAfterRestart(),
+  );
   playerMesh.add(muzzleMesh, muzzleLight);
 
   // Chevron de facing: triángulo plano unlit (visible via helper; sin luz extra).
@@ -1335,27 +1357,41 @@ export function createWorldView(
     intensity: number;
     active: boolean;
   }): void {
-    const ox = Math.sin(playerGltfYaw) * MUZZLE_FORWARD;
-    const oz = Math.cos(playerGltfYaw) * MUZZLE_FORWARD;
+    const ox = muzzleFlashPosXFromLook(Math.sin(playerGltfYaw) * MUZZLE_FORWARD);
+    const oz = muzzleFlashPosZFromLook(Math.cos(playerGltfYaw) * MUZZLE_FORWARD);
     muzzleMesh.position.set(ox, TRACER_HEIGHT, oz);
     muzzleLight.position.set(ox, TRACER_HEIGHT, oz);
-    muzzleMesh.visible = out.active;
-    muzzleLight.visible = out.active;
-    muzzleMat.opacity = out.intensity;
-    muzzleLight.intensity = out.active ? MUZZLE_LIGHT_PEAK * out.intensity : 0;
+    muzzleMesh.visible = muzzleFlashActiveFromLook(out.active);
+    muzzleLight.visible = muzzleFlashActiveFromLook(out.active);
+    muzzleMat.opacity = muzzleFlashIntensityFromLook(out.intensity);
+    muzzleLight.intensity = out.active
+      ? MUZZLE_LIGHT_PEAK * muzzleFlashIntensityFromLook(out.intensity)
+      : 0;
   }
 
   function tickMuzzle(dt: number, gameOver = false): void {
     if (!muzzleFlashApplies(gameOver)) {
-      applyMuzzleFlashVisual({ intensity: 0, active: false });
+      applyMuzzleFlashVisual({
+        intensity: muzzleFlashIntensityFromLook(0),
+        active: muzzleFlashActiveFromLook(false),
+      });
       return;
     }
     applyMuzzleFlashVisual(stepMuzzleFlash(playerMuzzle, dt, gameOver));
   }
 
   function hideMuzzle(): void {
-    applyMuzzleFlashVisual({ intensity: 0, active: false });
+    applyMuzzleFlashVisual({
+      intensity: muzzleFlashIntensityFromLook(0),
+      active: muzzleFlashActiveFromLook(false),
+    });
   }
+
+  // R / dispose: look fresco (inactive + pos yaw 0); leftover ctor Three opacity 1 / origin 0,0 no filtra.
+  applyMuzzleFlashVisual({
+    intensity: muzzleFlashIntensityAfterRestart(),
+    active: muzzleFlashActiveAfterRestart(),
+  });
 
   // Impact spark: esfera aditiva unlit (radio IMPACT_SPARK_RADIUS) + PointLight (reutilizable).
   const IMPACT_SPARK_LIGHT_DISTANCE = 1.8;
