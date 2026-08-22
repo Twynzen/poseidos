@@ -182,3 +182,24 @@ export function warmLightDistanceFromLook(distance: number): number {
 export function warmLightDistanceAfterRestart(): number {
   return warmLightDistanceFromLook(WARM_LIGHT_DISTANCE_SPAWN);
 }
+
+/** Idle warm intensity. Ctor warmLight.intensity 0 = fresco. Vivo on ≠ boot. */
+export const WARM_LIGHT_INTENSITY_SPAWN = 0;
+
+/**
+ * Intensity que lee syncWarmLight (look fresco o vivo).
+ * leftover mid-life on ≠ fresco (idle 0).
+ */
+export function warmLightIntensityFromLook(intensity: number): number {
+  return intensity;
+}
+
+/**
+ * R / softReset: intensity fresco (idle 0).
+ * WorldView nace warmLight.intensity AfterRestart; leftover mid-life on no filtra.
+ * syncWarmLight lee warmLightIntensityFromLook.
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function warmLightIntensityAfterRestart(): number {
+  return warmLightIntensityFromLook(WARM_LIGHT_INTENSITY_SPAWN);
+}

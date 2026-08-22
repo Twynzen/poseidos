@@ -379,6 +379,8 @@ import {
   isIndoor,
   warmLightDistanceAfterRestart,
   warmLightDistanceFromLook,
+  warmLightIntensityAfterRestart,
+  warmLightIntensityFromLook,
   warmLightOriginXAfterRestart,
   warmLightOriginXFromLook,
   warmLightOriginZAfterRestart,
@@ -825,8 +827,8 @@ export function createWorldView(
   scene.add(sun);
 
   // Pool cálido indoor de noche (landscapes / chess board light).
-  const warmLight = new THREE.PointLight(WARM_LIGHT_COLOR, 0, warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY);
-  // R / dispose: warm fresco (idle origin 0,0 / visible false / distance BASE 7.475); leftover ctor 7.5 / mid-life no filtra.
+  const warmLight = new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY);
+  // R / dispose: warm fresco (idle origin 0,0 / visible false / intensity 0 / distance BASE 7.475); leftover ctor 7.5 / mid-life no filtra.
   warmLight.position.set(warmLightOriginXAfterRestart(), 1.6, warmLightOriginZAfterRestart());
   warmLight.visible = warmLightVisibleAfterRestart();
   scene.add(warmLight);
@@ -2551,7 +2553,7 @@ export function createWorldView(
     },
     syncWarmLight(wx, wy, intensity) {
       const i = Math.max(0, Math.min(1, intensity));
-      warmLight.intensity = i * WARM_LIGHT_INTENSITY_MUL;
+      warmLight.intensity = warmLightIntensityFromLook(i * WARM_LIGHT_INTENSITY_MUL);
       warmLight.distance = warmLightDistanceFromLook(WARM_LIGHT_DISTANCE_BASE + i * WARM_LIGHT_DISTANCE_GAIN);
       warmLight.position.set(warmLightOriginXFromLook(wx), WARM_LIGHT_Y, warmLightOriginZFromLook(wy));
       warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS);
