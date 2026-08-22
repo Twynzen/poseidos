@@ -15,6 +15,7 @@ import {
   applyHelpInput,
   formatHudDebugTokens,
   formatHudStatus,
+  formatHudDayNight,
   helpInputApplies,
   helpHudVisible,
   nextShowHelp,
@@ -38,6 +39,9 @@ import {
   ZOOM_OUT_HUD_MSG,
 } from "../src/render/cameraConfig";
 import { dialogueOpenHudMsg } from "../src/possession";
+import { GameClock, clockAfterRestart } from "../src/core/clock";
+import { DEFAULT_DAY_LENGTH_SEC } from "../src/core/config";
+import { clockMoodle } from "../src/actors/moodles";
 
 function base(over: Partial<HudStatusInput> = {}): HudStatusInput {
   return {
@@ -1283,6 +1287,130 @@ describe("death → R HUD lock (softReset)", () => {
     );
     expect(gameSrc).not.toMatch(
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}lastLootMsgAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+  });
+});
+
+describe("clock recreate HUD lock (R / softReset)", () => {
+  test("formatHudDayNight: clock fresco noche 0%; leftover DIA/NOC no filtra", () => {
+    const boot = clockAfterRestart();
+    const hudClock = formatHudDayNight(boot.isNight, boot.phase);
+    expect(hudClock).toEqual({ modo: "noche", phasePct: 0 });
+    expect(clockMoodle(boot.isNight, hudClock.phasePct).label).toBe("NOC");
+
+    const noon = new GameClock(DEFAULT_DAY_LENGTH_SEC);
+    noon.elapsed = DEFAULT_DAY_LENGTH_SEC * 0.5;
+    const leftoverDia = formatHudDayNight(noon.isNight, noon.phase);
+    expect(leftoverDia).toEqual({ modo: "día", phasePct: 50 });
+    expect(leftoverDia).not.toEqual(hudClock);
+    expect(clockMoodle(noon.isNight, leftoverDia.phasePct).label).toBe("DIA");
+    expect(clockMoodle(noon.isNight, leftoverDia.phasePct).label).not.toBe(
+      clockMoodle(boot.isNight, hudClock.phasePct).label,
+    );
+
+    const lateNight = new GameClock(DEFAULT_DAY_LENGTH_SEC);
+    lateNight.elapsed = DEFAULT_DAY_LENGTH_SEC * 0.9;
+    const leftoverNoc = formatHudDayNight(lateNight.isNight, lateNight.phase);
+    expect(leftoverNoc).toEqual({ modo: "noche", phasePct: 90 });
+    expect(leftoverNoc).not.toEqual(hudClock);
+    expect(clockMoodle(lateNight.isNight, leftoverNoc.phasePct).label).toBe(
+      "NOC",
+    );
+    expect(leftoverNoc.phasePct).not.toBe(hudClock.phasePct);
+
+    const afterR = formatHudStatus(
+      base({
+        ...formatHudDayNight(boot.isNight, boot.phase),
+        gameOver: false,
+        msg: lastLootMsgAfterRestart(),
+      }),
+    );
+    expect(afterR).toContain("noche (0%)");
+    expect(afterR).not.toContain("día (");
+    expect(afterR).not.toContain("noche (90%)");
+    expect(afterR).not.toContain("día (50%)");
+    expect(afterR).toContain("reinicio");
+    expect(afterR).not.toContain("HAS MUERTO");
+
+    const stillDead = formatHudStatus(
+      base({
+        ...leftoverDia,
+        gameOver: true,
+        msg: "golpe -12 HP",
+      }),
+    );
+    expect(stillDead).toContain("HAS MUERTO");
+    expect(stillDead).not.toContain("día (50%)");
+    expect(stillDead).not.toContain("noche (0%)");
+  });
+
+  test("vivo tick no usa el helper (advance pinta fase nueva)", () => {
+    const clock = clockAfterRestart();
+    const boot = formatHudDayNight(clock.isNight, clock.phase);
+    expect(boot).toEqual({ modo: "noche", phasePct: 0 });
+    clock.advance(DEFAULT_DAY_LENGTH_SEC * 0.5);
+    const noon = formatHudDayNight(clock.isNight, clock.phase);
+    expect(noon).toEqual({ modo: "día", phasePct: 50 });
+    expect(noon).not.toEqual(formatHudDayNight(
+      clockAfterRestart().isNight,
+      clockAfterRestart().phase,
+    ));
+  });
+
+  test("Game softReset usa clockAfterRestart + refreshHud; F9 pisa elapsed", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("clockAfterRestart(");
+    expect(gameSrc).toContain("formatHudDayNight(");
+    expect(gameSrc).toMatch(
+      /this\.clock = new GameClock\(DEFAULT_DAY_LENGTH_SEC\)/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.clock = clockAfterRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.clock = clockAfterRestart\(\);[\s\S]{0,4200}this\.refreshHud\(true\)/,
+    );
+    expect(gameSrc).toMatch(
+      /formatHudDayNight\(\s*this\.clock\.isNight,\s*this\.clock\.phase,\s*\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}clockAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}clockAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}clockAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}clockAfterRestart/,
+    );
+    expect(saveSrc).toMatch(/world\.clock\.elapsed = parsed\.clock\.elapsed/);
+    expect(saveSrc).not.toContain("clockAfterRestart");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
     );
     expect(gameSrc).toMatch(
       /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,

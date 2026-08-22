@@ -80,6 +80,7 @@ export {
   GAME_OVER_LINE,
   formatHudDebugTokens,
   formatHudStatus,
+  formatHudDayNight,
   helpInputApplies,
   helpHudVisible,
   applyHelpInput,

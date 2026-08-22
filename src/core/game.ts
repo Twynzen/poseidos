@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { GameLoop } from "./loop";
 import { Input } from "./input";
-import { GameClock } from "./clock";
+import { GameClock, clockAfterRestart } from "./clock";
 import {
   applySave,
   browserStorage,
@@ -148,6 +148,7 @@ import {
   hotbarSelectedAfterRestart,
   swapHotbarStacks,
   formatHudStatus,
+  formatHudDayNight,
   helpInputApplies,
   helpHudVisible,
   nextShowHelp,
@@ -540,7 +541,8 @@ export class Game {
     // R: kit fresco = nunca sprintó; no filtrar RUN_NOISE_RING_MIN_AGE de la vida anterior.
     this.lastRunRingAgeSec = lastRunRingAgeAfterRestart();
     this.spawnThreats();
-    this.clock = new GameClock(DEFAULT_DAY_LENGTH_SEC);
+    // R: reloj fresco (DEFAULT_DAY_LENGTH, elapsed 0); leftover NOC/DIA no filtra.
+    this.clock = clockAfterRestart();
     this.weather = new WeatherSystem({ initial: "drizzle" });
     // R: mix fresco; no filtrar night/indoor/threat de la vida anterior. Mute se queda.
     resetAmbientAfterRestart(this.ambient);
@@ -2164,10 +2166,15 @@ export class Game {
     if (!this.hud && !force) return;
     if (!this.hud) return;
 
+    const { modo, phasePct } = formatHudDayNight(
+      this.clock.isNight,
+      this.clock.phase,
+    );
+
     if (this.gameOver || !this.player.alive) {
       this.hud.textContent = formatHudStatus({
-        modo: this.clock.isNight ? "noche" : "día",
-        phasePct: Math.floor(this.clock.phase * 100),
+        modo,
+        phasePct,
         muteN: 0,
         possN: 0,
         invLine: "",
@@ -2190,8 +2197,6 @@ export class Game {
       return;
     }
 
-    const phase = Math.floor(this.clock.phase * 100);
-    const modo = this.clock.isNight ? "noche" : "día";
     const muteN = this.hostiles.hostiles.filter((x) => x.kind === "mute").length;
     const possN = this.hostiles.hostiles.filter(
       (x) => x.kind === "possessed",
@@ -2251,7 +2256,7 @@ export class Game {
 
     this.hud.textContent = formatHudStatus({
       modo,
-      phasePct: phase,
+      phasePct,
       muteN,
       possN,
       invLine,

@@ -1,3 +1,5 @@
+import { DEFAULT_DAY_LENGTH_SEC } from "./config";
+
 /**
  * Reloj de juego para día/noche.
  * `dayLengthSec` = segundos reales de un ciclo completo.
@@ -36,4 +38,13 @@ export class GameClock {
   get isNight(): boolean {
     return this.daylight < 0.35;
   }
+}
+
+/**
+ * R / softReset: reloj fresco (elapsed 0, DEFAULT_DAY_LENGTH_SEC).
+ * Game.clock debe coincidir (leftover elapsed / NOC-DIA de la vida anterior no filtra).
+ * F9 load no usa esto — pisa `clock.elapsed`. enterGameOver / freeze death no assign.
+ */
+export function clockAfterRestart(): GameClock {
+  return new GameClock(DEFAULT_DAY_LENGTH_SEC);
 }

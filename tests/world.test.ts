@@ -3,7 +3,7 @@ import { makeDoor, makeFloor, makeWall, isWalkable } from "../src/world/tile";
 import { TileMap } from "../src/world/tilemap";
 import { createNeighborhood } from "../src/world/neighborhood";
 import { PlayerSim, PLAYER_RADIUS } from "../src/actors/player";
-import { GameClock } from "../src/core/clock";
+import { GameClock, clockAfterRestart } from "../src/core/clock";
 import { DEFAULT_DAY_LENGTH_SEC } from "../src/core/config";
 import { CONTAINER_REACH } from "../src/items";
 
@@ -129,5 +129,51 @@ describe("GameClock", () => {
 
   test("DEFAULT_DAY_LENGTH_SEC es jugable (>= 180s)", () => {
     expect(DEFAULT_DAY_LENGTH_SEC).toBeGreaterThanOrEqual(180);
+  });
+});
+
+describe("clockAfterRestart (R / softReset)", () => {
+  test("reloj fresco DEFAULT_DAY_LENGTH; leftover elapsed no filtra", () => {
+    const boot = clockAfterRestart();
+    expect(boot.dayLengthSec).toBe(DEFAULT_DAY_LENGTH_SEC);
+    expect(boot.elapsed).toBe(0);
+    expect(boot.phase).toBe(0);
+    expect(boot.isNight).toBe(true);
+    expect(new GameClock().dayLengthSec).not.toBe(DEFAULT_DAY_LENGTH_SEC);
+
+    const leftoverDia = new GameClock(DEFAULT_DAY_LENGTH_SEC);
+    leftoverDia.elapsed = DEFAULT_DAY_LENGTH_SEC * 0.5;
+    expect(leftoverDia.isNight).toBe(false);
+    expect(leftoverDia.phase).toBeCloseTo(0.5, 5);
+    expect(leftoverDia.elapsed).not.toBe(0);
+
+    const afterDia = clockAfterRestart();
+    expect(afterDia.elapsed).toBe(0);
+    expect(afterDia.isNight).toBe(true);
+    expect(afterDia.dayLengthSec).toBe(DEFAULT_DAY_LENGTH_SEC);
+    expect(afterDia).not.toBe(leftoverDia);
+    expect(afterDia.elapsed).not.toBe(leftoverDia.elapsed);
+
+    const leftoverNoc = new GameClock(DEFAULT_DAY_LENGTH_SEC);
+    leftoverNoc.elapsed = DEFAULT_DAY_LENGTH_SEC * 0.9;
+    expect(leftoverNoc.isNight).toBe(true);
+    expect(Math.floor(leftoverNoc.phase * 100)).toBe(90);
+
+    const afterNoc = clockAfterRestart();
+    expect(afterNoc.elapsed).toBe(0);
+    expect(afterNoc.isNight).toBe(true);
+    expect(Math.floor(afterNoc.phase * 100)).toBe(0);
+    expect(afterNoc.elapsed).not.toBe(leftoverNoc.elapsed);
+  });
+
+  test("vivo tick no usa el helper (advance igual que hoy)", () => {
+    const clock = clockAfterRestart();
+    expect(clock.elapsed).toBe(0);
+    clock.advance(0.1);
+    expect(clock.elapsed).toBeCloseTo(0.1, 10);
+    expect(clock.elapsed).not.toBe(clockAfterRestart().elapsed);
+    expect(clock.dayLengthSec).toBe(clockAfterRestart().dayLengthSec);
+    clock.advance(0.15);
+    expect(clock.elapsed).toBeCloseTo(0.25, 10);
   });
 });
