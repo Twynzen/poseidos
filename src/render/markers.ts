@@ -108,6 +108,31 @@ export function markerRingRadii(role: MarkerRole): MarkerRingRadii {
   return { inner: THREAT_RING_INNER, outer: THREAT_RING_OUTER };
 }
 
+/** Transparent del marker-ring mesh. Ctor ringMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const MARKER_RING_TRANSPARENT = true;
+
+/** Idle marker-ring mesh transparent. Ctor ringMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const MARKER_RING_TRANSPARENT_SPAWN = true;
+
+/**
+ * Transparent que leería attach (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * attach no escribe transparent (ctor constant).
+ */
+export function markerRingTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle true).
+ * WorldView nace ringMat.transparent AfterRestart; leftover mid-life no filtra.
+ * attach no escribe transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function markerRingTransparentAfterRestart(): boolean {
+  return markerRingTransparentFromLook(MARKER_RING_TRANSPARENT_SPAWN);
+}
+
 /** Altura world del floatBadge mute (2.3 × 1.15, misma banda door/bed/loot; queda por encima del Soldier 1.5). */
 export const muteBadgeY = 2.645;
 

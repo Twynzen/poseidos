@@ -3,6 +3,7 @@ import {
   markerBadgeOpacity,
   markerRingOpacity,
   markerRingRadii,
+  markerRingTransparentAfterRestart,
   markerUsesInteractRing,
   muteBadgeIconScale,
   muteBadgeY,
@@ -2937,7 +2938,8 @@ function attachRoleMarkers(
 
   const ringMat = new THREE.MeshBasicMaterial({
     color: pal.ring,
-    transparent: true,
+    // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+    transparent: markerRingTransparentAfterRestart(),
     opacity: markerRingOpacity(role),
     side: THREE.DoubleSide,
     depthWrite: false,
