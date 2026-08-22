@@ -230,6 +230,7 @@ import {
   muzzleFlashApplies,
   muzzleFlashColorAfterRestart,
   muzzleFlashDepthWriteAfterRestart,
+  muzzleFlashTransparentAfterRestart,
   muzzleFlashIntensityAfterRestart,
   muzzleFlashIntensityFromLook,
   muzzleFlashPosXAfterRestart,
@@ -1405,7 +1406,8 @@ export function createWorldView(
   const muzzleGeo = new THREE.SphereGeometry(MUZZLE_FLASH_RADIUS, 10, 8);
   const muzzleMat = new THREE.MeshBasicMaterial({
     color: muzzleFlashColorAfterRestart(),
-    transparent: true,
+    // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+    transparent: muzzleFlashTransparentAfterRestart(),
     // R / dispose: opacity fresco (inactive); leftover ctor Three 1 no filtra.
     opacity: muzzleFlashIntensityAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
