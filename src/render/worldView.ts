@@ -41,6 +41,7 @@ import {
   FLASHLIGHT_SPOT_COLOR,
   FLASHLIGHT_SPOT_INTENSITY_MUL,
   flashlightConeColorAfterRestart,
+  flashlightConeVertexColorsAfterRestart,
   flashlightConeOffsetXFromLook,
   flashlightConeOffsetZFromLook,
   flashlightConeTip,
@@ -1532,7 +1533,8 @@ export function createWorldView(
   const coneMat = new THREE.MeshBasicMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
     color: flashlightConeColorAfterRestart(),
-    vertexColors: true,
+    // R / dispose: vertexColors fresco (idle); leftover mid-life vertexColors de la vida anterior no filtra.
+    vertexColors: flashlightConeVertexColorsAfterRestart(),
     // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
     transparent: flashlightConeTransparentAfterRestart(),
     // R / dispose: cone opacity fresco (idle 0); leftover ctor BASE / mid-life no filtra.
