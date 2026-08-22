@@ -736,6 +736,31 @@ export function possessedHeadEmissiveAfterRestart(): number {
   return possessedHeadEmissiveFromLook(POSSESSED_HEAD_EMISSIVE_SPAWN);
 }
 
+/** Intensidad del possessed head mesh. Ctor possessedHeadMat.emissiveIntensity: 0.7 = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_MESH_EMISSIVE_INTENSITY = 0.7;
+
+/** Idle possessed head mesh emissiveIntensity. Ctor possessedHeadMat.emissiveIntensity: 0.7 = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_EMISSIVE_INTENSITY_SPAWN = 0.7;
+
+/**
+ * Intensidad que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0.7).
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ */
+export function possessedHeadEmissiveIntensityFromLook(intensity: number): number {
+  return intensity;
+}
+
+/**
+ * R / softReset: intensity fresco (idle 0.7).
+ * WorldView nace possessedHeadMat.emissiveIntensity AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function possessedHeadEmissiveIntensityAfterRestart(): number {
+  return possessedHeadEmissiveIntensityFromLook(POSSESSED_HEAD_EMISSIVE_INTENSITY_SPAWN);
+}
+
 /** Color del pool cálido indoor de noche. 0xffb070 × 1.15/canal (r clamp) para leerse de noche. */
 export const WARM_LIGHT_COLOR = 0xffca81;
 /** Multiplicador de intensidad del PointLight cálido indoor. 1.55 × 1.15 para leerse un poco más fuerte de noche. */
@@ -2139,7 +2164,8 @@ export function createWorldView(
     color: possessedHeadColorAfterRestart(),
     // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
     emissive: possessedHeadEmissiveAfterRestart(),
-    emissiveIntensity: 0.7,
+    // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
+    emissiveIntensity: possessedHeadEmissiveIntensityAfterRestart(),
     roughness: 0.45,
   });
   const hostileMeshes = new Map<string, THREE.Object3D>();
