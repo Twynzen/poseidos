@@ -31,6 +31,16 @@ export function createMuzzleFlash(): MuzzleFlashState {
   return { age: 0, active: false };
 }
 
+/**
+ * HAS MUERTO / F9 load-muerto: no avanzar el flash ni pintarlo.
+ * Vivo (incl. F9 load-vivo): tick/intensity de hoy.
+ * Ya oculto = no-op; gameOver no inventa flash.
+ */
+export function muzzleFlashApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
 /** Reinicia el flash desde t=0 (re-trigger a mitad = nuevo disparo). */
 export function triggerMuzzleFlash(state: MuzzleFlashState): void {
   state.age = 0;
@@ -49,11 +59,16 @@ function easeOutSine(u: number): number {
 /**
  * Avanza el flash y devuelve intensidad pura (determinista para tests).
  * Mutates `state`. dt≤0 no avanza age.
+ * gameOver → skip tick / hide (intensity 0); no inventa flash.
  */
 export function tickMuzzleFlash(
   state: MuzzleFlashState,
   dt: number,
+  gameOver = false,
 ): MuzzleFlashOutput {
+  if (!muzzleFlashApplies(gameOver)) {
+    return { intensity: 0, active: false };
+  }
   const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
   if (state.active) {
     state.age += safeDt;

@@ -1,12 +1,14 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   MUZZLE_FLASH_DURATION,
   MUZZLE_FLASH_PEAK,
   MUZZLE_FLASH_RADIUS,
   MUZZLE_LIGHT_PEAK,
   createMuzzleFlash,
+  muzzleFlashApplies,
   tickMuzzleFlash,
   triggerMuzzleFlash,
 } from "../src/render/muzzleFlash";
@@ -112,5 +114,108 @@ describe("create / trigger / tick", () => {
     const out = tickMuzzleFlash(s, 1 / 60);
     expect(out.active).toBe(true);
     expect(out.intensity).toBeGreaterThan(0.95);
+  });
+});
+
+describe("muzzleFlashApplies (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: no aplica; ya oculto no-op; load-muerto no; vivo/load-vivo sí", () => {
+    expect(muzzleFlashApplies(true)).toBe(false);
+    expect(muzzleFlashApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(muzzleFlashApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(muzzleFlashApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver no avanza age; hide; vivo sí; dt<=0 no-op", () => {
+    const dead = createMuzzleFlash();
+    triggerMuzzleFlash(dead);
+    tickMuzzleFlash(dead, 0.05, false);
+    const age = dead.age;
+    const hidden = tickMuzzleFlash(dead, 0.05, true);
+    expect(dead.age).toBe(age);
+    expect(hidden.active).toBe(false);
+    expect(hidden.intensity).toBe(0);
+
+    const idle = createMuzzleFlash();
+    expect(tickMuzzleFlash(idle, 0.1, true)).toEqual({
+      intensity: 0,
+      active: false,
+    });
+    expect(idle.active).toBe(false);
+    expect(idle.age).toBe(0);
+
+    const live = createMuzzleFlash();
+    triggerMuzzleFlash(live);
+    const out = tickMuzzleFlash(live, 0.05, false);
+    expect(out.active).toBe(true);
+    expect(out.intensity).toBeGreaterThan(0);
+    expect(live.age).toBeCloseTo(0.05, 10);
+
+    expect(tickMuzzleFlash(live, 0, false).active).toBe(true);
+    expect(live.age).toBeCloseTo(0.05, 10);
+    expect(tickMuzzleFlash(live, -1, false).active).toBe(true);
+    expect(live.age).toBeCloseTo(0.05, 10);
+    expect(tickMuzzleFlash(live, Number.NaN, false).active).toBe(true);
+    expect(live.age).toBeCloseTo(0.05, 10);
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto ocultan muzzle; vivo tickea; mixer death se queda", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("muzzleFlashApplies(");
+    expect(src).toContain("this.view.hideMuzzleFlash()");
+    expect(src).toMatch(
+      /syncMuzzleFlashOverlay\(dt = 0\): void \{[\s\S]{0,280}muzzleFlashApplies\(\s*this\.gameOver/,
+    );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,1600}this\.syncMuzzleFlashOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,1600}this\.syncMuzzleFlashOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,4000}this\.syncMuzzleFlashOverlay\(dt\)/,
+    );
+    expect(src).toMatch(
+      /this\.view\.tickPlayerLoco\(dt, false, false\);\s*this\.syncMuzzleFlashOverlay\(dt\)/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,4000}this\.view\.tickMuzzleFlash\(dt\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+    expect(src).toMatch(
+      /Mixer must keep ticking during freeze[\s\S]{0,120}this\.view\.tickPlayerLoco\(dt, false, false\)/,
+    );
+
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain("muzzleFlashApplies(");
+    expect(viewSrc).toContain("stepMuzzleFlash(");
+    expect(viewSrc).toContain("hideMuzzleFlash: hideMuzzle");
+    expect(viewSrc).toContain("playerMixer.update(dt, currentRole(playerAnimator))");
+    expect(viewSrc).not.toContain(
+      "applyMuzzleFlashVisual(tickMuzzleFlash(playerMuzzle, dt))",
+    );
   });
 });
