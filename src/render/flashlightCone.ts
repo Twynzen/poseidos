@@ -748,3 +748,28 @@ export function flashlightConeVertexColorsFromLook(vertexColors: boolean): boole
 export function flashlightConeVertexColorsAfterRestart(): boolean {
   return flashlightConeVertexColorsFromLook(FLASHLIGHT_CONE_VERTEX_COLORS_SPAWN);
 }
+
+/** Side del flashlight cone mesh. Ctor coneMat.side THREE.DoubleSide (2) = fresco. Mid-life leftover ≠ fresco. */
+export const FLASHLIGHT_CONE_SIDE = 2;
+
+/** Idle flashlight cone mesh side. Ctor coneMat.side THREE.DoubleSide (2) = fresco. Mid-life leftover ≠ fresco. */
+export const FLASHLIGHT_CONE_SIDE_SPAWN = 2;
+
+/**
+ * Side que leería syncTorchLight (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.DoubleSide / 2).
+ * syncTorchLight no escribe side (ctor constant).
+ */
+export function flashlightConeSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.DoubleSide / 2).
+ * WorldView nace coneMat.side AfterRestart; leftover mid-life no filtra.
+ * syncTorchLight no escribe side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function flashlightConeSideAfterRestart(): number {
+  return flashlightConeSideFromLook(FLASHLIGHT_CONE_SIDE_SPAWN);
+}

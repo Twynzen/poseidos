@@ -43,6 +43,7 @@ import {
   FLASHLIGHT_SPOT_INTENSITY_MUL,
   flashlightConeColorAfterRestart,
   flashlightConeVertexColorsAfterRestart,
+  flashlightConeSideAfterRestart,
   flashlightConeOffsetXFromLook,
   flashlightConeOffsetZFromLook,
   flashlightConeTip,
@@ -1540,7 +1541,8 @@ export function createWorldView(
     transparent: flashlightConeTransparentAfterRestart(),
     // R / dispose: cone opacity fresco (idle 0); leftover ctor BASE / mid-life no filtra.
     opacity: flashlightConeOpacityAfterRestart(),
-    side: THREE.DoubleSide,
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: flashlightConeSideAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: flashlightConeDepthWriteAfterRestart(),
     blending: THREE.AdditiveBlending,
