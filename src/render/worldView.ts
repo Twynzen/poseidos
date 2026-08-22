@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import {
   markerBadgeOpacity,
+  markerIconDepthWriteAfterRestart,
   markerIconTransparentAfterRestart,
   markerRingDepthWriteAfterRestart,
   markerRingOpacity,
@@ -2982,7 +2983,8 @@ function attachRoleMarkers(
     transparent: markerIconTransparentAfterRestart(),
     opacity: 0.92,
     side: THREE.DoubleSide,
-    depthWrite: false,
+    // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
+    depthWrite: markerIconDepthWriteAfterRestart(),
   });
   shared.mats.push(badgeMat, iconMat);
 
