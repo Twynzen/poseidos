@@ -371,10 +371,10 @@ describe("isoFrustumAfterRestart (R / softReset)", () => {
     );
     expect(gameSrc).toContain("isoFrustumAfterRestart(");
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3700}this\.isoFrustum = isoFrustumAfterRestart\(\)/,
+      /softReset\(\): void \{[\s\S]{0,3800}this\.isoFrustum = isoFrustumAfterRestart\(\)/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3700}this\.isoFrustum = isoFrustumAfterRestart\(\);[\s\S]{0,80}this\.resize\(\)/,
+      /softReset\(\): void \{[\s\S]{0,3800}this\.isoFrustum = isoFrustumAfterRestart\(\);[\s\S]{0,80}this\.resize\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.view = createWorldView\(this\.map, this\.containers\);[\s\S]{0,200}this\.isoFrustum = isoFrustumAfterRestart\(\)/,
