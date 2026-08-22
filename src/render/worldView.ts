@@ -493,6 +493,32 @@ export function playerBodyColorAfterRestart(): number {
 
 /** Color de la silueta fallback (cabeza). 0x7eb6ef × 1.15/canal (b clamp) para leerse de noche. */
 export const PLAYER_HEAD_COLOR = 0x91d1ff;
+
+/** Color del player head mesh. Ctor playerHeadMat.color: PLAYER_HEAD_COLOR = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_HEAD_MESH_COLOR = 0x91d1ff;
+
+/** Idle player head mesh color. Ctor playerHeadMat.color: PLAYER_HEAD_COLOR = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_HEAD_COLOR_SPAWN = 0x91d1ff;
+
+/**
+ * Color que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle PLAYER_HEAD_COLOR 0x91d1ff).
+ * attach/tick no escriben color (ctor constant).
+ */
+export function playerHeadColorFromLook(color: number): number {
+  return color;
+}
+
+/**
+ * R / softReset: color fresco (idle PLAYER_HEAD_COLOR 0x91d1ff).
+ * WorldView nace playerHeadMat.color AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben color (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function playerHeadColorAfterRestart(): number {
+  return playerHeadColorFromLook(PLAYER_HEAD_COLOR_SPAWN);
+}
+
 /** Emisivo de la silueta fallback (cabeza). 0x102030 × 1.15/canal para leerse de noche. */
 export const PLAYER_HEAD_EMISSIVE = 0x122537;
 /** Amenaza muda: rojo oscuro. 0x6b1a1a × 1.15/canal para leerse de noche. */
@@ -1048,7 +1074,8 @@ export function createWorldView(
     roughness: 0.45,
   });
   const playerHeadMat = new THREE.MeshStandardMaterial({
-    color: PLAYER_HEAD_COLOR,
+    // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
+    color: playerHeadColorAfterRestart(),
     roughness: 0.4,
     emissive: PLAYER_HEAD_EMISSIVE,
     emissiveIntensity: 0.22,
