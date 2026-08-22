@@ -261,6 +261,31 @@ export function lootNameplateTransparentAfterRestart(): boolean {
   return lootNameplateTransparentFromLook(LOOT_NAMEPLATE_TRANSPARENT_SPAWN);
 }
 
+/** DepthWrite del nameplate sprite. Ctor SpriteMaterial.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_DEPTH_WRITE = false;
+
+/** Idle nameplate sprite depthWrite. Ctor SpriteMaterial.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_DEPTH_WRITE_SPAWN = false;
+
+/**
+ * DepthWrite que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * syncLootFocus no escribe depthWrite (ctor constant).
+ */
+export function lootNameplateDepthWriteFromLook(depthWrite: boolean): boolean {
+  return depthWrite;
+}
+
+/**
+ * R / softReset: depthWrite fresco (idle false).
+ * WorldView nace SpriteMaterial.depthWrite AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus no escribe depthWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateDepthWriteAfterRestart(): boolean {
+  return lootNameplateDepthWriteFromLook(LOOT_NAMEPLATE_DEPTH_WRITE_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
