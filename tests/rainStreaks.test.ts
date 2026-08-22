@@ -29,6 +29,8 @@ import {
   rainStreakScaleYAfterRestart,
   rainStreakScaleYFromLook,
   rainStreaksHidden,
+  rainStreaksHiddenAfterRestart,
+  rainStreaksHiddenFromLook,
   rainStreakVxAfterRestart,
   rainStreakVxFromDrift,
   rainStreakVxFromPhase,
@@ -1287,6 +1289,150 @@ describe("rain count/active recreate lock (R / softReset)", () => {
     expect(gameSrc).not.toContain("rainActiveCountFromLook(");
     expect(saveSrc).not.toContain("rainActiveCountAfterRestart");
     expect(saveSrc).not.toContain("rainActiveCountFromLook");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+  });
+});
+
+describe("rainStreaksHiddenAfterRestart (R / softReset)", () => {
+  test("grupo fresco (drizzle visible); leftover mid-life hide no filtra", () => {
+    const boot = rainStreaksHiddenAfterRestart();
+    expect(boot).toBe(rainStreaksHiddenFromLook(0.4));
+    expect(boot).toBe(rainStreaksHidden(0.4));
+    expect(boot).toBe(false);
+    expect(rainStreaksHiddenAfterRestart(0.4)).toBe(boot);
+    expect(rainStreaksHiddenAfterRestart(0)).toBe(rainStreaksHidden(0));
+    expect(rainStreaksHiddenAfterRestart(1)).toBe(rainStreaksHidden(1));
+
+    const leftoverCtor = true;
+    expect(leftoverCtor).not.toBe(boot);
+    expect(leftoverCtor).toBe(true);
+    expect(rainStreaksHiddenFromLook(0.4)).not.toBe(leftoverCtor);
+
+    const leftoverClear = rainStreaksHiddenFromLook(0);
+    expect(leftoverClear).toBe(rainStreaksHidden(0));
+    expect(leftoverClear).toBe(true);
+    expect(leftoverClear).not.toBe(boot);
+    expect(leftoverClear).not.toBe(rainStreaksHiddenAfterRestart());
+
+    const leftoverIndoor = rainStreaksHiddenFromLook(0);
+    expect(leftoverIndoor).toBe(true);
+    expect(leftoverIndoor).not.toBe(rainStreaksHiddenAfterRestart());
+
+    const leftoverHideBelow = rainStreaksHiddenFromLook(0.0174);
+    expect(leftoverHideBelow).toBe(true);
+    expect(leftoverHideBelow).not.toBe(boot);
+
+    const leftoverStorm = rainStreaksHiddenFromLook(0.85);
+    expect(leftoverStorm).toBe(rainStreaksHidden(0.85));
+    expect(leftoverStorm).toBe(false);
+    expect(leftoverStorm).toBe(boot);
+
+    expect(rainStreaksHiddenFromLook(0.4)).toBe(boot);
+    expect(rainStreakYFromFall(4.4, 10, 0.2, 1, true)).toBe(4.4);
+    expect(tickRainStreakY(4.4, 10, 0.2, 1, true)).toBe(4.4);
+  });
+
+  test("vivo tick no usa el helper (hide avanza con intensity)", () => {
+    const boot = rainStreaksHiddenAfterRestart();
+    const liveClear = rainStreaksHiddenFromLook(0);
+    expect(liveClear).toBe(rainStreaksHidden(0));
+    expect(liveClear).not.toBe(boot);
+    expect(liveClear).not.toBe(rainStreaksHiddenAfterRestart());
+    expect(liveClear).toBe(true);
+
+    const liveIndoor = rainStreaksHiddenFromLook(0);
+    expect(liveIndoor).toBe(true);
+    expect(liveIndoor).not.toBe(rainStreaksHiddenAfterRestart());
+    expect(rainStreaksHiddenFromLook(0.4)).toBe(boot);
+    expect(rainStreaksHiddenFromLook(0.85)).toBe(false);
+  });
+});
+
+describe("rain hide/grupo recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace rain grupo fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const rainSrc = readFileSync(
+      resolve(process.cwd(), "src/render/rainStreaks.ts"),
+      "utf8",
+    );
+    expect(rainSrc).toContain("rainStreaksHiddenAfterRestart(");
+    expect(rainSrc).toContain("rainStreaksHiddenFromLook(");
+    expect(rainSrc).toContain("rainStreaksHidden(");
+    expect(rainSrc).toMatch(
+      /rainStreaksHiddenAfterRestart\([\s\S]{0,200}rainStreaksHiddenFromLook\(/,
+    );
+    expect(viewSrc).toContain("rainStreaksHiddenAfterRestart(");
+    expect(viewSrc).toContain("rainStreaksHiddenFromLook(");
+    expect(viewSrc).toMatch(
+      /rainGroup\.visible = !rainStreaksHiddenAfterRestart\(\s*\)/,
+    );
+    expect(viewSrc).toMatch(
+      /if \(rainStreaksHiddenFromLook\(\s*i\)\) \{/,
+    );
+    expect(viewSrc).toContain("rainStreakYFromFall(");
+    expect(viewSrc).not.toMatch(
+      /const rainGroup = new THREE\.Group\(\);\s*rainGroup\.visible = false/,
+    );
+    expect(viewSrc).not.toContain("if (rainStreaksHidden(i))");
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /syncRainVisual\(dt = 0\): void \{[\s\S]{0,360}rainVisualApplies\(\s*this\.gameOver\) \? dt : 0/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.syncRainVisual\(dt\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}rainStreaksHiddenAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}rainStreaksHiddenAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}rainStreaksHiddenAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}rainStreaksHiddenAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("rainStreaksHiddenAfterRestart(");
+    expect(gameSrc).not.toContain("rainStreaksHiddenFromLook(");
+    expect(saveSrc).not.toContain("rainStreaksHiddenAfterRestart");
+    expect(saveSrc).not.toContain("rainStreaksHiddenFromLook");
     expect(gameSrc).not.toMatch(
       /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
     );

@@ -266,6 +266,23 @@ export function rainStreaksHidden(intensity: number): boolean {
   return !Number.isFinite(intensity) || intensity <= RAIN_HIDE_BELOW;
 }
 
+/**
+ * Hide de look que lee syncRain (intensity fresco o vivo).
+ * leftover mid-life (ctor hide / clear 0 / indoor 0) ≠ grupo fresco (drizzle).
+ */
+export function rainStreaksHiddenFromLook(intensity: number): boolean {
+  return rainStreaksHidden(intensity);
+}
+
+/**
+ * R / softReset: hide fresco (drizzle 0.4).
+ * WorldView nace `rainGroup.visible = !rainStreaksHiddenAfterRestart`; leftover mid-life hide no filtra.
+ * syncRain lee rainStreaksHiddenFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function rainStreaksHiddenAfterRestart(intensity = 0.4): boolean {
+  return rainStreaksHiddenFromLook(intensity);
+}
+
 /** Opacidad: 0.3345925 + i×0.68439375; noche suma +0.39675 × nightMix. */
 export function rainStreakOpacity(intensity: number, daylight: number): number {
   const i = clamp01(intensity);
