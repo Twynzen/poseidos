@@ -1341,6 +1341,31 @@ export function furnitureEmissiveAfterRestart(): number {
   return furnitureEmissiveFromLook(FURNITURE_EMISSIVE_SPAWN);
 }
 
+/** Intensidad del furniture mesh. Ctor furnitureMat.emissiveIntensity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const FURNITURE_EMISSIVE_INTENSITY = 1;
+
+/** Idle furniture mesh emissiveIntensity. Ctor furnitureMat.emissiveIntensity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const FURNITURE_EMISSIVE_INTENSITY_SPAWN = 1;
+
+/**
+ * Intensidad que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ */
+export function furnitureEmissiveIntensityFromLook(intensity: number): number {
+  return intensity;
+}
+
+/**
+ * R / softReset: intensity fresco (idle 1).
+ * WorldView nace furnitureMat.emissiveIntensity AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function furnitureEmissiveIntensityAfterRestart(): number {
+  return furnitureEmissiveIntensityFromLook(FURNITURE_EMISSIVE_INTENSITY_SPAWN);
+}
+
 /** Roughness del bed mesh. Ctor bedMat.roughness: 0.85 = fresco. Mid-life leftover ≠ fresco. */
 export const BED_ROUGHNESS = 0.85;
 
@@ -2294,6 +2319,8 @@ export function createWorldView(
     metalness: furnitureMetalnessAfterRestart(),
     // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
     emissive: furnitureEmissiveAfterRestart(),
+    // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
+    emissiveIntensity: furnitureEmissiveIntensityAfterRestart(),
   });
   /** Cama: más baja y ancha que furniture genérico (reuse geo/mat). */
   const bedGeo = new THREE.BoxGeometry(1.0, BED_HEIGHT, BED_DEPTH);
