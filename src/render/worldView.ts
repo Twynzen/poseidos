@@ -175,8 +175,9 @@ import {
   rainStreakOpacity,
   rainStreakScaleY,
   rainStreaksHidden,
+  rainStreakYAfterRestart,
+  rainStreakYFromFall,
   tickRainStreakVx,
-  tickRainStreakY,
 } from "./rainStreaks";
 import { lootBadgeIconScale, lootBadgeY, lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
 import {
@@ -1507,7 +1508,8 @@ export function createWorldView(
     const mesh = new THREE.Mesh(rainGeo, mat);
     const vx = (Math.random() - 0.5) * 14;
     const vz = (Math.random() - 0.5) * 14;
-    const y = 2 + Math.random() * 6;
+    // R / dispose: Y fresco (spawn); leftover mid-fall de la vida anterior no filtra.
+    const y = rainStreakYAfterRestart(Math.random());
     mesh.position.set(vx, y, vz);
     rainGroup.add(mesh);
     rainDrops.push({
@@ -1551,7 +1553,7 @@ export function createWorldView(
       mat.opacity = op;
       d.mesh.scale.set(1, sy, 1);
       if (dt > 0) {
-        d.y = tickRainStreakY(d.y, d.vy, dt, i);
+        d.y = rainStreakYFromFall(d.y, d.vy, dt, i);
         if (d.y < 0.15) {
           d.y = 2.2 + Math.random() * 5.5;
           d.vx = (Math.random() - 0.5) * 14;

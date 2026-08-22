@@ -95,6 +95,36 @@ export function tickRainStreakY(
 }
 
 /**
+ * Y de spawn que lee WorldView al nacer (phase fresco [0,1]).
+ * leftover Y de la vida anterior ≠ spawn fresco.
+ */
+export function rainStreakYFromPhase(phase: number): number {
+  return 2 + clamp01(phase) * 6;
+}
+
+/**
+ * R / softReset: Y de caída fresca (spawn).
+ * WorldView nace con rainStreakYFromPhase; leftover mid-fall no filtra.
+ * F9 / enterGameOver / freeze death no assign — view.dispose + createWorldView.
+ */
+export function rainStreakYAfterRestart(phase = 0): number {
+  return rainStreakYFromPhase(phase);
+}
+
+/**
+ * Y que lee syncRain (caída fresca o viva).
+ */
+export function rainStreakYFromFall(
+  y: number,
+  vy: number,
+  dt: number,
+  intensity = 1,
+  gameOver = false,
+): number {
+  return tickRainStreakY(y, vy, dt, intensity, gameOver);
+}
+
+/**
  * Drift X del streak si aplica; gameOver no muta (congela viento).
  * dt no finito / ≤0 no avanza.
  */
