@@ -67,6 +67,19 @@ describe("tickHeartbeat", () => {
     expect(bus.acc).toBe(0);
   });
 
+  test("HAS MUERTO / freeze: HP 0 no emite beat (acc stale + dt largo)", () => {
+    const bus = createHeartbeatBus();
+    const lowInterval = heartbeatIntervalSec(20)!;
+    tickHeartbeat(bus, 20, lowInterval);
+    expect(bus.acc).toBeGreaterThanOrEqual(0);
+
+    bus.acc = 10;
+    expect(tickHeartbeat(bus, 0, 5)).toEqual({ beat: false });
+    expect(bus.acc).toBe(0);
+    expect(tickHeartbeat(bus, 0, 1.2)).toEqual({ beat: false });
+    expect(tickHeartbeat(bus, 0, lowInterval)).toEqual({ beat: false });
+  });
+
   test("HP bajo: no beat hasta acumular el intervalo", () => {
     const bus = createHeartbeatBus();
     const interval = heartbeatIntervalSec(17.5)!;

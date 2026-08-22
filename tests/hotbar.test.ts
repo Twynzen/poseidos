@@ -13,6 +13,7 @@ import {
   clampHotbarIndex,
   stepHotbarIndex,
   hotbarInputApplies,
+  hotbarHudVisible,
   nextHotbarSelected,
   swapHotbarStacks,
   hotbarIndexFromKey,
@@ -302,7 +303,7 @@ describe("hotbarInputApplies (HAS MUERTO / F9 load-muerto)", () => {
     expect(liveInv.slots[3]?.id).toBe("water_bottle");
   });
 
-  test("Game tick gatea 1–5 / rueda / clic / swap con gameOver; freeze sigue pintando hotbar", () => {
+  test("Game tick gatea 1–5 / rueda / clic / swap con gameOver; freeze no assign", () => {
     const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
     expect(src).toContain("hotbarInputApplies(");
     expect(src).toContain("nextHotbarSelected(");
@@ -313,9 +314,6 @@ describe("hotbarInputApplies (HAS MUERTO / F9 load-muerto)", () => {
       /this\.hotbarSelected = nextHotbarSelected\(\s*this\.gameOver/,
     );
     expect(src).toMatch(
-      /refreshHud\(force: boolean\): void \{[\s\S]{0,500}if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,800}this\.hotbarHud\.sync\(hotbarSlots\(this\.player\.inventory\),\s*this\.hotbarSelected\)/,
-    );
-    expect(src).toMatch(
       /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
     );
     expect(src).not.toMatch(
@@ -323,6 +321,65 @@ describe("hotbarInputApplies (HAS MUERTO / F9 load-muerto)", () => {
     );
     expect(src).not.toMatch(
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,900}this\.hotbarHud\.root\.hidden/,
+    );
+  });
+});
+
+describe("hotbarHudVisible (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: overlay hidden; ya oculto no-op; load-muerto hidden; vivo/load-vivo pinta", () => {
+    expect(hotbarHudVisible(true, true)).toBe(false);
+
+    const alreadyHidden = hotbarHudVisible(true, false);
+    expect(alreadyHidden).toBe(false);
+    expect(hotbarHudVisible(true, false)).toBe(false);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(hotbarHudVisible(deadRt.gameOver, true)).toBe(false);
+    expect(hotbarHudVisible(deadRt.gameOver, false)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(hotbarHudVisible(liveRt.gameOver, true)).toBe(true);
+
+    expect(hotbarHudVisible(false, true)).toBe(true);
+    expect(hotbarHudVisible(false, false)).toBe(false);
+  });
+
+  test("Game enterGameOver / freeze / F9 load-muerto ocultan #hotbar; vivo no hide", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("hotbarHudVisible(");
+    expect(src).toContain("this.hotbarHud.hide()");
+    expect(src).toMatch(
+      /syncHotbarHud\(\): void \{[\s\S]{0,280}hotbarHudVisible\(\s*this\.gameOver/,
+    );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,680}this\.syncHotbarHud\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,820}this\.syncHotbarHud\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshHud\(force: boolean\): void \{[\s\S]{0,500}if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,800}this\.syncHotbarHud\(\)/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,900}this\.hotbarHud\.sync\(hotbarSlots/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
     );
   });
 });

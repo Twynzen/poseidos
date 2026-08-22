@@ -22,6 +22,8 @@ function clearQtyBadge(slot: HTMLElement): void {
 
 export interface HotbarHud {
   sync(slots: ReadonlyArray<HotbarSlot>, selectedIndex?: number): void;
+  /** HAS MUERTO / F9 load-muerto: oculta #hotbar. Ya oculto = no-op. */
+  hide(): void;
   consumeClick(): number | null;
   consumeDblClick(): number | null;
   consumeDrag(): { from: number; to: number } | null;
@@ -176,7 +178,12 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
       pendingMerge = null;
       return merge;
     },
+    hide() {
+      if (bar.hidden) return;
+      bar.hidden = true;
+    },
     sync(slots, selectedIndex) {
+      bar.hidden = false;
       const selected = clampHotbarIndex(selectedIndex ?? 0);
       for (let i = 0; i < HOTBAR_SIZE; i++) {
         const { slot, key, icon } = nodes[i];
