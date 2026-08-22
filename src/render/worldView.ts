@@ -1372,12 +1372,10 @@ export function createWorldView(
 
   function placeFacingChevron(): void {
     const yaw = facingChevronYawFromLook(playerGltfYaw);
-    const { x, z } = facingChevronOffset(yaw);
-    chevronMesh.position.set(
-      facingChevronOffsetXFromLook(x),
-      CHEVRON_Y,
-      facingChevronOffsetZFromLook(z),
-    );
+    const off = facingChevronOffset(yaw);
+    const x = facingChevronOffsetXFromLook(off.x);
+    const z = facingChevronOffsetZFromLook(off.z);
+    chevronMesh.position.set(x, CHEVRON_Y, z);
     chevronMesh.rotation.y = yaw;
     chevronMesh.rotation.x = CHEVRON_TILT;
   }

@@ -312,8 +312,9 @@ describe("facing chevron recreate lock (R / softReset)", () => {
     );
     expect(viewSrc).toContain("facingChevronYawAfterRestart()");
     expect(viewSrc).toContain("facingChevronYawFromLook(playerGltfYaw)");
-    expect(viewSrc).toContain("facingChevronOffsetXFromLook(x)");
-    expect(viewSrc).toContain("facingChevronOffsetZFromLook(z)");
+    expect(viewSrc).toContain("facingChevronOffsetXFromLook(off.x)");
+    expect(viewSrc).toContain("facingChevronOffsetZFromLook(off.z)");
+    expect(viewSrc).toContain("chevronMesh.position.set(x, CHEVRON_Y, z)");
     expect(viewSrc).not.toMatch(
       /function hideFacingChevron\(\): void \{[\s\S]{0,200}facingChevronYawAfterRestart/,
     );
