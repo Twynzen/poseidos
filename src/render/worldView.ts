@@ -1476,7 +1476,7 @@ export function createWorldView(
     transparent: facingChevronTransparentAfterRestart(),
     opacity: facingChevronOpacityAfterRestart(),
     // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
-    side: facingChevronSideAfterRestart(),
+    side: facingChevronSideAfterRestart() as THREE.Side,
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: facingChevronDepthWriteAfterRestart(),
   });
@@ -1546,11 +1546,11 @@ export function createWorldView(
     // R / dispose: cone opacity fresco (idle 0); leftover ctor BASE / mid-life no filtra.
     opacity: flashlightConeOpacityAfterRestart(),
     // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
-    side: flashlightConeSideAfterRestart(),
+    side: flashlightConeSideAfterRestart() as THREE.Side,
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: flashlightConeDepthWriteAfterRestart(),
     // R / dispose: blending fresco (idle); leftover mid-life blending de la vida anterior no filtra.
-    blending: flashlightConeBlendingAfterRestart(),
+    blending: flashlightConeBlendingAfterRestart() as THREE.Blending,
   });
   const flashlightConeWedge = new THREE.Mesh(coneGeo, coneMat);
   flashlightConeWedge.name = "flashlightConeWedge";
@@ -3005,7 +3005,7 @@ function attachRoleMarkers(
     // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
     opacity: markerIconOpacityAfterRestart(),
     // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
-    side: markerIconSideAfterRestart(),
+    side: markerIconSideAfterRestart() as THREE.Side,
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: markerIconDepthWriteAfterRestart(),
   });
