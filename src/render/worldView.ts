@@ -1620,6 +1620,31 @@ export function bedEmissiveIntensityAfterRestart(): number {
   return bedEmissiveIntensityFromLook(BED_EMISSIVE_INTENSITY_SPAWN);
 }
 
+/** Opacity del bed mesh. Ctor bedMat.opacity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const BED_OPACITY = 1;
+
+/** Idle bed mesh opacity. Ctor bedMat.opacity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const BED_OPACITY_SPAWN = 1;
+
+/**
+ * Opacity que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * attach/tick no escriben opacity (ctor constant).
+ */
+export function bedOpacityFromLook(opacity: number): number {
+  return opacity;
+}
+
+/**
+ * R / softReset: opacity fresco (idle 1).
+ * WorldView nace bedMat.opacity AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben opacity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function bedOpacityAfterRestart(): number {
+  return bedOpacityFromLook(BED_OPACITY_SPAWN);
+}
+
 /** Roughness del door-closed mesh. Ctor doorClosedMat.roughness: 0.7 = fresco. Mid-life leftover ≠ fresco. */
 export const DOOR_CLOSED_ROUGHNESS = 0.7;
 
@@ -2687,6 +2712,8 @@ export function createWorldView(
     emissive: bedEmissiveAfterRestart(),
     // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
     emissiveIntensity: bedEmissiveIntensityAfterRestart(),
+    // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
+    opacity: bedOpacityAfterRestart(),
   });
   const doorClosedMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(DOOR_CLOSED, lastDaylight),
