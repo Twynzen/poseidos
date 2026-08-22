@@ -111,6 +111,7 @@ import {
   noiseRingOpacityFromLook,
   noiseRingScaleAfterRestart,
   noiseRingScaleFromLook,
+  noiseRingTransparentAfterRestart,
   ringColorHex,
   ringOpacity,
   ringScale,
@@ -1963,7 +1964,8 @@ export function createWorldView(
     const s = noiseRingScaleAfterRestart();
     const mat = new THREE.MeshBasicMaterial({
       color: 0xe8e8f0,
-      transparent: true,
+      // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+      transparent: noiseRingTransparentAfterRestart(),
       // R / dispose: opacity fresco (idle 0); leftover mid-life no filtra.
       opacity: noiseRingOpacityAfterRestart(),
       depthWrite: false,
