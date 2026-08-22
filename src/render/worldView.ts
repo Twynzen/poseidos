@@ -9,6 +9,7 @@ import {
   markerRingDepthWriteAfterRestart,
   markerRingOpacity,
   markerRingRadii,
+  markerRingSideAfterRestart,
   markerRingTransparentAfterRestart,
   markerUsesInteractRing,
   muteBadgeIconScale,
@@ -2970,7 +2971,8 @@ function attachRoleMarkers(
     // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
     transparent: markerRingTransparentAfterRestart(),
     opacity: markerRingOpacity(role),
-    side: THREE.DoubleSide,
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: markerRingSideAfterRestart() as THREE.Side,
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: markerRingDepthWriteAfterRestart(),
   });
