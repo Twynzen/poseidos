@@ -1,4 +1,6 @@
 import { describe, expect, test } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import {
   RAIN_ACTIVE_BASE,
   RAIN_ACTIVE_GAIN,
@@ -19,8 +21,12 @@ import {
   rainStreakOpacity,
   rainStreakScaleY,
   rainStreaksHidden,
+  rainVisualApplies,
+  tickRainStreakVx,
+  tickRainStreakY,
 } from "../src/render/rainStreaks";
 import { GameClock } from "../src/core/clock";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 
 describe("constantes", () => {
   test("count 47, width 0.04959375, largo día 0.727375 / noche 1.09503, color 0xdeffff", () => {
@@ -118,5 +124,81 @@ describe("rainStreaksHidden", () => {
     expect(rainStreaksHidden(0.02)).toBe(false);
     expect(rainStreaksHidden(1)).toBe(false);
     expect(rainStreaksHidden(Number.NaN)).toBe(true);
+  });
+});
+
+describe("rainVisualApplies (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: no aplica; load-muerto no; vivo/load-vivo sí", () => {
+    expect(rainVisualApplies(true)).toBe(false);
+    expect(rainVisualApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(rainVisualApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(rainVisualApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver no avanza Y/vx; vivo sí; dt<=0 no-op", () => {
+    expect(tickRainStreakY(4, 10, 0.1, 1, true)).toBe(4);
+    expect(tickRainStreakY(4, 10, 0.1, 1, false)).toBeCloseTo(4 - 10 * 0.1 * 1.2, 10);
+    expect(tickRainStreakY(4, 10, 0, 1, false)).toBe(4);
+    expect(tickRainStreakY(4, 10, -1, 1, false)).toBe(4);
+    expect(tickRainStreakY(4, 10, Number.NaN, 1, false)).toBe(4);
+
+    expect(tickRainStreakVx(2, 0.5, true)).toBe(2);
+    expect(tickRainStreakVx(2, 0.5, false)).toBeCloseTo(2.2, 10);
+    expect(tickRainStreakVx(2, 0, false)).toBe(2);
+    expect(tickRainStreakVx(2, -1, false)).toBe(2);
+    expect(tickRainStreakVx(2, Number.NaN, false)).toBe(2);
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto congelan rain; vivo tickea", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("rainVisualApplies(");
+    expect(src).toMatch(
+      /syncRainVisual\(dt = 0\): void \{[\s\S]{0,360}rainVisualApplies\(\s*this\.gameOver\) \? dt : 0/,
+    );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,1400}this\.syncRainVisual\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,1400}this\.syncRainVisual\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.syncRainVisual\(dt\)/,
+    );
+    expect(src).toMatch(
+      /this\.syncRainVisual\(dt\);\s*this\.syncGrassVisual\(dt\);/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.view\.syncRain\([\s\S]{0,120}\bdt\b/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain("tickRainStreakY(");
+    expect(viewSrc).toContain("tickRainStreakVx(");
+    expect(viewSrc).not.toContain("d.y -= d.vy * dt");
   });
 });

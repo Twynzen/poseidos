@@ -19,6 +19,8 @@ import {
   GRASS_RADIUS,
   MAX_GRASS_INSTANCES,
   tileAcceptsGrass,
+  grassVisualApplies,
+  tickGrassWindTime,
   WIND_PHASE_Z_MUL,
   WIND_SPEED,
   WIND_SPEED_Z_MUL,
@@ -27,6 +29,7 @@ import {
   WIND_YAW,
 } from "../src/render/windGrass";
 import type { TileKind } from "../src/world/tile";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 
 describe("tileAcceptsGrass", () => {
   test("solo floor outdoor", () => {
@@ -178,5 +181,84 @@ describe("blade transforms + wind", () => {
     }
     const poses = buildBladePoses(many, 0, 50, BLADES_PER_TILE);
     expect(poses.length).toBe(50);
+  });
+});
+
+describe("grassVisualApplies (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: no aplica; load-muerto no; vivo/load-vivo sí", () => {
+    expect(grassVisualApplies(true)).toBe(false);
+    expect(grassVisualApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(grassVisualApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(grassVisualApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver no avanza tiempo/offset; vivo sí; dt<=0 no-op", () => {
+    expect(tickGrassWindTime(1.5, 0.2, true)).toBe(1.5);
+    expect(tickGrassWindTime(1.5, 0.2, false)).toBeCloseTo(1.7, 10);
+    expect(tickGrassWindTime(1.5, 0, false)).toBe(1.5);
+    expect(tickGrassWindTime(1.5, -1, false)).toBe(1.5);
+    expect(tickGrassWindTime(1.5, Number.NaN, false)).toBe(1.5);
+
+    const frozen = tickGrassWindTime(0.4, 1.1, true);
+    const live = tickGrassWindTime(0.4, 1.1, false);
+    const pFrozen = bladePoseAt(5, 2, 1, 0.4, frozen);
+    const pStart = bladePoseAt(5, 2, 1, 0.4, 0.4);
+    const pLive = bladePoseAt(5, 2, 1, 0.4, live);
+    expect(pFrozen).toEqual(pStart);
+    expect(pLive.x !== pStart.x || pLive.z !== pStart.z || pLive.yaw !== pStart.yaw).toBe(
+      true,
+    );
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto congelan grass; vivo tickea", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("grassVisualApplies(");
+    expect(src).toMatch(
+      /syncGrassVisual\(dt = 0\): void \{[\s\S]{0,280}grassVisualApplies\(\s*this\.gameOver\) \? dt : 0/,
+    );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,1500}this\.syncGrassVisual\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,1500}this\.syncGrassVisual\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.syncGrassVisual\(dt\)/,
+    );
+    expect(src).toMatch(
+      /this\.syncRainVisual\(dt\);\s*this\.syncGrassVisual\(dt\);/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.view\.syncGrass\([\s\S]{0,80}\bdt\b/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain("tickGrassWindTime(");
+    expect(viewSrc).not.toContain("grassTime += Math.max(0, dt)");
   });
 });

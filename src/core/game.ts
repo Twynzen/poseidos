@@ -81,6 +81,8 @@ import {
   shouldSpawnNoiseRing,
 } from "../render/noiseRings";
 import { tracerOverlayApplies } from "../render/tracers";
+import { rainVisualApplies } from "../render/rainStreaks";
+import { grassVisualApplies } from "../render/windGrass";
 import { lootFloaterLabel } from "../render/lootFloater";
 import {
   SpeechDirector,
@@ -562,6 +564,9 @@ export class Game {
     // Load-muerto: tracers / anillos leftover off (load-vivo dt=0, igual que hoy).
     this.syncTracerOverlay();
     this.syncNoiseRingOverlay();
+    // Load-muerto: rain/grass leftover freeze (load-vivo dt=0, igual que hoy).
+    this.syncRainVisual();
+    this.syncGrassVisual();
     this.view.followCamera(this.player.x, this.player.y);
   }
 
@@ -581,8 +586,12 @@ export class Game {
     this.view.syncTorchLight(this.player.x, this.player.y, torch);
   }
 
-  /** Partículas de lluvia (ocultas indoor o si clear). */
-  private syncRainVisual(dt: number): void {
+  /**
+   * Partículas de lluvia (ocultas indoor o si clear).
+   * gameOver → dt 0 (congela streaks; no esconde el clima).
+   * Vivo (incl. F9 load-vivo): dt de hoy.
+   */
+  private syncRainVisual(dt = 0): void {
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
     const inten =
       indoor || !this.weather.isRaining ? 0 : this.weather.intensity;
@@ -590,14 +599,22 @@ export class Game {
       this.player.x,
       this.player.y,
       inten,
-      dt,
+      rainVisualApplies(this.gameOver) ? dt : 0,
       this.clock.daylight,
     );
   }
 
-  /** Césped wind outdoor cerca del player (rebuild por tile). */
-  private syncGrassVisual(dt: number): void {
-    this.view.syncGrass(this.player.x, this.player.y, dt);
+  /**
+   * Césped wind outdoor cerca del player (rebuild por tile).
+   * gameOver → dt 0 (congela viento; no esconde el césped).
+   * Vivo (incl. F9 load-vivo): dt de hoy.
+   */
+  private syncGrassVisual(dt = 0): void {
+    this.view.syncGrass(
+      this.player.x,
+      this.player.y,
+      grassVisualApplies(this.gameOver) ? dt : 0,
+    );
   }
 
   private applyFov(): void {
@@ -914,6 +931,9 @@ export class Game {
     // Tracers / anillos leftover: hide ya (no esperar el freeze tick).
     this.syncTracerOverlay();
     this.syncNoiseRingOverlay();
+    // Rain/grass leftover: freeze streaks/viento ya (no hide weather).
+    this.syncRainVisual();
+    this.syncGrassVisual();
     // Drain G/E/F / U / Q / C / H / X / Space/V / Z / B / T / Esc / I / F1 / +/- / F5 al final: no loot/puerta/drop/use/craft/cook/shoot/melee/sleep/build/diálogo/inventario/ayuda/zoom/save; no empuja ventanas de scan del hide.
     this.input.consumeLoot();
     this.input.consumeInteract();
@@ -1240,7 +1260,7 @@ export class Game {
       this.syncHostileView(dt);
       this.syncLighting();
       this.syncRainVisual(dt);
-    this.syncGrassVisual(dt);
+      this.syncGrassVisual(dt);
       this.syncTracerOverlay(dt);
       this.syncNoiseRingOverlay(dt);
       this.tickHitFlashOverlay(dt);

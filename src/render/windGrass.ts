@@ -152,6 +152,30 @@ export function bladeBasePose(
 }
 
 /**
+ * HAS MUERTO / F9 load-muerto: no avanzar tiempo de viento.
+ * Vivo (incl. F9 load-vivo): dt/animación de hoy.
+ * No esconde el césped; solo gate de dt. gameOver no inventa hide.
+ */
+export function grassVisualApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * Avanza tiempo de viento si aplica; gameOver no muta (congela sway).
+ * dt no finito / ≤0 no avanza (igual que un tick vacío).
+ */
+export function tickGrassWindTime(
+  time: number,
+  dt: number,
+  gameOver = false,
+): number {
+  if (!grassVisualApplies(gameOver)) return time;
+  if (!Number.isFinite(dt) || dt <= 0) return time;
+  return time + dt;
+}
+
+/**
  * Desplazamiento / yaw de viento barato: sin(time * speed + seed fase).
  */
 export function bladeWind(

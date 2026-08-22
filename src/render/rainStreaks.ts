@@ -67,6 +67,47 @@ export function rainStreakScaleY(daylight: number): number {
   return rainStreakLength(daylight) / RAIN_STREAK_LENGTH_DAY;
 }
 
+/**
+ * HAS MUERTO / F9 load-muerto: no avanzar caída ni drift de streaks.
+ * Vivo (incl. F9 load-vivo): dt/animación de hoy.
+ * No esconde el clima; solo gate de dt. gameOver no inventa hide.
+ */
+export function rainVisualApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * Avanza Y del streak si aplica; gameOver no muta (congela caída).
+ * dt no finito / ≤0 no avanza (igual que un tick vacío).
+ */
+export function tickRainStreakY(
+  y: number,
+  vy: number,
+  dt: number,
+  intensity = 1,
+  gameOver = false,
+): number {
+  if (!rainVisualApplies(gameOver)) return y;
+  if (!Number.isFinite(dt) || dt <= 0) return y;
+  const i = clamp01(intensity);
+  return y - vy * dt * (0.7 + i * 0.5);
+}
+
+/**
+ * Drift X del streak si aplica; gameOver no muta (congela viento).
+ * dt no finito / ≤0 no avanza.
+ */
+export function tickRainStreakVx(
+  vx: number,
+  dt: number,
+  gameOver = false,
+): number {
+  if (!rainVisualApplies(gameOver)) return vx;
+  if (!Number.isFinite(dt) || dt <= 0) return vx;
+  return vx + dt * 0.4;
+}
+
 /** ¿Grupo oculto? Mismo umbral que syncRain (intensity ≤ RAIN_HIDE_BELOW). */
 export function rainStreaksHidden(intensity: number): boolean {
   return !Number.isFinite(intensity) || intensity <= RAIN_HIDE_BELOW;

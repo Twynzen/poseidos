@@ -148,6 +148,7 @@ import {
   GRASS_RADIUS,
   MAX_GRASS_INSTANCES,
   BLADES_PER_TILE,
+  tickGrassWindTime,
   type GrassTile,
 } from "./windGrass";
 import {
@@ -159,6 +160,8 @@ import {
   rainStreakOpacity,
   rainStreakScaleY,
   rainStreaksHidden,
+  tickRainStreakVx,
+  tickRainStreakY,
 } from "./rainStreaks";
 import { lootBadgeIconScale, lootBadgeY, lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
 import {
@@ -545,6 +548,7 @@ export interface WorldView {
    * Lluvia barata: partículas/líneas alrededor de (wx,wy).
    * intensity 0 = oculto; >0 sync + anima caída.
    * `daylight` (GameClock) alarga / aclara streaks de noche.
+   * `dt` 0 (HAS MUERTO / F9 load-muerto): congela streaks; no hide weather.
    */
   syncRain(
     wx: number,
@@ -556,6 +560,7 @@ export interface WorldView {
   /**
    * Césped instanced outdoor cerca del player.
    * Rebuild al cambiar de tile; viento en cada tick.
+   * `dt` 0 (HAS MUERTO / F9 load-muerto): congela viento; no hide césped.
    */
   syncGrass(wx: number, wy: number, dt?: number): void;
   dispose(): void;
@@ -1338,14 +1343,14 @@ export function createWorldView(
       mat.opacity = op;
       d.mesh.scale.set(1, sy, 1);
       if (dt > 0) {
-        d.y -= d.vy * dt * (0.7 + i * 0.5);
+        d.y = tickRainStreakY(d.y, d.vy, dt, i);
         if (d.y < 0.15) {
           d.y = 2.2 + Math.random() * 5.5;
           d.vx = (Math.random() - 0.5) * 14;
           d.vz = (Math.random() - 0.5) * 14;
         }
         // Drift leve con el viento.
-        d.vx += dt * 0.4;
+        d.vx = tickRainStreakVx(d.vx, dt);
         d.mesh.position.set(d.vx, d.y, d.vz);
       }
     }
@@ -1419,7 +1424,7 @@ export function createWorldView(
   }
 
   function syncGrass(wx: number, wy: number, dt = 0.016): void {
-    grassTime += Math.max(0, dt);
+    grassTime = tickGrassWindTime(grassTime, dt);
     rebuildGrassTiles(wx, wy);
     applyGrassPoses();
   }
