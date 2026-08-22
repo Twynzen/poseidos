@@ -1036,6 +1036,35 @@ export const FURNITURE_HEIGHT = 0.9775;
 export const FURNITURE_XZ = 0.805;
 /** Altura Y de la caja/furniture genérico. 0.425 × 1.15 para sentarse un poco más alto de noche. */
 export const FURNITURE_BASE_Y = 0.48875;
+
+/** Roughness del furniture mesh. Ctor furnitureMat.roughness: 0.8 = fresco. Mid-life leftover ≠ fresco. */
+export const FURNITURE_ROUGHNESS = 0.8;
+
+/** Roughness del furniture mesh. Ctor furnitureMat.roughness: 0.8 = fresco. Mid-life leftover ≠ fresco. */
+export const FURNITURE_MESH_ROUGHNESS = 0.8;
+
+/** Idle furniture mesh roughness. Ctor furnitureMat.roughness: 0.8 = fresco. Mid-life leftover ≠ fresco. */
+export const FURNITURE_ROUGHNESS_SPAWN = 0.8;
+
+/**
+ * Roughness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0.8).
+ * attach/tick no escriben roughness (ctor constant).
+ */
+export function furnitureRoughnessFromLook(roughness: number): number {
+  return roughness;
+}
+
+/**
+ * R / softReset: roughness fresco (idle 0.8).
+ * WorldView nace furnitureMat.roughness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben roughness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function furnitureRoughnessAfterRestart(): number {
+  return furnitureRoughnessFromLook(FURNITURE_ROUGHNESS_SPAWN);
+}
+
 /** Alto de la barricada. 1.35 × 1.15 para leerse un poco más alta de noche. */
 export const BARRICADE_HEIGHT = 1.5525;
 /** Ancho de la barricada. 0.92 × 1.15 para leerse un poco más ancha de noche. */
@@ -1359,7 +1388,8 @@ export function createWorldView(
   let lastDaylight = 1;
   const furnitureMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(FURNITURE_COLOR, lastDaylight),
-    roughness: 0.8,
+    // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
+    roughness: furnitureRoughnessAfterRestart(),
   });
   /** Cama: más baja y ancha que furniture genérico (reuse geo/mat). */
   const bedGeo = new THREE.BoxGeometry(1.0, BED_HEIGHT, BED_DEPTH);
