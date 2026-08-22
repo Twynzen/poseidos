@@ -3,7 +3,10 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import { CONTAINER_REACH } from "../src/items";
+import { createNeighborhood } from "../src/world/neighborhood";
 import {
+  LOOT_FOCUS_LOOK_X_SPAWN,
+  LOOT_FOCUS_LOOK_Z_SPAWN,
   LOOT_FOCUS_PULSE_AMP,
   LOOT_FOCUS_PULSE_SPEED,
   LOOT_FOCUS_REACH,
@@ -12,11 +15,23 @@ import {
   lootBadgeIconScale,
   lootBadgeY,
   lootFocusApplies,
+  lootFocusDistAfterRestart,
+  lootFocusDistFromLook,
+  lootFocusElapsedAfterRestart,
+  lootFocusElapsedFromLook,
   lootFocusInReach,
+  lootFocusLookXAfterRestart,
+  lootFocusLookXFromLook,
+  lootFocusLookZAfterRestart,
+  lootFocusLookZFromLook,
   lootFocusMul,
+  lootFocusMulAfterRestart,
+  lootFocusMulFromLook,
   lootFocusPulse,
   lootFocusScale,
   lootRingVisible,
+  lootRingVisibleAfterRestart,
+  lootRingVisibleFromLook,
 } from "../src/render/lootFocus";
 
 describe("constantes", () => {
@@ -226,6 +241,246 @@ describe("lootFocusApplies (HAS MUERTO / F9 load-muerto)", () => {
     );
     expect(src).not.toMatch(
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2200}this\.view\.syncLootFocus\(/,
+    );
+  });
+});
+
+describe("lootFocusAfterRestart (R / softReset)", () => {
+  test("look fresco (spawn 24.5, 15.5); leftover ctor scale 1 / Three ring / origin / far no filtra", () => {
+    const barrio = createNeighborhood(48);
+    const wood = barrio.containers.list.find((c) => c.id === "madera-spawn");
+    expect(wood).toBeTruthy();
+    const woodMx = wood!.x + 0.5;
+    const woodMy = wood!.y + 0.5;
+    const bootWx = lootFocusLookXAfterRestart();
+    const bootWy = lootFocusLookZAfterRestart();
+    const bootElapsed = lootFocusElapsedAfterRestart();
+    const bootDist = lootFocusDistAfterRestart(woodMx, woodMy);
+    const bootMul = lootFocusMulAfterRestart(bootDist);
+    const bootRing = lootRingVisibleAfterRestart(false, bootDist);
+
+    expect(bootWx).toBe(lootFocusLookXFromLook(24.5));
+    expect(bootWy).toBe(lootFocusLookZFromLook(15.5));
+    expect(bootWx).toBe(LOOT_FOCUS_LOOK_X_SPAWN);
+    expect(bootWy).toBe(LOOT_FOCUS_LOOK_Z_SPAWN);
+    expect(bootWx).toBe(barrio.spawn.x);
+    expect(bootWy).toBe(barrio.spawn.y);
+    expect(lootFocusLookXAfterRestart(24.5)).toBe(bootWx);
+    expect(lootFocusLookZAfterRestart(15.5)).toBe(bootWy);
+    expect(lootFocusLookXAfterRestart(0)).toBe(lootFocusLookXFromLook(0));
+    expect(lootFocusLookZAfterRestart(40)).toBe(lootFocusLookZFromLook(40));
+
+    expect(bootElapsed).toBe(0);
+    expect(bootElapsed).toBe(lootFocusElapsedFromLook(0));
+    expect(bootDist).toBe(1);
+    expect(bootDist).toBe(lootFocusDistFromLook(24.5, 15.5, woodMx, woodMy));
+    expect(bootRing).toBe(true);
+    expect(bootRing).toBe(lootRingVisibleFromLook(false, bootDist));
+    expect(bootMul).toBeCloseTo(lootFocusScale(1) * lootFocusPulse(0), 10);
+    expect(bootMul).toBeCloseTo(1.595265625, 10);
+    expect(bootMul).not.toBe(1);
+
+    const leftoverCtorScale = 1;
+    expect(leftoverCtorScale).not.toBe(bootMul);
+    expect(leftoverCtorScale).toBe(lootFocusMulFromLook(8, 0));
+
+    const leftoverCtorRing = true;
+    const far = barrio.containers.list.find((c) => c.id !== "madera-spawn");
+    expect(far).toBeTruthy();
+    const farDist = lootFocusDistAfterRestart(far!.x + 0.5, far!.y + 0.5);
+    expect(farDist).toBeGreaterThan(LOOT_FOCUS_REACH);
+    expect(lootRingVisibleAfterRestart(false, farDist)).toBe(false);
+    expect(leftoverCtorRing).not.toBe(
+      lootRingVisibleAfterRestart(false, farDist),
+    );
+
+    const leftoverOriginDist = lootFocusDistFromLook(0, 0, woodMx, woodMy);
+    expect(leftoverOriginDist).not.toBe(bootDist);
+    expect(lootFocusLookXFromLook(0)).toBe(0);
+    expect(lootFocusLookXFromLook(0)).not.toBe(bootWx);
+    expect(lootRingVisibleFromLook(false, leftoverOriginDist)).toBe(false);
+    expect(lootFocusMulFromLook(leftoverOriginDist, 0)).toBe(1);
+    expect(lootFocusMulFromLook(leftoverOriginDist, 0)).not.toBe(bootMul);
+
+    const leftoverFarDist = lootFocusDistFromLook(40, 30, woodMx, woodMy);
+    expect(leftoverFarDist).not.toBe(bootDist);
+    expect(lootFocusLookXFromLook(40)).toBe(40);
+    expect(lootFocusLookZFromLook(30)).toBe(30);
+    expect(lootFocusLookXFromLook(40)).not.toBe(bootWx);
+    expect(lootFocusLookZFromLook(30)).not.toBe(bootWy);
+    expect(lootRingVisibleFromLook(false, leftoverFarDist)).toBe(false);
+    expect(lootFocusMulFromLook(leftoverFarDist, 0)).toBe(1);
+    expect(lootFocusMulFromLook(leftoverFarDist, 0)).not.toBe(bootMul);
+    expect(leftoverFarDist).not.toBe(lootFocusDistAfterRestart(woodMx, woodMy));
+
+    const leftoverPulse = Math.PI / (2 * LOOT_FOCUS_PULSE_SPEED);
+    const leftoverMul = lootFocusMulFromLook(bootDist, leftoverPulse);
+    expect(leftoverMul).toBeCloseTo(bootMul * 1.066125, 10);
+    expect(leftoverMul).not.toBe(bootMul);
+    expect(leftoverMul).not.toBe(lootFocusMulAfterRestart(bootDist));
+
+    expect(lootFocusDistFromLook(24.5, 15.5, woodMx, woodMy)).toBe(bootDist);
+    expect(lootFocusMulFromLook(bootDist, 0)).toBe(bootMul);
+    expect(lootRingVisibleFromLook(true, bootDist)).toBe(false);
+    expect(lootFocusMulAfterRestart(bootDist, true)).toBe(1);
+    expect(lootRingVisibleAfterRestart(false, bootDist, true)).toBe(false);
+  });
+
+  test("vivo tick no usa el helper (pulso avanza con elapsed)", () => {
+    const barrio = createNeighborhood(48);
+    const wood = barrio.containers.list.find((c) => c.id === "madera-spawn")!;
+    const woodMx = wood.x + 0.5;
+    const woodMy = wood.y + 0.5;
+    const bootDist = lootFocusDistAfterRestart(woodMx, woodMy);
+    const bootMul = lootFocusMulAfterRestart(bootDist);
+    const bootElapsed = lootFocusElapsedAfterRestart();
+    const liveElapsed = lootFocusElapsedFromLook(
+      Math.PI / (2 * LOOT_FOCUS_PULSE_SPEED),
+    );
+    const liveMul = lootFocusMulFromLook(bootDist, liveElapsed);
+    const liveLookX = lootFocusLookXFromLook(40);
+    const liveLookZ = lootFocusLookZFromLook(30);
+    const liveDist = lootFocusDistFromLook(40, 30, woodMx, woodMy);
+    expect(liveElapsed).not.toBe(bootElapsed);
+    expect(liveElapsed).not.toBe(lootFocusElapsedAfterRestart());
+    expect(liveMul).not.toBe(bootMul);
+    expect(liveMul).not.toBe(lootFocusMulAfterRestart(bootDist));
+    expect(liveLookX).toBe(40);
+    expect(liveLookZ).toBe(30);
+    expect(liveLookX).not.toBe(lootFocusLookXAfterRestart());
+    expect(liveLookZ).not.toBe(lootFocusLookZAfterRestart());
+    expect(liveDist).not.toBe(bootDist);
+    expect(liveDist).not.toBe(lootFocusDistAfterRestart(woodMx, woodMy));
+    expect(lootFocusMulFromLook(liveDist, liveElapsed)).toBe(1);
+    expect(lootRingVisibleFromLook(false, liveDist)).toBe(false);
+    expect(lootFocusLookXFromLook(24.5)).toBe(lootFocusLookXAfterRestart());
+    expect(lootFocusLookZFromLook(15.5)).toBe(lootFocusLookZAfterRestart());
+    expect(lootFocusMulFromLook(bootDist, 0)).toBe(bootMul);
+  });
+});
+
+describe("loot focus recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace loot focus fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const focusSrc = readFileSync(
+      resolve(process.cwd(), "src/render/lootFocus.ts"),
+      "utf8",
+    );
+    expect(focusSrc).toContain("lootFocusLookXAfterRestart(");
+    expect(focusSrc).toContain("lootFocusLookZAfterRestart(");
+    expect(focusSrc).toContain("lootFocusLookXFromLook(");
+    expect(focusSrc).toContain("lootFocusLookZFromLook(");
+    expect(focusSrc).toContain("lootFocusDistAfterRestart(");
+    expect(focusSrc).toContain("lootFocusDistFromLook(");
+    expect(focusSrc).toContain("lootFocusElapsedAfterRestart(");
+    expect(focusSrc).toContain("lootFocusElapsedFromLook(");
+    expect(focusSrc).toContain("lootFocusMulAfterRestart(");
+    expect(focusSrc).toContain("lootFocusMulFromLook(");
+    expect(focusSrc).toContain("lootRingVisibleAfterRestart(");
+    expect(focusSrc).toContain("lootRingVisibleFromLook(");
+    expect(focusSrc).toContain("LOOT_FOCUS_LOOK_X_SPAWN");
+    expect(focusSrc).toContain("LOOT_FOCUS_LOOK_Z_SPAWN");
+    expect(focusSrc).toMatch(
+      /lootFocusLookXAfterRestart\([\s\S]{0,200}lootFocusLookXFromLook\(/,
+    );
+    expect(focusSrc).toMatch(
+      /lootFocusLookZAfterRestart\([\s\S]{0,200}lootFocusLookZFromLook\(/,
+    );
+    expect(focusSrc).toMatch(
+      /lootFocusMulAfterRestart\([\s\S]{0,200}lootFocusMulFromLook\(/,
+    );
+    expect(focusSrc).toMatch(
+      /lootRingVisibleAfterRestart\([\s\S]{0,200}lootRingVisibleFromLook\(/,
+    );
+    expect(viewSrc).toContain("lootFocusLookXAfterRestart(");
+    expect(viewSrc).toContain("lootFocusLookZAfterRestart(");
+    expect(viewSrc).toContain("lootFocusElapsedAfterRestart(");
+    expect(viewSrc).toContain("lootFocusDistFromLook(");
+    expect(viewSrc).toContain("lootFocusMulFromLook(");
+    expect(viewSrc).toContain("lootRingVisibleFromLook(");
+    expect(viewSrc).toMatch(
+      /let lootFocusElapsed = lootFocusElapsedAfterRestart\(\)/,
+    );
+    expect(viewSrc).toMatch(
+      /applyLootFocusLook\(\s*lootFocusLookXAfterRestart\(\),\s*lootFocusLookZAfterRestart\(\),\s*lootFocusElapsed/,
+    );
+    expect(viewSrc).toMatch(
+      /const d = lootFocusDistFromLook\(\s*wx,\s*wy,\s*e\.x,\s*e\.y\)/,
+    );
+    expect(viewSrc).toMatch(
+      /const vis = lootRingVisibleFromLook\(\s*empty,\s*d,\s*gameOver\)/,
+    );
+    expect(viewSrc).toMatch(
+      /lootFocusMulFromLook\(\s*bestD,\s*elapsed,\s*gameOver\)/,
+    );
+    expect(viewSrc).toContain("applyLootFocusLook(");
+    expect(viewSrc).not.toMatch(/let lootFocusElapsed = 0/);
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /syncInteractFocus\(dt = 0\): void \{[\s\S]{0,400}this\.view\.syncLootFocus\(/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.syncInteractFocus\(dt\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}lootFocusLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}lootFocusLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}lootFocusLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}lootFocusLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("lootFocusLookXAfterRestart(");
+    expect(gameSrc).not.toContain("lootFocusLookZAfterRestart(");
+    expect(gameSrc).not.toContain("lootFocusElapsedAfterRestart(");
+    expect(gameSrc).not.toContain("lootFocusMulAfterRestart(");
+    expect(gameSrc).not.toContain("lootRingVisibleAfterRestart(");
+    expect(gameSrc).not.toContain("lootFocusDistAfterRestart(");
+    expect(gameSrc).not.toContain("lootFocusLookXFromLook(");
+    expect(saveSrc).not.toContain("lootFocusLookXAfterRestart");
+    expect(saveSrc).not.toContain("lootFocusElapsedAfterRestart");
+    expect(saveSrc).not.toContain("lootFocusMulAfterRestart");
+    expect(saveSrc).not.toContain("lootFocusLookXFromLook");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
     );
   });
 });
