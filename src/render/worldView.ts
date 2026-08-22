@@ -1489,6 +1489,31 @@ export function barricadeEdgeRoughnessAfterRestart(): number {
   return barricadeEdgeRoughnessFromLook(BARRICADE_EDGE_ROUGHNESS_SPAWN);
 }
 
+/** Metalness del barricade-edge mesh. Ctor barricadeEdgeMat.metalness: 0 = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_EDGE_METALNESS = 0;
+
+/** Idle barricade-edge mesh metalness. Ctor barricadeEdgeMat.metalness: 0 = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_EDGE_METALNESS_SPAWN = 0;
+
+/**
+ * Metalness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0).
+ * attach/tick no escriben metalness (ctor constant).
+ */
+export function barricadeEdgeMetalnessFromLook(value: number): number {
+  return value;
+}
+
+/**
+ * R / softReset: metalness fresco (idle 0).
+ * WorldView nace barricadeEdgeMat.metalness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben metalness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function barricadeEdgeMetalnessAfterRestart(): number {
+  return barricadeEdgeMetalnessFromLook(BARRICADE_EDGE_METALNESS_SPAWN);
+}
+
 /** Alto de la barricada. 1.35 × 1.15 para leerse un poco más alta de noche. */
 export const BARRICADE_HEIGHT = 1.5525;
 /** Ancho de la barricada. 0.92 × 1.15 para leerse un poco más ancha de noche. */
@@ -1893,6 +1918,8 @@ export function createWorldView(
     color: applyNightGroundLift(BARRICADE_EDGE, lastDaylight),
     // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
     roughness: barricadeEdgeRoughnessAfterRestart(),
+    // R / dispose: metalness fresco (idle); leftover mid-life metalness de la vida anterior no filtra.
+    metalness: barricadeEdgeMetalnessAfterRestart(),
   });
   const fogMat = new THREE.MeshBasicMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
