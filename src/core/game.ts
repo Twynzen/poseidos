@@ -204,6 +204,7 @@ import {
   createHeartbeatBus,
   tickHeartbeat,
   createHeartbeatPlayer,
+  resetHeartbeatPlayerAfterRestart,
   playHeartbeat,
   type AmbientBus,
   type FootstepsBus,
@@ -565,6 +566,8 @@ export class Game {
     // R: cámara nueva = ISO_FRUSTUM; no filtrar el zoom de la vida anterior.
     this.isoFrustum = isoFrustumAfterRestart();
     this.resize();
+    // R: corta beep leftover (heartbeat sine 80ms). Mute se queda.
+    resetHeartbeatPlayerAfterRestart(this.heartbeatPlayer);
     this.view.clearPlayerAction();
     this.view.syncVisibleChunks(this.player.x, this.player.y);
     this.applyFov();
