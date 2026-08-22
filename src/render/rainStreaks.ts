@@ -260,6 +260,29 @@ export function rainStreakOpacity(intensity: number, daylight: number): number {
 }
 
 /**
+ * Opacity de look que lee syncRain (intensity + daylight fresco o vivo).
+ * leftover mid-life (storm noon / ctor 0.45) ≠ look fresco (drizzle medianoche).
+ */
+export function rainStreakOpacityFromLook(
+  intensity: number,
+  daylight: number,
+): number {
+  return rainStreakOpacity(intensity, daylight);
+}
+
+/**
+ * R / softReset: opacity de look fresco (drizzle 0.4 + medianoche 0.08).
+ * WorldView nace con rainStreakOpacityAfterRestart; leftover mid-life no filtra.
+ * syncRain lee rainStreakOpacityFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function rainStreakOpacityAfterRestart(
+  intensity = 0.4,
+  daylight = 0.08,
+): number {
+  return rainStreakOpacityFromLook(intensity, daylight);
+}
+
+/**
  * Streaks activos: max(min, floor(COUNT × (0.4025 + i×0.7475) × (1 − cut×nightMix))).
  */
 export function rainActiveCount(intensity: number, daylight: number): number {

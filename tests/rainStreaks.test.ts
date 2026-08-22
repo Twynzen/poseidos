@@ -21,6 +21,8 @@ import {
   rainStreakLength,
   rainStreakNeedsWrap,
   rainStreakOpacity,
+  rainStreakOpacityAfterRestart,
+  rainStreakOpacityFromLook,
   rainStreakScaleY,
   rainStreaksHidden,
   rainStreakVxAfterRestart,
@@ -781,6 +783,139 @@ describe("rainStreakYWrapAfterRestart (R / softReset)", () => {
     expect(rainStreakNeedsWrap(midFall)).toBe(true);
     expect(rainStreakYFromWrap(0.4)).not.toBe(midFall);
     expect(rainStreakYWrapAfterRestart(0.4)).not.toBe(midFall);
+  });
+});
+
+describe("rainStreakOpacityAfterRestart (R / softReset)", () => {
+  test("look fresco (drizzle + medianoche); leftover mid-life opacity no filtra", () => {
+    const boot = rainStreakOpacityAfterRestart();
+    expect(boot).toBe(rainStreakOpacityFromLook(0.4, 0.08));
+    expect(boot).toBe(rainStreakOpacity(0.4, 0.08));
+    expect(boot).toBeCloseTo(0.3345925 + 0.4 * 0.68439375 + 0.39675 * 0.92, 10);
+    expect(rainStreakOpacityAfterRestart(0.4, 0.08)).toBe(boot);
+    expect(rainStreakOpacityAfterRestart(0, 1)).toBe(rainStreakOpacity(0, 1));
+    expect(rainStreakOpacityAfterRestart(1, 0)).toBe(rainStreakOpacity(1, 0));
+
+    const leftoverCtor = 0.45;
+    expect(leftoverCtor).not.toBe(boot);
+    expect(leftoverCtor).toBeLessThan(boot);
+    expect(rainStreakOpacityFromLook(0.4, 0.08)).not.toBe(leftoverCtor);
+
+    const leftoverStormNoon = rainStreakOpacityFromLook(0.85, 1);
+    expect(leftoverStormNoon).toBe(rainStreakOpacity(0.85, 1));
+    expect(leftoverStormNoon).toBeCloseTo(0.3345925 + 0.85 * 0.68439375, 10);
+    expect(leftoverStormNoon).not.toBe(boot);
+    expect(leftoverStormNoon).not.toBe(rainStreakOpacityAfterRestart());
+
+    const leftoverDrizzleNoon = rainStreakOpacityFromLook(0.4, 1);
+    expect(leftoverDrizzleNoon).toBe(rainStreakOpacity(0.4, 1));
+    expect(leftoverDrizzleNoon).toBeLessThan(boot);
+    expect(leftoverDrizzleNoon).not.toBe(rainStreakOpacityAfterRestart());
+
+    expect(rainStreakOpacityFromLook(0.85, 0.08)).not.toBe(boot);
+    expect(rainStreakYFromFall(4.4, 10, 0.2, 1, true)).toBe(4.4);
+    expect(tickRainStreakY(4.4, 10, 0.2, 1, true)).toBe(4.4);
+  });
+
+  test("vivo tick no usa el helper (look avanza con intensity/daylight)", () => {
+    const boot = rainStreakOpacityAfterRestart();
+    const liveNoon = rainStreakOpacityFromLook(0.4, 1);
+    expect(liveNoon).toBe(rainStreakOpacity(0.4, 1));
+    expect(liveNoon).not.toBe(boot);
+    expect(liveNoon).not.toBe(rainStreakOpacityAfterRestart());
+    expect(liveNoon).toBeLessThan(boot);
+
+    const liveStorm = rainStreakOpacityFromLook(0.85, 0.08);
+    expect(liveStorm).toBeGreaterThan(boot);
+    expect(liveStorm).not.toBe(rainStreakOpacityAfterRestart());
+    expect(rainStreakOpacityFromLook(0.4, 0.08)).toBe(boot);
+  });
+});
+
+describe("rain opacity/look recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace rain opacity fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const rainSrc = readFileSync(
+      resolve(process.cwd(), "src/render/rainStreaks.ts"),
+      "utf8",
+    );
+    expect(rainSrc).toContain("rainStreakOpacityAfterRestart(");
+    expect(rainSrc).toContain("rainStreakOpacityFromLook(");
+    expect(rainSrc).toContain("rainStreakOpacity(");
+    expect(rainSrc).toMatch(
+      /rainStreakOpacityAfterRestart\([\s\S]{0,200}rainStreakOpacityFromLook\(/,
+    );
+    expect(viewSrc).toContain("rainStreakOpacityAfterRestart(");
+    expect(viewSrc).toContain("rainStreakOpacityFromLook(");
+    expect(viewSrc).toMatch(
+      /opacity:\s*rainStreakOpacityAfterRestart\(\s*\)/,
+    );
+    expect(viewSrc).toMatch(
+      /const op = rainStreakOpacityFromLook\(\s*i,\s*daylight\)/,
+    );
+    expect(viewSrc).toContain("rainStreakYFromFall(");
+    expect(viewSrc).not.toContain("opacity: 0.45");
+    expect(viewSrc).not.toContain("const op = rainStreakOpacity(");
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /syncRainVisual\(dt = 0\): void \{[\s\S]{0,360}rainVisualApplies\(\s*this\.gameOver\) \? dt : 0/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.syncRainVisual\(dt\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}rainStreakOpacityAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}rainStreakOpacityAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}rainStreakOpacityAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}rainStreakOpacityAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("rainStreakOpacityAfterRestart(");
+    expect(gameSrc).not.toContain("rainStreakOpacityFromLook(");
+    expect(saveSrc).not.toContain("rainStreakOpacityAfterRestart");
+    expect(saveSrc).not.toContain("rainStreakOpacityFromLook");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
   });
 });
 
