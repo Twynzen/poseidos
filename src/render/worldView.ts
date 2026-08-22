@@ -1118,6 +1118,31 @@ export function bedRoughnessAfterRestart(): number {
   return bedRoughnessFromLook(BED_ROUGHNESS_SPAWN);
 }
 
+/** Metalness del bed mesh. Ctor bedMat.metalness: 0 = fresco. Mid-life leftover ≠ fresco. */
+export const BED_METALNESS = 0;
+
+/** Idle bed mesh metalness. Ctor bedMat.metalness: 0 = fresco. Mid-life leftover ≠ fresco. */
+export const BED_METALNESS_SPAWN = 0;
+
+/**
+ * Metalness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0).
+ * attach/tick no escriben metalness (ctor constant).
+ */
+export function bedMetalnessFromLook(metalness: number): number {
+  return metalness;
+}
+
+/**
+ * R / softReset: metalness fresco (idle 0).
+ * WorldView nace bedMat.metalness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben metalness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function bedMetalnessAfterRestart(): number {
+  return bedMetalnessFromLook(BED_METALNESS_SPAWN);
+}
+
 /** Roughness del door-closed mesh. Ctor doorClosedMat.roughness: 0.7 = fresco. Mid-life leftover ≠ fresco. */
 export const DOOR_CLOSED_ROUGHNESS = 0.7;
 
@@ -1648,6 +1673,8 @@ export function createWorldView(
     color: applyNightGroundLift(BED_COLOR, lastDaylight),
     // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
     roughness: bedRoughnessAfterRestart(),
+    // R / dispose: metalness fresco (idle); leftover mid-life metalness de la vida anterior no filtra.
+    metalness: bedMetalnessAfterRestart(),
   });
   const doorClosedMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(DOOR_CLOSED, lastDaylight),
