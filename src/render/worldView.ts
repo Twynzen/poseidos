@@ -519,6 +519,31 @@ export function playerBodyRoughnessAfterRestart(): number {
   return playerBodyRoughnessFromLook(PLAYER_BODY_ROUGHNESS_SPAWN);
 }
 
+/** Metalness del player-body mesh. Ctor playerBodyMat.metalness: 0 = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_BODY_METALNESS = 0;
+
+/** Idle player-body mesh metalness. Ctor playerBodyMat.metalness: 0 = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_BODY_METALNESS_SPAWN = 0;
+
+/**
+ * Metalness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0).
+ * attach/tick no escriben metalness (ctor constant).
+ */
+export function playerBodyMetalnessFromLook(value: number): number {
+  return value;
+}
+
+/**
+ * R / softReset: metalness fresco (idle 0).
+ * WorldView nace playerBodyMat.metalness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben metalness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function playerBodyMetalnessAfterRestart(): number {
+  return playerBodyMetalnessFromLook(PLAYER_BODY_METALNESS_SPAWN);
+}
+
 /** Color de la silueta fallback (cabeza). 0x7eb6ef × 1.15/canal (b clamp) para leerse de noche. */
 export const PLAYER_HEAD_COLOR = 0x91d1ff;
 
@@ -1946,6 +1971,8 @@ export function createWorldView(
     color: playerBodyColorAfterRestart(),
     // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
     roughness: playerBodyRoughnessAfterRestart(),
+    // R / dispose: metalness fresco (idle); leftover mid-life metalness de la vida anterior no filtra.
+    metalness: playerBodyMetalnessAfterRestart(),
   });
   const playerHeadMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
