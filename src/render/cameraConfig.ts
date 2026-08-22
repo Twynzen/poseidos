@@ -107,3 +107,12 @@ export function applyIsoZoom(
   }
   return nextIsoZoom(current, zoomIn, zoomOut);
 }
+
+/**
+ * R / softReset: cámara nueva siempre nace en ISO_FRUSTUM.
+ * Game.isoFrustum debe coincidir (un zoom 6–16 previo no filtra).
+ * F9 load no usa esto — el zoom persiste en la misma vista.
+ */
+export function isoFrustumAfterRestart(): number {
+  return ISO_FRUSTUM;
+}

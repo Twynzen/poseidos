@@ -19,7 +19,12 @@ import {
 } from "../world/los";
 import { PlayerSim } from "../actors/player";
 import { createWorldView, type WorldView } from "../render/worldView";
-import { ISO_FRUSTUM, nextIsoZoom, zoomInputApplies } from "../render/cameraConfig";
+import {
+  ISO_FRUSTUM,
+  isoFrustumAfterRestart,
+  nextIsoZoom,
+  zoomInputApplies,
+} from "../render/cameraConfig";
 import {
   CONTAINER_REACH,
   containerHasLoot,
@@ -537,6 +542,9 @@ export class Game {
     this.lastLootMsg = "reinicio";
     this.view.dispose();
     this.view = createWorldView(this.map, this.containers);
+    // R: cámara nueva = ISO_FRUSTUM; no filtrar el zoom de la vida anterior.
+    this.isoFrustum = isoFrustumAfterRestart();
+    this.resize();
     this.view.clearPlayerAction();
     this.view.syncVisibleChunks(this.player.x, this.player.y);
     this.applyFov();

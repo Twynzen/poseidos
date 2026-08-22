@@ -10,6 +10,7 @@ import {
   applyIsoZoom,
   applyZoomInput,
   clampIsoFrustum,
+  isoFrustumAfterRestart,
   nextIsoZoom,
   zoomHudMsg,
   zoomInFrustum,
@@ -306,6 +307,93 @@ describe("zoomInputApplies / applyZoomInput / applyIsoZoom (HAS MUERTO / F9 load
     expect(gameSrc).toContain("if (next.msg) this.lastLootMsg = next.msg");
     expect(gameSrc).toMatch(
       /private tick\(dt: number\): void \{[\s\S]{0,80}this\.applyIsoZoomInput\(\)/,
+    );
+  });
+});
+
+describe("isoFrustumAfterRestart (R / softReset)", () => {
+  test("reinicio → ISO_FRUSTUM; zoomed current no filtra", () => {
+    expect(isoFrustumAfterRestart()).toBe(ISO_FRUSTUM);
+    expect(isoFrustumAfterRestart()).toBe(8);
+
+    let current = ISO_FRUSTUM_MIN;
+    expect(current).toBe(6);
+    current = isoFrustumAfterRestart();
+    expect(current).toBe(ISO_FRUSTUM);
+    expect(current).not.toBe(ISO_FRUSTUM_MIN);
+
+    current = ISO_FRUSTUM_MAX;
+    expect(current).toBe(16);
+    current = isoFrustumAfterRestart();
+    expect(current).toBe(ISO_FRUSTUM);
+    expect(current).not.toBe(ISO_FRUSTUM_MAX);
+
+    current = 10;
+    current = isoFrustumAfterRestart();
+    expect(current).toBe(ISO_FRUSTUM);
+  });
+
+  test("vivo +/- no usa el helper (nextIsoZoom igual que hoy)", () => {
+    expect(applyIsoZoom(false, 10, true, false)).toEqual(
+      nextIsoZoom(10, true, false),
+    );
+    expect(applyIsoZoom(false, 10, false, true)).toEqual(
+      nextIsoZoom(10, false, true),
+    );
+    expect(applyIsoZoom(false, 10, true, false).frustum).not.toBe(
+      isoFrustumAfterRestart(),
+    );
+    expect(ZOOM_IN_HUD_MSG).toBe("acercaste");
+    expect(ZOOM_OUT_HUD_MSG).toBe("alejaste");
+    expect(zoomHudMsg("in")).toBe("acercaste");
+    expect(zoomHudMsg("out")).toBe("alejaste");
+  });
+
+  test("Game softReset asigna helper + resize; F9 load no toca frustum; freeze drena R/F9/M", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("isoFrustumAfterRestart(");
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2200}this\.isoFrustum = isoFrustumAfterRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2400}this\.isoFrustum = isoFrustumAfterRestart\(\);[\s\S]{0,80}this\.resize\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view = createWorldView\(this\.map, this\.containers\);[\s\S]{0,200}this\.isoFrustum = isoFrustumAfterRestart\(\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}isoFrustumAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}this\.isoFrustum\s*=/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,3600}isoFrustumAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}isoFrustumAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}this\.isoFrustum\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+    expect(gameSrc).toContain("if (next.msg) this.lastLootMsg = next.msg");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,2400}acercaste/,
+    );
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,2400}alejaste/,
     );
   });
 });
