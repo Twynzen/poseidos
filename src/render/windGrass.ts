@@ -124,6 +124,125 @@ export function collectGrassTiles(
   return out;
 }
 
+/** Spawn barrio (neighborhood 24.5, 15.5). NaN / tiles vacíos = leftover Three default. */
+export const GRASS_LOOK_X_SPAWN = 24.5;
+export const GRASS_LOOK_Z_SPAWN = 15.5;
+/** Tile ancla = floor(spawn). leftover ctor NaN ≠ fresco 24, 15. */
+export const GRASS_ANCHOR_TX_SPAWN = 24;
+export const GRASS_ANCHOR_TY_SPAWN = 15;
+
+/**
+ * Ancla X que lee rebuildGrassTiles (wx fresco o vivo).
+ * leftover mid-life (ctor NaN / far 40) ≠ ancla fresco (spawn 24).
+ */
+export function grassAnchorTxFromLook(wx: number): number {
+  return Math.floor(wx);
+}
+
+/**
+ * Ancla Z que lee rebuildGrassTiles (wy fresco o vivo).
+ * leftover mid-life (ctor NaN / far 30) ≠ ancla fresco (spawn 15).
+ */
+export function grassAnchorTyFromLook(wy: number): number {
+  return Math.floor(wy);
+}
+
+/**
+ * R / softReset: ancla X fresco (spawn 24).
+ * WorldView nace `grassAnchorTx = grassAnchorTxAfterRestart()`;
+ * leftover ctor NaN no filtra.
+ * rebuildGrassTiles lee grassAnchorTxFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function grassAnchorTxAfterRestart(
+  wx = GRASS_LOOK_X_SPAWN,
+): number {
+  return grassAnchorTxFromLook(wx);
+}
+
+/**
+ * R / softReset: ancla Z fresco (spawn 15).
+ * WorldView nace `grassAnchorTy = grassAnchorTyAfterRestart()`;
+ * leftover ctor NaN no filtra.
+ * rebuildGrassTiles lee grassAnchorTyFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function grassAnchorTyAfterRestart(
+  wy = GRASS_LOOK_Z_SPAWN,
+): number {
+  return grassAnchorTyFromLook(wy);
+}
+
+/**
+ * Tiles que lee rebuildGrassTiles (look fresco o vivo).
+ * leftover empty / origin 0,0 / far 40,30 ≠ tiles fresco (spawn).
+ */
+export function grassTilesFromLook(
+  wx: number,
+  wy: number,
+  getKind: (x: number, y: number) => TileKind | undefined,
+  radius = GRASS_RADIUS,
+): GrassTile[] {
+  return collectGrassTiles(
+    grassAnchorTxFromLook(wx),
+    grassAnchorTyFromLook(wy),
+    getKind,
+    radius,
+  );
+}
+
+/**
+ * R / softReset: tiles fresco (spawn 24.5, 15.5).
+ * WorldView nace `grassTiles = grassTilesAfterRestart(...)`;
+ * leftover empty / NaN no filtra.
+ * rebuildGrassTiles lee grassTilesFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function grassTilesAfterRestart(
+  getKind: (x: number, y: number) => TileKind | undefined,
+  radius = GRASS_RADIUS,
+): GrassTile[] {
+  return grassTilesFromLook(
+    GRASS_LOOK_X_SPAWN,
+    GRASS_LOOK_Z_SPAWN,
+    getKind,
+    radius,
+  );
+}
+
+/** Count de instancias que lee applyGrassPoses (tiles fresco o vivo). */
+export function grassInstanceCountFromTiles(
+  tiles: ReadonlyArray<GrassTile>,
+  bladesPerTile = BLADES_PER_TILE,
+  max = MAX_GRASS_INSTANCES,
+): number {
+  return Math.min(tiles.length * bladesPerTile, max);
+}
+
+/** Visible si hay instancias (n > 0). leftover ctor hide / count 0 ≠ fresco. */
+export function grassVisibleFromCount(n: number): boolean {
+  return n > 0;
+}
+
+/**
+ * R / softReset: count fresco (spawn outdoor).
+ * leftover ctor 0 / origin 0,0 no filtra.
+ */
+export function grassInstanceCountAfterRestart(
+  getKind: (x: number, y: number) => TileKind | undefined,
+  radius = GRASS_RADIUS,
+): number {
+  return grassInstanceCountFromTiles(grassTilesAfterRestart(getKind, radius));
+}
+
+/**
+ * R / softReset: visible fresco (spawn outdoor = true).
+ * leftover ctor hide no filtra.
+ */
+export function grassVisibleAfterRestart(
+  getKind: (x: number, y: number) => TileKind | undefined,
+  radius = GRASS_RADIUS,
+): boolean {
+  return grassVisibleFromCount(grassInstanceCountAfterRestart(getKind, radius));
+}
+
 /**
  * Pose base de una hoja dentro del tile (sin viento).
  * `bladeIndex` ∈ [0, BLADES_PER_TILE).

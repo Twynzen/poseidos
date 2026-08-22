@@ -20,7 +20,21 @@ import {
   buildBladePoses,
   collectGrassTiles,
   countSolidsNear,
+  grassAnchorTxAfterRestart,
+  grassAnchorTxFromLook,
+  grassAnchorTyAfterRestart,
+  grassAnchorTyFromLook,
+  grassInstanceCountAfterRestart,
+  grassInstanceCountFromTiles,
+  grassTilesAfterRestart,
+  grassTilesFromLook,
+  grassVisibleAfterRestart,
+  grassVisibleFromCount,
   grassWindTimeAfterRestart,
+  GRASS_ANCHOR_TX_SPAWN,
+  GRASS_ANCHOR_TY_SPAWN,
+  GRASS_LOOK_X_SPAWN,
+  GRASS_LOOK_Z_SPAWN,
   GRASS_RADIUS,
   MAX_GRASS_INSTANCES,
   tileAcceptsGrass,
@@ -34,6 +48,7 @@ import {
   WIND_YAW,
 } from "../src/render/windGrass";
 import type { TileKind } from "../src/world/tile";
+import { createNeighborhood } from "../src/world/neighborhood";
 import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 
 describe("tileAcceptsGrass", () => {
@@ -373,6 +388,236 @@ describe("grass recreate lock (R / softReset)", () => {
     expect(gameSrc).not.toContain("grassWindTimeAfterRestart(");
     expect(saveSrc).not.toContain("grassWindTimeAfterRestart");
     expect(saveSrc).not.toContain("grassTime");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+  });
+});
+
+describe("grassTilesAfterRestart (R / softReset)", () => {
+  test("tiles fresco (spawn 24.5, 15.5); leftover empty / origin / far no filtra", () => {
+    const barrio = createNeighborhood(48);
+    const getKind = (x: number, y: number) => barrio.map.getTile(x, y)?.kind;
+    const bootTiles = grassTilesAfterRestart(getKind);
+    const bootTx = grassAnchorTxAfterRestart();
+    const bootTy = grassAnchorTyAfterRestart();
+    const bootCount = grassInstanceCountAfterRestart(getKind);
+    const bootVis = grassVisibleAfterRestart(getKind);
+
+    expect(bootTx).toBe(grassAnchorTxFromLook(24.5));
+    expect(bootTy).toBe(grassAnchorTyFromLook(15.5));
+    expect(bootTx).toBe(GRASS_ANCHOR_TX_SPAWN);
+    expect(bootTy).toBe(GRASS_ANCHOR_TY_SPAWN);
+    expect(bootTx).toBe(Math.floor(barrio.spawn.x));
+    expect(bootTy).toBe(Math.floor(barrio.spawn.y));
+    expect(GRASS_LOOK_X_SPAWN).toBe(barrio.spawn.x);
+    expect(GRASS_LOOK_Z_SPAWN).toBe(barrio.spawn.y);
+    expect(grassAnchorTxAfterRestart(24.5)).toBe(bootTx);
+    expect(grassAnchorTyAfterRestart(15.5)).toBe(bootTy);
+    expect(grassAnchorTxAfterRestart(0)).toBe(grassAnchorTxFromLook(0));
+    expect(grassAnchorTyAfterRestart(40)).toBe(grassAnchorTyFromLook(40));
+
+    expect(bootTiles).toEqual(
+      grassTilesFromLook(24.5, 15.5, getKind),
+    );
+    expect(bootTiles).toEqual(
+      collectGrassTiles(bootTx, bootTy, getKind, GRASS_RADIUS),
+    );
+    expect(bootTiles.length).toBeGreaterThan(0);
+    expect(bootCount).toBe(grassInstanceCountFromTiles(bootTiles));
+    expect(bootCount).toBeGreaterThan(0);
+    expect(bootCount).toBe(MAX_GRASS_INSTANCES);
+    expect(bootVis).toBe(true);
+    expect(bootVis).toBe(grassVisibleFromCount(bootCount));
+
+    const leftoverEmpty: typeof bootTiles = [];
+    const leftoverEmptyCount = grassInstanceCountFromTiles(leftoverEmpty);
+    expect(leftoverEmptyCount).toBe(0);
+    expect(leftoverEmptyCount).not.toBe(bootCount);
+    expect(grassVisibleFromCount(leftoverEmptyCount)).toBe(false);
+    expect(grassVisibleFromCount(leftoverEmptyCount)).not.toBe(bootVis);
+
+    const leftoverCtorTx = Number.NaN;
+    const leftoverCtorTy = Number.NaN;
+    expect(Number.isNaN(leftoverCtorTx)).toBe(true);
+    expect(Number.isNaN(leftoverCtorTy)).toBe(true);
+    expect(leftoverCtorTx).not.toBe(bootTx);
+    expect(leftoverCtorTy).not.toBe(bootTy);
+
+    const leftoverOriginTiles = grassTilesFromLook(0, 0, getKind);
+    const leftoverOriginCount = grassInstanceCountFromTiles(leftoverOriginTiles);
+    expect(leftoverOriginTiles).not.toEqual(bootTiles);
+    expect(leftoverOriginCount).not.toBe(bootCount);
+    expect(grassAnchorTxFromLook(0)).toBe(0);
+    expect(grassAnchorTxFromLook(0)).not.toBe(bootTx);
+
+    const leftoverFarTiles = grassTilesFromLook(40, 30, getKind);
+    const leftoverFarCount = grassInstanceCountFromTiles(leftoverFarTiles);
+    expect(leftoverFarTiles).not.toEqual(bootTiles);
+    expect(leftoverFarCount).not.toBe(bootCount);
+    expect(grassAnchorTxFromLook(40)).toBe(40);
+    expect(grassAnchorTyFromLook(30)).toBe(30);
+    expect(grassAnchorTxFromLook(40)).not.toBe(bootTx);
+    expect(grassAnchorTyFromLook(30)).not.toBe(bootTy);
+    expect(leftoverFarTiles).not.toEqual(grassTilesAfterRestart(getKind));
+    expect(leftoverFarCount).not.toBe(grassInstanceCountAfterRestart(getKind));
+
+    expect(grassTilesFromLook(24.5, 15.5, getKind)).toEqual(bootTiles);
+    expect(grassVisibleFromCount(0)).toBe(false);
+    expect(tickGrassWindTime(0, 0.2, true)).toBe(0);
+  });
+
+  test("vivo tick no usa el helper (tiles avanzan con player)", () => {
+    const barrio = createNeighborhood(48);
+    const getKind = (x: number, y: number) => barrio.map.getTile(x, y)?.kind;
+    const bootTiles = grassTilesAfterRestart(getKind);
+    const bootTx = grassAnchorTxAfterRestart();
+    const bootTy = grassAnchorTyAfterRestart();
+    const liveTiles = grassTilesFromLook(40, 30, getKind);
+    const liveTx = grassAnchorTxFromLook(40);
+    const liveTy = grassAnchorTyFromLook(30);
+    expect(liveTx).toBe(40);
+    expect(liveTy).toBe(30);
+    expect(liveTx).not.toBe(bootTx);
+    expect(liveTy).not.toBe(bootTy);
+    expect(liveTx).not.toBe(grassAnchorTxAfterRestart());
+    expect(liveTy).not.toBe(grassAnchorTyAfterRestart());
+    expect(liveTiles).not.toEqual(bootTiles);
+    expect(liveTiles).not.toEqual(grassTilesAfterRestart(getKind));
+    expect(grassInstanceCountFromTiles(liveTiles)).not.toBe(
+      grassInstanceCountAfterRestart(getKind),
+    );
+    expect(liveTx).toBeGreaterThan(bootTx);
+    expect(liveTy).toBeGreaterThan(bootTy);
+
+    expect(grassTilesFromLook(24.5, 15.5, getKind)).toEqual(bootTiles);
+    expect(grassAnchorTxFromLook(24.5)).toBe(bootTx);
+    expect(grassAnchorTyFromLook(15.5)).toBe(bootTy);
+    expect(grassAnchorTxFromLook(0)).toBe(0);
+  });
+});
+
+describe("grass tiles recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace grass tiles fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const grassSrc = readFileSync(
+      resolve(process.cwd(), "src/render/windGrass.ts"),
+      "utf8",
+    );
+    expect(grassSrc).toContain("grassAnchorTxAfterRestart(");
+    expect(grassSrc).toContain("grassAnchorTyAfterRestart(");
+    expect(grassSrc).toContain("grassAnchorTxFromLook(");
+    expect(grassSrc).toContain("grassAnchorTyFromLook(");
+    expect(grassSrc).toContain("grassTilesAfterRestart(");
+    expect(grassSrc).toContain("grassTilesFromLook(");
+    expect(grassSrc).toContain("grassInstanceCountAfterRestart(");
+    expect(grassSrc).toContain("grassVisibleFromCount(");
+    expect(grassSrc).toContain("GRASS_LOOK_X_SPAWN");
+    expect(grassSrc).toContain("GRASS_LOOK_Z_SPAWN");
+    expect(grassSrc).toMatch(
+      /grassAnchorTxAfterRestart\([\s\S]{0,200}grassAnchorTxFromLook\(/,
+    );
+    expect(grassSrc).toMatch(
+      /grassAnchorTyAfterRestart\([\s\S]{0,200}grassAnchorTyFromLook\(/,
+    );
+    expect(grassSrc).toMatch(
+      /grassTilesAfterRestart\([\s\S]{0,200}grassTilesFromLook\(/,
+    );
+    expect(viewSrc).toContain("grassAnchorTxAfterRestart(");
+    expect(viewSrc).toContain("grassAnchorTyAfterRestart(");
+    expect(viewSrc).toContain("grassAnchorTxFromLook(");
+    expect(viewSrc).toContain("grassAnchorTyFromLook(");
+    expect(viewSrc).toContain("grassTilesAfterRestart(");
+    expect(viewSrc).toContain("grassTilesFromLook(");
+    expect(viewSrc).toContain("grassVisibleFromCount(");
+    expect(viewSrc).toMatch(
+      /let grassTiles: GrassTile\[\] = grassTilesAfterRestart\(/,
+    );
+    expect(viewSrc).toMatch(
+      /let grassAnchorTx = grassAnchorTxAfterRestart\(\)/,
+    );
+    expect(viewSrc).toMatch(
+      /let grassAnchorTy = grassAnchorTyAfterRestart\(\)/,
+    );
+    expect(viewSrc).toMatch(
+      /const tx = grassAnchorTxFromLook\(\s*wx\)/,
+    );
+    expect(viewSrc).toMatch(
+      /const ty = grassAnchorTyFromLook\(\s*wy\)/,
+    );
+    expect(viewSrc).toMatch(
+      /grassTiles = grassTilesFromLook\(\s*wx,\s*wy,/,
+    );
+    expect(viewSrc).toMatch(
+      /grassMesh\.visible = grassVisibleFromCount\(\s*n\)/,
+    );
+    expect(viewSrc).toContain("applyGrassPoses();");
+    expect(viewSrc).not.toMatch(/let grassTiles: GrassTile\[\] = \[\]/);
+    expect(viewSrc).not.toMatch(/let grassAnchorTx = Number\.NaN/);
+    expect(viewSrc).not.toMatch(/let grassAnchorTy = Number\.NaN/);
+    expect(viewSrc).not.toContain("collectGrassTiles(");
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /syncGrassVisual\(dt = 0\): void \{[\s\S]{0,280}grassVisualApplies\(\s*this\.gameOver\) \? dt : 0/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.syncGrassVisual\(dt\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}grassTilesAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}grassTilesAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}grassTilesAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}grassTilesAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("grassTilesAfterRestart(");
+    expect(gameSrc).not.toContain("grassAnchorTxAfterRestart(");
+    expect(gameSrc).not.toContain("grassAnchorTyAfterRestart(");
+    expect(gameSrc).not.toContain("grassTilesFromLook(");
+    expect(gameSrc).not.toContain("grassAnchorTxFromLook(");
+    expect(saveSrc).not.toContain("grassTilesAfterRestart");
+    expect(saveSrc).not.toContain("grassAnchorTxAfterRestart");
+    expect(saveSrc).not.toContain("grassTilesFromLook");
+    expect(saveSrc).not.toContain("grassAnchorTxFromLook");
     expect(gameSrc).not.toMatch(
       /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
     );
