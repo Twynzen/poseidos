@@ -242,6 +242,7 @@ export function createInventoryPanel(root: HTMLElement): InventoryPanel {
     },
     sync(view) {
       if (!view.open) {
+        // Death paint: no resetAfterRestart / endDrag. R usa resetInventoryPanelAfterRestart.
         panel.hidden = true;
         return;
       }

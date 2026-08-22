@@ -212,6 +212,7 @@ export function createHotbarHud(root: HTMLElement): HotbarHud {
       ignoreClick = false;
     },
     hide() {
+      // Death paint: no resetAfterRestart / endDrag. R usa resetHotbarHudAfterRestart.
       if (bar.hidden) return;
       bar.hidden = true;
     },
