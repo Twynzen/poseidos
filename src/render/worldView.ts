@@ -222,6 +222,7 @@ import {
   muzzleFlashActiveAfterRestart,
   muzzleFlashActiveFromLook,
   muzzleFlashApplies,
+  muzzleFlashColorAfterRestart,
   muzzleFlashIntensityAfterRestart,
   muzzleFlashIntensityFromLook,
   muzzleFlashPosXAfterRestart,
@@ -1372,7 +1373,7 @@ export function createWorldView(
   // Muzzle flash: esfera aditiva (radio MUZZLE_FLASH_RADIUS) + PointLight (reutilizable).
   const muzzleGeo = new THREE.SphereGeometry(MUZZLE_FLASH_RADIUS, 10, 8);
   const muzzleMat = new THREE.MeshBasicMaterial({
-    color: MUZZLE_FLASH_COLOR,
+    color: muzzleFlashColorAfterRestart(),
     transparent: true,
     // R / dispose: opacity fresco (inactive); leftover ctor Three 1 no filtra.
     opacity: muzzleFlashIntensityAfterRestart(),

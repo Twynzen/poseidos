@@ -406,10 +406,10 @@ describe("muzzle flash recreate lock (R / softReset)", () => {
       /muzzleMat\.opacity = muzzleFlashIntensityFromLook\(out\.intensity\)/,
     );
     expect(viewSrc).toMatch(
-      /MUZZLE_FLASH_COLOR,[\s\S]{0,160}opacity:\s*muzzleFlashIntensityAfterRestart\(\)/,
+      /muzzleFlashColorAfterRestart\(\),[\s\S]{0,200}opacity:\s*muzzleFlashIntensityAfterRestart\(\)/,
     );
     expect(viewSrc).not.toMatch(
-      /MUZZLE_FLASH_COLOR,[\s\S]{0,160}opacity:\s*1,/,
+      /muzzleFlashColorAfterRestart\(\),[\s\S]{0,200}opacity:\s*1,/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
