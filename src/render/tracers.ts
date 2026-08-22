@@ -120,6 +120,28 @@ export function tracerCountAfterRestart(): number {
   return tracerCountFromLook(TRACER_COUNT_SPAWN);
 }
 
+/** Idle tracer flash decay. Ctor flash.decay TRACER_FLASH_DECAY 1.74 = fresco. Mid-life leftover ≠ fresco. */
+export const TRACER_FLASH_DECAY_SPAWN = 1.74;
+
+/**
+ * Decay que leería spawn/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle TRACER_FLASH_DECAY).
+ * spawn/tick no escribe decay (ctor constant).
+ */
+export function tracerFlashDecayFromLook(decay: number): number {
+  return decay;
+}
+
+/**
+ * R / softReset: decay fresco (idle TRACER_FLASH_DECAY).
+ * WorldView nace flash.decay AfterRestart; leftover mid-life no filtra.
+ * spawn/tick no escribe decay (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function tracerFlashDecayAfterRestart(): number {
+  return tracerFlashDecayFromLook(TRACER_FLASH_DECAY_SPAWN);
+}
+
 /** Longitud del segmento (mínimo epsilon para evitar NaN en escala). */
 export function tracerLength(from: TracerPoint, to: TracerPoint): number {
   return Math.max(0.05, Math.hypot(to.x - from.x, to.y - from.y));

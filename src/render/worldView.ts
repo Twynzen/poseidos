@@ -81,6 +81,7 @@ import {
   clampTracerTtl,
   tickTracerAge,
   tracerCountAfterRestart,
+  tracerFlashDecayAfterRestart,
   tracerLength,
   tracerMidpoint,
   tracerOpacity,
@@ -1856,7 +1857,7 @@ export function createWorldView(
     mesh.rotation.y = tracerYaw(from, to);
     scene.add(mesh);
 
-    const flash = new THREE.PointLight(TRACER_FLASH_COLOR, TRACER_FLASH_INTENSITY, TRACER_FLASH_DISTANCE, TRACER_FLASH_DECAY);
+    const flash = new THREE.PointLight(TRACER_FLASH_COLOR, TRACER_FLASH_INTENSITY, TRACER_FLASH_DISTANCE, tracerFlashDecayAfterRestart());
     flash.position.set(from.x, TRACER_HEIGHT + TRACER_FLASH_Y_OFFSET, from.y);
     scene.add(flash);
 
