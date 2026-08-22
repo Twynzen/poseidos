@@ -15,6 +15,7 @@ import {
   formatHudDebugTokens,
   formatHudStatus,
   helpInputApplies,
+  helpHudVisible,
   nextShowHelp,
   formatPacifyHud,
   formatSpeedBumpHud,
@@ -1006,6 +1007,76 @@ describe("helpInputApplies / applyHelpInput / nextShowHelp (HAS MUERTO / F9 load
     );
     expect(gameSrc).toMatch(
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+  });
+});
+
+describe("helpHudVisible (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: clase hud-help hidden; vivo / load-vivo = showHelp", () => {
+    expect(helpHudVisible(true, true)).toBe(false);
+    expect(helpHudVisible(true, false)).toBe(false);
+    expect(helpHudVisible(false, true)).toBe(true);
+    expect(helpHudVisible(false, false)).toBe(false);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(helpHudVisible(deadRt.gameOver, true)).toBe(false);
+    expect(helpHudVisible(deadRt.gameOver, false)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(helpHudVisible(liveRt.gameOver, true)).toBe(true);
+    expect(helpHudVisible(liveRt.gameOver, false)).toBe(false);
+  });
+
+  test("formatHudStatus gameOver+showHelp = GAME_OVER_LINE (no CONTROLS_HELP); vivo prepende", () => {
+    const deadHelp = formatHudStatus(base({ gameOver: true, showHelp: true }));
+    expect(deadHelp).toBe(GAME_OVER_LINE);
+    expect(deadHelp).not.toContain(CONTROLS_HELP);
+    expect(deadHelp).not.toContain("WASD");
+    expect(deadHelp).not.toMatch(/F1 cerrar ayuda/);
+
+    const liveHelp = formatHudStatus(base({ showHelp: true }));
+    expect(liveHelp.startsWith(CONTROLS_HELP + "\n")).toBe(true);
+    expect(liveHelp).toContain(CONTROLS_HELP);
+    expect(liveHelp).not.toContain("HAS MUERTO");
+  });
+
+  test("Game refreshHud / enterGameOver / freeze / F9 load-muerto usan helpHudVisible; no fuerza showHelp=false", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("helpHudVisible(");
+    expect(gameSrc).toMatch(
+      /syncHelpHud\(\): void \{[\s\S]{0,280}helpHudVisible\(\s*this\.gameOver/,
+    );
+    expect(gameSrc).toMatch(
+      /refreshHud\(force: boolean\): void \{[\s\S]{0,1200}helpHudVisible\(\s*this\.gameOver/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,900}this\.syncHelpHud\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,900}this\.syncHelpHud\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.syncHelpHud\(\);\s*this\.syncSpeechOverlay\(\);\s*this\.syncDialoguePanel\(\);\s*this\.syncLootFloaterOverlay\(\);\s*this\.syncInventoryPanel\(\);\s*this\.hudAcc \+= dt/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}this\.showHelp\s*=\s*false/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}this\.showHelp\s*=\s*false/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,800}this\.showHelp\s*=\s*false/,
     );
   });
 });

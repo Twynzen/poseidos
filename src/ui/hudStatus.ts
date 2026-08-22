@@ -252,6 +252,20 @@ export function helpInputApplies(gameOver: boolean): boolean {
 }
 
 /**
+ * HAS MUERTO / F9 load-muerto: no pintar clase hud-help sobre HAS MUERTO.
+ * Vivo (incl. F9 load-vivo): showHelp igual que hoy.
+ * Ya cerrado (showHelp false) = hidden; gameOver no fuerza showHelp=false
+ * ni inventa restore en R / F9 load-vivo.
+ */
+export function helpHudVisible(
+  gameOver: boolean,
+  showHelp: boolean,
+): boolean {
+  if (gameOver) return false;
+  return showHelp;
+}
+
+/**
  * HAS MUERTO / F9 load-muerto: no llama apply (flag igual).
  * Vivo + wants → apply(). !wants → null.
  */
