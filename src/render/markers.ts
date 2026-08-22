@@ -183,6 +183,31 @@ export function markerIconTransparentAfterRestart(): boolean {
   return markerIconTransparentFromLook(MARKER_ICON_TRANSPARENT_SPAWN);
 }
 
+/** DepthWrite del marker-icon mesh. Ctor iconMat.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const MARKER_ICON_DEPTH_WRITE = false;
+
+/** Idle marker-icon mesh depthWrite. Ctor iconMat.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const MARKER_ICON_DEPTH_WRITE_SPAWN = false;
+
+/**
+ * DepthWrite que leería attach (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * attach no escribe depthWrite (ctor constant).
+ */
+export function markerIconDepthWriteFromLook(depthWrite: boolean): boolean {
+  return depthWrite;
+}
+
+/**
+ * R / softReset: depthWrite fresco (idle false).
+ * WorldView nace iconMat.depthWrite AfterRestart; leftover mid-life no filtra.
+ * attach no escribe depthWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function markerIconDepthWriteAfterRestart(): boolean {
+  return markerIconDepthWriteFromLook(MARKER_ICON_DEPTH_WRITE_SPAWN);
+}
+
 /** Altura world del floatBadge mute (2.3 × 1.15, misma banda door/bed/loot; queda por encima del Soldier 1.5). */
 export const muteBadgeY = 2.645;
 
