@@ -229,6 +229,7 @@ import {
   muzzleFlashPosYAfterRestart,
   muzzleFlashPosZAfterRestart,
   muzzleFlashPosZFromLook,
+  muzzleLightColorAfterRestart,
   muzzleLightDecayAfterRestart,
   tickMuzzleFlash as stepMuzzleFlash,
   triggerMuzzleFlash as startMuzzleFlash,
@@ -1375,7 +1376,7 @@ export function createWorldView(
   // R / dispose: hidden fresco; leftover mid-flash visible no filtra.
   muzzleMesh.visible = muzzleFlashActiveAfterRestart();
   const muzzleLight = new THREE.PointLight(
-    MUZZLE_LIGHT_COLOR,
+    muzzleLightColorAfterRestart(),
     0,
     MUZZLE_LIGHT_DISTANCE,
     muzzleLightDecayAfterRestart(),
