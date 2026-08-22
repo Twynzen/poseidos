@@ -101,8 +101,10 @@ import {
 } from "./meleeSwing";
 import {
   createHitLeanState,
-  tickHitLean,
+  hitLeanApplies,
+  tickHitLean as stepHitLean,
   triggerHitLean,
+  type HitLeanOutput,
 } from "./hitLean";
 import {
   cameraShakeApplies,
@@ -442,7 +444,7 @@ export interface WorldView {
   /**
    * Locomocion visual: silueta locoBob o mixer GLB (Idle/Walk/Run).
    * No mueve el root mundo — solo locoRoot local (bob) o mixer + yaw.
-   * Aplica last meleeSwing overlay a rotation.x/z (tick aparte).
+   * Aplica last meleeSwing / hitLean overlay a rotation.x/z (tick aparte).
    * Hit lean (recoil) overridea el swing mientras está activo.
    * Camera shake avanza en tickCameraShake (offset para followCamera).
    * Coloca el chevron de facing (siempre on).
@@ -462,6 +464,13 @@ export interface WorldView {
   tickMeleeSwing(dt: number, gameOver?: boolean): void;
   /** Quita lean leftover (HAS MUERTO / F9 load-muerto). Ya en reposo = no-op. */
   hideMeleeSwing(): void;
+  /**
+   * Avanza el hit-lean recoil procedural (overridea swing).
+   * `gameOver`: HAS MUERTO / F9 load-muerto — skip tick + reset lean pose.
+   */
+  tickHitLean(dt: number, gameOver?: boolean): void;
+  /** Quita recoil leftover (HAS MUERTO / F9 load-muerto). Ya en reposo = no-op. */
+  hideHitLean(): void;
   /**
    * Avanza el camera shake (offset XZ para followCamera).
    * `gameOver`: HAS MUERTO / F9 load-muerto — skip tick + zero offset.
@@ -773,6 +782,11 @@ export function createWorldView(
     active: false,
   };
   let meleeSwingOut: MeleeSwingOutput = {
+    pitch: 0,
+    yawBias: 0,
+    active: false,
+  };
+  let hitLeanOut: HitLeanOutput = {
     pitch: 0,
     yawBias: 0,
     active: false,
@@ -1145,8 +1159,13 @@ export function createWorldView(
   }
 
   function applySwingOverlayPose(swing: MeleeSwingOutput): void {
-    const lean = tickHitLean(playerHitLean, 0);
-    const pose = lean.active ? lean : swing;
+    const pose = hitLeanOut.active ? hitLeanOut : swing;
+    playerLocoRoot.rotation.z = pose.yawBias;
+    playerLocoRoot.rotation.x = pose.pitch;
+  }
+
+  function applyLeanOverlayPose(lean: HitLeanOutput): void {
+    const pose = lean.active ? lean : meleeSwingOut;
     playerLocoRoot.rotation.z = pose.yawBias;
     playerLocoRoot.rotation.x = pose.pitch;
   }
@@ -1162,6 +1181,19 @@ export function createWorldView(
   function hideSwing(): void {
     meleeSwingOut = { pitch: 0, yawBias: 0, active: false };
     applySwingOverlayPose(meleeSwingOut);
+  }
+
+  function tickLean(dt: number, gameOver = false): void {
+    if (!hitLeanApplies(gameOver)) {
+      hideLean();
+      return;
+    }
+    hitLeanOut = stepHitLean(playerHitLean, dt, gameOver);
+  }
+
+  function hideLean(): void {
+    hitLeanOut = { pitch: 0, yawBias: 0, active: false };
+    applyLeanOverlayPose(hitLeanOut);
   }
 
   function tickShake(dt: number, gameOver = false): void {
@@ -1790,7 +1822,7 @@ export function createWorldView(
       setLocomotion(playerAnimator, { moving, sprinting });
       tickCharacterAnimator(playerAnimator, dt);
       const swing = meleeSwingOut;
-      const lean = tickHitLean(playerHitLean, dt);
+      const lean = hitLeanOut;
       if (faceX != null && faceZ != null) {
         const yaw = playerGltfYawFromMove(faceX, faceZ);
         if (yaw !== null) playerGltfYaw = yaw;
@@ -1828,6 +1860,8 @@ export function createWorldView(
     },
     tickMeleeSwing: tickSwing,
     hideMeleeSwing: hideSwing,
+    tickHitLean: tickLean,
+    hideHitLean: hideLean,
     tickCameraShake: tickShake,
     hideCameraShake: hideShake,
     tickMuzzleFlash: tickMuzzle,
