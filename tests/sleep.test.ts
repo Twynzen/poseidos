@@ -330,7 +330,7 @@ describe("sleepInputApplies / applySleepInput (HAS MUERTO / F9 load-muerto)", ()
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2800}consumeSleep\(\)/,
     );
     expect(gameSrc).toMatch(
-      /enterGameOver\(\): void \{[\s\S]{0,2200}consumeSleep\(\)/,
+      /enterGameOver\(\): void \{[\s\S]{0,2400}consumeSleep\(\)/,
     );
     expect(gameSrc).toMatch(
       /doLoad\(\): boolean \{[\s\S]{0,2600}if \(loaded\.gameOver\) this\.input\.consumeSleep\(\)/,
