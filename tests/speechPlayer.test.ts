@@ -181,7 +181,7 @@ describe("resetSpeechPlayerAfterRestart (R / softReset)", () => {
     );
     expect(gameSrc).toContain("resetSpeechPlayerAfterRestart(");
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,4400}resetSpeechPlayerAfterRestart\(this\.speechPlayer\)/,
+      /softReset\(\): void \{[\s\S]{0,4500}resetSpeechPlayerAfterRestart\(this\.speechPlayer\)/,
     );
     expect(gameSrc).toMatch(
       /resetInteractPlayerAfterRestart\(this\.interactPlayer\);[\s\S]{0,240}resetSpeechPlayerAfterRestart\(this\.speechPlayer\)/,

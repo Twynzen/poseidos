@@ -276,6 +276,7 @@ import {
 import {
   atmosphereFromClock,
   fogColorAfterRestart,
+  fogDepthWriteAfterRestart,
   fogOpacityAfterRestart,
   fogRotXAfterRestart,
   fogRotYAfterRestart,
@@ -969,7 +970,8 @@ export function createWorldView(
     transparent: fogTransparentAfterRestart(),
     // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
     opacity: fogOpacityAfterRestart(),
-    depthWrite: false,
+    // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
+    depthWrite: fogDepthWriteAfterRestart(),
   });
 
   const loaded = new Map<string, ChunkMeshes>();

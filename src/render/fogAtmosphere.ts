@@ -537,6 +537,31 @@ export function fogTransparentAfterRestart(): boolean {
   return fogTransparentFromLook(FOG_TRANSPARENT_SPAWN);
 }
 
+/** DepthWrite del fog de tiles fuera de LOS. Ctor fogMat.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const FOG_DEPTH_WRITE = false;
+
+/** Idle fog mesh depthWrite. Ctor fogMat.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const FOG_DEPTH_WRITE_SPAWN = false;
+
+/**
+ * DepthWrite que leería chunk/FOV (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * chunk/FOV no escribe depthWrite (ctor constant).
+ */
+export function fogDepthWriteFromLook(depthWrite: boolean): boolean {
+  return depthWrite;
+}
+
+/**
+ * R / softReset: depthWrite fresco (idle false).
+ * WorldView nace fogMat.depthWrite AfterRestart; leftover mid-life no filtra.
+ * chunk/FOV no escribe depthWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function fogDepthWriteAfterRestart(): boolean {
+  return fogDepthWriteFromLook(FOG_DEPTH_WRITE_SPAWN);
+}
+
 function clamp01(v: number): number {
   return Math.max(0, Math.min(1, v));
 }
