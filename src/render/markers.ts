@@ -133,6 +133,31 @@ export function markerRingTransparentAfterRestart(): boolean {
   return markerRingTransparentFromLook(MARKER_RING_TRANSPARENT_SPAWN);
 }
 
+/** Transparent del marker-icon mesh. Ctor iconMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const MARKER_ICON_TRANSPARENT = true;
+
+/** Idle marker-icon mesh transparent. Ctor iconMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const MARKER_ICON_TRANSPARENT_SPAWN = true;
+
+/**
+ * Transparent que leería attach (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * attach no escribe transparent (ctor constant).
+ */
+export function markerIconTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle true).
+ * WorldView nace iconMat.transparent AfterRestart; leftover mid-life no filtra.
+ * attach no escribe transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function markerIconTransparentAfterRestart(): boolean {
+  return markerIconTransparentFromLook(MARKER_ICON_TRANSPARENT_SPAWN);
+}
+
 /** Altura world del floatBadge mute (2.3 × 1.15, misma banda door/bed/loot; queda por encima del Soldier 1.5). */
 export const muteBadgeY = 2.645;
 

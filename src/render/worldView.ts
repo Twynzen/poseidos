@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import {
   markerBadgeOpacity,
+  markerIconTransparentAfterRestart,
   markerRingOpacity,
   markerRingRadii,
   markerRingTransparentAfterRestart,
@@ -2975,7 +2976,8 @@ function attachRoleMarkers(
   const iconMat = new THREE.MeshBasicMaterial({
     color: 0xffffff,
     ...(letterMap ? { map: letterMap } : {}),
-    transparent: true,
+    // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+    transparent: markerIconTransparentAfterRestart(),
     opacity: 0.92,
     side: THREE.DoubleSide,
     depthWrite: false,
