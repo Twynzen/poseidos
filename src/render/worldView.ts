@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import {
   markerBadgeEmissiveIntensityAfterRestart,
+  markerBadgeMetalnessAfterRestart,
   markerBadgeOpacity,
   markerBadgeRoughnessAfterRestart,
   markerBadgeSideAfterRestart,
@@ -3345,7 +3346,8 @@ function attachRoleMarkers(
     emissiveIntensity: markerBadgeEmissiveIntensityAfterRestart(),
     // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
     roughness: markerBadgeRoughnessAfterRestart(),
-    metalness: 0.1,
+    // R / dispose: metalness fresco (idle); leftover mid-life metalness de la vida anterior no filtra.
+    metalness: markerBadgeMetalnessAfterRestart(),
     // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
     side: markerBadgeSideAfterRestart() as THREE.Side,
     opacity: markerBadgeOpacity(role),
