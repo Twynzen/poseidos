@@ -25,6 +25,7 @@ import {
   facingChevronDepthWriteAfterRestart,
   facingChevronOpacityAfterRestart,
   facingChevronRenderOrderAfterRestart,
+  facingChevronSideAfterRestart,
   facingChevronTransparentAfterRestart,
   facingChevronOffset,
   facingChevronOffsetXAfterRestart,
@@ -1474,7 +1475,8 @@ export function createWorldView(
     // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
     transparent: facingChevronTransparentAfterRestart(),
     opacity: facingChevronOpacityAfterRestart(),
-    side: THREE.DoubleSide,
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: facingChevronSideAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: facingChevronDepthWriteAfterRestart(),
   });
