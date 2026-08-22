@@ -396,7 +396,7 @@ describe("useInputApplies / applyUseInput (HAS MUERTO / F9 load-muerto)", () => 
       applyUseInput(false, true, () => liveFood.tryConsumeAt(0)),
     ).toBe("food");
     expect(findSlot(liveFood.inventory, "canned_food")).toBe(-1);
-    expect(liveFood.needs.hunger).toBeCloseTo(40 - NEEDS_RELIEF.food, 5);
+    expect(liveFood.needs.hunger).toBeCloseTo(40 - NEEDS_RELIEF.eat, 5);
     expect(
       applyUseInput(false, false, () => liveFood.tryConsume("food")),
     ).toBeNull();
@@ -444,10 +444,7 @@ describe("useInputApplies / applyUseInput (HAS MUERTO / F9 load-muerto)", () => 
       /doLoad\(\): boolean \{[\s\S]{0,1600}if \(loaded\.gameOver\) this\.input\.consumeUse\(\)/,
     );
     expect(gameSrc).toMatch(
-      /useInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsUse[\s\S]{0,400}attemptRefill/,
-    );
-    expect(gameSrc).toMatch(
-      /useInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsUse[\s\S]{0,500}useHotbarSlot/,
+      /useInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsUse[\s\S]{0,400}attemptRefill[\s\S]{0,400}useHotbarSlot/,
     );
     expect(gameSrc).not.toMatch(
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}attemptRefill/,
