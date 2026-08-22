@@ -196,6 +196,7 @@ import {
   playGun,
   playDryFire,
   createInteractPlayer,
+  resetInteractPlayerAfterRestart,
   playDoor,
   playLoot,
   playUse,
@@ -568,6 +569,8 @@ export class Game {
     this.resize();
     // R: corta beep leftover (heartbeat sine 80ms). Mute se queda.
     resetHeartbeatPlayerAfterRestart(this.heartbeatPlayer);
+    // R: corta beep leftover (door 90ms / loot 70ms / use 80ms). Mute se queda.
+    resetInteractPlayerAfterRestart(this.interactPlayer);
     this.view.clearPlayerAction();
     this.view.syncVisibleChunks(this.player.x, this.player.y);
     this.applyFov();

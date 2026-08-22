@@ -69,11 +69,15 @@ export {
   shouldPlayInteractSfx,
   interactBeepSpec,
   createInteractPlayer,
+  interactBeepsAfterRestart,
+  interactPlayerScheduled,
+  resetInteractPlayerAfterRestart,
   playDoor,
   playLoot,
   playUse,
   type InteractSfxKind,
   type InteractBeepSpec,
+  type InteractVoice,
   type InteractPlayer,
 } from "./interactPlayer";
 
