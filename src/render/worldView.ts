@@ -274,6 +274,7 @@ import {
 } from "./floorStyle";
 import {
   atmosphereFromClock,
+  fogColorAfterRestart,
   nightAmbientIntensity,
   nightSunIntensity,
 } from "./fogAtmosphere";
@@ -587,9 +588,6 @@ export const BARRICADE_CROSS_SCALE_Z = 1.035;
 export const BARRICADE_PLANK_ROT_Y = (Math.PI / 8) * 1.15;
 /** Yaw de las cruces de barricada. (-Math.PI / 5) × 1.15 para leerse un poco más rotadas de noche. */
 export const BARRICADE_CROSS_ROT_Y = (-Math.PI / 5) * 1.15;
-/** Color del fog de tiles fuera de LOS. */
-const FOG_COLOR = 0x050508;
-
 /** Radio en chunks alrededor del player para mantener meshes. */
 const VISIBLE_CHUNK_RADIUS = 1;
 
@@ -951,7 +949,8 @@ export function createWorldView(
     roughness: 0.9,
   });
   const fogMat = new THREE.MeshBasicMaterial({
-    color: FOG_COLOR,
+    // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
+    color: fogColorAfterRestart(),
     transparent: true,
     opacity: 0.92,
     depthWrite: false,

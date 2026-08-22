@@ -287,6 +287,31 @@ export function atmosphereAfterRestart(): FogAtmosphere {
   return atmosphereFromClock(clockAfterRestart());
 }
 
+/** Color del fog de tiles fuera de LOS. Ctor fogMat.color FOG_COLOR 0x050508 = fresco. Mid-life leftover ≠ fresco. */
+export const FOG_COLOR = 0x050508;
+
+/** Idle fog mesh color. Ctor fogMat.color FOG_COLOR 0x050508 = fresco. Mid-life leftover ≠ fresco. */
+export const FOG_COLOR_SPAWN = 0x050508;
+
+/**
+ * Color que leería chunk/FOV (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle FOG_COLOR 0x050508).
+ * chunk/FOV no escribe color (ctor constant).
+ */
+export function fogColorFromLook(color: number): number {
+  return color;
+}
+
+/**
+ * R / softReset: color fresco (idle FOG_COLOR 0x050508).
+ * WorldView nace fogMat.color AfterRestart; leftover mid-life no filtra.
+ * chunk/FOV no escribe color (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function fogColorAfterRestart(): number {
+  return fogColorFromLook(FOG_COLOR_SPAWN);
+}
+
 function clamp01(v: number): number {
   return Math.max(0, Math.min(1, v));
 }
