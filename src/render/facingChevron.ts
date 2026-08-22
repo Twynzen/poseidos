@@ -238,3 +238,28 @@ export function facingChevronRenderOrderFromLook(renderOrder: number): number {
 export function facingChevronRenderOrderAfterRestart(): number {
   return facingChevronRenderOrderFromLook(FACING_CHEVRON_RENDER_ORDER_SPAWN);
 }
+
+/** Side del chevron mesh. Ctor chevronMat.side THREE.DoubleSide (2) = fresco. Mid-life leftover ≠ fresco. */
+export const FACING_CHEVRON_SIDE = 2;
+
+/** Idle chevron mesh side. Ctor chevronMat.side THREE.DoubleSide (2) = fresco. Mid-life leftover ≠ fresco. */
+export const FACING_CHEVRON_SIDE_SPAWN = 2;
+
+/**
+ * Side que leería place/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.DoubleSide / 2).
+ * place/tick no escribe side (ctor constant).
+ */
+export function facingChevronSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.DoubleSide / 2).
+ * WorldView nace chevronMat.side AfterRestart; leftover mid-life no filtra.
+ * place/tick no escribe side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function facingChevronSideAfterRestart(): number {
+  return facingChevronSideFromLook(FACING_CHEVRON_SIDE_SPAWN);
+}
