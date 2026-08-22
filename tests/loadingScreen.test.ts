@@ -4,6 +4,7 @@ import { describe, expect, test } from "vitest";
 import {
   LOADING_LINES,
   createLoadingProgress,
+  loadingLineAfterRestart,
 } from "../src/ui/loadingScreen";
 
 describe("loading overlay CSS", () => {
@@ -67,5 +68,53 @@ describe("createLoadingProgress", () => {
   test("default total = LOADING_LINES.length", () => {
     const p = createLoadingProgress();
     expect(p.total).toBe(LOADING_LINES.length);
+  });
+});
+
+describe("loadingLineAfterRestart (R / softReset)", () => {
+  test("reinicio → null; leftover Despertando… no filtra", () => {
+    expect(loadingLineAfterRestart()).toBeNull();
+    expect(LOADING_LINES).toContain("Despertando sombras en los callejones…");
+    expect(loadingLineAfterRestart()).not.toBe(
+      "Despertando sombras en los callejones…",
+    );
+
+    let current: string | null = "Despertando sombras en los callejones…";
+    expect(current).not.toBeNull();
+    current = loadingLineAfterRestart();
+    expect(current).toBeNull();
+    expect(current).not.toBe("Despertando sombras en los callejones…");
+
+    const splash = createLoadingProgress();
+    splash.skip();
+    expect(splash.line).not.toBe(loadingLineAfterRestart());
+    expect(splash.label()).not.toBe(loadingLineAfterRestart());
+  });
+
+  test("Game softReset no pinta línea de splash; F9/enterGameOver tampoco", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).not.toContain("loadingLineAfterRestart(");
+    expect(gameSrc).not.toContain("createLoadingProgress(");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}Despertando/,
+    );
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}LOADING_LINES/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}Despertando/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}Despertando/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}Despertando/,
+    );
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
   });
 });

@@ -77,3 +77,28 @@ export function createLoadingOverlay(): LoadingOverlay {
     },
   };
 }
+
+/**
+ * Boot skip (Space/clic): dismiss + dispose. Overlay no queda en DOM.
+ * R / softReset no remount — no se llama aquí (splash vive en `main.ts`).
+ */
+export function dismissBootSplash(overlay: LoadingOverlay): void {
+  overlay.dismiss();
+  overlay.dispose();
+}
+
+/**
+ * R / softReset: overlay ya disposed en boot (`dismissBootSplash`).
+ * No remount; no pinta `Despertando…`; `#loading-overlay` no vuelve.
+ */
+export function loadingOverlayVisibleAfterRestart(): boolean {
+  return false;
+}
+
+/**
+ * Space/clic de skip boot: cierra splash, no reinicia partida.
+ * R es `KeyR` (`consumeRestOrRestart`); Space en splash no es restart.
+ */
+export function bootSkipSpaceRestarts(): boolean {
+  return false;
+}

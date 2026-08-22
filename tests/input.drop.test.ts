@@ -114,4 +114,15 @@ describe("endFrame limpia edges (Espacio skip ≠ melee)", () => {
     input.endFrame();
     expect(input.consumeShoot()).toBe(false);
   });
+
+  test("Space skip no es restart (KeyR); endFrame drena melee", () => {
+    input = new Input();
+    keydown("Space");
+    expect(input.consumeRestOrRestart()).toBe(false);
+    expect(input.consumeAttack()).toBe(true);
+    keydown("Space");
+    input.endFrame();
+    expect(input.consumeAttack()).toBe(false);
+    expect(input.consumeRestOrRestart()).toBe(false);
+  });
 });

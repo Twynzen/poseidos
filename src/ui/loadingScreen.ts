@@ -77,3 +77,11 @@ export function createLoadingProgress(totalSteps?: number): LoadingProgress {
 
   return api;
 }
+
+/**
+ * R / softReset: no línea diegética de splash.
+ * Leftover `Despertando sombras en los callejones…` no filtra HUD.
+ */
+export function loadingLineAfterRestart(): string | null {
+  return null;
+}
