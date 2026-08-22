@@ -85,8 +85,12 @@ export {
   shouldPlaySpeechSfx,
   speechBeepSpec,
   createSpeechPlayer,
+  speechBeepsAfterRestart,
+  speechPlayerScheduled,
+  resetSpeechPlayerAfterRestart,
   playSpeech,
   type SpeechBeepSpec,
+  type SpeechVoice,
   type SpeechPlayer,
 } from "./speechPlayer";
 

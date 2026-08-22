@@ -201,6 +201,7 @@ import {
   playLoot,
   playUse,
   createSpeechPlayer,
+  resetSpeechPlayerAfterRestart,
   playSpeech,
   createHeartbeatBus,
   tickHeartbeat,
@@ -571,6 +572,8 @@ export class Game {
     resetHeartbeatPlayerAfterRestart(this.heartbeatPlayer);
     // R: corta beep leftover (door 90ms / loot 70ms / use 80ms). Mute se queda.
     resetInteractPlayerAfterRestart(this.interactPlayer);
+    // R: corta beep leftover (speech 240Hz + 480Hz 120ms). Mute se queda.
+    resetSpeechPlayerAfterRestart(this.speechPlayer);
     this.view.clearPlayerAction();
     this.view.syncVisibleChunks(this.player.x, this.player.y);
     this.applyFov();
