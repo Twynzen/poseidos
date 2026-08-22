@@ -2165,6 +2165,31 @@ export function barricadeEdgeEmissiveAfterRestart(): number {
   return barricadeEdgeEmissiveFromLook(BARRICADE_EDGE_EMISSIVE_SPAWN);
 }
 
+/** Intensidad del barricade-edge mesh. Ctor barricadeEdgeMat.emissiveIntensity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_EDGE_EMISSIVE_INTENSITY = 1;
+
+/** Idle barricade-edge mesh emissiveIntensity. Ctor barricadeEdgeMat.emissiveIntensity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_EDGE_EMISSIVE_INTENSITY_SPAWN = 1;
+
+/**
+ * Intensidad que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ */
+export function barricadeEdgeEmissiveIntensityFromLook(intensity: number): number {
+  return intensity;
+}
+
+/**
+ * R / softReset: intensity fresco (idle 1).
+ * WorldView nace barricadeEdgeMat.emissiveIntensity AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function barricadeEdgeEmissiveIntensityAfterRestart(): number {
+  return barricadeEdgeEmissiveIntensityFromLook(BARRICADE_EDGE_EMISSIVE_INTENSITY_SPAWN);
+}
+
 /** Alto de la barricada. 1.35 × 1.15 para leerse un poco más alta de noche. */
 export const BARRICADE_HEIGHT = 1.5525;
 /** Ancho de la barricada. 0.92 × 1.15 para leerse un poco más ancha de noche. */
@@ -2605,6 +2630,8 @@ export function createWorldView(
     metalness: barricadeEdgeMetalnessAfterRestart(),
     // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
     emissive: barricadeEdgeEmissiveAfterRestart(),
+    // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
+    emissiveIntensity: barricadeEdgeEmissiveIntensityAfterRestart(),
   });
   const fogMat = new THREE.MeshBasicMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
