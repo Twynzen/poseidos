@@ -37,6 +37,16 @@ export function createImpactSpark(): ImpactSparkState {
   return { age: 0, active: false, x: 0, y: 0 };
 }
 
+/**
+ * HAS MUERTO / F9 load-muerto: no avanzar el spark ni pintarlo.
+ * Vivo (incl. F9 load-vivo): tick/intensity de hoy.
+ * Ya oculto = no-op; gameOver no inventa spark.
+ */
+export function impactSparkApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
 /** Reinicia el spark desde t=0 en (x, y) (re-trigger a mitad = nuevo impacto). */
 export function triggerImpactSpark(
   state: ImpactSparkState,
@@ -61,11 +71,21 @@ function easeOutSine(u: number): number {
 /**
  * Avanza el spark y devuelve intensidad + posición (determinista para tests).
  * Mutates `state`. dt≤0 no avanza age.
+ * gameOver → skip tick / hide (intensity 0); no inventa spark.
  */
 export function tickImpactSpark(
   state: ImpactSparkState,
   dt: number,
+  gameOver = false,
 ): ImpactSparkOutput {
+  if (!impactSparkApplies(gameOver)) {
+    return {
+      intensity: 0,
+      active: false,
+      x: state.x,
+      y: state.y,
+    };
+  }
   const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
   if (state.active) {
     state.age += safeDt;

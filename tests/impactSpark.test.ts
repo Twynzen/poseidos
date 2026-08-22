@@ -1,12 +1,14 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   IMPACT_SPARK_DURATION,
   IMPACT_SPARK_LIGHT_PEAK,
   IMPACT_SPARK_PEAK,
   IMPACT_SPARK_RADIUS,
   createImpactSpark,
+  impactSparkApplies,
   tickImpactSpark,
   triggerImpactSpark,
 } from "../src/render/impactSpark";
@@ -124,5 +126,114 @@ describe("create / trigger / tick", () => {
     expect(out.intensity).toBeGreaterThan(0.95);
     expect(out.x).toBe(9);
     expect(out.y).toBe(-4);
+  });
+});
+
+describe("impactSparkApplies (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: no aplica; ya oculto no-op; load-muerto no; vivo/load-vivo sí", () => {
+    expect(impactSparkApplies(true)).toBe(false);
+    expect(impactSparkApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(impactSparkApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(impactSparkApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver no avanza age; hide; vivo sí; dt<=0 no-op", () => {
+    const dead = createImpactSpark();
+    triggerImpactSpark(dead, 4, -2);
+    tickImpactSpark(dead, 0.05, false);
+    const age = dead.age;
+    const hidden = tickImpactSpark(dead, 0.05, true);
+    expect(dead.age).toBe(age);
+    expect(hidden.active).toBe(false);
+    expect(hidden.intensity).toBe(0);
+    expect(hidden.x).toBe(4);
+    expect(hidden.y).toBe(-2);
+
+    const idle = createImpactSpark();
+    expect(tickImpactSpark(idle, 0.1, true)).toEqual({
+      intensity: 0,
+      active: false,
+      x: 0,
+      y: 0,
+    });
+    expect(idle.active).toBe(false);
+    expect(idle.age).toBe(0);
+
+    const live = createImpactSpark();
+    triggerImpactSpark(live, 1, 2);
+    const out = tickImpactSpark(live, 0.05, false);
+    expect(out.active).toBe(true);
+    expect(out.intensity).toBeGreaterThan(0);
+    expect(out.x).toBe(1);
+    expect(out.y).toBe(2);
+    expect(live.age).toBeCloseTo(0.05, 10);
+
+    expect(tickImpactSpark(live, 0, false).active).toBe(true);
+    expect(live.age).toBeCloseTo(0.05, 10);
+    expect(tickImpactSpark(live, -1, false).active).toBe(true);
+    expect(live.age).toBeCloseTo(0.05, 10);
+    expect(tickImpactSpark(live, Number.NaN, false).active).toBe(true);
+    expect(live.age).toBeCloseTo(0.05, 10);
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto ocultan impact; vivo tickea; mixer death se queda", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("impactSparkApplies(");
+    expect(src).toContain("this.view.hideImpactSpark()");
+    expect(src).toMatch(
+      /syncImpactSparkOverlay\(dt = 0\): void \{[\s\S]{0,280}impactSparkApplies\(\s*this\.gameOver/,
+    );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,1800}this\.syncImpactSparkOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,1800}this\.syncImpactSparkOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,4200}this\.syncImpactSparkOverlay\(dt\)/,
+    );
+    expect(src).toMatch(
+      /this\.view\.tickPlayerLoco\(dt, false, false\);\s*this\.syncMuzzleFlashOverlay\(dt\);\s*this\.syncImpactSparkOverlay\(dt\)/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,4200}this\.view\.tickImpactSpark\(dt\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+    expect(src).toMatch(
+      /Mixer must keep ticking during freeze[\s\S]{0,120}this\.view\.tickPlayerLoco\(dt, false, false\)/,
+    );
+
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain("impactSparkApplies(");
+    expect(viewSrc).toContain("stepImpactSpark(");
+    expect(viewSrc).toContain("hideImpactSpark: hideImpact");
+    expect(viewSrc).toContain("playerMixer.update(dt, currentRole(playerAnimator))");
+    expect(viewSrc).not.toContain(
+      "applyImpactSparkVisual(tickImpactSpark(impactSpark, dt))",
+    );
   });
 });
