@@ -387,6 +387,7 @@ import {
   lootNameplateScaleFromLook,
   lootNameplateColorAfterRestart,
   lootNameplateDepthWriteAfterRestart,
+  lootNameplateRenderOrderAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -1165,7 +1166,8 @@ export function createWorldView(
     sprite.name = "lootNameplate";
     sprite.position.set(0, LOOT_NAMEPLATE_Y, 0);
     sprite.scale.set(LOOT_NAMEPLATE_SCALE_X, LOOT_NAMEPLATE_SCALE_Y, 1);
-    sprite.renderOrder = 9;
+    // R / dispose: renderOrder fresco (idle); leftover mid-life renderOrder de la vida anterior no filtra.
+    sprite.renderOrder = lootNameplateRenderOrderAfterRestart();
     return sprite;
   }
 

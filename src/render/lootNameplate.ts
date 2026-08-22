@@ -311,6 +311,31 @@ export function lootNameplateColorAfterRestart(): number {
   return lootNameplateColorFromLook(LOOT_NAMEPLATE_COLOR_SPAWN);
 }
 
+/** renderOrder del nameplate sprite. Ctor sprite.renderOrder 9 = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_RENDER_ORDER = 9;
+
+/** Idle nameplate sprite renderOrder. Ctor sprite.renderOrder 9 = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_RENDER_ORDER_SPAWN = 9;
+
+/**
+ * renderOrder que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 9).
+ * syncLootFocus no escribe renderOrder (ctor constant).
+ */
+export function lootNameplateRenderOrderFromLook(renderOrder: number): number {
+  return renderOrder;
+}
+
+/**
+ * R / softReset: renderOrder fresco (idle 9).
+ * WorldView nace sprite.renderOrder AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus no escribe renderOrder (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateRenderOrderAfterRestart(): number {
+  return lootNameplateRenderOrderFromLook(LOOT_NAMEPLATE_RENDER_ORDER_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
