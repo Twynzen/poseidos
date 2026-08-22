@@ -14,11 +14,17 @@ export const RAIN_THIRST_MULT = 1.28;
 export const RAIN_FATIGUE_MULT = 1.18;
 
 /** Intensidad objetivo por estado. */
-const TARGET_INTENSITY: Record<WeatherKind, number> = {
+export const WEATHER_TARGET_INTENSITY: Record<WeatherKind, number> = {
   clear: 0,
   drizzle: 0.4,
   rain: 0.85,
 };
+
+/** Kind de R / ctor Game (drizzle fresco). */
+export const WEATHER_BOOT_KIND: WeatherKind = "drizzle";
+
+/** Fracción del checkInterval al boot (primer roll un poco antes). */
+export const WEATHER_BOOT_TIMER_FRAC = 0.35;
 
 export interface WeatherOpts {
   /** Intervalo entre rolls (default WEATHER_CHECK_SEC). */
@@ -39,15 +45,20 @@ export class WeatherSystem {
 
   constructor(opts?: WeatherOpts) {
     this.kind = opts?.initial ?? "clear";
-    this.intensity = TARGET_INTENSITY[this.kind];
+    this.intensity = WEATHER_TARGET_INTENSITY[this.kind];
     this.checkInterval = opts?.checkInterval ?? WEATHER_CHECK_SEC;
     this.rng = opts?.rng ?? Math.random;
     // Primer roll un poco antes del intervalo completo.
-    this.timer = this.checkInterval * 0.35;
+    this.timer = this.checkInterval * WEATHER_BOOT_TIMER_FRAC;
   }
 
   get isRaining(): boolean {
     return this.kind === "rain" || this.kind === "drizzle";
+  }
+
+  /** Segundos hacia el próximo roll (boot = checkInterval × 0.35). */
+  get rollTimer(): number {
+    return this.timer;
   }
 
   /**
@@ -61,7 +72,7 @@ export class WeatherSystem {
       this.timer = 0;
       this.roll(phase);
     }
-    const target = TARGET_INTENSITY[this.kind];
+    const target = WEATHER_TARGET_INTENSITY[this.kind];
     // Fade ~2s hacia el target.
     const k = 1 - Math.exp(-dt * 2.2);
     this.intensity += (target - this.intensity) * k;
@@ -71,7 +82,7 @@ export class WeatherSystem {
   /** Forzar estado (tests / debug). */
   setKind(kind: WeatherKind): void {
     this.kind = kind;
-    this.intensity = TARGET_INTENSITY[kind];
+    this.intensity = WEATHER_TARGET_INTENSITY[kind];
   }
 
   private roll(phase?: number): void {
@@ -133,4 +144,37 @@ export function rainNeedsMult(
     thirst: 1 + (RAIN_THIRST_MULT - 1) * t,
     fatigue: 1 + (RAIN_FATIGUE_MULT - 1) * t,
   };
+}
+
+/**
+ * R / softReset: clima fresco (drizzle boot, intensity 0.4, rollTimer 0.35×interval).
+ * Game.weather debe coincidir (leftover rain / phase de la vida anterior no filtra).
+ * F9 load no usa esto — no persiste weather. enterGameOver / freeze death no assign.
+ */
+export function weatherAfterRestart(): WeatherSystem {
+  return new WeatherSystem({ initial: WEATHER_BOOT_KIND });
+}
+
+/** Segundos de rollTimer al boot (mismo que el ctor). */
+export function weatherBootTimer(checkInterval = WEATHER_CHECK_SEC): number {
+  return checkInterval * WEATHER_BOOT_TIMER_FRAC;
+}
+
+/**
+ * Intensidad que lee syncRain: 0 indoor o clear; si no, weather.intensity.
+ * R / drizzle outdoor → 0.4; leftover rain outdoor → 0.85.
+ */
+export function rainVisualIntensity(
+  weather: { isRaining: boolean; intensity: number },
+  indoor: boolean,
+): number {
+  return indoor || !weather.isRaining ? 0 : weather.intensity;
+}
+
+/** HUD token `lluvia`: raining y outdoor. */
+export function weatherHudRaining(
+  weather: { isRaining: boolean },
+  indoor: boolean,
+): boolean {
+  return weather.isRaining && !indoor;
 }

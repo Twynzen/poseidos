@@ -376,7 +376,7 @@ describe("resetAmbientAfterRestart (R / softReset)", () => {
       /softReset\(\): void \{[\s\S]{0,1800}resetAmbientAfterRestart\(this\.ambient\)/,
     );
     expect(gameSrc).toMatch(
-      /this\.weather = new WeatherSystem\(\{ initial: "drizzle" \}\);[\s\S]{0,200}resetAmbientAfterRestart\(this\.ambient\)/,
+      /this\.weather = weatherAfterRestart\(\);[\s\S]{0,200}resetAmbientAfterRestart\(this\.ambient\)/,
     );
     expect(gameSrc).not.toMatch(
       /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}resetAmbientAfterRestart/,

@@ -428,7 +428,7 @@ describe("hotbarSelectedAfterRestart (R / softReset)", () => {
     );
     expect(gameSrc).toContain("hotbarSelectedAfterRestart(");
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,1600}this\.hotbarSelected = hotbarSelectedAfterRestart\(\)/,
+      /softReset\(\): void \{[\s\S]{0,2000}this\.hotbarSelected = hotbarSelectedAfterRestart\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.lastInvIndex = null;[\s\S]{0,200}this\.hotbarSelected = hotbarSelectedAfterRestart\(\)/,
