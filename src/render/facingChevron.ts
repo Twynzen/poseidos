@@ -213,3 +213,28 @@ export function facingChevronDepthWriteFromLook(depthWrite: boolean): boolean {
 export function facingChevronDepthWriteAfterRestart(): boolean {
   return facingChevronDepthWriteFromLook(FACING_CHEVRON_DEPTH_WRITE_SPAWN);
 }
+
+/** renderOrder del chevron mesh. Ctor chevronMesh.renderOrder 8 = fresco. Mid-life leftover ≠ fresco. */
+export const FACING_CHEVRON_RENDER_ORDER = 8;
+
+/** Idle chevron mesh renderOrder. Ctor chevronMesh.renderOrder 8 = fresco. Mid-life leftover ≠ fresco. */
+export const FACING_CHEVRON_RENDER_ORDER_SPAWN = 8;
+
+/**
+ * renderOrder que leería place/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 8).
+ * place/tick no escribe renderOrder (ctor constant).
+ */
+export function facingChevronRenderOrderFromLook(renderOrder: number): number {
+  return renderOrder;
+}
+
+/**
+ * R / softReset: renderOrder fresco (idle 8).
+ * WorldView nace chevronMesh.renderOrder AfterRestart; leftover mid-life no filtra.
+ * place/tick no escribe renderOrder (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function facingChevronRenderOrderAfterRestart(): number {
+  return facingChevronRenderOrderFromLook(FACING_CHEVRON_RENDER_ORDER_SPAWN);
+}
