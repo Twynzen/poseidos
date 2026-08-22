@@ -592,7 +592,7 @@ describe("resetHotbarHudAfterRestart (R / softReset)", () => {
     );
     expect(gameSrc).toContain("resetHotbarHudAfterRestart(");
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,4600}resetHotbarHudAfterRestart\(this\.hotbarHud\)/,
+      /softReset\(\): void \{[\s\S]{0,4700}resetHotbarHudAfterRestart\(this\.hotbarHud\)/,
     );
     expect(gameSrc).toMatch(
       /this\.hudAcc = hudAccAfterRestart\(\);[\s\S]{0,240}resetHotbarHudAfterRestart\(this\.hotbarHud\)/,
@@ -671,7 +671,7 @@ describe("resetHotbarHudAfterRestart (R / softReset)", () => {
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}resetHotbarHudAfterRestart/,
     );
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,4600}resetHotbarHudAfterRestart\(this\.hotbarHud\)/,
+      /softReset\(\): void \{[\s\S]{0,4700}resetHotbarHudAfterRestart\(this\.hotbarHud\)/,
     );
     expect(gameSrc).not.toMatch(
       /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}resetHotbarHudAfterRestart/,

@@ -175,6 +175,28 @@ export function muzzleLightColorAfterRestart(): number {
   return muzzleLightColorFromLook(MUZZLE_LIGHT_COLOR_SPAWN);
 }
 
+/** Idle muzzle distance. Ctor muzzleLight.distance MUZZLE_LIGHT_DISTANCE 2.6 = fresco. Mid-life leftover ≠ fresco. */
+export const MUZZLE_LIGHT_DISTANCE_SPAWN = 2.6;
+
+/**
+ * Distance que leería applyMuzzleFlashVisual (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle MUZZLE_LIGHT_DISTANCE 2.6).
+ * apply/tick no escribe distance (ctor constant).
+ */
+export function muzzleLightDistanceFromLook(distance: number): number {
+  return distance;
+}
+
+/**
+ * R / softReset: distance fresco (idle MUZZLE_LIGHT_DISTANCE 2.6).
+ * WorldView nace muzzleLight.distance AfterRestart; leftover mid-life no filtra.
+ * apply/tick no escribe distance (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function muzzleLightDistanceAfterRestart(): number {
+  return muzzleLightDistanceFromLook(MUZZLE_LIGHT_DISTANCE_SPAWN);
+}
+
 /**
  * HAS MUERTO / F9 load-muerto: no avanzar el flash ni pintarlo.
  * Vivo (incl. F9 load-vivo): tick/intensity de hoy.
