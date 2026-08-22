@@ -122,6 +122,7 @@ import {
   swapHotbarStacks,
   formatHudStatus,
   helpInputApplies,
+  helpHudVisible,
   nextShowHelp,
   isKeepableDeathCause,
   formatGateLine,
@@ -543,6 +544,7 @@ export class Game {
     this.syncLootFloaterOverlay();
     this.syncInventoryPanel();
     this.syncMoodlesHud();
+    this.syncHelpHud();
     // Load-muerto: apagar pulso leftover (load-vivo espera el tick, igual que hoy).
     if (this.gameOver) this.syncInteractFocus();
     this.syncLighting();
@@ -888,6 +890,7 @@ export class Game {
     this.syncLootFloaterOverlay();
     this.syncInventoryPanel();
     this.syncMoodlesHud();
+    this.syncHelpHud();
     this.syncInteractFocus();
     this.applyFov();
     // FOV ya en radio base: ocultar mudos/poseídos del anillo +4 linterna.
@@ -1225,6 +1228,7 @@ export class Game {
       // Mixer must keep ticking during freeze so death LoopOnce can play/clamp.
       this.view.tickPlayerLoco(dt, false, false);
       this.renderer.render(this.view.scene, this.view.camera);
+      this.syncHelpHud();
       this.syncSpeechOverlay();
       this.syncDialoguePanel();
       this.syncLootFloaterOverlay();
@@ -1825,6 +1829,15 @@ export class Game {
     this.moodlesHud.sync(this.buildPlayerHudMoodles());
   }
 
+  /** Clase `#hud.hud-help`: drop si gameOver (no tapa HAS MUERTO). */
+  private syncHelpHud(): void {
+    if (!this.hud) return;
+    this.hud.classList.toggle(
+      "hud-help",
+      helpHudVisible(this.gameOver, this.showHelp),
+    );
+  }
+
 
   /** Low-HP heartbeat: tick headless + beep si `{beat}` y no mute. */
   private syncHeartbeat(dt: number): void {
@@ -1905,7 +1918,10 @@ export class Game {
         msg: this.lastLootMsg || undefined,
         showHelp: this.showHelp,
       });
-      this.hud.classList.toggle("hud-help", this.showHelp);
+      this.hud.classList.toggle(
+        "hud-help",
+        helpHudVisible(this.gameOver, this.showHelp),
+      );
       this.syncMoodlesHud();
       this.hotbarHud.sync(hotbarSlots(this.player.inventory), this.hotbarSelected);
       this.syncInventoryPanel();
@@ -2005,7 +2021,10 @@ export class Game {
       fov: this.fovVisibleCount,
       showHelp: this.showHelp,
     });
-    this.hud.classList.toggle("hud-help", this.showHelp);
+    this.hud.classList.toggle(
+      "hud-help",
+      helpHudVisible(this.gameOver, this.showHelp),
+    );
   }
 
   /**

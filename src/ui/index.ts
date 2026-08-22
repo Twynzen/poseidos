@@ -70,6 +70,7 @@ export {
   formatHudDebugTokens,
   formatHudStatus,
   helpInputApplies,
+  helpHudVisible,
   applyHelpInput,
   nextShowHelp,
   resolveGameOverCause,
