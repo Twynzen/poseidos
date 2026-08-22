@@ -2729,7 +2729,7 @@ describe("worldView flashlight fill decay", () => {
     );
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("export const FLASHLIGHT_SPOT_Y = 1.7825");
@@ -2832,7 +2832,7 @@ describe("worldView flashlight spot decay", () => {
       "utf8",
     );
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -2994,7 +2994,7 @@ describe("worldView muzzle light decay", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -3165,7 +3165,7 @@ describe("worldView impact spark light decay", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -3355,7 +3355,7 @@ describe("worldView tracer flash decay", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -3534,7 +3534,7 @@ describe("worldView tracer flash intensity", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -3716,7 +3716,7 @@ describe("worldView tracer flash distance", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -3900,7 +3900,7 @@ describe("worldView tracer flash Y offset", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -4101,7 +4101,7 @@ describe("worldView flashlight spot target Y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -4305,7 +4305,7 @@ describe("worldView muzzle forward", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -4514,7 +4514,7 @@ describe("worldView facing chevron Y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -4858,7 +4858,7 @@ describe("worldView facing chevron tilt", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -5200,7 +5200,7 @@ describe("worldView noise ring Y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -5542,7 +5542,7 @@ describe("worldView marker ring Y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -5884,7 +5884,7 @@ describe("worldView marker icon Y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -6226,7 +6226,7 @@ describe("worldView marker icon size", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -6568,7 +6568,7 @@ describe("worldView marker badge radius", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -6910,7 +6910,7 @@ describe("worldView marker badge tilt", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -7252,7 +7252,7 @@ describe("worldView player body base Y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -7594,7 +7594,7 @@ describe("worldView player head base Y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -7936,7 +7936,7 @@ describe("worldView hostile body base Y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -8278,7 +8278,7 @@ describe("worldView hostile head base Y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -8620,7 +8620,7 @@ describe("worldView hostile mute XZ scale", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -8962,7 +8962,7 @@ describe("worldView hostile body width", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -9324,7 +9324,7 @@ describe("worldView hostile body height", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -9686,7 +9686,7 @@ describe("worldView hostile body depth", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -10043,7 +10043,7 @@ describe("worldView hostile head size", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -10408,7 +10408,7 @@ describe("worldView player head size", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -10767,7 +10767,7 @@ describe("worldView player body width", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -11126,7 +11126,7 @@ describe("worldView player body height", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -11485,7 +11485,7 @@ describe("worldView player body depth", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -11855,7 +11855,7 @@ describe("worldView wall height", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -12231,7 +12231,7 @@ describe("worldView wall base Y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -12622,7 +12622,7 @@ describe("worldView door height", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -13025,7 +13025,7 @@ describe("worldView door base Y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -13435,7 +13435,7 @@ describe("worldView door depth", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -13855,7 +13855,7 @@ describe("worldView bed height", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -14281,7 +14281,7 @@ describe("worldView bed base Y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -14714,7 +14714,7 @@ describe("worldView bed depth", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -15157,7 +15157,7 @@ describe("worldView furniture height", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -15606,7 +15606,7 @@ describe("worldView furniture xz", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -16061,7 +16061,7 @@ describe("worldView furniture base y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -16535,7 +16535,7 @@ describe("worldView barricade height", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -17011,7 +17011,7 @@ describe("worldView barricade width", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -17522,7 +17522,7 @@ describe("worldView barricade depth", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -18035,7 +18035,7 @@ describe("worldView barricade plank y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -18550,7 +18550,7 @@ describe("worldView barricade cross y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -19067,7 +19067,7 @@ describe("worldView barricade cross scale y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -19586,7 +19586,7 @@ describe("worldView barricade cross scale x", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -20107,7 +20107,7 @@ describe("worldView barricade cross scale z", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -20630,7 +20630,7 @@ describe("worldView door open x", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -21155,7 +21155,7 @@ describe("worldView barricade plank rot y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
@@ -21682,7 +21682,7 @@ describe("worldView barricade cross rot y", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DECAY = 1.74");
-    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    FLASHLIGHT_SPOT_DECAY,");
+    expect(src).toContain("flashlightSpotPenumbraAfterRestart(),\n    flashlightSpotDecayAfterRestart(),");
     expect(src).not.toMatch(/FLASHLIGHT_SPOT_PENUMBRA,\s*\n\s*2,/);
     expect(src).not.toMatch(/export const FLASHLIGHT_SPOT_DECAY = 2/);
     expect(src).toContain("flashlightSpotDistanceAfterRestart()");
