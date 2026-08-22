@@ -1,4 +1,7 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import { TileMap } from "../src/world/tilemap";
 import {
   isBedTile,
@@ -17,9 +20,11 @@ import {
   SLEEP_FLOOR_HOURS,
   SLEEP_HOSTILE_RADIUS,
   SLEEP_HOURS,
+  applySleepInput,
   hostileNearby,
   isSafehouseHint,
   nearBed,
+  sleepInputApplies,
   sleepWakeLabel,
   trySleep,
 } from "../src/actors/sleep";
@@ -204,5 +209,143 @@ describe("safehouse hint + labels + neighborhood beds", () => {
     // Jugador puede estar indoor cerca de la cama spawn-house
     expect(isIndoor(map, 24.5, 23.5)).toBe(true);
     expect(nearBed(map, 24.5, 23.5)).toBe(true);
+  });
+});
+
+describe("sleepInputApplies / applySleepInput (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: Z no aplica; vivo / load-vivo sí", () => {
+    expect(sleepInputApplies(true)).toBe(false);
+    expect(sleepInputApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(sleepInputApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(sleepInputApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver + wantsSleep no muta needs/fatigue/reloj; vivo Z duerme o toast de hoy", () => {
+    const map = roomWithBed();
+    const deadNeeds = createNeeds({ hunger: 40, thirst: 35, fatigue: 70 });
+    const deadClock = new GameClock(48);
+    const beforeDeadNeeds = { ...deadNeeds };
+    const beforeDeadElapsed = deadClock.elapsed;
+    const beforeDeadPhase = deadClock.phase;
+
+    expect(
+      applySleepInput(true, true, () =>
+        trySleep(deadNeeds, deadClock, map, 6.5, 7.2, []),
+      ),
+    ).toBeNull();
+    expect(deadNeeds).toEqual(beforeDeadNeeds);
+    expect(deadNeeds.fatigue).toBe(70);
+    expect(deadClock.elapsed).toBe(beforeDeadElapsed);
+    expect(deadClock.phase).toBe(beforeDeadPhase);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(
+      applySleepInput(deadRt.gameOver, true, () =>
+        trySleep(deadNeeds, deadClock, map, 6.5, 7.2, []),
+      ),
+    ).toBeNull();
+    expect(deadNeeds.fatigue).toBe(70);
+    expect(deadNeeds.hunger).toBe(40);
+    expect(deadNeeds.thirst).toBe(35);
+    expect(deadClock.elapsed).toBe(0);
+    expect(deadClock.phase).toBe(0);
+
+    const liveNeeds = createNeeds({ fatigue: 70 });
+    const liveClock = new GameClock(48);
+    const beforeLive = liveClock.elapsed;
+    const slept = applySleepInput(false, true, () =>
+      trySleep(liveNeeds, liveClock, map, 6.5, 7.2, []),
+    );
+    expect(slept?.ok).toBe(true);
+    if (slept?.ok) {
+      expect(slept.onBed).toBe(true);
+      expect(slept.message).toMatch(/^dormiste en la cama hasta /);
+      expect(slept.hours).toBe(SLEEP_HOURS);
+    }
+    expect(liveNeeds.fatigue).toBeCloseTo(
+      Math.max(0, 70 - SLEEP_FATIGUE_RELIEF),
+      5,
+    );
+    expect(liveClock.elapsed - beforeLive).toBeCloseTo(
+      (SLEEP_HOURS / 24) * liveClock.dayLengthSec,
+      5,
+    );
+    expect(
+      applySleepInput(false, false, () =>
+        trySleep(liveNeeds, liveClock, map, 6.5, 7.2, []),
+      ),
+    ).toBeNull();
+    expect(liveNeeds.fatigue).toBeCloseTo(
+      Math.max(0, 70 - SLEEP_FATIGUE_RELIEF),
+      5,
+    );
+
+    const outdoorNeeds = createNeeds({ fatigue: 80 });
+    const outdoorClock = new GameClock(48);
+    const outdoor = applySleepInput(false, true, () =>
+      trySleep(outdoorNeeds, outdoorClock, openYard(), 8.5, 8.5, []),
+    );
+    expect(outdoor?.ok).toBe(false);
+    if (outdoor && !outdoor.ok) {
+      expect(outdoor.reason).toBe("outdoor");
+      expect(outdoor.message).toBe("no puedes dormir aquí");
+    }
+    expect(outdoorNeeds.fatigue).toBe(80);
+    expect(outdoorClock.elapsed).toBe(0);
+
+    const liveRt = loadAliveRuntime(true);
+    const againNeeds = createNeeds({ fatigue: 50 });
+    const againClock = new GameClock(48);
+    const floor = applySleepInput(liveRt.gameOver, true, () =>
+      trySleep(againNeeds, againClock, room(), 6.5, 7.2, []),
+    );
+    expect(floor?.ok).toBe(true);
+    if (floor?.ok) {
+      expect(floor.onBed).toBe(false);
+      expect(floor.message).toMatch(/^dormiste en el suelo hasta /);
+    }
+    expect(againNeeds.fatigue).toBeCloseTo(
+      Math.max(0, 50 - SLEEP_FLOOR_FATIGUE_RELIEF),
+      5,
+    );
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto drenan Z sin dormir; vivo gatea", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("sleepInputApplies(");
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2800}consumeSleep\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2200}consumeSleep\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2600}if \(loaded\.gameOver\) this\.input\.consumeSleep\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /sleepInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsSleep[\s\S]{0,200}trySleep/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2800}trySleep/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}trySleep/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2800}consumeRestOrRestart\(\)/,
+    );
   });
 });
