@@ -437,3 +437,28 @@ export function rainTransparentFromLook(transparent: boolean): boolean {
 export function rainTransparentAfterRestart(): boolean {
   return rainTransparentFromLook(RAIN_TRANSPARENT_SPAWN);
 }
+
+/** DepthWrite del rain mesh. Ctor rainMat.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const RAIN_DEPTH_WRITE = false;
+
+/** Idle rain mesh depthWrite. Ctor rainMat.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const RAIN_DEPTH_WRITE_SPAWN = false;
+
+/**
+ * DepthWrite que leería spawn/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * spawn/tick no escribe depthWrite (ctor constant).
+ */
+export function rainDepthWriteFromLook(depthWrite: boolean): boolean {
+  return depthWrite;
+}
+
+/**
+ * R / softReset: depthWrite fresco (idle false).
+ * WorldView nace rainMat.depthWrite AfterRestart; leftover mid-life no filtra.
+ * spawn/tick no escribe depthWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function rainDepthWriteAfterRestart(): boolean {
+  return rainDepthWriteFromLook(RAIN_DEPTH_WRITE_SPAWN);
+}
