@@ -12,8 +12,11 @@ import {
   type Inventory,
 } from "../src/items";
 import {
+  applyInventoryToggle,
   createInventoryPanel,
   inventoryPanelVisible,
+  inventoryToggleApplies,
+  nextShowInvDetail,
 } from "../src/ui/inventory";
 import { inventoryInspectLabel } from "../src/ui/hotbar";
 
@@ -753,6 +756,122 @@ describe("inventoryPanelVisible (HAS MUERTO / F9 load-muerto)", () => {
     );
     expect(src).not.toMatch(
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,900}this\.showInvDetail = true/,
+    );
+  });
+});
+
+describe("inventoryToggleApplies / applyInventoryToggle / nextShowInvDetail (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: I no aplica; vivo / load-vivo sí", () => {
+    expect(inventoryToggleApplies(true)).toBe(false);
+    expect(inventoryToggleApplies(false)).toBe(true);
+
+    expect(nextShowInvDetail(true, true, true)).toBe(true);
+    expect(nextShowInvDetail(true, false, true)).toBe(false);
+    expect(nextShowInvDetail(true, true, false)).toBe(true);
+    expect(nextShowInvDetail(true, false, false)).toBe(false);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(inventoryToggleApplies(deadRt.gameOver)).toBe(false);
+    expect(nextShowInvDetail(deadRt.gameOver, true, true)).toBe(true);
+    expect(nextShowInvDetail(deadRt.gameOver, false, true)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(inventoryToggleApplies(liveRt.gameOver)).toBe(true);
+    expect(nextShowInvDetail(liveRt.gameOver, false, true)).toBe(true);
+    expect(nextShowInvDetail(liveRt.gameOver, true, true)).toBe(false);
+    expect(nextShowInvDetail(liveRt.gameOver, true, false)).toBe(true);
+    expect(nextShowInvDetail(false, false, true)).toBe(true);
+    expect(nextShowInvDetail(false, true, true)).toBe(false);
+    expect(nextShowInvDetail(false, true, false)).toBe(true);
+  });
+
+  test("gameOver + wantsToggle no flippea showInvDetail; vivo I togglea", () => {
+    let deadOpen = true;
+    expect(
+      applyInventoryToggle(true, true, () => {
+        deadOpen = !deadOpen;
+        return deadOpen;
+      }),
+    ).toBeNull();
+    expect(deadOpen).toBe(true);
+    expect(nextShowInvDetail(true, true, true)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    let deadClosed = false;
+    expect(
+      applyInventoryToggle(deadRt.gameOver, true, () => {
+        deadClosed = !deadClosed;
+        return deadClosed;
+      }),
+    ).toBeNull();
+    expect(deadClosed).toBe(false);
+    expect(nextShowInvDetail(deadRt.gameOver, false, true)).toBe(false);
+
+    let live = false;
+    const opened = applyInventoryToggle(false, true, () => {
+      live = !live;
+      return live;
+    });
+    expect(opened).toBe(true);
+    expect(live).toBe(true);
+    expect(
+      applyInventoryToggle(false, false, () => {
+        live = !live;
+        return live;
+      }),
+    ).toBeNull();
+    expect(live).toBe(true);
+
+    const liveRt = loadAliveRuntime(true);
+    const closed = applyInventoryToggle(liveRt.gameOver, true, () => {
+      live = !live;
+      return live;
+    });
+    expect(closed).toBe(false);
+    expect(live).toBe(false);
+    expect(nextShowInvDetail(false, false, true)).toBe(true);
+    expect(nextShowInvDetail(false, true, true)).toBe(false);
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto drenan I sin flip; vivo gatea", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("inventoryToggleApplies(");
+    expect(gameSrc).toContain("nextShowInvDetail(");
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeInventoryToggle\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2600}consumeInventoryToggle\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,3000}if \(loaded\.gameOver\) this\.input\.consumeInventoryToggle\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /inventoryToggleApplies\(\s*this\.gameOver[\s\S]{0,80}wantsInv[\s\S]{0,200}nextShowInvDetail/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}inventoryToggleApplies/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}inventoryToggleApplies/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}nextShowInvDetail/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}nextShowInvDetail/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
     );
   });
 });

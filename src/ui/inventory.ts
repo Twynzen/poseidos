@@ -32,6 +32,43 @@ export function inventoryPanelVisible(
   return showInvDetail;
 }
 
+/**
+ * HAS MUERTO / F9 load-muerto: I no aplica (se drena, showInvDetail no flippea).
+ * Vivo (incl. F9 load-vivo): I togglea el panel, igual que hoy.
+ * No esconde el panel; solo gate de input. gameOver no inventa restore.
+ */
+export function inventoryToggleApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no llama apply (flag igual).
+ * Vivo + wants → apply(). !wants → null.
+ */
+export function applyInventoryToggle<T>(
+  gameOver: boolean,
+  wants: boolean,
+  apply: () => T | null,
+): T | null {
+  if (!inventoryToggleApplies(gameOver) || !wants) return null;
+  return apply();
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: current sin cambio (abierto queda abierto, cerrado queda cerrado).
+ * Vivo + wantsToggle → flip. !wantsToggle → current. No inventa HUD copy.
+ */
+export function nextShowInvDetail(
+  gameOver: boolean,
+  current: boolean,
+  wantsToggle: boolean,
+): boolean {
+  if (!inventoryToggleApplies(gameOver)) return current;
+  if (wantsToggle) return !current;
+  return current;
+}
+
 export interface InventoryPanel {
   sync(view: InventoryPanelView): void;
   /** Último clic en fila; last-wins; consume y limpia. */

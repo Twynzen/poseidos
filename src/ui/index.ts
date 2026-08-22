@@ -46,6 +46,9 @@ export {
 export {
   createInventoryPanel,
   inventoryPanelVisible,
+  inventoryToggleApplies,
+  applyInventoryToggle,
+  nextShowInvDetail,
   type InventoryPanel,
   type InventoryPanelView,
 } from "./inventory";
