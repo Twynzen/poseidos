@@ -48,6 +48,7 @@ import {
   flashlightConeOpacityAfterRestart,
   flashlightConeOpacityFromLook,
   flashlightConeDepthWriteAfterRestart,
+  flashlightConeRenderOrderAfterRestart,
   flashlightConeTransparentAfterRestart,
   flashlightConeVisibleAfterRestart,
   flashlightConeVisibleFromLook,
@@ -1542,7 +1543,8 @@ export function createWorldView(
   });
   const flashlightConeWedge = new THREE.Mesh(coneGeo, coneMat);
   flashlightConeWedge.name = "flashlightConeWedge";
-  flashlightConeWedge.renderOrder = 7;
+  // R / dispose: renderOrder fresco (idle); leftover mid-life renderOrder de la vida anterior no filtra.
+  flashlightConeWedge.renderOrder = flashlightConeRenderOrderAfterRestart();
   // R / dispose: cone visible fresco (idle false); leftover mid-life on no filtra.
   flashlightConeWedge.visible = flashlightConeVisibleAfterRestart();
   flashlightConeWedge.position.set(0, FLASHLIGHT_CONE_Y, 0);
