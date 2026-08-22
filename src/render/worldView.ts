@@ -39,6 +39,8 @@ import {
   flashlightConeOffsetZFromLook,
   flashlightConeTip,
   flashlightConeVisible,
+  flashlightConeVisibleAfterRestart,
+  flashlightConeVisibleFromLook,
   flashlightConeYawAfterRestart,
   flashlightConeYawFromLook,
   flashlightFillOriginXAfterRestart,
@@ -1452,7 +1454,8 @@ export function createWorldView(
   const flashlightConeWedge = new THREE.Mesh(coneGeo, coneMat);
   flashlightConeWedge.name = "flashlightConeWedge";
   flashlightConeWedge.renderOrder = 7;
-  flashlightConeWedge.visible = false;
+  // R / dispose: cone visible fresco (idle false); leftover mid-life on no filtra.
+  flashlightConeWedge.visible = flashlightConeVisibleAfterRestart();
   flashlightConeWedge.position.set(0, FLASHLIGHT_CONE_Y, 0);
   // R / dispose: yaw fresco (idle 0); leftover mid-life yaw no filtra.
   flashlightConeWedge.rotation.y = flashlightConeYawAfterRestart();
@@ -2564,7 +2567,7 @@ export function createWorldView(
       torchSpot.color.setHex(FLASHLIGHT_SPOT_COLOR);
 
       flashlightConeWedge.rotation.y = yaw;
-      flashlightConeWedge.visible = on;
+      flashlightConeWedge.visible = flashlightConeVisibleFromLook(on);
       coneMat.opacity = flashlightWedgeOpacity(i);
     },
     followCamera(x, y) {
