@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import {
   AMBIENT_DAY_B,
@@ -13,7 +15,9 @@ import {
   AMBIENT_WARM_PUSH,
   AMBIENT_WARM_R,
   ambientRgb,
+  atmosphereAfterRestart,
   atmosphereFor,
+  atmosphereFromClock,
   DAWN_TINT_B,
   DAWN_TINT_G,
   DAWN_TINT_R,
@@ -48,7 +52,9 @@ import {
   sunRgb,
   type Rgb,
 } from "../src/render/fogAtmosphere";
-import { GameClock } from "../src/core/clock";
+import { GameClock, clockAfterRestart } from "../src/core/clock";
+import { DEFAULT_DAY_LENGTH_SEC } from "../src/core/config";
+import { WeatherSystem } from "../src/world/weather";
 
 function in01(c: Rgb): void {
   expect(c.r).toBeGreaterThanOrEqual(0);
@@ -322,5 +328,167 @@ describe("rgb ranges + atmosphereFor", () => {
       in01(atm.sun);
       expect(atm.near).toBeLessThan(atm.far);
     }
+  });
+});
+
+describe("atmosphereAfterRestart (R / softReset)", () => {
+  test("medianoche fresco; leftover noon / dusk / lastDaylight=1 no filtra", () => {
+    const boot = atmosphereAfterRestart();
+    const clock = clockAfterRestart();
+    expect(clock.phase).toBe(0);
+    expect(clock.daylight).toBeCloseTo(0.08, 10);
+    expect(boot).toEqual(atmosphereFromClock(clock));
+    expect(boot.sky).toEqual(skyRgb(0, clock.daylight));
+    expect(boot.near).toBeLessThan(FOG_NEAR_DAY);
+    expect(boot.far).toBeLessThan(FOG_FAR_DAY);
+    expect(boot.sky).not.toEqual(SKY_DAY);
+    expect(nightAmbientIntensity(clock.daylight)).toBeLessThan(
+      nightAmbientIntensity(1),
+    );
+    expect(nightSunIntensity(clock.daylight)).toBeLessThan(nightSunIntensity(1));
+
+    const leftoverNoon = new GameClock(DEFAULT_DAY_LENGTH_SEC);
+    leftoverNoon.elapsed = DEFAULT_DAY_LENGTH_SEC * 0.5;
+    expect(leftoverNoon.phase).toBeCloseTo(0.5, 5);
+    expect(leftoverNoon.daylight).toBeCloseTo(1, 5);
+    const noonAtm = atmosphereFromClock(leftoverNoon);
+    expect(noonAtm.sky).toEqual(SKY_DAY);
+    expect(noonAtm).not.toEqual(boot);
+    expect(noonAtm.far).toBeGreaterThan(boot.far);
+    expect(noonAtm.near).toBeGreaterThan(boot.near);
+
+    // WorldView ctor nace lastDaylight=1 (noon mats) — syncDayNight pisa clock fresco.
+    const leftoverCtorDaylight = 1;
+    expect(leftoverCtorDaylight).not.toBe(clock.daylight);
+    expect(
+      atmosphereFromClock({ phase: 0.5, daylight: leftoverCtorDaylight }),
+    ).not.toEqual(boot);
+
+    const leftoverNoc = new GameClock(DEFAULT_DAY_LENGTH_SEC);
+    leftoverNoc.elapsed = DEFAULT_DAY_LENGTH_SEC * 0.9;
+    expect(Math.floor(leftoverNoc.phase * 100)).toBe(90);
+    expect(atmosphereFromClock(leftoverNoc)).not.toEqual(boot);
+  });
+
+  test("weather rain 0.85 no tintea cielo (storm leftover = clock)", () => {
+    const storm = new WeatherSystem({ initial: "rain" });
+    expect(storm.intensity).toBe(0.85);
+    const boot = atmosphereAfterRestart();
+    expect(boot).toEqual(atmosphereFromClock(clockAfterRestart()));
+    expect(atmosphereFromClock(clockAfterRestart())).not.toEqual(
+      atmosphereFromClock({
+        phase: 0.5,
+        daylight: 1,
+      }),
+    );
+    void storm;
+  });
+
+  test("vivo tick no usa el helper (advance pinta noon)", () => {
+    const clock = clockAfterRestart();
+    const boot = atmosphereFromClock(clock);
+    expect(boot).toEqual(atmosphereAfterRestart());
+    clock.advance(DEFAULT_DAY_LENGTH_SEC * 0.5);
+    const noon = atmosphereFromClock(clock);
+    expect(noon.sky).toEqual(SKY_DAY);
+    expect(noon).not.toEqual(boot);
+    expect(noon).not.toEqual(atmosphereAfterRestart());
+  });
+});
+
+describe("lighting recreate lock (R / softReset)", () => {
+  test("Game softReset syncLighting lee clock fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("clockAfterRestart(");
+    expect(gameSrc).toContain("weatherAfterRestart(");
+    expect(gameSrc).toContain("warmLightFromClock(");
+    expect(gameSrc).toContain("this.syncLighting()");
+    expect(viewSrc).toContain("atmosphereFromClock(");
+    expect(viewSrc).toMatch(/let lastDaylight = 1;/);
+    expect(gameSrc).toMatch(
+      /this\.clock = new GameClock\(DEFAULT_DAY_LENGTH_SEC\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.weather = new WeatherSystem\(\{ initial: "drizzle" \}\)/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.clock = clockAfterRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.clock = clockAfterRestart\(\);[\s\S]{0,2400}this\.syncLighting\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.weather = weatherAfterRestart\(\);[\s\S]{0,2400}this\.syncLighting\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,800}this\.syncLighting\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /syncLighting\(\): void \{[\s\S]{0,360}this\.view\.syncDayNight\(this\.clock\)/,
+    );
+    expect(gameSrc).toMatch(
+      /syncLighting\(\): void \{[\s\S]{0,360}warmLightFromClock\(\s*indoor,\s*this\.clock/,
+    );
+    expect(viewSrc).toMatch(
+      /syncDayNight\(clock\) \{[\s\S]{0,240}atmosphereFromClock\(clock\)/,
+    );
+    expect(viewSrc).toMatch(
+      /syncDayNight\(clock\) \{[\s\S]{0,80}lastDaylight = d/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}atmosphereAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}atmosphereAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}atmosphereAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}atmosphereAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}warmLightAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}warmLightAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}warmLightAfterRestart/,
+    );
+    expect(saveSrc).not.toContain("atmosphereAfterRestart");
+    expect(saveSrc).not.toContain("warmLightAfterRestart");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
   });
 });

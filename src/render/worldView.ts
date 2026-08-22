@@ -151,7 +151,7 @@ import {
   WALL_COLOR,
 } from "./floorStyle";
 import {
-  atmosphereFor,
+  atmosphereFromClock,
   nightAmbientIntensity,
   nightSunIntensity,
 } from "./fogAtmosphere";
@@ -2046,7 +2046,7 @@ export function createWorldView(
     syncDayNight(clock) {
       const d = clock.daylight;
       lastDaylight = d;
-      const atm = atmosphereFor(clock.phase, d);
+      const atm = atmosphereFromClock(clock);
       ambient.intensity = nightAmbientIntensity(d);
       sun.intensity = nightSunIntensity(d);
       ambientColor.setRGB(atm.ambient.r, atm.ambient.g, atm.ambient.b);

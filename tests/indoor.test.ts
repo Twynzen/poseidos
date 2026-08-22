@@ -8,9 +8,13 @@ import {
 import {
   isIndoor,
   warmLightAnchor,
+  warmLightAfterRestart,
+  warmLightFromClock,
   warmLightIntensity,
   INDOOR_SOLID_THRESHOLD,
 } from "../src/world/indoor";
+import { GameClock, clockAfterRestart } from "../src/core/clock";
+import { DEFAULT_DAY_LENGTH_SEC } from "../src/core/config";
 
 function openYard(): TileMap {
   // 16x16 todo floor — outdoor
@@ -70,5 +74,39 @@ describe("warm light", () => {
     expect(warmLightIntensity(true, 0.08)).toBeGreaterThan(0.5);
     expect(warmLightIntensity(true, 0.4)).toBeGreaterThan(0);
     expect(warmLightIntensity(true, 0.4)).toBeLessThan(0.2);
+  });
+});
+
+describe("warmLightAfterRestart (R / softReset)", () => {
+  test("noche indoor fresco; leftover noon / outdoor no filtra", () => {
+    const clock = clockAfterRestart();
+    expect(clock.daylight).toBeCloseTo(0.08, 10);
+    expect(warmLightAfterRestart(false)).toBe(0);
+    expect(warmLightAfterRestart(true)).toBeGreaterThan(0.5);
+    expect(warmLightAfterRestart(true)).toBe(
+      warmLightFromClock(true, clock),
+    );
+    expect(warmLightAfterRestart(true)).toBe(
+      warmLightIntensity(true, clock.daylight),
+    );
+
+    const leftoverNoon = new GameClock(DEFAULT_DAY_LENGTH_SEC);
+    leftoverNoon.elapsed = DEFAULT_DAY_LENGTH_SEC * 0.5;
+    expect(leftoverNoon.daylight).toBeCloseTo(1, 5);
+    expect(warmLightFromClock(true, leftoverNoon)).toBe(0);
+    expect(warmLightFromClock(true, leftoverNoon)).not.toBe(
+      warmLightAfterRestart(true),
+    );
+    expect(warmLightFromClock(false, leftoverNoon)).toBe(0);
+  });
+
+  test("vivo tick no usa el helper (advance apaga warm)", () => {
+    const clock = clockAfterRestart();
+    expect(warmLightFromClock(true, clock)).toBe(warmLightAfterRestart(true));
+    clock.advance(DEFAULT_DAY_LENGTH_SEC * 0.5);
+    expect(warmLightFromClock(true, clock)).toBe(0);
+    expect(warmLightFromClock(true, clock)).not.toBe(
+      warmLightAfterRestart(true),
+    );
   });
 });

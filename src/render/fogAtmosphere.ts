@@ -16,6 +16,8 @@
  * (noche azul/violeta, día cielo frío claro).
  */
 
+import { clockAfterRestart } from "../core/clock";
+
 export interface Rgb {
   r: number;
   g: number;
@@ -263,6 +265,26 @@ export function atmosphereFor(phase: number, daylight: number): FogAtmosphere {
     ambient: ambientRgb(daylight, phase),
     sun: sunRgb(daylight, phase),
   };
+}
+
+/**
+ * Snapshot sky/fog/ambient/sun que lee syncDayNight (clock fresco o vivo).
+ * Weather no tintea cielo — leftover storm es leftover clock, no rain 0.85.
+ */
+export function atmosphereFromClock(clock: {
+  phase: number;
+  daylight: number;
+}): FogAtmosphere {
+  return atmosphereFor(clock.phase, clock.daylight);
+}
+
+/**
+ * R / softReset: atmósfera del clock fresco (medianoche, daylight 0.08).
+ * leftover noon (d=1 / lastDaylight ctor) / dusk no filtra.
+ * F9 / enterGameOver / freeze death no assign — leen this.clock al pintar.
+ */
+export function atmosphereAfterRestart(): FogAtmosphere {
+  return atmosphereFromClock(clockAfterRestart());
 }
 
 function clamp01(v: number): number {
