@@ -337,7 +337,7 @@ describe("rainStreakVxAfterRestart (R / softReset)", () => {
     const boot = rainStreakVxAfterRestart(0.4);
     expect(boot).toBe(rainStreakVxFromPhase(0.4));
     expect(boot).toBe((0.4 - 0.5) * 14);
-    expect(boot).toBe(-1.4);
+    expect(boot).toBeCloseTo(-1.4, 10);
     expect(rainStreakVxAfterRestart(0)).toBe(-7);
     expect(rainStreakVxAfterRestart(1)).toBe(7);
     expect(rainStreakVxAfterRestart()).toBe(-7);
@@ -353,7 +353,7 @@ describe("rainStreakVxAfterRestart (R / softReset)", () => {
     const leftoverDrift = rainStreakVxFromDrift(boot, 5, false);
     expect(leftoverDrift).toBe(tickRainStreakVx(boot, 5, false));
     expect(leftoverDrift).toBe(boot + 5 * 0.4);
-    expect(leftoverDrift).toBe(0.6);
+    expect(leftoverDrift).toBeCloseTo(0.6, 10);
     expect(leftoverDrift).not.toBe(rainStreakVxAfterRestart(0.4));
     expect(leftoverDrift).not.toBe(boot);
   });
