@@ -603,7 +603,33 @@ export function possessedColorAfterRestart(): number {
   return possessedColorFromLook(POSSESSED_COLOR_SPAWN);
 }
 
-const POSSESSED_EMISSIVE = 0x1e0925;
+export const POSSESSED_EMISSIVE = 0x1e0925;
+
+/** Emisivo del possessed mesh. Ctor possessedMat.emissive: POSSESSED_EMISSIVE = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_MESH_EMISSIVE = 0x1e0925;
+
+/** Idle possessed mesh emissive. Ctor possessedMat.emissive: POSSESSED_EMISSIVE = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_EMISSIVE_SPAWN = 0x1e0925;
+
+/**
+ * Emisivo que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle POSSESSED_EMISSIVE 0x1e0925).
+ * attach/tick no escriben emissive (ctor constant).
+ */
+export function possessedEmissiveFromLook(emissive: number): number {
+  return emissive;
+}
+
+/**
+ * R / softReset: emissive fresco (idle POSSESSED_EMISSIVE 0x1e0925).
+ * WorldView nace possessedMat.emissive AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben emissive (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function possessedEmissiveAfterRestart(): number {
+  return possessedEmissiveFromLook(POSSESSED_EMISSIVE_SPAWN);
+}
+
 /** Color de la silueta fallback poseída (cabeza). 0x7a3d8a × 1.15/canal para leerse de noche. */
 export const POSSESSED_HEAD_COLOR = 0x8c469f;
 
@@ -2051,7 +2077,8 @@ export function createWorldView(
   const possessedMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
     color: possessedColorAfterRestart(),
-    emissive: POSSESSED_EMISSIVE,
+    // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
+    emissive: possessedEmissiveAfterRestart(),
     emissiveIntensity: 0.55,
     roughness: 0.5,
   });
