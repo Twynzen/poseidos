@@ -596,6 +596,31 @@ export function playerBodyEmissiveIntensityAfterRestart(): number {
   return playerBodyEmissiveIntensityFromLook(PLAYER_BODY_EMISSIVE_INTENSITY_SPAWN);
 }
 
+/** Opacity del player-body mesh. Ctor playerBodyMat.opacity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_BODY_OPACITY = 1;
+
+/** Idle player-body mesh opacity. Ctor playerBodyMat.opacity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_BODY_OPACITY_SPAWN = 1;
+
+/**
+ * Opacity que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * attach/tick no escriben opacity (ctor constant).
+ */
+export function playerBodyOpacityFromLook(opacity: number): number {
+  return opacity;
+}
+
+/**
+ * R / softReset: opacity fresco (idle 1).
+ * WorldView nace playerBodyMat.opacity AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben opacity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function playerBodyOpacityAfterRestart(): number {
+  return playerBodyOpacityFromLook(PLAYER_BODY_OPACITY_SPAWN);
+}
+
 /** Color de la silueta fallback (cabeza). 0x7eb6ef × 1.15/canal (b clamp) para leerse de noche. */
 export const PLAYER_HEAD_COLOR = 0x91d1ff;
 
@@ -2665,6 +2690,8 @@ export function createWorldView(
     emissive: playerBodyEmissiveAfterRestart(),
     // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
     emissiveIntensity: playerBodyEmissiveIntensityAfterRestart(),
+    // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
+    opacity: playerBodyOpacityAfterRestart(),
   });
   const playerHeadMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
