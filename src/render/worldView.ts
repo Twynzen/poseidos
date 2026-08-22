@@ -86,6 +86,7 @@ import {
   tracerColorAfterRestart,
   tracerCountAfterRestart,
   tracerDepthWriteAfterRestart,
+  tracerTransparentAfterRestart,
   tracerFlashColorAfterRestart,
   tracerFlashDecayAfterRestart,
   tracerFlashDistanceAfterRestart,
@@ -1875,7 +1876,8 @@ export function createWorldView(
   const tracerGeo = new THREE.BoxGeometry(1, 1, 1);
   const tracerMatBase = new THREE.MeshBasicMaterial({
     color: tracerColorAfterRestart(),
-    transparent: true,
+    // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+    transparent: tracerTransparentAfterRestart(),
     // R / dispose: opacity fresco (idle); leftover ctor Three 1 no filtra.
     opacity: tracerOpacityAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
