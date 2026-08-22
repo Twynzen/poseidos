@@ -752,6 +752,31 @@ export function playerHeadMetalnessAfterRestart(): number {
   return playerHeadMetalnessFromLook(PLAYER_HEAD_METALNESS_SPAWN);
 }
 
+/** Opacity del player-head mesh. Ctor playerHeadMat.opacity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_HEAD_OPACITY = 1;
+
+/** Idle player-head mesh opacity. Ctor playerHeadMat.opacity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_HEAD_OPACITY_SPAWN = 1;
+
+/**
+ * Opacity que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * attach/tick no escriben opacity (ctor constant).
+ */
+export function playerHeadOpacityFromLook(opacity: number): number {
+  return opacity;
+}
+
+/**
+ * R / softReset: opacity fresco (idle 1).
+ * WorldView nace playerHeadMat.opacity AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben opacity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function playerHeadOpacityAfterRestart(): number {
+  return playerHeadOpacityFromLook(PLAYER_HEAD_OPACITY_SPAWN);
+}
+
 /** Amenaza muda: rojo oscuro. 0x6b1a1a × 1.15/canal para leerse de noche. */
 export const HOSTILE_COLOR = 0x7b1e1e;
 
@@ -2704,6 +2729,8 @@ export function createWorldView(
     emissive: playerHeadEmissiveAfterRestart(),
     // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
     emissiveIntensity: playerHeadEmissiveIntensityAfterRestart(),
+    // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
+    opacity: playerHeadOpacityAfterRestart(),
   });
   const playerMesh = new THREE.Group();
   /** Hijo de silueta: bobY + lean/sway; root queda en suelo (x,0,y). */
