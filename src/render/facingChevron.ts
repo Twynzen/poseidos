@@ -163,3 +163,28 @@ export function facingChevronOpacityFromLook(opacity: number): number {
 export function facingChevronOpacityAfterRestart(): number {
   return facingChevronOpacityFromLook(FACING_CHEVRON_OPACITY_SPAWN);
 }
+
+/** Transparent del chevron mesh. Ctor chevronMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const FACING_CHEVRON_TRANSPARENT = true;
+
+/** Idle chevron mesh transparent. Ctor chevronMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const FACING_CHEVRON_TRANSPARENT_SPAWN = true;
+
+/**
+ * Transparent que leería place/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * place/tick no escribe transparent (ctor constant).
+ */
+export function facingChevronTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle true).
+ * WorldView nace chevronMat.transparent AfterRestart; leftover mid-life no filtra.
+ * place/tick no escribe transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function facingChevronTransparentAfterRestart(): boolean {
+  return facingChevronTransparentFromLook(FACING_CHEVRON_TRANSPARENT_SPAWN);
+}

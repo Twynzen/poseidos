@@ -16,6 +16,7 @@ import {
   FACING_CHEVRON_LEN,
   facingChevronColorAfterRestart,
   facingChevronOpacityAfterRestart,
+  facingChevronTransparentAfterRestart,
   facingChevronOffset,
   facingChevronOffsetXAfterRestart,
   facingChevronOffsetXFromLook,
@@ -1431,7 +1432,8 @@ export function createWorldView(
   );
   const chevronMat = new THREE.MeshBasicMaterial({
     color: facingChevronColorAfterRestart(),
-    transparent: true,
+    // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+    transparent: facingChevronTransparentAfterRestart(),
     opacity: facingChevronOpacityAfterRestart(),
     side: THREE.DoubleSide,
     depthWrite: false,
