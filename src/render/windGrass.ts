@@ -56,6 +56,31 @@ export const BLADE_Y_MUL = 0.207;
 /** Albedo de la hoja instanced (histórico 0x4a6a38 en worldView). 0x4a6a38 × 1.15 por canal para leer de noche. */
 export const BLADE_COLOR = 0x557a40;
 
+/** Roughness del césped instanced. Ctor grassMat.roughness 0.92 = fresco. Mid-life leftover ≠ fresco. */
+export const GRASS_ROUGHNESS = 0.92;
+
+/** Idle grass mesh roughness. Ctor grassMat.roughness 0.92 = fresco. Mid-life leftover ≠ fresco. */
+export const GRASS_ROUGHNESS_SPAWN = 0.92;
+
+/**
+ * Roughness que leería applyGrassPoses (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0.92).
+ * applyGrassPoses / color.setHex no escribe roughness (ctor constant).
+ */
+export function grassRoughnessFromLook(roughness: number): number {
+  return roughness;
+}
+
+/**
+ * R / softReset: roughness fresco (idle 0.92).
+ * WorldView nace grassMat.roughness AfterRestart; leftover mid-life no filtra.
+ * applyGrassPoses / color.setHex no escribe roughness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function grassRoughnessAfterRestart(): number {
+  return grassRoughnessFromLook(GRASS_ROUGHNESS_SPAWN);
+}
+
 export interface GrassTile {
   tx: number;
   ty: number;
