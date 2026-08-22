@@ -179,6 +179,8 @@ import {
   rainStreakVxFromDrift,
   rainStreakVyAfterRestart,
   rainStreakVyFromSpeed,
+  rainStreakVzAfterRestart,
+  rainStreakVzFromZ,
   rainStreakYAfterRestart,
   rainStreakYFromFall,
 } from "./rainStreaks";
@@ -1511,7 +1513,8 @@ export function createWorldView(
     const mesh = new THREE.Mesh(rainGeo, mat);
     // R / dispose: vx fresco (spawn); leftover mid-drift de la vida anterior no filtra.
     const vx = rainStreakVxAfterRestart(Math.random());
-    const vz = (Math.random() - 0.5) * 14;
+    // R / dispose: vz fresco (spawn); leftover mid-life Z de la vida anterior no filtra.
+    const vz = rainStreakVzAfterRestart(Math.random());
     // R / dispose: Y fresco (spawn); leftover mid-fall de la vida anterior no filtra.
     const y = rainStreakYAfterRestart(Math.random());
     // R / dispose: vy fresco (spawn); leftover mid-life speed de la vida anterior no filtra.
@@ -1567,7 +1570,7 @@ export function createWorldView(
         }
         // Drift leve con el viento.
         d.vx = rainStreakVxFromDrift(d.vx, dt);
-        d.mesh.position.set(d.vx, d.y, d.vz);
+        d.mesh.position.set(d.vx, d.y, rainStreakVzFromZ(d.vz));
       }
     }
     void rainAnchorX;

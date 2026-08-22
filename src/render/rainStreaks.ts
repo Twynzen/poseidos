@@ -191,6 +191,31 @@ export function rainStreakVyFromSpeed(vy: number): number {
   return vy;
 }
 
+/**
+ * vz de spawn que lee WorldView al nacer (phase fresco [0,1]).
+ * leftover mid-life Z de la vida anterior ≠ spawn fresco ([-7, 7]).
+ */
+export function rainStreakVzFromPhase(phase: number): number {
+  return (clamp01(phase) - 0.5) * 14;
+}
+
+/**
+ * R / softReset: vz de deriva Z fresca (spawn).
+ * WorldView nace con rainStreakVzFromPhase; leftover mid-life no filtra.
+ * F9 / enterGameOver / freeze death no assign — view.dispose + createWorldView.
+ */
+export function rainStreakVzAfterRestart(phase = 0): number {
+  return rainStreakVzFromPhase(phase);
+}
+
+/**
+ * vz que lee syncRain (deriva Z fresca o viva).
+ * vz no muta mid-life; leftover de la vida anterior muere con dispose.
+ */
+export function rainStreakVzFromZ(vz: number): number {
+  return vz;
+}
+
 /** ¿Grupo oculto? Mismo umbral que syncRain (intensity ≤ RAIN_HIDE_BELOW). */
 export function rainStreaksHidden(intensity: number): boolean {
   return !Number.isFinite(intensity) || intensity <= RAIN_HIDE_BELOW;
