@@ -173,6 +173,7 @@ import {
 import { REST_HUD_MSG } from "../actors/needs";
 import {
   createAmbientBus,
+  resetAmbientAfterRestart,
   tickAmbient,
   ambientTickApplies,
   describeAmbient,
@@ -529,6 +530,8 @@ export class Game {
     this.spawnThreats();
     this.clock = new GameClock(DEFAULT_DAY_LENGTH_SEC);
     this.weather = new WeatherSystem({ initial: "drizzle" });
+    // R: mix fresco; no filtrar night/indoor/threat de la vida anterior. Mute se queda.
+    resetAmbientAfterRestart(this.ambient);
     this.gameOver = false;
     this.showInvDetail = false;
     this.lastInvUseSlot = null;
