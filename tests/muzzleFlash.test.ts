@@ -406,7 +406,7 @@ describe("muzzle flash recreate lock (R / softReset)", () => {
       /muzzleMat\.opacity = muzzleFlashIntensityFromLook\(out\.intensity\)/,
     );
     expect(viewSrc).toMatch(
-      /muzzleFlashColorAfterRestart\(\),[\s\S]{0,200}opacity:\s*muzzleFlashIntensityAfterRestart\(\)/,
+      /muzzleFlashColorAfterRestart\(\),[\s\S]{0,240}opacity:\s*muzzleFlashIntensityAfterRestart\(\)/,
     );
     expect(viewSrc).not.toMatch(
       /muzzleFlashColorAfterRestart\(\),[\s\S]{0,200}opacity:\s*1,/,

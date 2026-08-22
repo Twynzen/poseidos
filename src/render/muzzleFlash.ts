@@ -244,6 +244,31 @@ export function muzzleFlashDepthWriteAfterRestart(): boolean {
   return muzzleFlashDepthWriteFromLook(MUZZLE_FLASH_DEPTH_WRITE_SPAWN);
 }
 
+/** Transparent del muzzle flash mesh. Ctor muzzleMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const MUZZLE_FLASH_TRANSPARENT = true;
+
+/** Idle muzzle flash mesh transparent. Ctor muzzleMat.transparent true = fresco. Mid-life leftover ≠ fresco. */
+export const MUZZLE_FLASH_TRANSPARENT_SPAWN = true;
+
+/**
+ * Transparent que leería applyMuzzleFlashVisual (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * apply/tick no escribe transparent (ctor constant).
+ */
+export function muzzleFlashTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle true).
+ * WorldView nace muzzleMat.transparent AfterRestart; leftover mid-life no filtra.
+ * apply/tick no escribe transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function muzzleFlashTransparentAfterRestart(): boolean {
+  return muzzleFlashTransparentFromLook(MUZZLE_FLASH_TRANSPARENT_SPAWN);
+}
+
 /**
  * HAS MUERTO / F9 load-muerto: no avanzar el flash ni pintarlo.
  * Vivo (incl. F9 load-vivo): tick/intensity de hoy.
