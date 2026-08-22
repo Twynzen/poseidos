@@ -249,6 +249,7 @@ import {
   impactSparkPosYAfterRestart,
   impactSparkPosZAfterRestart,
   impactSparkPosZFromLook,
+  impactSparkLightColorAfterRestart,
   impactSparkLightDecayAfterRestart,
   tickImpactSpark as stepImpactSpark,
   triggerImpactSpark as startImpactSpark,
@@ -1548,7 +1549,7 @@ export function createWorldView(
   // R / dispose: hidden fresco; leftover mid-spark visible no filtra.
   impactMesh.visible = impactSparkActiveAfterRestart();
   const impactLight = new THREE.PointLight(
-    IMPACT_SPARK_LIGHT_COLOR,
+    impactSparkLightColorAfterRestart(),
     0,
     IMPACT_SPARK_LIGHT_DISTANCE,
     impactSparkLightDecayAfterRestart(),
