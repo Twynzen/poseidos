@@ -1,6 +1,7 @@
 export {
   createAmbientBus,
   tickAmbient,
+  ambientTickApplies,
   ambientLevels,
   ambientTargets,
   describeAmbient,

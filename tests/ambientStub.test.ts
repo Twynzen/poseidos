@@ -1,9 +1,11 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   createAmbientBus,
   tickAmbient,
+  ambientTickApplies,
   ambientLevels,
   ambientTargets,
   describeAmbient,
@@ -174,7 +176,120 @@ describe("tickAmbient / ambientLevels", () => {
     expect(afterUnmute).toBe(SOUND_HUD_MSG);
     expect(describeAmbient(bus)).not.toBe(MUTE_HUD_MSG);
   });
+});
 
+describe("ambientTickApplies (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: no aplica; load-muerto no; vivo/load-vivo sí", () => {
+    expect(ambientTickApplies(true)).toBe(false);
+    expect(ambientTickApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(ambientTickApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(ambientTickApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver no avanza threatPhase ni lerp; vivo sí; dt<=0 no-op", () => {
+    const threatState: AmbientState = {
+      ...dayClearOutdoor,
+      threatNearby: true,
+    };
+    const dead = createAmbientBus();
+    tickAmbient(dead, threatState, 0.2, false);
+    const frozenPhase = dead.threatPhase;
+    const frozenLevels = { ...dead.levels };
+    expect(frozenPhase).toBeGreaterThan(0);
+    expect(frozenLevels.threat).toBeGreaterThan(0);
+
+    tickAmbient(dead, threatState, 0.5, true);
+    expect(dead.threatPhase).toBe(frozenPhase);
+    expect(dead.levels).toEqual(frozenLevels);
+    expect(dead.muted).toBe(false);
+
+    const rainState: AmbientState = { ...dayClearOutdoor, raining: true };
+    const rainDead = createAmbientBus();
+    tickAmbient(rainDead, rainState, 0.5, true);
+    expect(rainDead.levels.rain).toBe(0);
+    expect(rainDead.threatPhase).toBe(0);
+
+    const live = createAmbientBus();
+    tickAmbient(live, threatState, 0.2, false);
+    const livePhase = live.threatPhase;
+    tickAmbient(live, threatState, 0.5, false);
+    expect(live.threatPhase).toBeGreaterThan(livePhase);
+    expect(live.levels.threat).toBeGreaterThan(0);
+
+    const still = createAmbientBus();
+    still.threatPhase = 1.25;
+    still.levels.threat = 0.4;
+    const stillLevels = { ...still.levels };
+    tickAmbient(still, threatState, 0, false);
+    expect(still.threatPhase).toBe(1.25);
+    expect(still.levels).toEqual(stillLevels);
+    tickAmbient(still, threatState, -1, false);
+    expect(still.threatPhase).toBe(1.25);
+    expect(still.levels).toEqual(stillLevels);
+
+    const helperDt = ambientTickApplies(true) ? 0.5 : 0;
+    tickAmbient(dead, threatState, helperDt);
+    expect(dead.threatPhase).toBe(frozenPhase);
+    expect(dead.levels).toEqual(frozenLevels);
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto congelan ambient; vivo tickea; mixer death se queda", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("ambientTickApplies(");
+    expect(src).toMatch(
+      /syncAmbient\(dt = 0\): void \{[\s\S]{0,480}ambientTickApplies\(\s*this\.gameOver\) \? dt : 0/,
+    );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}this\.syncAmbient\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2200}this\.syncAmbient\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.syncAmbient\(dt\)/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}tickAmbient\([\s\S]{0,200}\bdt\b/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+    expect(src).toMatch(
+      /Mixer must keep ticking during freeze[\s\S]{0,160}this\.view\.tickPlayerLoco\(dt, false, false\)/,
+    );
+
+    const stubSrc = readFileSync(
+      resolve(process.cwd(), "src/audio/ambientStub.ts"),
+      "utf8",
+    );
+    expect(stubSrc).toContain("ambientTickApplies(");
+    expect(stubSrc).toMatch(
+      /if \(!ambientTickApplies\(gameOver\)\) dt = 0/,
+    );
+    expect(stubSrc).not.toMatch(/if \(gameOver\)[\s\S]{0,80}bus\.muted = true/);
+  });
+});
+
+describe("Game M mute (HAS MUERTO)", () => {
   test("Game M vivo y muerto asignan lastLootMsg via muteHudMsg (sin lootToast)", () => {
     const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
     const assign =

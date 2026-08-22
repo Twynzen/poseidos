@@ -166,6 +166,7 @@ import { REST_HUD_MSG } from "../actors/needs";
 import {
   createAmbientBus,
   tickAmbient,
+  ambientTickApplies,
   describeAmbient,
   toggleAmbientMute,
   muteHudMsg,
@@ -587,6 +588,8 @@ export class Game {
     this.syncLocoBobOverlay();
     // Load-muerto: camera shake leftover off (load-vivo dt=0, igual que hoy).
     this.syncCameraShakeOverlay();
+    // Load-muerto: ambient leftover freeze (load-vivo dt=0, igual que hoy).
+    this.syncAmbient();
     this.view.followCamera(this.player.x, this.player.y);
   }
 
@@ -972,6 +975,8 @@ export class Game {
     this.syncLocoBobOverlay();
     // Camera shake leftover: zero offset ya (no esperar el freeze tick).
     this.syncCameraShakeOverlay();
+    // Ambient leftover: freeze threatPhase/lerp ya (no mute).
+    this.syncAmbient();
     // Drain G/E/F / U / Q / C / H / X / Space/V / Z / B / T / Esc / I / F1 / +/- / F5 al final: no loot/puerta/drop/use/craft/cook/shoot/melee/sleep/build/diálogo/inventario/ayuda/zoom/save; no empuja ventanas de scan del hide.
     this.input.consumeLoot();
     this.input.consumeInteract();
@@ -2033,8 +2038,12 @@ export class Game {
     if (beat) playHeartbeat(this.heartbeatPlayer, this.ambient.muted);
   }
 
-  /** Ambient stub + WebAudio layers; mute → gains 0. */
-  private syncAmbient(dt: number): void {
+  /**
+   * Ambient stub + WebAudio layers; mute → gains 0.
+   * gameOver → dt 0 (congela threatPhase / lerp; no mutea).
+   * Vivo (incl. F9 load-vivo): dt de hoy.
+   */
+  private syncAmbient(dt = 0): void {
     const indoor = isIndoor(this.map, this.player.x, this.player.y);
     const threat = hostileNearby(
       this.hostiles.hostiles,
@@ -2050,7 +2059,7 @@ export class Game {
         indoor,
         threatNearby: threat,
       },
-      dt,
+      ambientTickApplies(this.gameOver) ? dt : 0,
     );
     syncAmbientPlayer(this.ambientPlayer, this.ambient);
   }
