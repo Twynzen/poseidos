@@ -33,6 +33,17 @@ export function createFootstepsBus(muted = false): FootstepsBus {
   };
 }
 
+/**
+ * R / softReset: pisadas frescas (level 0, phase 0). Mute se queda.
+ * Game.footsteps debe coincidir (stride / HUD de la vida anterior no filtra).
+ * F9 load no usa esto — el bus persiste (misma carrera).
+ */
+export function resetFootstepsAfterRestart(bus: FootstepsBus): void {
+  const fresh = createFootstepsBus(bus.muted);
+  bus.level = fresh.level;
+  bus.phase = fresh.phase;
+}
+
 /** Target 0–1 a partir de movimiento (sin suavizado). */
 export function footstepsTarget(state: FootstepsState): number {
   if (state.moved <= 0) return 0;

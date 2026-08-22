@@ -18,6 +18,7 @@ export {
 
 export {
   createFootstepsBus,
+  resetFootstepsAfterRestart,
   tickFootsteps,
   footstepsLevel,
   footstepsTarget,
@@ -29,6 +30,7 @@ export {
 export {
   shouldEmitFootstep,
   createFootstepPlayer,
+  resetFootstepPlayerAfterRestart,
   syncFootstepPlayer,
   type FootstepPlayer,
   type FootstepPlayerSync,
