@@ -1,15 +1,19 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { GameClock } from "../src/core/clock";
 import {
   SAVE_SLOT_KEY,
   SAVE_VERSION,
   applySave,
+  applySaveInput,
   captureSave,
   clearSave,
   createMemoryStorage,
   loadFromString,
   persistSave,
   readSave,
+  saveInputApplies,
   saveToString,
   writeSave,
 } from "../src/core/save";
@@ -400,5 +404,126 @@ describe("F5/F9 player.health (campo ya existente)", () => {
       JSON.stringify({ ...save, player: { ...save.player, health: -8 } }),
     );
     expect(under.player.health).toBe(0);
+  });
+});
+
+describe("saveInputApplies / applySaveInput (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: F5 no aplica; vivo / load-vivo sí", () => {
+    expect(saveInputApplies(true)).toBe(false);
+    expect(saveInputApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(saveInputApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(saveInputApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver + wantsSave no pinta ni escribe; vivo F5 guarda (o sin storage)", () => {
+    const world = makeWorld();
+    const storage = createMemoryStorage();
+    let lastLootMsg = "golpe";
+
+    expect(
+      applySaveInput(true, true, () => {
+        lastLootMsg = "F5 no aplica (muerto)";
+        writeSave(storage, world);
+        return "guardado";
+      }),
+    ).toBeNull();
+    expect(lastLootMsg).toBe("golpe");
+    expect(storage.data.has(SAVE_SLOT_KEY)).toBe(false);
+
+    const deadRt = loadAliveRuntime(false);
+    lastLootMsg = "sed";
+    expect(
+      applySaveInput(deadRt.gameOver, true, () => {
+        lastLootMsg = "F5 no aplica (muerto)";
+        writeSave(storage, world);
+        return "guardado";
+      }),
+    ).toBeNull();
+    expect(lastLootMsg).toBe("sed");
+    expect(storage.data.has(SAVE_SLOT_KEY)).toBe(false);
+
+    lastLootMsg = "";
+    const saved = applySaveInput(false, true, () => {
+      writeSave(storage, world);
+      lastLootMsg = "guardado";
+      return lastLootMsg;
+    });
+    expect(saved).toBe("guardado");
+    expect(lastLootMsg).toBe("guardado");
+    expect(storage.data.has(SAVE_SLOT_KEY)).toBe(true);
+
+    const before = storage.data.get(SAVE_SLOT_KEY);
+    expect(
+      applySaveInput(false, false, () => {
+        lastLootMsg = "otra";
+        writeSave(storage, world);
+        return "guardado";
+      }),
+    ).toBeNull();
+    expect(lastLootMsg).toBe("guardado");
+    expect(storage.data.get(SAVE_SLOT_KEY)).toBe(before);
+
+    const liveRt = loadAliveRuntime(true);
+    lastLootMsg = "";
+    const noStorage = applySaveInput(liveRt.gameOver, true, () => {
+      lastLootMsg = "sin storage";
+      return lastLootMsg;
+    });
+    expect(noStorage).toBe("sin storage");
+    expect(lastLootMsg).toBe("sin storage");
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto drenan F5 sin doSave; vivo gatea", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("saveInputApplies(");
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeSave\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,3200}consumeSave\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,4000}if \(loaded\.gameOver\) this\.input\.consumeSave\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /saveInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsSave[\s\S]{0,200}this\.doSave\(\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}this\.doSave\(\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}saveInputApplies/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}doSave/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}nextIsoZoom/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}this\.isoFrustum\s*=/,
+    );
   });
 });
