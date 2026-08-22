@@ -100,3 +100,64 @@ export function warmLightFromClock(
 export function warmLightAfterRestart(indoor: boolean): number {
   return warmLightFromClock(indoor, clockAfterRestart());
 }
+
+/** Idle warm origin X. Ctor warmLight position.x 0 + visible false = fresco. Mid-life leftover ≠ 0. */
+export const WARM_LIGHT_ORIGIN_X_SPAWN = 0;
+
+/** Idle warm origin Z. Ctor warmLight position.z 0 + visible false = fresco. Mid-life leftover ≠ 0. */
+export const WARM_LIGHT_ORIGIN_Z_SPAWN = 0;
+
+/** Idle warm visible. Ctor warmLight.visible false = fresco. Vivo on ≠ boot. */
+export const WARM_LIGHT_VISIBLE_SPAWN = false;
+
+/**
+ * Origin X que lee syncWarmLight (look fresco o vivo).
+ * leftover mid-life / far 40 ≠ fresco (idle 0).
+ */
+export function warmLightOriginXFromLook(x: number): number {
+  return x;
+}
+
+/**
+ * Origin Z que lee syncWarmLight (look fresco o vivo).
+ * leftover mid-life / far 30 ≠ fresco (idle 0).
+ */
+export function warmLightOriginZFromLook(z: number): number {
+  return z;
+}
+
+/**
+ * Visible que lee syncWarmLight (look fresco o vivo).
+ * leftover mid-life on ≠ fresco (idle false).
+ */
+export function warmLightVisibleFromLook(visible: boolean): boolean {
+  return visible;
+}
+
+/**
+ * R / softReset: origin X fresco (idle 0).
+ * WorldView nace warmLight.position.x AfterRestart; leftover mid-life / far no filtra.
+ * syncWarmLight lee warmLightOriginXFromLook.
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function warmLightOriginXAfterRestart(): number {
+  return warmLightOriginXFromLook(WARM_LIGHT_ORIGIN_X_SPAWN);
+}
+
+/**
+ * R / softReset: origin Z fresco (idle 0).
+ * WorldView nace warmLight.position.z AfterRestart; leftover mid-life / far no filtra.
+ * syncWarmLight lee warmLightOriginZFromLook.
+ */
+export function warmLightOriginZAfterRestart(): number {
+  return warmLightOriginZFromLook(WARM_LIGHT_ORIGIN_Z_SPAWN);
+}
+
+/**
+ * R / softReset: visible fresco (idle false).
+ * WorldView nace warmLight.visible AfterRestart; leftover mid-life on no filtra.
+ * syncWarmLight lee warmLightVisibleFromLook.
+ */
+export function warmLightVisibleAfterRestart(): boolean {
+  return warmLightVisibleFromLook(WARM_LIGHT_VISIBLE_SPAWN);
+}
