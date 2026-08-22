@@ -81,7 +81,7 @@ describe("tracer flash color recreate lock (R / softReset)", () => {
     expect(viewSrc).toContain("tracerFlashColorAfterRestart()");
     expect(viewSrc).not.toContain("tracerFlashColorFromLook(");
     expect(viewSrc).toContain(
-      "new THREE.PointLight(tracerFlashColorAfterRestart(), TRACER_FLASH_INTENSITY, TRACER_FLASH_DISTANCE, tracerFlashDecayAfterRestart())",
+      "new THREE.PointLight(tracerFlashColorAfterRestart(), TRACER_FLASH_INTENSITY, tracerFlashDistanceAfterRestart(), tracerFlashDecayAfterRestart())",
     );
     expect(viewSrc).not.toMatch(
       /new THREE\.PointLight\(\s*TRACER_FLASH_COLOR,\s*TRACER_FLASH_INTENSITY,\s*TRACER_FLASH_DISTANCE,\s*tracerFlashDecayAfterRestart/,
