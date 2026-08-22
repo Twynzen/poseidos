@@ -109,3 +109,26 @@ export function pickMeleeTarget(
 
   return bestFacing ?? bestAny;
 }
+
+/**
+ * HAS MUERTO / F9 load-muerto: Space/V no aplica (se drena, no golpea).
+ * Vivo (incl. F9 load-vivo): melee + CD, igual que hoy.
+ * No cambia daño/facing/puños-vs-arma ni ruido; solo gate de input.
+ */
+export function meleeInputApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no llama apply (HP hostil y CD iguales).
+ * Vivo + wants → apply(). !wants → null.
+ */
+export function applyMeleeInput<T>(
+  gameOver: boolean,
+  wants: boolean,
+  apply: () => T | null,
+): T | null {
+  if (!meleeInputApplies(gameOver) || !wants) return null;
+  return apply();
+}

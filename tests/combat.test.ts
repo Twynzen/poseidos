@@ -20,6 +20,8 @@ import {
   pickMeleeTarget,
   resolveMeleeWeapon,
   BARE_HANDS,
+  meleeInputApplies,
+  applyMeleeInput,
   RANGED_DAMAGE,
   RANGED_RANGE,
   checkRangedReady,
@@ -635,6 +637,133 @@ describe("shootInputApplies / applyShootInput (HAS MUERTO / F9 load-muerto)", ()
     );
     expect(gameSrc).toMatch(
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeRestOrRestart\(\)/,
+    );
+  });
+});
+
+describe("meleeInputApplies / applyMeleeInput (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: Space/V no aplica; vivo / load-vivo sí", () => {
+    expect(meleeInputApplies(true)).toBe(false);
+    expect(meleeInputApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(meleeInputApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(meleeInputApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver + wantsAttack no muta HP ni CD; vivo Space/V golpea o whiff", () => {
+    const deadPlayer = new PlayerSim({ x: 5.5, y: 4.5 });
+    deadPlayer.facingX = 1;
+    deadPlayer.facingY = 0;
+    deadPlayer.aimX = 1;
+    deadPlayer.aimY = 0;
+    const deadSim = new HostileSim({ speed: 0, visionRange: 0, hearRange: 0 });
+    deadSim.add("mute", 6.4, 4.5);
+    const beforeDeadHp = deadSim.hostiles[0]!.health;
+    const beforeDeadCd = deadPlayer.attackCd;
+
+    expect(
+      applyMeleeInput(true, true, () => deadPlayer.tryMelee(deadSim)),
+    ).toBeNull();
+    expect(deadSim.hostiles[0]!.health).toBe(beforeDeadHp);
+    expect(deadPlayer.attackCd).toBe(beforeDeadCd);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(
+      applyMeleeInput(deadRt.gameOver, true, () => deadPlayer.tryMelee(deadSim)),
+    ).toBeNull();
+    expect(deadSim.hostiles[0]!.health).toBe(beforeDeadHp);
+    expect(deadPlayer.attackCd).toBe(beforeDeadCd);
+
+    const livePlayer = new PlayerSim({ x: 5.5, y: 4.5 });
+    livePlayer.facingX = 1;
+    livePlayer.facingY = 0;
+    livePlayer.aimX = 1;
+    livePlayer.aimY = 0;
+    const liveSim = new HostileSim({ speed: 0, visionRange: 0, hearRange: 0 });
+    liveSim.add("mute", 6.4, 4.5);
+    const beforeLiveHp = liveSim.hostiles[0]!.health;
+
+    const hit = applyMeleeInput(false, true, () => livePlayer.tryMelee(liveSim));
+    expect(hit).not.toBeNull();
+    expect(hit!.damage).toBe(MELEE_DAMAGE);
+    expect(hit!.weapon.label).toBe("puños");
+    expect(liveSim.hostiles[0]!.health).toBe(beforeLiveHp - MELEE_DAMAGE);
+    expect(livePlayer.attackCd).toBeGreaterThan(0);
+    expect(
+      applyMeleeInput(false, false, () => livePlayer.tryMelee(liveSim)),
+    ).toBeNull();
+    expect(liveSim.hostiles[0]!.health).toBe(beforeLiveHp - MELEE_DAMAGE);
+    expect(
+      applyMeleeInput(false, true, () => livePlayer.tryMelee(liveSim)),
+    ).toBeNull();
+    expect(liveSim.hostiles[0]!.health).toBe(beforeLiveHp - MELEE_DAMAGE);
+    expect(livePlayer.attackCd).toBeGreaterThan(0);
+
+    const missPlayer = new PlayerSim({ x: 5.5, y: 4.5 });
+    const missSim = new HostileSim({ speed: 0, visionRange: 0, hearRange: 0 });
+    missSim.add("far", 10.5, 4.5);
+    const missHp = missSim.hostiles[0]!.health;
+    expect(
+      applyMeleeInput(false, true, () => missPlayer.tryMelee(missSim)),
+    ).toBeNull();
+    expect(missSim.hostiles[0]!.health).toBe(missHp);
+    expect(missPlayer.attackCd).toBe(MELEE_WHIFF_COOLDOWN);
+
+    const liveRt = loadAliveRuntime(true);
+    const again = new PlayerSim({ x: 5.5, y: 4.5 });
+    again.facingX = 1;
+    again.facingY = 0;
+    again.aimX = 1;
+    again.aimY = 0;
+    addItem(again.inventory, "crowbar", 1);
+    const againSim = new HostileSim({ speed: 0, visionRange: 0, hearRange: 0 });
+    againSim.add("mute", 6.4, 4.5);
+    const armed = applyMeleeInput(liveRt.gameOver, true, () =>
+      again.tryMelee(againSim),
+    );
+    expect(armed?.weapon.id).toBe("crowbar");
+    expect(armed?.weapon.label).toBe("palanca");
+    expect(armed?.damage).toBe(getItemDef("crowbar").meleeDamage);
+    expect(againSim.hostiles[0]!.health).toBe(
+      HOSTILE_MAX_HEALTH - getItemDef("crowbar").meleeDamage!,
+    );
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto drenan Space/V sin swing; vivo gatea", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("meleeInputApplies(");
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2600}consumeAttack\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2000}consumeAttack\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2400}if \(loaded\.gameOver\) this\.input\.consumeAttack\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /meleeInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsAttack[\s\S]{0,200}tryMelee/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2600}tryMelee/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}tryMelee/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2600}consumeRestOrRestart\(\)/,
     );
   });
 });
