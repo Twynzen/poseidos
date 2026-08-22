@@ -1,12 +1,14 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { createNeighborhood } from "../src/world/neighborhood";
 import {
   FLASHLIGHT_CONE_HALF_WIDTH,
   FLASHLIGHT_CONE_LENGTH,
   FLASHLIGHT_CONE_VISIBLE_EPS,
   FLASHLIGHT_CONE_Y,
   FLASHLIGHT_CONE_YAW_OFFSET,
+  FLASHLIGHT_CONE_YAW_SPAWN,
   FLASHLIGHT_FILL_INTENSITY_MUL,
   FLASHLIGHT_SPOT_INTENSITY_MUL,
   FLASHLIGHT_SPOT_COLOR,
@@ -18,10 +20,16 @@ import {
   FLASHLIGHT_WEDGE_OPACITY_BASE,
   FLASHLIGHT_WEDGE_OPACITY_GAIN,
   flashlightConeAngle,
+  flashlightConeOffsetXAfterRestart,
+  flashlightConeOffsetXFromLook,
+  flashlightConeOffsetZAfterRestart,
+  flashlightConeOffsetZFromLook,
   flashlightConeTip,
   flashlightConeVisible,
   flashlightConeWedge,
   flashlightConeWedgePoints,
+  flashlightConeYawAfterRestart,
+  flashlightConeYawFromLook,
   flashlightSpotAngle,
   flashlightWedgeOpacity,
   flashlightWedgeVertexColors,
@@ -365,5 +373,183 @@ describe("flashlightWedgeVertexColors", () => {
     expect(c[7]).toBeCloseTo(FLASHLIGHT_WEDGE_FAR_G, 5);
     expect(c[8]).toBeCloseTo(0.345, 5);
     expect(c[8]).toBeCloseTo(FLASHLIGHT_WEDGE_FAR_B, 5);
+  });
+});
+
+describe("flashlightConeAfterRestart (R / softReset)", () => {
+  test("cono fresco (idle yaw 0 + offset +Z); leftover mid-life yaw / far 40,30 no filtra", () => {
+    const barrio = createNeighborhood(48);
+    expect(barrio.spawn.x).toBe(24.5);
+    expect(barrio.spawn.y).toBe(15.5);
+
+    const bootYaw = flashlightConeYawAfterRestart();
+    const bootX = flashlightConeOffsetXAfterRestart();
+    const bootZ = flashlightConeOffsetZAfterRestart();
+    expect(bootYaw).toBe(flashlightConeYawFromLook(0));
+    expect(bootX).toBe(flashlightConeOffsetXFromLook(0));
+    expect(bootZ).toBe(flashlightConeOffsetZFromLook(FLASHLIGHT_CONE_LENGTH));
+    expect(bootYaw).toBe(0);
+    expect(bootX).toBeCloseTo(0, 10);
+    expect(bootZ).toBeCloseTo(FLASHLIGHT_CONE_LENGTH, 10);
+    expect(bootYaw).toBe(FLASHLIGHT_CONE_YAW_SPAWN);
+    expect(flashlightConeYawAfterRestart()).toBe(bootYaw);
+    expect(flashlightConeOffsetXAfterRestart()).toBe(bootX);
+    expect(flashlightConeOffsetZAfterRestart()).toBe(bootZ);
+
+    const leftoverYaw = Math.PI / 2;
+    const leftover = flashlightConeTip(leftoverYaw);
+    expect(leftover.x).toBeCloseTo(FLASHLIGHT_CONE_LENGTH, 10);
+    expect(leftover.z).toBeCloseTo(0, 10);
+    expect(leftoverYaw).not.toBe(bootYaw);
+    expect(leftover.x).not.toBe(bootX);
+    expect(leftover.z).not.toBe(bootZ);
+    expect(flashlightConeYawFromLook(leftoverYaw)).toBe(leftoverYaw);
+    expect(flashlightConeYawFromLook(leftoverYaw)).not.toBe(bootYaw);
+    expect(flashlightConeOffsetXFromLook(leftover.x)).toBe(leftover.x);
+    expect(flashlightConeOffsetXFromLook(leftover.x)).not.toBe(bootX);
+    expect(flashlightConeOffsetZFromLook(leftover.z)).toBe(leftover.z);
+    expect(flashlightConeOffsetZFromLook(leftover.z)).not.toBe(bootZ);
+
+    const leftoverFarX = 40;
+    const leftoverFarZ = 30;
+    expect(leftoverFarX).not.toBe(barrio.spawn.x);
+    expect(leftoverFarZ).not.toBe(barrio.spawn.y);
+    expect(leftoverFarX).not.toBe(24.5);
+    expect(leftoverFarZ).not.toBe(15.5);
+    expect(leftoverFarX).toBe(40);
+    expect(leftoverFarZ).toBe(30);
+
+    expect(flashlightConeYawFromLook(0)).toBe(bootYaw);
+    expect(flashlightConeOffsetXFromLook(0)).toBe(bootX);
+    expect(flashlightConeOffsetZFromLook(FLASHLIGHT_CONE_LENGTH)).toBe(bootZ);
+  });
+
+  test("vivo yaw no usa el helper (yaw avanza con look)", () => {
+    const bootYaw = flashlightConeYawAfterRestart();
+    const bootX = flashlightConeOffsetXAfterRestart();
+    const bootZ = flashlightConeOffsetZAfterRestart();
+    const liveYaw = flashlightConeYawFromLook(Math.PI / 2);
+    const liveTip = flashlightConeTip(liveYaw);
+    const liveX = flashlightConeOffsetXFromLook(liveTip.x);
+    const liveZ = flashlightConeOffsetZFromLook(liveTip.z);
+    expect(liveYaw).toBe(Math.PI / 2);
+    expect(liveX).toBeCloseTo(FLASHLIGHT_CONE_LENGTH, 10);
+    expect(liveZ).toBeCloseTo(0, 10);
+    expect(liveYaw).not.toBe(bootYaw);
+    expect(liveX).not.toBe(bootX);
+    expect(liveZ).not.toBe(bootZ);
+    expect(liveYaw).not.toBe(flashlightConeYawAfterRestart());
+    expect(liveX).not.toBe(flashlightConeOffsetXAfterRestart());
+    expect(liveZ).not.toBe(flashlightConeOffsetZAfterRestart());
+
+    expect(flashlightConeYawFromLook(0)).toBe(bootYaw);
+    expect(flashlightConeOffsetXFromLook(0)).toBe(bootX);
+    expect(flashlightConeOffsetZFromLook(FLASHLIGHT_CONE_LENGTH)).toBe(bootZ);
+    expect(flashlightConeYawFromLook(Math.PI)).toBe(Math.PI);
+    expect(flashlightConeOffsetXFromLook(FLASHLIGHT_CONE_LENGTH)).toBe(
+      FLASHLIGHT_CONE_LENGTH,
+    );
+  });
+});
+
+describe("flashlight cone recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace cono fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const coneSrc = readFileSync(
+      resolve(process.cwd(), "src/render/flashlightCone.ts"),
+      "utf8",
+    );
+    expect(coneSrc).toContain("flashlightConeYawAfterRestart(");
+    expect(coneSrc).toContain("flashlightConeOffsetXAfterRestart(");
+    expect(coneSrc).toContain("flashlightConeOffsetZAfterRestart(");
+    expect(coneSrc).toContain("flashlightConeYawFromLook(");
+    expect(coneSrc).toContain("flashlightConeOffsetXFromLook(");
+    expect(coneSrc).toContain("flashlightConeOffsetZFromLook(");
+    expect(coneSrc).toContain("FLASHLIGHT_CONE_YAW_SPAWN");
+    expect(coneSrc).toMatch(
+      /flashlightConeYawAfterRestart\([\s\S]{0,200}flashlightConeYawFromLook\(/,
+    );
+    expect(coneSrc).toMatch(
+      /flashlightConeOffsetXAfterRestart\([\s\S]{0,200}flashlightConeOffsetXFromLook\(/,
+    );
+    expect(coneSrc).toMatch(
+      /flashlightConeOffsetZAfterRestart\([\s\S]{0,200}flashlightConeOffsetZFromLook\(/,
+    );
+    expect(viewSrc).toContain("flashlightConeYawAfterRestart(");
+    expect(viewSrc).toContain("flashlightConeOffsetXAfterRestart(");
+    expect(viewSrc).toContain("flashlightConeOffsetZAfterRestart(");
+    expect(viewSrc).toContain("flashlightConeYawFromLook(");
+    expect(viewSrc).toContain("flashlightConeOffsetXFromLook(");
+    expect(viewSrc).toContain("flashlightConeOffsetZFromLook(");
+    expect(viewSrc).toContain("flashlightConeOffsetXAfterRestart()");
+    expect(viewSrc).toContain("flashlightConeOffsetZAfterRestart()");
+    expect(viewSrc).toContain("flashlightConeYawAfterRestart()");
+    expect(viewSrc).toContain("flashlightConeYawFromLook(playerGltfYaw)");
+    expect(viewSrc).toContain("flashlightConeOffsetXFromLook(tip.x)");
+    expect(viewSrc).toContain("flashlightConeOffsetZFromLook(tip.z)");
+    expect(viewSrc).toContain("flashlightConeWedge.rotation.y = yaw");
+    expect(viewSrc).not.toMatch(
+      /function hideFlashlightCone\(\): void \{[\s\S]{0,200}flashlightConeYawAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}flashlightConeYawAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}flashlightConeYawAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}flashlightConeYawAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}flashlightConeYawAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("flashlightConeYawAfterRestart(");
+    expect(gameSrc).not.toContain("flashlightConeOffsetXAfterRestart(");
+    expect(gameSrc).not.toContain("flashlightConeOffsetZAfterRestart(");
+    expect(gameSrc).not.toContain("flashlightConeYawFromLook(");
+    expect(gameSrc).not.toContain("flashlightConeOffsetXFromLook(");
+    expect(gameSrc).not.toContain("flashlightConeOffsetZFromLook(");
+    expect(saveSrc).not.toContain("flashlightConeYawAfterRestart");
+    expect(saveSrc).not.toContain("flashlightConeOffsetXAfterRestart");
+    expect(saveSrc).not.toContain("flashlightConeYawFromLook");
+    expect(saveSrc).not.toContain("flashlightConeOffsetXFromLook");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
   });
 });
