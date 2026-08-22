@@ -68,3 +68,42 @@ export function nextIsoZoom(
   }
   return { frustum, changed: frustum !== current, msg };
 }
+
+/**
+ * HAS MUERTO / F9 load-muerto: +/- no aplica (se drena, frustum igual, sin HUD).
+ * Vivo (incl. F9 load-vivo): +/- zoomea, igual que hoy.
+ * No cambia copy / limits. gameOver no inventa restore.
+ */
+export function zoomInputApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no llama apply (frustum/msg iguales).
+ * Vivo + wants → apply(). !wants → null.
+ */
+export function applyZoomInput<T>(
+  gameOver: boolean,
+  wants: boolean,
+  apply: () => T | null,
+): T | null {
+  if (!zoomInputApplies(gameOver) || !wants) return null;
+  return apply();
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: frustum igual, changed false, sin msg.
+ * Vivo: nextIsoZoom de hoy (changed → frustum + acercaste/alejaste; min/max no spam).
+ */
+export function applyIsoZoom(
+  gameOver: boolean,
+  current: number,
+  zoomIn: boolean,
+  zoomOut: boolean,
+): IsoZoomNext {
+  if (!zoomInputApplies(gameOver)) {
+    return { frustum: current, changed: false, msg: null };
+  }
+  return nextIsoZoom(current, zoomIn, zoomOut);
+}
