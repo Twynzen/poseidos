@@ -1,9 +1,13 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   HIT_LEAN_ANGLE,
   HIT_LEAN_DURATION,
   HIT_LEAN_YAW_RATIO,
   createHitLeanState,
+  hitLeanApplies,
   tickHitLean,
   triggerHitLean,
 } from "../src/render/hitLean";
@@ -113,5 +117,110 @@ describe("create / trigger / tick", () => {
     expect(s.active).toBe(true);
     const out = tickHitLean(s, HIT_LEAN_DURATION / 2);
     expect(out.pitch).toBeCloseTo(-HIT_LEAN_ANGLE, 10);
+  });
+});
+
+describe("hitLeanApplies (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: no aplica; ya en reposo no-op; load-muerto no; vivo/load-vivo sí", () => {
+    expect(hitLeanApplies(true)).toBe(false);
+    expect(hitLeanApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(hitLeanApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(hitLeanApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver no avanza age; reset pose; vivo sí; dt<=0 no-op", () => {
+    const dead = createHitLeanState();
+    triggerHitLean(dead);
+    tickHitLean(dead, 0.05, false);
+    const age = dead.age;
+    const hidden = tickHitLean(dead, 0.05, true);
+    expect(dead.age).toBe(age);
+    expect(hidden.active).toBe(false);
+    expect(hidden.pitch).toBe(0);
+    expect(hidden.yawBias).toBe(0);
+
+    const idle = createHitLeanState();
+    expect(tickHitLean(idle, 0.1, true)).toEqual({
+      pitch: 0,
+      yawBias: 0,
+      active: false,
+    });
+    expect(idle.active).toBe(false);
+    expect(idle.age).toBe(0);
+
+    const live = createHitLeanState();
+    triggerHitLean(live);
+    const out = tickHitLean(live, HIT_LEAN_DURATION / 4, false);
+    const expected = -Math.sin(Math.PI / 4) * HIT_LEAN_ANGLE;
+    expect(out.active).toBe(true);
+    expect(out.pitch).toBeCloseTo(expected, 10);
+    expect(out.yawBias).toBeCloseTo(expected * 0.575, 10);
+    expect(live.age).toBeCloseTo(HIT_LEAN_DURATION / 4, 10);
+
+    expect(tickHitLean(live, 0, false).active).toBe(true);
+    expect(live.age).toBeCloseTo(HIT_LEAN_DURATION / 4, 10);
+    expect(tickHitLean(live, -1, false).active).toBe(true);
+    expect(live.age).toBeCloseTo(HIT_LEAN_DURATION / 4, 10);
+    expect(tickHitLean(live, Number.NaN, false).active).toBe(true);
+    expect(live.age).toBeCloseTo(HIT_LEAN_DURATION / 4, 10);
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto resetan lean; vivo tickea; mixer death se queda", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("hitLeanApplies(");
+    expect(src).toContain("this.view.hideHitLean()");
+    expect(src).toMatch(
+      /syncHitLeanOverlay\(dt = 0\): void \{[\s\S]{0,280}hitLeanApplies\(\s*this\.gameOver/,
+    );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2200}this\.syncHitLeanOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2200}this\.syncHitLeanOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,4600}this\.syncHitLeanOverlay\(dt\)/,
+    );
+    expect(src).toMatch(
+      /this\.syncHitLeanOverlay\(dt\);\s*\/\/ Mixer must keep ticking during freeze[\s\S]{0,160}this\.syncSwingPoseOverlay\(dt\);\s*this\.view\.tickPlayerLoco\(dt, false, false\)/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,4600}this\.view\.tickHitLean\(dt\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+    expect(src).toMatch(
+      /Mixer must keep ticking during freeze[\s\S]{0,160}this\.view\.tickPlayerLoco\(dt, false, false\)/,
+    );
+
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain("hitLeanApplies(");
+    expect(viewSrc).toContain("stepHitLean(");
+    expect(viewSrc).toContain("hideHitLean: hideLean");
+    expect(viewSrc).toContain("playerMixer.update(dt, currentRole(playerAnimator))");
+    expect(viewSrc).not.toContain("tickHitLean(playerHitLean, dt)");
   });
 });

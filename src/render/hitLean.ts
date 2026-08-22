@@ -32,6 +32,16 @@ export function createHitLeanState(): HitLeanState {
   return { age: 0, active: false };
 }
 
+/**
+ * HAS MUERTO / F9 load-muerto: no avanzar el lean ni aplicar recoil pose.
+ * Vivo (incl. F9 load-vivo): tick/pose de hoy.
+ * Ya en reposo = no-op; gameOver no inventa lean.
+ */
+export function hitLeanApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
 /** Reinicia el lean desde t=0 (re-trigger a mitad = nuevo recoil). */
 export function triggerHitLean(state: HitLeanState): void {
   state.age = 0;
@@ -51,8 +61,16 @@ function easeOutSine(t: number): number {
  * Avanza el lean y devuelve offsets puros (deterministas para tests).
  * Mutates `state`. dt≤0 no avanza age.
  * Pitch es negativo (espejo del melee swing).
+ * gameOver → skip tick / reset lean pose (ceros); no inventa lean.
  */
-export function tickHitLean(state: HitLeanState, dt: number): HitLeanOutput {
+export function tickHitLean(
+  state: HitLeanState,
+  dt: number,
+  gameOver = false,
+): HitLeanOutput {
+  if (!hitLeanApplies(gameOver)) {
+    return { pitch: 0, yawBias: 0, active: false };
+  }
   const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
   if (state.active) {
     state.age += safeDt;

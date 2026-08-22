@@ -87,6 +87,7 @@ import { muzzleFlashApplies } from "../render/muzzleFlash";
 import { impactSparkApplies } from "../render/impactSpark";
 import { swingPoseApplies } from "../render/meleeSwing";
 import { cameraShakeApplies } from "../render/cameraShake";
+import { hitLeanApplies } from "../render/hitLean";
 import { lootFloaterLabel } from "../render/lootFloater";
 import {
   SpeechDirector,
@@ -577,6 +578,8 @@ export class Game {
     this.syncImpactSparkOverlay();
     // Load-muerto: swing overlay leftover off (load-vivo dt=0, igual que hoy).
     this.syncSwingPoseOverlay();
+    // Load-muerto: hit-lean leftover off (load-vivo dt=0, igual que hoy).
+    this.syncHitLeanOverlay();
     // Load-muerto: camera shake leftover off (load-vivo dt=0, igual que hoy).
     this.syncCameraShakeOverlay();
     this.view.followCamera(this.player.x, this.player.y);
@@ -952,6 +955,8 @@ export class Game {
     this.syncImpactSparkOverlay();
     // Swing leftover: reset overlay pose ya (no esperar el freeze tick).
     this.syncSwingPoseOverlay();
+    // Hit-lean leftover: reset overlay pose ya (no esperar el freeze tick).
+    this.syncHitLeanOverlay();
     // Camera shake leftover: zero offset ya (no esperar el freeze tick).
     this.syncCameraShakeOverlay();
     // Drain G/E/F / U / Q / C / H / X / Space/V / Z / B / T / Esc / I / F1 / +/- / F5 al final: no loot/puerta/drop/use/craft/cook/shoot/melee/sleep/build/diálogo/inventario/ayuda/zoom/save; no empuja ventanas de scan del hide.
@@ -1286,6 +1291,7 @@ export class Game {
       this.tickHitFlashOverlay(dt);
       this.view.syncPlayer(this.player.x, this.player.y);
       this.syncInteractFocus(dt);
+      this.syncHitLeanOverlay(dt);
       // Mixer must keep ticking during freeze so death LoopOnce can play/clamp.
       this.syncSwingPoseOverlay(dt);
       this.view.tickPlayerLoco(dt, false, false);
@@ -1388,6 +1394,7 @@ export class Game {
       this.tickHitFlashOverlay(dt);
       this.view.syncPlayer(this.player.x, this.player.y);
       this.syncInteractFocus(dt);
+      this.syncHitLeanOverlay(dt);
       this.syncSwingPoseOverlay(dt);
       this.view.tickPlayerLoco(dt, false, false);
       this.syncMuzzleFlashOverlay(dt);
@@ -1788,6 +1795,7 @@ export class Game {
       const moving = ax.x !== 0 || ax.z !== 0;
       // Ejes vivos (diagonal continua) para yaw GLB; facing cardinal sigue
       // en player para melee / barricada / disparo.
+      this.syncHitLeanOverlay(dt);
       this.syncSwingPoseOverlay(dt);
       this.view.tickPlayerLoco(dt, moving, sprint, ax.x, ax.z);
     }
@@ -1890,6 +1898,15 @@ export class Game {
   private syncSwingPoseOverlay(dt = 0): void {
     if (swingPoseApplies(this.gameOver)) this.view.tickMeleeSwing(dt);
     else this.view.hideMeleeSwing();
+  }
+
+  /**
+   * Hit-lean recoil overlay: gameOver → skip tick + reset lean pose.
+   * Vivo (incl. F9 load-vivo): tick de hoy. Ya en reposo = no-op.
+   */
+  private syncHitLeanOverlay(dt = 0): void {
+    if (hitLeanApplies(this.gameOver)) this.view.tickHitLean(dt);
+    else this.view.hideHitLean();
   }
 
   /**
