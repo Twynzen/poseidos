@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   DEFAULT_NOISE_RING_LIFE,
   NOISE_RING_AMBER,
@@ -9,7 +10,9 @@ import {
   NOISE_RING_RUN,
   NOISE_RING_WIDTH,
   RUN_NOISE_RING_MIN_AGE,
+  applyNoiseRingTick,
   createNoiseRing,
+  noiseRingApplies,
   ringColorHex,
   ringOpacity,
   ringProgress,
@@ -227,5 +230,88 @@ describe("noiseRings (headless)", () => {
     expect(ringColorHex("attack")).toBe(0xff6e37);
     expect(ringColorHex("gun")).toBe(0xff6e37);
     expect(ringColorHex("barricade")).toBe(0xff6e37);
+  });
+});
+
+describe("noiseRingApplies (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: no aplica; ya vacío no-op; load-muerto no; vivo/load-vivo sí", () => {
+    expect(noiseRingApplies(true)).toBe(false);
+    expect(noiseRingApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(noiseRingApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(noiseRingApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver no avanza age; vivo sí", () => {
+    const dead = createNoiseRing({ x: 0, y: 0, radius: 5, life: 0.5 });
+    expect(applyNoiseRingTick(dead, 0.2, true)).toBe(true);
+    expect(dead.age).toBe(0);
+    expect(ringProgress(dead)).toBe(0);
+    expect(ringOpacity(dead)).toBe(1);
+
+    const live = createNoiseRing({ x: 0, y: 0, radius: 5, life: 0.5 });
+    expect(applyNoiseRingTick(live, 0.2, false)).toBe(true);
+    expect(live.age).toBeCloseTo(0.2, 5);
+    expect(applyNoiseRingTick(live, 0.2, false)).toBe(true);
+    expect(applyNoiseRingTick(live, 0.2, false)).toBe(false);
+    expect(live.age).toBeGreaterThanOrEqual(0.5);
+
+    const alreadyDone = createNoiseRing({ x: 0, y: 0, radius: 3, life: 0.1 });
+    alreadyDone.age = 0.1;
+    expect(applyNoiseRingTick(alreadyDone, 0.2, true)).toBe(false);
+    expect(alreadyDone.age).toBe(0.1);
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto ocultan anillos; vivo tickea", () => {
+    const src = readFileSync(resolve(process.cwd(), "src/core/game.ts"), "utf8");
+    expect(src).toContain("noiseRingApplies(");
+    expect(src).toContain("this.view.hideNoiseRings()");
+    expect(src).toMatch(
+      /syncNoiseRingOverlay\(dt = 0\): void \{[\s\S]{0,280}noiseRingApplies\(\s*this\.gameOver/,
+    );
+    expect(src).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,1200}this\.syncNoiseRingOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,1200}this\.syncNoiseRingOverlay\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}this\.syncNoiseRingOverlay\(dt\)/,
+    );
+    expect(src).toMatch(
+      /this\.syncTracerOverlay\(dt\);\s*this\.syncNoiseRingOverlay\(dt\);/,
+    );
+    expect(src).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,
+    );
+    expect(src).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}this\.view\.tickNoiseRings\(dt\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    expect(viewSrc).toContain("noiseRingApplies(");
+    expect(viewSrc).toContain("applyNoiseRingTick(");
+    expect(viewSrc).toContain("hideNoiseRings: clearNoiseRings");
   });
 });

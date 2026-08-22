@@ -188,10 +188,10 @@ describe("hitFlashOverlayOpacity (HAS MUERTO / F9 load-muerto)", () => {
       /refreshViewAfterLoad\(\): void \{[\s\S]{0,500}this\.syncHitFlashOverlay\(\)/,
     );
     expect(src).toMatch(
-      /this\.view\.tickNoiseRings\(dt\);\s*this\.tickHitFlashOverlay\(dt\)/,
+      /this\.syncNoiseRingOverlay\(dt\);\s*this\.tickHitFlashOverlay\(dt\)/,
     );
     expect(src).toMatch(
-      /if \(!this\.player\.alive\) \{[\s\S]{0,200}enterGameOver\(\)[\s\S]{0,280}this\.tickHitFlashOverlay\(dt\)/,
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}this\.tickHitFlashOverlay\(dt\)/,
     );
     expect(src).toMatch(
       /doLoad\(\): boolean \{[\s\S]{0,900}loadAliveRuntime[\s\S]{0,400}if \(loaded\.gameOver\) \{[\s\S]{0,80}this\.closeDialogueOnGameOver\(\)[\s\S]{0,200}refreshViewAfterLoad/,

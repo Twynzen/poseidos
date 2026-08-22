@@ -75,7 +75,12 @@ import {
 } from "../combat";
 import { tileKey } from "../world/los";
 import { NoiseBus, type NoiseEvent } from "../world/noise";
-import { shouldShowNoiseRing, shouldSpawnNoiseRing } from "../render/noiseRings";
+import {
+  noiseRingApplies,
+  shouldShowNoiseRing,
+  shouldSpawnNoiseRing,
+} from "../render/noiseRings";
+import { tracerOverlayApplies } from "../render/tracers";
 import { lootFloaterLabel } from "../render/lootFloater";
 import {
   SpeechDirector,
@@ -554,6 +559,9 @@ export class Game {
     // Load-muerto: apagar pulso leftover (load-vivo espera el tick, igual que hoy).
     if (this.gameOver) this.syncInteractFocus();
     this.syncLighting();
+    // Load-muerto: tracers / anillos leftover off (load-vivo dt=0, igual que hoy).
+    this.syncTracerOverlay();
+    this.syncNoiseRingOverlay();
     this.view.followCamera(this.player.x, this.player.y);
   }
 
@@ -903,6 +911,9 @@ export class Game {
     // FOV ya en radio base: ocultar mudos/poseídos del anillo +4 linterna.
     this.syncHostileView();
     this.syncLighting();
+    // Tracers / anillos leftover: hide ya (no esperar el freeze tick).
+    this.syncTracerOverlay();
+    this.syncNoiseRingOverlay();
     // Drain G/E/F / U / Q / C / H / X / Space/V / Z / B / T / Esc / I / F1 / +/- / F5 al final: no loot/puerta/drop/use/craft/cook/shoot/melee/sleep/build/diálogo/inventario/ayuda/zoom/save; no empuja ventanas de scan del hide.
     this.input.consumeLoot();
     this.input.consumeInteract();
@@ -1230,8 +1241,8 @@ export class Game {
       this.syncLighting();
       this.syncRainVisual(dt);
     this.syncGrassVisual(dt);
-      this.view.tickTracers(dt);
-      this.view.tickNoiseRings(dt);
+      this.syncTracerOverlay(dt);
+      this.syncNoiseRingOverlay(dt);
       this.tickHitFlashOverlay(dt);
       this.view.syncPlayer(this.player.x, this.player.y);
       this.syncInteractFocus(dt);
@@ -1738,8 +1749,8 @@ export class Game {
     this.syncLighting();
     this.syncRainVisual(dt);
     this.syncGrassVisual(dt);
-    this.view.tickTracers(dt);
-    this.view.tickNoiseRings(dt);
+    this.syncTracerOverlay(dt);
+    this.syncNoiseRingOverlay(dt);
     this.view.followCamera(this.player.x, this.player.y);
     this.tickHitFlashOverlay(dt);
     this.renderer.render(this.view.scene, this.view.camera);
@@ -1800,6 +1811,24 @@ export class Game {
       if (d > CONTAINER_REACH) continue;
       this.view.addLootMarker(c.id, c.x, c.y, c.name, c.inv);
     }
+  }
+
+  /**
+   * Tracers de disparo: gameOver → skip tick + hide meshes.
+   * Vivo (incl. F9 load-vivo): tick de hoy. Ya vacío = no-op.
+   */
+  private syncTracerOverlay(dt = 0): void {
+    if (tracerOverlayApplies(this.gameOver)) this.view.tickTracers(dt);
+    else this.view.hideTracers();
+  }
+
+  /**
+   * Anillos de ruido: gameOver → skip tick + hide meshes.
+   * Vivo (incl. F9 load-vivo): tick de hoy. Ya vacío = no-op.
+   */
+  private syncNoiseRingOverlay(dt = 0): void {
+    if (noiseRingApplies(this.gameOver)) this.view.tickNoiseRings(dt);
+    else this.view.hideNoiseRings();
   }
 
   /** Overlay `#hit-flash`: decay + opacity (0 si gameOver). */
