@@ -708,10 +708,10 @@ describe("lootInputApplies / applyLootInput (HAS MUERTO / F9 load-muerto)", () =
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeInteract\(\)/,
     );
     expect(gameSrc).toMatch(
-      /enterGameOver\(\): void \{[\s\S]{0,1200}consumeLoot\(\)/,
+      /enterGameOver\(\): void \{[\s\S]{0,1600}consumeLoot\(\)/,
     );
     expect(gameSrc).toMatch(
-      /enterGameOver\(\): void \{[\s\S]{0,1200}consumeInteract\(\)/,
+      /enterGameOver\(\): void \{[\s\S]{0,1600}consumeInteract\(\)/,
     );
     expect(gameSrc).toMatch(
       /doLoad\(\): boolean \{[\s\S]{0,900}if \(loaded\.gameOver\) \{[\s\S]{0,200}consumeLoot\(\);[\s\S]{0,80}consumeInteract\(\)/,

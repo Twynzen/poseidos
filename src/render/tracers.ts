@@ -21,6 +21,30 @@ export const TRACER_WIDTH = 0.0790625;
 /** Re-export: miss / max-range endpoint (misma regla que ranged). */
 export { aimAlongFacing } from "../combat/ranged";
 
+/**
+ * HAS MUERTO / F9 load-muerto: no avanzar tracers ni pintar líneas.
+ * Vivo (incl. F9 load-vivo): tick/opacity de hoy.
+ * Ya vacío = no-op; gameOver no inventa tracer.
+ */
+export function tracerOverlayApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * Avanza age si aplica; gameOver no muta (skip tick).
+ * dt no finito / ≤0 no avanza (igual que un tick vacío).
+ */
+export function tickTracerAge(
+  age: number,
+  dt: number,
+  gameOver = false,
+): number {
+  if (!tracerOverlayApplies(gameOver)) return age;
+  if (!Number.isFinite(dt) || dt <= 0) return age;
+  return age + dt;
+}
+
 /** Clampa TTL al rango visual pedido. */
 export function clampTracerTtl(ttl: number): number {
   if (!Number.isFinite(ttl)) return DEFAULT_TRACER_TTL;

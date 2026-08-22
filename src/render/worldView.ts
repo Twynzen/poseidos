@@ -39,19 +39,22 @@ import {
   TRACER_HEIGHT,
   TRACER_WIDTH,
   clampTracerTtl,
+  tickTracerAge,
   tracerLength,
   tracerMidpoint,
   tracerOpacity,
+  tracerOverlayApplies,
   tracerYaw,
   type TracerPoint,
 } from "./tracers";
 import {
   NOISE_RING_INNER,
+  applyNoiseRingTick,
   createNoiseRing,
+  noiseRingApplies,
   ringColorHex,
   ringOpacity,
   ringScale,
-  tickNoiseRing,
   type NoiseRingState,
 } from "./noiseRings";
 import {
@@ -519,15 +522,25 @@ export interface WorldView {
    * Desaparece en ~ttl (0.15–0.35s). Opcional: flash en el hocico.
    */
   spawnTracer(from: TracerPoint, to: TracerPoint, ttl?: number): void;
-  /** Avanza TTL / opacidad de tracers activos; limpia expirados. */
-  tickTracers(dt: number): void;
+  /**
+   * Avanza TTL / opacidad de tracers activos; limpia expirados.
+   * `gameOver`: HAS MUERTO / F9 load-muerto — skip tick + hide meshes.
+   */
+  tickTracers(dt: number, gameOver?: boolean): void;
+  /** Quita tracers leftover (HAS MUERTO / F9 load-muerto). Ya vacío = no-op. */
+  hideTracers(): void;
   /**
    * Anillo de ruido en el suelo: se expande hasta `radius` (tiles) y se desvanece.
    * `kind` colorea (run blanco, door/loot ámbar, attack/gun/barricade rojo).
    */
   spawnNoiseRing(x: number, y: number, radius: number, kind?: string): void;
-  /** Avanza age / scale / opacity de anillos; limpia muertos. */
-  tickNoiseRings(dt: number): void;
+  /**
+   * Avanza age / scale / opacity de anillos; limpia muertos.
+   * `gameOver`: HAS MUERTO / F9 load-muerto — skip tick + hide meshes.
+   */
+  tickNoiseRings(dt: number, gameOver?: boolean): void;
+  /** Quita anillos leftover (HAS MUERTO / F9 load-muerto). Ya vacío = no-op. */
+  hideNoiseRings(): void;
   /**
    * Lluvia barata: partículas/líneas alrededor de (wx,wy).
    * intensity 0 = oculto; >0 sync + anima caída.
@@ -1143,10 +1156,14 @@ export function createWorldView(
     liveTracers.push({ mesh, mat, flash, age: 0, ttl: life });
   }
 
-  function tickTracers(dt: number): void {
+  function tickTracers(dt: number, gameOver = false): void {
+    if (!tracerOverlayApplies(gameOver)) {
+      clearTracers();
+      return;
+    }
     for (let i = liveTracers.length - 1; i >= 0; i--) {
       const t = liveTracers[i]!;
-      t.age += dt;
+      t.age = tickTracerAge(t.age, dt, gameOver);
       const op = tracerOpacity(t.age, t.ttl);
       t.mat.opacity = op;
       t.flash.intensity = TRACER_FLASH_INTENSITY * op;
@@ -1221,10 +1238,14 @@ export function createWorldView(
     slot.mesh.visible = true;
   }
 
-  function tickNoiseRings(dt: number): void {
+  function tickNoiseRings(dt: number, gameOver = false): void {
+    if (!noiseRingApplies(gameOver)) {
+      clearNoiseRings();
+      return;
+    }
     for (const p of noiseRingPool) {
       if (!p.state) continue;
-      const alive = tickNoiseRing(p.state, dt);
+      const alive = applyNoiseRingTick(p.state, dt, gameOver);
       if (!alive) {
         p.state = null;
         p.mesh.visible = false;
@@ -1873,8 +1894,10 @@ export function createWorldView(
     },
     spawnTracer,
     tickTracers,
+    hideTracers: clearTracers,
     spawnNoiseRing,
     tickNoiseRings,
+    hideNoiseRings: clearNoiseRings,
     syncRain,
     syncGrass,
     dispose() {

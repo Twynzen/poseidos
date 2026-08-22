@@ -40,6 +40,16 @@ export const NOISE_RING_VISIBLE_KINDS = new Set([
   "gun",
 ]);
 
+/**
+ * HAS MUERTO / F9 load-muerto: no avanzar anillos ni pintar aros.
+ * Vivo (incl. F9 load-vivo): tick/scale/opacity de hoy.
+ * Ya vacío = no-op; gameOver no inventa anillo.
+ */
+export function noiseRingApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
 export function shouldShowNoiseRing(kind: string): boolean {
   return NOISE_RING_VISIBLE_KINDS.has(kind);
 }
@@ -98,6 +108,19 @@ export function ringProgress(r: NoiseRingState): number {
 export function tickNoiseRing(r: NoiseRingState, dt: number): boolean {
   if (dt > 0) r.age += dt;
   return r.age < r.life;
+}
+
+/**
+ * Avanza age si aplica; gameOver no muta (skip tick).
+ * true si sigue vivo (age < life), igual que tickNoiseRing.
+ */
+export function applyNoiseRingTick(
+  r: NoiseRingState,
+  dt: number,
+  gameOver = false,
+): boolean {
+  if (!noiseRingApplies(gameOver)) return r.age < r.life;
+  return tickNoiseRing(r, dt);
 }
 
 /** Ease-out expand 0→1 (quad). */
