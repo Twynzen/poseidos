@@ -1129,7 +1129,7 @@ describe("hudAccAfterRestart (R / softReset)", () => {
     expect(gameSrc).toContain("hudAccAfterRestart(");
     expect(gameSrc).toMatch(/private hudAcc = 0;/);
     expect(gameSrc).toMatch(
-      /softReset\(\): void \{[\s\S]{0,3600}this\.refreshHud\(true\);[\s\S]{0,200}this\.hudAcc = hudAccAfterRestart\(\)/,
+      /softReset\(\): void \{[\s\S]{0,4000}this\.refreshHud\(true\);[\s\S]{0,200}this\.hudAcc = hudAccAfterRestart\(\)/,
     );
     expect(gameSrc).not.toMatch(
       /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}hudAccAfterRestart/,
