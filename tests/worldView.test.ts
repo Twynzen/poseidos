@@ -368,7 +368,7 @@ describe("worldView possessed fallback head emissive", () => {
     expect(src).toContain("const POSSESSED_EMISSIVE = 0x1e0925");
     expect(src).not.toMatch(/emissive:\s*0x2a1040/);
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("emissiveIntensity: 0.22");
     expect(src).toContain("color: HOSTILE_COLOR");
     expect(src).toContain("color: PLAYER_COLOR");
@@ -407,7 +407,7 @@ describe("worldView indoor night warm light", () => {
       "utf8",
     );
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/PointLight\(0xffb070/);
     expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
     expect(src).toContain("color: MUZZLE_FLASH_COLOR");
@@ -464,7 +464,7 @@ describe("worldView muzzle flash mesh", () => {
     expect(src).toContain("export const MUZZLE_LIGHT_COLOR = 0xffffb8");
     expect(src).toContain("new THREE.PointLight(\n    MUZZLE_LIGHT_COLOR,");
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
     expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
     expect(src).toContain("color: POSSESSED_HEAD_COLOR");
@@ -517,7 +517,7 @@ describe("worldView muzzle PointLight", () => {
     expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
     expect(src).toContain("color: MUZZLE_FLASH_COLOR");
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
     expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
     expect(src).toContain("color: POSSESSED_HEAD_COLOR");
@@ -575,7 +575,7 @@ describe("worldView impact spark mesh", () => {
     expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
     expect(src).toContain("color: MUZZLE_FLASH_COLOR");
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
     expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
     expect(src).toContain("color: POSSESSED_HEAD_COLOR");
@@ -635,7 +635,7 @@ describe("worldView impact spark PointLight", () => {
     expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
     expect(src).toContain("color: MUZZLE_FLASH_COLOR");
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
     expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
     expect(src).toContain("color: POSSESSED_HEAD_COLOR");
@@ -706,7 +706,7 @@ describe("worldView tracer mesh", () => {
     expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
     expect(src).toContain("color: MUZZLE_FLASH_COLOR");
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
     expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
     expect(src).toContain("color: POSSESSED_HEAD_COLOR");
@@ -771,7 +771,7 @@ describe("worldView tracer flash", () => {
     expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
     expect(src).toContain("color: MUZZLE_FLASH_COLOR");
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
     expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
     expect(src).toContain("color: POSSESSED_HEAD_COLOR");
@@ -844,7 +844,7 @@ describe("worldView flashlight fill", () => {
     expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
     expect(src).toContain("color: MUZZLE_FLASH_COLOR");
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
     expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
     expect(src).toContain("color: POSSESSED_HEAD_COLOR");
@@ -916,7 +916,7 @@ describe("worldView flashlight fill distance", () => {
     expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
     expect(src).toContain("color: MUZZLE_FLASH_COLOR");
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
     expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
     expect(src).toContain("color: POSSESSED_HEAD_COLOR");
@@ -988,7 +988,7 @@ describe("worldView flashlight fill distance gain", () => {
     expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
     expect(src).toContain("color: MUZZLE_FLASH_COLOR");
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
     expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
     expect(src).toContain("color: POSSESSED_HEAD_COLOR");
@@ -1066,7 +1066,7 @@ describe("worldView flashlight fill Y", () => {
     expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
     expect(src).toContain("color: MUZZLE_FLASH_COLOR");
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
     expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
     expect(src).toContain("color: POSSESSED_HEAD_COLOR");
@@ -1156,7 +1156,7 @@ describe("worldView flashlight spot Y", () => {
     expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
     expect(src).toContain("color: MUZZLE_FLASH_COLOR");
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
     expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
     expect(src).toContain("color: POSSESSED_HEAD_COLOR");
@@ -1258,7 +1258,7 @@ describe("worldView flashlight spot distance extra", () => {
     expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
     expect(src).toContain("color: MUZZLE_FLASH_COLOR");
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
     expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
     expect(src).toContain("color: POSSESSED_HEAD_COLOR");
@@ -1357,7 +1357,7 @@ describe("worldView flashlight spot distance gain", () => {
     expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
     expect(src).toContain("color: MUZZLE_FLASH_COLOR");
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
     expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
     expect(src).toContain("color: POSSESSED_HEAD_COLOR");
@@ -1455,7 +1455,7 @@ describe("worldView warm light intensity mul", () => {
     expect(src).toContain("export const MUZZLE_FLASH_COLOR = 0xffffdd");
     expect(src).toContain("color: MUZZLE_FLASH_COLOR");
     expect(src).toContain("export const WARM_LIGHT_COLOR = 0xffca81");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const POSSESSED_HEAD_EMISSIVE = 0x30124a");
     expect(src).toContain("emissive: POSSESSED_HEAD_EMISSIVE");
     expect(src).toContain("color: POSSESSED_HEAD_COLOR");
@@ -1529,7 +1529,7 @@ describe("worldView warm light Y", () => {
     );
     expect(WARM_LIGHT_DISTANCE_BASE).toBe(7.475);
     expect(WARM_LIGHT_DISTANCE_GAIN).toBe(2.875);
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DISTANCE_GAIN = 2.3");
     expect(src).toContain("export const FLASHLIGHT_SPOT_DISTANCE_EXTRA = 1.84");
     expect(src).toContain(
@@ -1631,7 +1631,7 @@ describe("worldView warm light distance base", () => {
       /warmLight\.distance = WARM_LIGHT_DISTANCE_BASE \+ i \* 2\.5/,
     );
     expect(WARM_LIGHT_DISTANCE_GAIN).toBe(2.875);
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const WARM_LIGHT_Y = 1.7825");
     expect(src).toContain("warmLight.position.set(warmLightOriginXFromLook(wx), warmLightYFromLook(WARM_LIGHT_Y), warmLightOriginZFromLook(wy))");
     expect(src).not.toMatch(/export const WARM_LIGHT_Y = 1\.55/);
@@ -1743,7 +1743,7 @@ describe("worldView warm light distance gain", () => {
       /warmLight\.distance = WARM_LIGHT_DISTANCE_BASE \+ i \* 2\.5/,
     );
     expect(src).not.toMatch(/warmLight\.distance = 6\.5 \+ i \* 2\.5/);
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).toContain("export const WARM_LIGHT_Y = 1.7825");
     expect(src).toContain("warmLight.position.set(warmLightOriginXFromLook(wx), warmLightYFromLook(WARM_LIGHT_Y), warmLightOriginZFromLook(wy))");
     expect(src).not.toMatch(/export const WARM_LIGHT_Y = 1\.55/);
@@ -1875,7 +1875,7 @@ describe("worldView warm light amber G gain", () => {
     );
     expect(src).not.toMatch(/warmLight\.distance = 6\.5 \+ i \* 2\.5/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -2013,7 +2013,7 @@ describe("worldView warm light amber B", () => {
     );
     expect(src).not.toMatch(/warmLight\.distance = 6\.5 \+ i \* 2\.5/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -2149,7 +2149,7 @@ describe("worldView warm light amber B gain", () => {
     );
     expect(src).not.toMatch(/warmLight\.distance = 6\.5 \+ i \* 2\.5/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -2289,7 +2289,7 @@ describe("worldView warm light amber G", () => {
     );
     expect(src).not.toMatch(/warmLight\.distance = 6\.5 \+ i \* 2\.5/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -2426,7 +2426,7 @@ describe("worldView warm light visible eps", () => {
     );
     expect(src).not.toMatch(/warmLight\.distance = 6\.5 \+ i \* 2\.5/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).not.toMatch(/export const WARM_LIGHT_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_Y = 1.7825");
@@ -2544,7 +2544,7 @@ describe("worldView warm light decay", () => {
       "utf8",
     );
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).not.toMatch(/export const WARM_LIGHT_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
@@ -2689,7 +2689,7 @@ describe("worldView flashlight fill decay", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -2846,7 +2846,7 @@ describe("worldView flashlight spot decay", () => {
     expect(src).not.toMatch(/export const MUZZLE_LIGHT_DECAY = 2/);
     expect(src).toContain("const MUZZLE_LIGHT_DISTANCE = 2.6");
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -3003,7 +3003,7 @@ describe("worldView muzzle light decay", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -3174,7 +3174,7 @@ describe("worldView impact spark light decay", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -3364,7 +3364,7 @@ describe("worldView tracer flash decay", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -3543,7 +3543,7 @@ describe("worldView tracer flash intensity", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -3725,7 +3725,7 @@ describe("worldView tracer flash distance", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -3909,7 +3909,7 @@ describe("worldView tracer flash Y offset", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -4110,7 +4110,7 @@ describe("worldView flashlight spot target Y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -4314,7 +4314,7 @@ describe("worldView muzzle forward", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -4523,7 +4523,7 @@ describe("worldView facing chevron Y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -4867,7 +4867,7 @@ describe("worldView facing chevron tilt", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -5209,7 +5209,7 @@ describe("worldView noise ring Y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -5551,7 +5551,7 @@ describe("worldView marker ring Y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -5893,7 +5893,7 @@ describe("worldView marker icon Y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -6235,7 +6235,7 @@ describe("worldView marker icon size", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -6577,7 +6577,7 @@ describe("worldView marker badge radius", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -6919,7 +6919,7 @@ describe("worldView marker badge tilt", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -7261,7 +7261,7 @@ describe("worldView player body base Y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -7603,7 +7603,7 @@ describe("worldView player head base Y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -7945,7 +7945,7 @@ describe("worldView hostile body base Y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -8287,7 +8287,7 @@ describe("worldView hostile head base Y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -8629,7 +8629,7 @@ describe("worldView hostile mute XZ scale", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -8971,7 +8971,7 @@ describe("worldView hostile body width", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -9333,7 +9333,7 @@ describe("worldView hostile body height", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -9695,7 +9695,7 @@ describe("worldView hostile body depth", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -10052,7 +10052,7 @@ describe("worldView hostile head size", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -10417,7 +10417,7 @@ describe("worldView player head size", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -10776,7 +10776,7 @@ describe("worldView player body width", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -11135,7 +11135,7 @@ describe("worldView player body height", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -11494,7 +11494,7 @@ describe("worldView player body depth", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -11864,7 +11864,7 @@ describe("worldView wall height", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -12240,7 +12240,7 @@ describe("worldView wall base Y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -12631,7 +12631,7 @@ describe("worldView door height", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -13034,7 +13034,7 @@ describe("worldView door base Y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -13444,7 +13444,7 @@ describe("worldView door depth", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -13864,7 +13864,7 @@ describe("worldView bed height", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -14290,7 +14290,7 @@ describe("worldView bed base Y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -14723,7 +14723,7 @@ describe("worldView bed depth", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -15166,7 +15166,7 @@ describe("worldView furniture height", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -15615,7 +15615,7 @@ describe("worldView furniture xz", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -16070,7 +16070,7 @@ describe("worldView furniture base y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -16544,7 +16544,7 @@ describe("worldView barricade height", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -17020,7 +17020,7 @@ describe("worldView barricade width", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -17531,7 +17531,7 @@ describe("worldView barricade depth", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -18044,7 +18044,7 @@ describe("worldView barricade plank y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -18559,7 +18559,7 @@ describe("worldView barricade cross y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -19076,7 +19076,7 @@ describe("worldView barricade cross scale y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -19595,7 +19595,7 @@ describe("worldView barricade cross scale x", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -20116,7 +20116,7 @@ describe("worldView barricade cross scale z", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -20639,7 +20639,7 @@ describe("worldView door open x", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -21164,7 +21164,7 @@ describe("worldView barricade plank rot y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
@@ -21691,7 +21691,7 @@ describe("worldView barricade cross rot y", () => {
     expect(src).not.toMatch(/new THREE\.PointLight\(FLASHLIGHT_FILL_COLOR, 0, 10, 2\)/);
     expect(src).not.toMatch(/export const FLASHLIGHT_FILL_DECAY = 2/);
     expect(src).toContain("export const WARM_LIGHT_DECAY = 1.74");
-    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), WARM_LIGHT_DECAY)");
+    expect(src).toContain("new THREE.PointLight(WARM_LIGHT_COLOR, warmLightIntensityAfterRestart(), warmLightDistanceAfterRestart(), warmLightDecayAfterRestart())");
     expect(src).not.toMatch(/new THREE\.PointLight\(WARM_LIGHT_COLOR, 0, 7\.5, 2\)/);
     expect(src).toContain("export const WARM_LIGHT_VISIBLE_EPS = 0.0174");
     expect(src).toContain("warmLight.visible = warmLightVisibleFromLook(i > WARM_LIGHT_VISIBLE_EPS)");
