@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import {
   markerBadgeOpacity,
+  markerBadgeSideAfterRestart,
   markerIconColorAfterRestart,
   markerIconDepthWriteAfterRestart,
   markerIconOpacityAfterRestart,
@@ -2995,7 +2996,8 @@ function attachRoleMarkers(
     emissiveIntensity: 0.65,
     roughness: 0.45,
     metalness: 0.1,
-    side: THREE.DoubleSide,
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: markerBadgeSideAfterRestart() as THREE.Side,
     opacity: markerBadgeOpacity(role),
   });
   const letterMap =
