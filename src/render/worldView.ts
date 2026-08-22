@@ -2,6 +2,7 @@ import * as THREE from "three";
 import {
   markerBadgeOpacity,
   markerIconTransparentAfterRestart,
+  markerRingDepthWriteAfterRestart,
   markerRingOpacity,
   markerRingRadii,
   markerRingTransparentAfterRestart,
@@ -2943,7 +2944,8 @@ function attachRoleMarkers(
     transparent: markerRingTransparentAfterRestart(),
     opacity: markerRingOpacity(role),
     side: THREE.DoubleSide,
-    depthWrite: false,
+    // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
+    depthWrite: markerRingDepthWriteAfterRestart(),
   });
   shared.mats.push(ringMat);
   const ringGeo = markerUsesInteractRing(role)
