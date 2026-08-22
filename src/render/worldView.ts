@@ -175,14 +175,18 @@ import {
   rainStreakOpacity,
   rainStreakScaleY,
   rainStreaksHidden,
+  rainStreakNeedsWrap,
   rainStreakVxAfterRestart,
   rainStreakVxFromDrift,
+  rainStreakVxFromPhase,
   rainStreakVyAfterRestart,
   rainStreakVyFromSpeed,
   rainStreakVzAfterRestart,
+  rainStreakVzFromPhase,
   rainStreakVzFromZ,
   rainStreakYAfterRestart,
   rainStreakYFromFall,
+  rainStreakYFromWrap,
 } from "./rainStreaks";
 import { lootBadgeIconScale, lootBadgeY, lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
 import {
@@ -1563,10 +1567,11 @@ export function createWorldView(
       d.mesh.scale.set(1, sy, 1);
       if (dt > 0) {
         d.y = rainStreakYFromFall(d.y, rainStreakVyFromSpeed(d.vy), dt, i);
-        if (d.y < 0.15) {
-          d.y = 2.2 + Math.random() * 5.5;
-          d.vx = (Math.random() - 0.5) * 14;
-          d.vz = (Math.random() - 0.5) * 14;
+        // Wrap mid-life: respawn fresco; leftover Y < 0.15 de la vida anterior no filtra (dispose).
+        if (rainStreakNeedsWrap(d.y)) {
+          d.y = rainStreakYFromWrap(Math.random());
+          d.vx = rainStreakVxFromPhase(Math.random());
+          d.vz = rainStreakVzFromPhase(Math.random());
         }
         // Drift leve con el viento.
         d.vx = rainStreakVxFromDrift(d.vx, dt);
