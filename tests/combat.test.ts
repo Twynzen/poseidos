@@ -1,7 +1,9 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { makeFloor, makeWall } from "../src/world/tile";
 import { TileMap } from "../src/world/tilemap";
-import { HostileSim } from "../src/ai";
+import { HostileSim, loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import { PlayerSim } from "../src/actors/player";
 import {
   HOSTILE_MAX_HEALTH,
@@ -22,6 +24,8 @@ import {
   RANGED_RANGE,
   checkRangedReady,
   pickRangedTarget,
+  shootInputApplies,
+  applyShootInput,
 } from "../src/combat";
 import { addItem, createInventory, getItemDef, totalQty, findSlot } from "../src/items";
 import { NoiseBus, NOISE_PRESETS } from "../src/world/noise";
@@ -489,5 +493,148 @@ describe("combat aim continuo vs facing snap", () => {
     const hit = player.tryMelee(sim);
     expect(hit?.hostileId).toBe("diag");
     expect(map.walkable(5, 5)).toBe(true);
+  });
+});
+
+describe("shootInputApplies / applyShootInput (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: X no aplica; vivo / load-vivo sí", () => {
+    expect(shootInputApplies(true)).toBe(false);
+    expect(shootInputApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(shootInputApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(shootInputApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver + wantsShoot no muta ammo ni dispara; vivo X gasta 1 ammo", () => {
+    const map = openMap(16, 8);
+    const deadInv = createInventory(8, 20);
+    addItem(deadInv, "pistol", 1);
+    addItem(deadInv, "ammo", 3);
+    const deadPlayer = new PlayerSim({ x: 3.5, y: 4.5 }, undefined, deadInv);
+    deadPlayer.facingX = 1;
+    deadPlayer.facingY = 0;
+    deadPlayer.aimX = 1;
+    deadPlayer.aimY = 0;
+    const deadSim = new HostileSim({
+      speed: 0,
+      visionRange: 0,
+      hearRange: 0,
+      maxHealth: 100,
+    });
+    deadSim.add("far", 9.5, 4.5);
+    const beforeDeadAmmo = deadPlayer.inventory.slots.find((s) => s.id === "ammo")!.qty;
+    const beforeDeadHp = deadSim.hostiles[0]!.health;
+    const beforeDeadSlots = deadPlayer.inventory.slots.map((s) => ({ ...s }));
+
+    expect(
+      applyShootInput(true, true, () => deadPlayer.tryShoot(deadSim, map)),
+    ).toBeNull();
+    expect(deadPlayer.inventory.slots).toEqual(beforeDeadSlots);
+    expect(deadPlayer.inventory.slots.find((s) => s.id === "ammo")!.qty).toBe(
+      beforeDeadAmmo,
+    );
+    expect(deadSim.hostiles[0]!.health).toBe(beforeDeadHp);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(
+      applyShootInput(deadRt.gameOver, true, () =>
+        deadPlayer.tryShoot(deadSim, map),
+      ),
+    ).toBeNull();
+    expect(deadPlayer.inventory.slots.find((s) => s.id === "ammo")!.qty).toBe(
+      beforeDeadAmmo,
+    );
+    expect(deadSim.hostiles[0]!.health).toBe(beforeDeadHp);
+
+    const liveInv = createInventory(8, 20);
+    addItem(liveInv, "pistol", 1);
+    addItem(liveInv, "ammo", 3);
+    const livePlayer = new PlayerSim({ x: 3.5, y: 4.5 }, undefined, liveInv);
+    livePlayer.facingX = 1;
+    livePlayer.facingY = 0;
+    livePlayer.aimX = 1;
+    livePlayer.aimY = 0;
+    const liveSim = new HostileSim({
+      speed: 0,
+      visionRange: 0,
+      hearRange: 0,
+      maxHealth: 100,
+    });
+    liveSim.add("far", 9.5, 4.5);
+    const beforeLiveHp = liveSim.hostiles[0]!.health;
+
+    const shot = applyShootInput(false, true, () =>
+      livePlayer.tryShoot(liveSim, map),
+    );
+    expect(shot?.kind).toBe("shot");
+    if (shot?.kind === "shot") {
+      expect(shot.hit).toBe(true);
+    }
+    expect(livePlayer.inventory.slots.find((s) => s.id === "ammo")!.qty).toBe(2);
+    expect(liveSim.hostiles[0]!.health).toBe(beforeLiveHp - RANGED_DAMAGE);
+    expect(
+      applyShootInput(false, false, () => livePlayer.tryShoot(liveSim, map)),
+    ).toBeNull();
+    expect(livePlayer.inventory.slots.find((s) => s.id === "ammo")!.qty).toBe(2);
+
+    const liveRt = loadAliveRuntime(true);
+    const againInv = createInventory(8, 20);
+    addItem(againInv, "pistol", 1);
+    addItem(againInv, "ammo", 1);
+    const again = new PlayerSim({ x: 3.5, y: 4.5 }, undefined, againInv);
+    again.facingX = 1;
+    again.facingY = 0;
+    again.aimX = 1;
+    again.aimY = 0;
+    const againSim = new HostileSim({
+      speed: 0,
+      visionRange: 0,
+      hearRange: 0,
+      maxHealth: 100,
+    });
+    againSim.add("far", 9.5, 4.5);
+    expect(
+      applyShootInput(liveRt.gameOver, true, () => again.tryShoot(againSim, map))
+        ?.kind,
+    ).toBe("shot");
+    expect(again.inventory.slots.find((s) => s.id === "ammo")).toBeUndefined();
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto drenan X sin disparo; vivo gatea", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("shootInputApplies(");
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeShoot\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,1800}consumeShoot\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2200}if \(loaded\.gameOver\) this\.input\.consumeShoot\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /shootInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsShoot[\s\S]{0,200}tryShoot/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}tryShoot/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}tryShoot/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeRestOrRestart\(\)/,
+    );
   });
 });
