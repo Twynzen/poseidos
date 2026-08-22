@@ -174,7 +174,8 @@ import {
   rainActiveCount,
   rainStreakOpacityAfterRestart,
   rainStreakOpacityFromLook,
-  rainStreakScaleY,
+  rainStreakScaleYAfterRestart,
+  rainStreakScaleYFromLook,
   rainStreaksHidden,
   rainStreakNeedsWrap,
   rainStreakVxAfterRestart,
@@ -1526,6 +1527,8 @@ export function createWorldView(
     // R / dispose: vy fresco (spawn); leftover mid-life speed de la vida anterior no filtra.
     const vy = rainStreakVyAfterRestart(Math.random());
     mesh.position.set(vx, y, vz);
+    // R / dispose: scaleY fresco (largo); leftover mid-life scale de la vida anterior no filtra.
+    mesh.scale.set(1, rainStreakScaleYAfterRestart(), 1);
     rainGroup.add(mesh);
     rainDrops.push({
       mesh,
@@ -1557,7 +1560,8 @@ export function createWorldView(
     // R / dispose: look fresco; leftover mid-life opacity de la vida anterior no filtra.
     const op = rainStreakOpacityFromLook(i, daylight);
     const active = rainActiveCount(i, daylight);
-    const sy = rainStreakScaleY(daylight);
+    // R / dispose: largo fresco; leftover mid-life scaleY de la vida anterior no filtra.
+    const sy = rainStreakScaleYFromLook(daylight);
     for (let n = 0; n < rainDrops.length; n++) {
       const d = rainDrops[n]!;
       const mat = d.mesh.material as THREE.MeshBasicMaterial;

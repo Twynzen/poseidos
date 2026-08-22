@@ -68,6 +68,23 @@ export function rainStreakScaleY(daylight: number): number {
 }
 
 /**
+ * scaleY de look que lee syncRain (daylight fresco o vivo).
+ * leftover mid-life (noon 1 / noche d=0) ≠ largo fresco (medianoche 0.08).
+ */
+export function rainStreakScaleYFromLook(daylight: number): number {
+  return rainStreakScaleY(daylight);
+}
+
+/**
+ * R / softReset: scaleY de largo fresco (medianoche 0.08).
+ * WorldView nace con rainStreakScaleYAfterRestart; leftover mid-life no filtra.
+ * syncRain lee rainStreakScaleYFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function rainStreakScaleYAfterRestart(daylight = 0.08): number {
+  return rainStreakScaleYFromLook(daylight);
+}
+
+/**
  * HAS MUERTO / F9 load-muerto: no avanzar caída ni drift de streaks.
  * Vivo (incl. F9 load-vivo): dt/animación de hoy.
  * No esconde el clima; solo gate de dt. gameOver no inventa hide.
