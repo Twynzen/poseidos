@@ -473,9 +473,11 @@ describe("flashlight cone recreate lock (R / softReset)", () => {
     expect(coneSrc).toContain("flashlightConeYawAfterRestart(");
     expect(coneSrc).toContain("flashlightConeOffsetXAfterRestart(");
     expect(coneSrc).toContain("flashlightConeOffsetZAfterRestart(");
+    expect(coneSrc).toContain("flashlightConeVisibleAfterRestart(");
     expect(coneSrc).toContain("flashlightConeYawFromLook(");
     expect(coneSrc).toContain("flashlightConeOffsetXFromLook(");
     expect(coneSrc).toContain("flashlightConeOffsetZFromLook(");
+    expect(coneSrc).toContain("flashlightConeVisibleFromLook(");
     expect(coneSrc).toContain("FLASHLIGHT_CONE_YAW_SPAWN");
     expect(coneSrc).toMatch(
       /flashlightConeYawAfterRestart\([\s\S]{0,200}flashlightConeYawFromLook\(/,
@@ -492,6 +494,8 @@ describe("flashlight cone recreate lock (R / softReset)", () => {
     expect(viewSrc).toContain("flashlightConeOffsetZFromLook(");
     expect(viewSrc).toContain("flashlightSpotTargetXAfterRestart()");
     expect(viewSrc).toContain("flashlightSpotTargetZAfterRestart()");
+    expect(viewSrc).toContain("flashlightConeVisibleAfterRestart()");
+    expect(viewSrc).toContain("flashlightConeVisibleFromLook(on)");
     expect(viewSrc).toContain("flashlightConeYawAfterRestart()");
     expect(viewSrc).toContain("flashlightConeYawFromLook(playerGltfYaw)");
     expect(viewSrc).toContain("flashlightConeOffsetXFromLook(tip.x)");

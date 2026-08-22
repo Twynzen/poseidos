@@ -412,3 +412,24 @@ export function flashlightSpotTargetXAfterRestart(): number {
 export function flashlightSpotTargetZAfterRestart(): number {
   return flashlightSpotTargetZFromLook(FLASHLIGHT_SPOT_TARGET_Z_SPAWN);
 }
+
+/** Idle cone visible. Ctor flashlightConeWedge.visible false = fresco. Vivo on ≠ boot. */
+export const FLASHLIGHT_CONE_VISIBLE_SPAWN = false;
+
+/**
+ * Visible que lee syncTorchLight (look fresco o vivo).
+ * leftover mid-life on ≠ fresco (idle false).
+ */
+export function flashlightConeVisibleFromLook(visible: boolean): boolean {
+  return visible;
+}
+
+/**
+ * R / softReset: visible fresco (idle false).
+ * WorldView nace flashlightConeWedge.visible AfterRestart; leftover mid-life on no filtra.
+ * syncTorchLight lee flashlightConeVisibleFromLook.
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function flashlightConeVisibleAfterRestart(): boolean {
+  return flashlightConeVisibleFromLook(FLASHLIGHT_CONE_VISIBLE_SPAWN);
+}
