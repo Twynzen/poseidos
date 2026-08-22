@@ -64,6 +64,12 @@ import {
 import {
   createLocoBobState,
   locoBobApplies,
+  locoBobLeanZAfterRestart,
+  locoBobLeanZFromLook,
+  locoBobSwayXAfterRestart,
+  locoBobSwayXFromLook,
+  locoBobYAfterRestart,
+  locoBobYFromLook,
   tickLocoBob as stepLocoBob,
   type LocoBobOutput,
 } from "./locoBob";
@@ -877,6 +883,8 @@ export function createWorldView(
   // R / dispose: swing fresco (idle 0); leftover mid-swing no filtra.
   playerLocoRoot.rotation.x = meleeSwingPitchAfterRestart();
   playerLocoRoot.rotation.z = meleeSwingYawBiasAfterRestart();
+  // R / dispose: loco fresco (idle 0); leftover mid-stride no filtra.
+  playerLocoRoot.position.y = locoBobYAfterRestart();
   const playerBody = new THREE.Mesh(playerBodyGeo, playerBodyMat);
   playerBody.position.y = PLAYER_BODY_BASE_Y;
   const playerHead = new THREE.Mesh(playerHeadGeo, playerHeadMat);
@@ -910,9 +918,9 @@ export function createWorldView(
     active: false,
   };
   let locoBobOut: LocoBobOutput = {
-    bobY: 0,
-    leanZ: 0,
-    swayX: 0,
+    bobY: locoBobYAfterRestart(),
+    leanZ: locoBobLeanZAfterRestart(),
+    swayX: locoBobSwayXAfterRestart(),
     phase: 0,
   };
   /** Roles mixer-agnosticos; GLB opcional via candidates (Soldier first). */
@@ -1564,10 +1572,18 @@ export function createWorldView(
           pitch: meleeSwingPitchFromLook(meleeSwingOut.pitch),
           yawBias: meleeSwingYawBiasFromLook(meleeSwingOut.yawBias),
         };
-    playerLocoRoot.position.y = out.bobY;
-    playerLocoRoot.rotation.z = out.leanZ + pose.yawBias;
-    playerLocoRoot.rotation.x = out.swayX + pose.pitch;
+    playerLocoRoot.position.y = locoBobYFromLook(out.bobY);
+    playerLocoRoot.rotation.z = locoBobLeanZFromLook(out.leanZ) + pose.yawBias;
+    playerLocoRoot.rotation.x = locoBobSwayXFromLook(out.swayX) + pose.pitch;
   }
+
+  // R / dispose: loco fresco (idle 0); leftover mid-stride no filtra.
+  applyLocoBobOffsets({
+    bobY: locoBobYAfterRestart(),
+    leanZ: locoBobLeanZAfterRestart(),
+    swayX: locoBobSwayXAfterRestart(),
+    phase: 0,
+  });
 
   function tickBob(
     dt: number,
@@ -1579,11 +1595,22 @@ export function createWorldView(
       hideBob();
       return;
     }
-    locoBobOut = stepLocoBob(playerLoco, { moving, sprinting }, dt, gameOver);
+    const out = stepLocoBob(playerLoco, { moving, sprinting }, dt, gameOver);
+    locoBobOut = {
+      bobY: locoBobYFromLook(out.bobY),
+      leanZ: locoBobLeanZFromLook(out.leanZ),
+      swayX: locoBobSwayXFromLook(out.swayX),
+      phase: out.phase,
+    };
   }
 
   function hideBob(): void {
-    locoBobOut = { bobY: 0, leanZ: 0, swayX: 0, phase: playerLoco.phase };
+    locoBobOut = {
+      bobY: locoBobYFromLook(0),
+      leanZ: locoBobLeanZFromLook(0),
+      swayX: locoBobSwayXFromLook(0),
+      phase: playerLoco.phase,
+    };
     applyLocoBobOffsets(locoBobOut);
   }
 
@@ -2216,9 +2243,9 @@ export function createWorldView(
         return;
       }
       const out = locoBobOut;
-      playerLocoRoot.position.y = out.bobY;
-      playerLocoRoot.rotation.z = out.leanZ + pose.yawBias;
-      playerLocoRoot.rotation.x = out.swayX + pose.pitch;
+      playerLocoRoot.position.y = locoBobYFromLook(out.bobY);
+      playerLocoRoot.rotation.z = locoBobLeanZFromLook(out.leanZ) + pose.yawBias;
+      playerLocoRoot.rotation.x = locoBobSwayXFromLook(out.swayX) + pose.pitch;
     },
     triggerPlayerAction(role) {
       setAction(playerAnimator, role);

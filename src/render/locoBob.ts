@@ -52,6 +52,64 @@ export const SPRINT_LEAN_AMP = 0.092575;
 /** Sway lateral sprint. 0.0575 × 1.15 para leer de noche. */
 export const SPRINT_SWAY_AMP = 0.066125;
 
+/** Idle bobY. Ctor locoRoot.position.y 0 = fresco. Mid-stride leftover ≠ 0. */
+export const LOCO_BOB_Y_SPAWN = 0;
+/** Idle leanZ. Ctor locoRoot.rotation.z overlay 0 = fresco. Mid-stride leftover ≠ 0. */
+export const LOCO_LEAN_Z_SPAWN = 0;
+/** Idle swayX. Ctor locoRoot.rotation.x overlay 0 = fresco. Mid-stride leftover ≠ 0. */
+export const LOCO_SWAY_X_SPAWN = 0;
+
+/**
+ * bobY que lee apply/tick (look fresco o vivo).
+ * leftover mid-stride / leftover ctor non-zero ≠ fresco (idle 0).
+ */
+export function locoBobYFromLook(bobY: number): number {
+  return bobY;
+}
+
+/**
+ * leanZ que lee apply/tick (look fresco o vivo).
+ * leftover mid-stride / leftover ctor non-zero ≠ fresco (idle 0).
+ */
+export function locoBobLeanZFromLook(leanZ: number): number {
+  return leanZ;
+}
+
+/**
+ * swayX que lee apply/tick (look fresco o vivo).
+ * leftover mid-stride / leftover ctor non-zero ≠ fresco (idle 0).
+ */
+export function locoBobSwayXFromLook(swayX: number): number {
+  return swayX;
+}
+
+/**
+ * R / softReset: bobY fresco (idle 0).
+ * WorldView nace locoRoot.position.y AfterRestart; leftover mid-stride no filtra.
+ * apply/tick lee locoBobYFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function locoBobYAfterRestart(): number {
+  return locoBobYFromLook(LOCO_BOB_Y_SPAWN);
+}
+
+/**
+ * R / softReset: leanZ fresco (idle 0).
+ * WorldView nace locoBobOut lean AfterRestart; leftover mid-stride no filtra.
+ * apply/tick lee locoBobLeanZFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function locoBobLeanZAfterRestart(): number {
+  return locoBobLeanZFromLook(LOCO_LEAN_Z_SPAWN);
+}
+
+/**
+ * R / softReset: swayX fresco (idle 0).
+ * WorldView nace locoBobOut sway AfterRestart; leftover mid-stride no filtra.
+ * apply/tick lee locoBobSwayXFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function locoBobSwayXAfterRestart(): number {
+  return locoBobSwayXFromLook(LOCO_SWAY_X_SPAWN);
+}
+
 const TWO_PI = Math.PI * 2;
 
 export function createLocoBobState(phase = 0): LocoBobState {
