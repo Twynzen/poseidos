@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
+import { createNeighborhood } from "../src/world/neighborhood";
 import {
   LOOT_NAMEPLATE_FADE_DIST,
   LOOT_NAMEPLATE_FILL,
@@ -11,6 +12,8 @@ import {
   LOOT_NAMEPLATE_ICON_PAD,
   LOOT_NAMEPLATE_ICON_SIZE,
   LOOT_NAMEPLATE_ICON_STROKE,
+  LOOT_NAMEPLATE_LOOK_X_SPAWN,
+  LOOT_NAMEPLATE_LOOK_Z_SPAWN,
   LOOT_NAMEPLATE_MAX_CHARS,
   LOOT_NAMEPLATE_MID_SCALE,
   LOOT_NAMEPLATE_NEAR_DIST,
@@ -20,13 +23,25 @@ import {
   LOOT_NAMEPLATE_STROKE_PX,
   LOOT_NAMEPLATE_TEXT_STROKE,
   LOOT_NAMEPLATE_Y,
+  lootNameplateDistAfterRestart,
+  lootNameplateDistFromLook,
   lootNameplateIconKind,
   lootNameplateInvEmpty,
   lootNameplateLabel,
   lootNameplateLeadId,
+  lootNameplateLookXAfterRestart,
+  lootNameplateLookXFromLook,
+  lootNameplateLookZAfterRestart,
+  lootNameplateLookZFromLook,
   lootNameplateOpacity,
+  lootNameplateOpacityAfterRestart,
+  lootNameplateOpacityFromLook,
   lootNameplateScale,
+  lootNameplateScaleAfterRestart,
+  lootNameplateScaleFromLook,
   lootNameplateVisible,
+  lootNameplateVisibleAfterRestart,
+  lootNameplateVisibleFromLook,
   paintLootNameplateIcon,
   truncateLootLabel,
 } from "../src/render/lootNameplate";
@@ -666,10 +681,13 @@ describe("lootNameplateVisible (HAS MUERTO / F9 load-muerto)", () => {
       "utf8",
     );
     expect(viewSrc).toContain(
-      "e.nameplate.visible = lootNameplateVisible(empty, d, gameOver)",
+      "e.nameplate.visible = lootNameplateVisibleFromLook(empty, d, gameOver)",
     );
     expect(viewSrc).toMatch(
-      /syncLootFocus\(wx, wy, dt, emptyIds, gameOver = false\) \{[\s\S]{0,800}lootNameplateVisible\(empty, d, gameOver\)/,
+      /syncLootFocus\(wx, wy, dt, emptyIds, gameOver = false\) \{[\s\S]{0,400}applyLootNameplateLook\(wx, wy, emptyIds, gameOver\)/,
+    );
+    expect(viewSrc).toMatch(
+      /function applyLootNameplateLook\([\s\S]{0,500}lootNameplateVisibleFromLook\(empty, d, gameOver\)/,
     );
   });
 });
@@ -798,5 +816,237 @@ describe("paintLootNameplateIcon", () => {
     expect(() => paintLootNameplateIcon(ctx, "knife", 0, 0, 32)).not.toThrow();
     expect(() => paintLootNameplateIcon(ctx, "unknown", 0, 0, 32)).not.toThrow();
     expect(() => paintLootNameplateIcon(ctx, "", 0, 0, 0)).not.toThrow();
+  });
+});
+
+describe("lootNameplateAfterRestart (R / softReset)", () => {
+  test("look fresco (spawn 24.5, 15.5); leftover ctor dist 0 / Three opacity 1 / origin / far no filtra", () => {
+    const barrio = createNeighborhood(48);
+    const wood = barrio.containers.list.find((c) => c.id === "madera-spawn");
+    expect(wood).toBeTruthy();
+    const woodMx = wood!.x + 0.5;
+    const woodMy = wood!.y + 0.5;
+    const bootWx = lootNameplateLookXAfterRestart();
+    const bootWy = lootNameplateLookZAfterRestart();
+    const bootDist = lootNameplateDistAfterRestart(woodMx, woodMy);
+    const bootOp = lootNameplateOpacityAfterRestart(bootDist);
+    const bootVis = lootNameplateVisibleAfterRestart(false, bootDist);
+    const bootScale = lootNameplateScaleAfterRestart(bootDist);
+
+    expect(bootWx).toBe(lootNameplateLookXFromLook(24.5));
+    expect(bootWy).toBe(lootNameplateLookZFromLook(15.5));
+    expect(bootWx).toBe(LOOT_NAMEPLATE_LOOK_X_SPAWN);
+    expect(bootWy).toBe(LOOT_NAMEPLATE_LOOK_Z_SPAWN);
+    expect(bootWx).toBe(barrio.spawn.x);
+    expect(bootWy).toBe(barrio.spawn.y);
+    expect(lootNameplateLookXAfterRestart(24.5)).toBe(bootWx);
+    expect(lootNameplateLookZAfterRestart(15.5)).toBe(bootWy);
+    expect(lootNameplateLookXAfterRestart(0)).toBe(lootNameplateLookXFromLook(0));
+    expect(lootNameplateLookZAfterRestart(40)).toBe(lootNameplateLookZFromLook(40));
+
+    expect(bootDist).toBe(1);
+    expect(bootDist).toBe(lootNameplateDistFromLook(24.5, 15.5, woodMx, woodMy));
+    expect(bootOp).toBe(1);
+    expect(bootOp).toBe(lootNameplateOpacityFromLook(bootDist));
+    expect(bootVis).toBe(true);
+    expect(bootVis).toBe(lootNameplateVisibleFromLook(false, bootDist));
+    expect(bootScale).toBe(1);
+    expect(bootScale).toBe(lootNameplateScaleFromLook(bootDist));
+
+    const leftoverCtorDist = 0;
+    const leftoverCtorOp = 1;
+    const leftoverCtorVis = lootNameplateVisible(false, 0);
+    const leftoverCtorScale = lootNameplateScale(0);
+    expect(leftoverCtorDist).not.toBe(bootDist);
+    expect(leftoverCtorOp).toBe(1);
+    expect(leftoverCtorVis).toBe(true);
+    expect(leftoverCtorScale).toBe(1);
+
+    const far = barrio.containers.list.find((c) => c.id !== "madera-spawn");
+    expect(far).toBeTruthy();
+    const farDist = lootNameplateDistAfterRestart(far!.x + 0.5, far!.y + 0.5);
+    expect(farDist).toBeGreaterThan(LOOT_NAMEPLATE_FADE_DIST);
+    expect(lootNameplateOpacityAfterRestart(farDist)).toBe(0);
+    expect(lootNameplateVisibleAfterRestart(false, farDist)).toBe(false);
+    expect(lootNameplateScaleAfterRestart(farDist)).toBe(LOOT_NAMEPLATE_MID_SCALE);
+    expect(leftoverCtorOp).not.toBe(lootNameplateOpacityAfterRestart(farDist));
+    expect(leftoverCtorVis).not.toBe(
+      lootNameplateVisibleAfterRestart(false, farDist),
+    );
+    expect(leftoverCtorScale).not.toBe(lootNameplateScaleAfterRestart(farDist));
+    expect(leftoverCtorDist).not.toBe(farDist);
+
+    const leftoverOriginDist = lootNameplateDistFromLook(0, 0, woodMx, woodMy);
+    expect(leftoverOriginDist).not.toBe(bootDist);
+    expect(lootNameplateLookXFromLook(0)).toBe(0);
+    expect(lootNameplateLookXFromLook(0)).not.toBe(bootWx);
+    expect(lootNameplateOpacityFromLook(leftoverOriginDist)).toBe(0);
+    expect(lootNameplateVisibleFromLook(false, leftoverOriginDist)).toBe(false);
+    expect(lootNameplateOpacityFromLook(leftoverOriginDist)).not.toBe(bootOp);
+
+    const leftoverFarDist = lootNameplateDistFromLook(40, 30, woodMx, woodMy);
+    expect(leftoverFarDist).not.toBe(bootDist);
+    expect(lootNameplateLookXFromLook(40)).toBe(40);
+    expect(lootNameplateLookZFromLook(30)).toBe(30);
+    expect(lootNameplateLookXFromLook(40)).not.toBe(bootWx);
+    expect(lootNameplateLookZFromLook(30)).not.toBe(bootWy);
+    expect(lootNameplateOpacityFromLook(leftoverFarDist)).toBe(0);
+    expect(lootNameplateVisibleFromLook(false, leftoverFarDist)).toBe(false);
+    expect(lootNameplateOpacityFromLook(leftoverFarDist)).not.toBe(bootOp);
+    expect(leftoverFarDist).not.toBe(
+      lootNameplateDistAfterRestart(woodMx, woodMy),
+    );
+
+    expect(lootNameplateDistFromLook(24.5, 15.5, woodMx, woodMy)).toBe(bootDist);
+    expect(lootNameplateOpacityFromLook(bootDist)).toBe(bootOp);
+    expect(lootNameplateVisibleFromLook(true, bootDist)).toBe(false);
+    expect(lootNameplateVisibleAfterRestart(false, bootDist, true)).toBe(false);
+    expect(lootNameplateOpacityAfterRestart(bootDist)).toBe(bootOp);
+  });
+
+  test("vivo tick no usa el helper (fade avanza con look)", () => {
+    const barrio = createNeighborhood(48);
+    const wood = barrio.containers.list.find((c) => c.id === "madera-spawn")!;
+    const woodMx = wood.x + 0.5;
+    const woodMy = wood.y + 0.5;
+    const bootDist = lootNameplateDistAfterRestart(woodMx, woodMy);
+    const bootOp = lootNameplateOpacityAfterRestart(bootDist);
+    const liveLookX = lootNameplateLookXFromLook(40);
+    const liveLookZ = lootNameplateLookZFromLook(30);
+    const liveDist = lootNameplateDistFromLook(40, 30, woodMx, woodMy);
+    expect(liveLookX).toBe(40);
+    expect(liveLookZ).toBe(30);
+    expect(liveLookX).not.toBe(lootNameplateLookXAfterRestart());
+    expect(liveLookZ).not.toBe(lootNameplateLookZAfterRestart());
+    expect(liveDist).not.toBe(bootDist);
+    expect(liveDist).not.toBe(lootNameplateDistAfterRestart(woodMx, woodMy));
+    expect(lootNameplateOpacityFromLook(liveDist)).toBe(0);
+    expect(lootNameplateOpacityFromLook(liveDist)).not.toBe(bootOp);
+    expect(lootNameplateVisibleFromLook(false, liveDist)).toBe(false);
+    expect(lootNameplateScaleFromLook(liveDist)).toBe(LOOT_NAMEPLATE_MID_SCALE);
+    expect(lootNameplateLookXFromLook(24.5)).toBe(lootNameplateLookXAfterRestart());
+    expect(lootNameplateLookZFromLook(15.5)).toBe(lootNameplateLookZAfterRestart());
+    expect(lootNameplateOpacityFromLook(bootDist)).toBe(bootOp);
+  });
+});
+
+describe("loot nameplate recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace nameplate fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const plateSrc = readFileSync(
+      resolve(process.cwd(), "src/render/lootNameplate.ts"),
+      "utf8",
+    );
+    expect(plateSrc).toContain("lootNameplateLookXAfterRestart(");
+    expect(plateSrc).toContain("lootNameplateLookZAfterRestart(");
+    expect(plateSrc).toContain("lootNameplateLookXFromLook(");
+    expect(plateSrc).toContain("lootNameplateLookZFromLook(");
+    expect(plateSrc).toContain("lootNameplateDistAfterRestart(");
+    expect(plateSrc).toContain("lootNameplateDistFromLook(");
+    expect(plateSrc).toContain("lootNameplateOpacityAfterRestart(");
+    expect(plateSrc).toContain("lootNameplateOpacityFromLook(");
+    expect(plateSrc).toContain("lootNameplateVisibleAfterRestart(");
+    expect(plateSrc).toContain("lootNameplateVisibleFromLook(");
+    expect(plateSrc).toContain("lootNameplateScaleAfterRestart(");
+    expect(plateSrc).toContain("lootNameplateScaleFromLook(");
+    expect(plateSrc).toContain("LOOT_NAMEPLATE_LOOK_X_SPAWN");
+    expect(plateSrc).toContain("LOOT_NAMEPLATE_LOOK_Z_SPAWN");
+    expect(plateSrc).toMatch(
+      /lootNameplateLookXAfterRestart\([\s\S]{0,200}lootNameplateLookXFromLook\(/,
+    );
+    expect(plateSrc).toMatch(
+      /lootNameplateLookZAfterRestart\([\s\S]{0,200}lootNameplateLookZFromLook\(/,
+    );
+    expect(plateSrc).toMatch(
+      /lootNameplateOpacityAfterRestart\([\s\S]{0,200}lootNameplateOpacityFromLook\(/,
+    );
+    expect(plateSrc).toMatch(
+      /lootNameplateVisibleAfterRestart\([\s\S]{0,200}lootNameplateVisibleFromLook\(/,
+    );
+    expect(viewSrc).toContain("lootNameplateLookXAfterRestart(");
+    expect(viewSrc).toContain("lootNameplateLookZAfterRestart(");
+    expect(viewSrc).toContain("lootNameplateDistFromLook(");
+    expect(viewSrc).toContain("lootNameplateOpacityFromLook(");
+    expect(viewSrc).toContain("lootNameplateVisibleFromLook(");
+    expect(viewSrc).toContain("lootNameplateScaleFromLook(");
+    expect(viewSrc).toMatch(
+      /applyLootNameplateLook\(\s*lootNameplateLookXAfterRestart\(\),\s*lootNameplateLookZAfterRestart\(\),\s*emptyIds/,
+    );
+    expect(viewSrc).toMatch(
+      /const d = lootNameplateDistFromLook\(\s*wx,\s*wy,\s*e\.x,\s*e\.y\)/,
+    );
+    expect(viewSrc).toMatch(
+      /e\.nameplate\.visible = lootNameplateVisibleFromLook\(\s*empty,\s*d,\s*gameOver\)/,
+    );
+    expect(viewSrc).toContain("applyLootNameplateLook(");
+    expect(viewSrc).toMatch(
+      /nameplate\.visible = lootNameplateVisible\(empty, 0\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /syncInteractFocus\(dt = 0\): void \{[\s\S]{0,400}this\.view\.syncLootFocus\(/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.syncInteractFocus\(dt\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}lootNameplateLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}lootNameplateLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}lootNameplateLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}lootNameplateLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("lootNameplateLookXAfterRestart(");
+    expect(gameSrc).not.toContain("lootNameplateLookZAfterRestart(");
+    expect(gameSrc).not.toContain("lootNameplateDistAfterRestart(");
+    expect(gameSrc).not.toContain("lootNameplateOpacityAfterRestart(");
+    expect(gameSrc).not.toContain("lootNameplateVisibleAfterRestart(");
+    expect(gameSrc).not.toContain("lootNameplateScaleAfterRestart(");
+    expect(gameSrc).not.toContain("lootNameplateLookXFromLook(");
+    expect(saveSrc).not.toContain("lootNameplateLookXAfterRestart");
+    expect(saveSrc).not.toContain("lootNameplateOpacityAfterRestart");
+    expect(saveSrc).not.toContain("lootNameplateLookXFromLook");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
   });
 });

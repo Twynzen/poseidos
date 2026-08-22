@@ -103,6 +103,139 @@ export function lootNameplateVisible(
   return lootNameplateOpacity(dist) > 0;
 }
 
+/** Spawn barrio (neighborhood 24.5, 15.5). Ctor dist 0 / Three opacity 1 = leftover. */
+export const LOOT_NAMEPLATE_LOOK_X_SPAWN = 24.5;
+export const LOOT_NAMEPLATE_LOOK_Z_SPAWN = 15.5;
+
+/**
+ * Look X que lee syncLootFocus (wx fresco o vivo).
+ * leftover mid-life (ctor origin 0 / far 40) ≠ look fresco (spawn 24.5).
+ */
+export function lootNameplateLookXFromLook(wx: number): number {
+  return wx;
+}
+
+/**
+ * Look Z que lee syncLootFocus (wy fresco o vivo).
+ * leftover mid-life (ctor origin 0 / far 30) ≠ look fresco (spawn 15.5).
+ */
+export function lootNameplateLookZFromLook(wy: number): number {
+  return wy;
+}
+
+/**
+ * Distancia look→marcador que lee syncLootFocus (look fresco o vivo).
+ * leftover ctor dist 0 / hypot(0, marker) / far ≠ dist fresco (spawn).
+ */
+export function lootNameplateDistFromLook(
+  wx: number,
+  wy: number,
+  mx: number,
+  my: number,
+): number {
+  return Math.hypot(
+    lootNameplateLookXFromLook(wx) - mx,
+    lootNameplateLookZFromLook(wy) - my,
+  );
+}
+
+/**
+ * Opacity que lee syncLootFocus (dist fresco o vivo).
+ * leftover ctor Three 1 / dist 0 ≠ fade fresco (spawn).
+ */
+export function lootNameplateOpacityFromLook(dist: number): number {
+  return lootNameplateOpacity(dist);
+}
+
+/**
+ * Visible que lee syncLootFocus (empty + dist fresco o vivo).
+ * leftover ctor dist 0 / Three visible ≠ plate fresco (solo fade).
+ */
+export function lootNameplateVisibleFromLook(
+  empty: boolean,
+  dist: number,
+  gameOver = false,
+): boolean {
+  return lootNameplateVisible(empty, dist, gameOver);
+}
+
+/**
+ * Scale mul que lee syncLootFocus (dist fresco o vivo).
+ * leftover ctor scale 1 / dist 0 ≠ fade fresco (spawn).
+ */
+export function lootNameplateScaleFromLook(dist?: number): number {
+  return lootNameplateScale(dist);
+}
+
+/**
+ * R / softReset: look X fresco (spawn 24.5).
+ * WorldView nace applyLootNameplateLook(lootNameplateLookXAfterRestart(), …);
+ * leftover ctor origin 0 / dist 0 no filtra.
+ * syncLootFocus lee lootNameplateLookXFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateLookXAfterRestart(
+  wx = LOOT_NAMEPLATE_LOOK_X_SPAWN,
+): number {
+  return lootNameplateLookXFromLook(wx);
+}
+
+/**
+ * R / softReset: look Z fresco (spawn 15.5).
+ * WorldView nace applyLootNameplateLook(…, lootNameplateLookZAfterRestart(), …);
+ * leftover ctor origin 0 no filtra.
+ */
+export function lootNameplateLookZAfterRestart(
+  wy = LOOT_NAMEPLATE_LOOK_Z_SPAWN,
+): number {
+  return lootNameplateLookZFromLook(wy);
+}
+
+/**
+ * R / softReset: dist fresco (marcador vs spawn).
+ * leftover ctor dist 0 / origin 0,0 / far 40,30 no filtra.
+ */
+export function lootNameplateDistAfterRestart(
+  mx: number,
+  my: number,
+  wx = LOOT_NAMEPLATE_LOOK_X_SPAWN,
+  wy = LOOT_NAMEPLATE_LOOK_Z_SPAWN,
+): number {
+  return lootNameplateDistFromLook(
+    lootNameplateLookXAfterRestart(wx),
+    lootNameplateLookZAfterRestart(wy),
+    mx,
+    my,
+  );
+}
+
+/**
+ * R / softReset: opacity fresco (spawn + fade).
+ * leftover ctor Three 1 / dist 0 no filtra.
+ */
+export function lootNameplateOpacityAfterRestart(dist: number): number {
+  return lootNameplateOpacityFromLook(dist);
+}
+
+/**
+ * R / softReset: visible fresco (solo fade desde spawn).
+ * leftover ctor dist 0 / Three visible no filtra.
+ */
+export function lootNameplateVisibleAfterRestart(
+  empty: boolean,
+  dist: number,
+  gameOver = false,
+): boolean {
+  return lootNameplateVisibleFromLook(empty, dist, gameOver);
+}
+
+/**
+ * R / softReset: scale fresco (fade desde spawn).
+ * leftover ctor scale 1 / dist 0 no filtra.
+ */
+export function lootNameplateScaleAfterRestart(dist?: number): number {
+  return lootNameplateScaleFromLook(dist);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.

@@ -235,12 +235,16 @@ import {
   LOOT_NAMEPLATE_STROKE_PX,
   LOOT_NAMEPLATE_TEXT_STROKE,
   LOOT_NAMEPLATE_Y,
+  lootNameplateDistFromLook,
   lootNameplateInvEmpty,
   lootNameplateLabel,
   lootNameplateLeadId,
-  lootNameplateOpacity,
-  lootNameplateScale,
+  lootNameplateLookXAfterRestart,
+  lootNameplateLookZAfterRestart,
+  lootNameplateOpacityFromLook,
+  lootNameplateScaleFromLook,
   lootNameplateVisible,
+  lootNameplateVisibleFromLook,
   paintLootNameplateIcon,
 } from "./lootNameplate";
 import {
@@ -459,7 +463,7 @@ export interface WorldView {
   /**
    * Anillo/nameplate ámbar para un contenedor (drop al suelo / refresh qty).
    * Si ya hay marcador con ese id, reemplaza el nameplate. `x`/`y` son tiles.
-   * `plate.visible` según `lootNameplateInvEmpty` + dist 0 (syncLootFocus aplica fade + scale).
+   * `plate.visible` según `lootNameplateInvEmpty` + dist 0 (ctor apply AfterRestart / syncLootFocus aplica fade + scale).
    */
   addLootMarker(
     id: string,
@@ -1069,6 +1073,34 @@ export function createWorldView(
       lootFocusElapsed,
       emptyIds,
     );
+    // R / dispose: nameplate fresco (spawn fade); leftover ctor dist 0 / Three opacity 1 no filtra.
+    applyLootNameplateLook(
+      lootNameplateLookXAfterRestart(),
+      lootNameplateLookZAfterRestart(),
+      emptyIds,
+    );
+  }
+
+  function applyLootNameplateLook(
+    wx: number,
+    wy: number,
+    emptyIds?: ReadonlySet<string>,
+    gameOver = false,
+  ): void {
+    for (let i = 0; i < lootMarkerGroups.length; i++) {
+      const e = lootMarkerGroups[i]!;
+      const empty = !!emptyIds?.has(e.id);
+      const d = lootNameplateDistFromLook(wx, wy, e.x, e.y);
+      e.nameplate.visible = lootNameplateVisibleFromLook(empty, d, gameOver);
+      const plateMat = e.nameplate.material as THREE.SpriteMaterial;
+      plateMat.opacity = lootNameplateOpacityFromLook(d);
+      const s = lootNameplateScaleFromLook(d);
+      e.nameplate.scale.set(
+        LOOT_NAMEPLATE_SCALE_X * s,
+        LOOT_NAMEPLATE_SCALE_Y * s,
+        1,
+      );
+    }
   }
 
   // Door: anillo/badge steel blue-grey por tile door. Anillo solo en reach (no FOV).
@@ -1945,20 +1977,7 @@ export function createWorldView(
     syncLootFocus(wx, wy, dt, emptyIds, gameOver = false) {
       const safeDt = Number.isFinite(dt) && dt > 0 ? dt : 0;
       lootFocusElapsed += safeDt;
-      for (let i = 0; i < lootMarkerGroups.length; i++) {
-        const e = lootMarkerGroups[i]!;
-        const empty = !!emptyIds?.has(e.id);
-        const d = lootFocusDistFromLook(wx, wy, e.x, e.y);
-        e.nameplate.visible = lootNameplateVisible(empty, d, gameOver);
-        const plateMat = e.nameplate.material as THREE.SpriteMaterial;
-        plateMat.opacity = lootNameplateOpacity(d);
-        const s = lootNameplateScale(d);
-        e.nameplate.scale.set(
-          LOOT_NAMEPLATE_SCALE_X * s,
-          LOOT_NAMEPLATE_SCALE_Y * s,
-          1,
-        );
-      }
+      applyLootNameplateLook(wx, wy, emptyIds, gameOver);
       applyLootFocusLook(wx, wy, lootFocusElapsed, emptyIds, gameOver);
     },
     syncDoorFocus(wx, wy, dt, gameOver = false) {
