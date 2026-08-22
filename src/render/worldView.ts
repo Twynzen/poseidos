@@ -98,7 +98,13 @@ import {
   hostileLocoFromDelta,
   hostileMixerDt,
 } from "./hostileLoco";
-import { playerGltfYawFromMove } from "./playerFacing";
+import {
+  playerGltfYawFromMove,
+  playerPosXAfterRestart,
+  playerPosXFromLook,
+  playerPosZAfterRestart,
+  playerPosZFromLook,
+} from "./playerFacing";
 import { applySurvivorLook } from "./survivorLook";
 import { applyPossessedLook } from "./possessedLook";
 import { applyMuteLook } from "./muteLook";
@@ -911,7 +917,12 @@ export function createWorldView(
   })();
   const markerShared = createMarkerSharedResources();
   attachRoleMarkers(playerMesh, "player", markerShared);
-  playerMesh.position.set(0, 0, 0);
+  // R / dispose: pos fresco (spawn); leftover ctor origin 0,0 no filtra.
+  playerMesh.position.set(
+    playerPosXAfterRestart(),
+    0,
+    playerPosZAfterRestart(),
+  );
   scene.add(playerMesh);
 
   // Loot: anillo/badge ámbar por contenedor. Anillo solo en reach (no FOV);
@@ -2043,7 +2054,11 @@ export function createWorldView(
     ambient,
     sun,
     syncPlayer(x, y) {
-      playerMesh.position.set(x, 0, y);
+      playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      );
       placeFacingChevron();
     },
     addLootMarker(id, x, y, name, inv) {

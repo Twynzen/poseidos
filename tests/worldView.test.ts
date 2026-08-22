@@ -10238,7 +10238,11 @@ describe("worldView player head size", () => {
     expect(src).toContain("playerHead.position.y = PLAYER_HEAD_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerHead.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).toContain("new THREE.BoxGeometry(PLAYER_BODY_WIDTH, PLAYER_BODY_HEIGHT, PLAYER_BODY_DEPTH)");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, PLAYER_BODY_HEIGHT, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_DEPTH = 0\.48/);
@@ -10592,7 +10596,11 @@ describe("worldView player body width", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -10948,7 +10956,11 @@ describe("worldView player body height", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -11304,7 +11316,11 @@ describe("worldView player body depth", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -11671,7 +11687,11 @@ describe("worldView wall height", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -12044,7 +12064,11 @@ describe("worldView wall base Y", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -12432,7 +12456,11 @@ describe("worldView door height", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -12832,7 +12860,11 @@ describe("worldView door base Y", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -13239,7 +13271,11 @@ describe("worldView door depth", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -13656,7 +13692,11 @@ describe("worldView bed height", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -14079,7 +14119,11 @@ describe("worldView bed base Y", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -14509,7 +14553,11 @@ describe("worldView bed depth", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -14949,7 +14997,11 @@ describe("worldView furniture height", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -15395,7 +15447,11 @@ describe("worldView furniture xz", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -15847,7 +15903,11 @@ describe("worldView furniture base y", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -16318,7 +16378,11 @@ describe("worldView barricade height", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -16791,7 +16855,11 @@ describe("worldView barricade width", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -17299,7 +17367,11 @@ describe("worldView barricade depth", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -17809,7 +17881,11 @@ describe("worldView barricade plank y", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -18321,7 +18397,11 @@ describe("worldView barricade cross y", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -18835,7 +18915,11 @@ describe("worldView barricade cross scale y", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -19351,7 +19435,11 @@ describe("worldView barricade cross scale x", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -19869,7 +19957,11 @@ describe("worldView barricade cross scale z", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -20389,7 +20481,11 @@ describe("worldView door open x", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -20911,7 +21007,11 @@ describe("worldView barricade plank rot y", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
@@ -21435,7 +21535,11 @@ describe("worldView barricade cross rot y", () => {
     expect(src).toContain("playerBody.position.y = PLAYER_BODY_BASE_Y");
     expect(src).toContain("playerLocoRoot.add(playerBody, playerHead)");
     expect(src).toContain("playerBody.visible = false");
-    expect(src).toContain("playerMesh.position.set(x, 0, y)");
+    expect(src).toContain("playerMesh.position.set(
+        playerPosXFromLook(x),
+        0,
+        playerPosZFromLook(y),
+      )");
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(PLAYER_BODY_WIDTH, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/new THREE\.BoxGeometry\(0\.55, 1\.12, 0\.48\)/);
     expect(src).not.toMatch(/const PLAYER_BODY_WIDTH = 0\.55/);
