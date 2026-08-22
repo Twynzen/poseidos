@@ -4,6 +4,7 @@ import { describe, expect, test } from "vitest";
 import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   createAmbientBus,
+  resetAmbientAfterRestart,
   tickAmbient,
   ambientTickApplies,
   ambientLevels,
@@ -286,6 +287,115 @@ describe("ambientTickApplies (HAS MUERTO / F9 load-muerto)", () => {
       /if \(!ambientTickApplies\(gameOver\)\) dt = 0/,
     );
     expect(stubSrc).not.toMatch(/if \(gameOver\)[\s\S]{0,80}bus\.muted = true/);
+  });
+});
+
+describe("resetAmbientAfterRestart (R / softReset)", () => {
+  test("reinicio → threatPhase 0 + levels 0; night/indoor/threat previo no filtra", () => {
+    const boot = createAmbientBus();
+    const bus = createAmbientBus();
+    settle(bus, {
+      raining: false,
+      isNight: true,
+      indoor: true,
+      threatNearby: true,
+    });
+    expect(bus.threatPhase).toBeGreaterThan(0);
+    expect(bus.levels.night).toBeGreaterThan(0);
+    expect(bus.levels.indoor).toBeGreaterThan(0);
+    expect(bus.levels.threat).toBeGreaterThan(0);
+    expect(bus.levels.rain).toBe(0);
+
+    resetAmbientAfterRestart(bus);
+    expect(bus.threatPhase).toBe(0);
+    expect(bus.threatPhase).toBe(boot.threatPhase);
+    expect(bus.levels).toEqual(boot.levels);
+    expect(bus.levels).toEqual({ rain: 0, night: 0, indoor: 0, threat: 0 });
+    expect(bus.muted).toBe(false);
+
+    const leaked = createAmbientBus();
+    leaked.threatPhase = 4.2;
+    leaked.levels = { rain: 0.22, night: 0.12, indoor: 0.4, threat: 0.7 };
+    resetAmbientAfterRestart(leaked);
+    expect(leaked.threatPhase).toBe(0);
+    expect(leaked.threatPhase).not.toBe(4.2);
+    expect(leaked.levels.night).toBe(0);
+    expect(leaked.levels.indoor).toBe(0);
+    expect(leaked.levels.threat).toBe(0);
+    expect(leaked.levels.rain).toBe(0);
+  });
+
+  test("muted se preserva; tick vivo no usa el helper (igual que hoy)", () => {
+    const muted = createAmbientBus();
+    muted.muted = true;
+    muted.threatPhase = 2.5;
+    muted.levels = { rain: 0.9, night: 0.45, indoor: 0.4, threat: 0.6 };
+    resetAmbientAfterRestart(muted);
+    expect(muted.muted).toBe(true);
+    expect(muted.threatPhase).toBe(0);
+    expect(muted.levels).toEqual({ rain: 0, night: 0, indoor: 0, threat: 0 });
+    expect(ambientLevels(muted)).toEqual({
+      rain: 0,
+      night: 0,
+      indoor: 0,
+      threat: 0,
+    });
+    expect(describeAmbient(muted)).toBe(MUTE_HUD_MSG);
+
+    const unmuted = createAmbientBus(true);
+    unmuted.threatPhase = 1;
+    unmuted.levels.threat = 0.5;
+    resetAmbientAfterRestart(unmuted);
+    expect(unmuted.muted).toBe(true);
+    toggleAmbientMute(unmuted);
+    expect(unmuted.muted).toBe(false);
+    resetAmbientAfterRestart(unmuted);
+    expect(unmuted.muted).toBe(false);
+    expect(unmuted.threatPhase).toBe(0);
+
+    const live = createAmbientBus();
+    const threatState: AmbientState = {
+      ...dayClearOutdoor,
+      threatNearby: true,
+    };
+    tickAmbient(live, threatState, 0.2);
+    expect(live.threatPhase).toBeGreaterThan(0);
+    expect(live.levels.threat).toBeGreaterThan(0);
+    expect(live.threatPhase).not.toBe(createAmbientBus().threatPhase);
+    expect(ambientTickApplies(false)).toBe(true);
+    expect(ambientTickApplies(true)).toBe(false);
+  });
+
+  test("Game softReset usa helper; F9 load no toca mix; freeze drena R/F9/M", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("resetAmbientAfterRestart(");
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,1800}resetAmbientAfterRestart\(this\.ambient\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.weather = new WeatherSystem\(\{ initial: "drizzle" \}\);[\s\S]{0,200}resetAmbientAfterRestart\(this\.ambient\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}resetAmbientAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2000}resetAmbientAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}resetAmbientAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
   });
 });
 

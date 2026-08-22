@@ -1,5 +1,6 @@
 export {
   createAmbientBus,
+  resetAmbientAfterRestart,
   tickAmbient,
   ambientTickApplies,
   ambientLevels,

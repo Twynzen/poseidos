@@ -46,6 +46,17 @@ export function createAmbientBus(muted = false): AmbientBus {
   };
 }
 
+/**
+ * R / softReset: mix fresco (threatPhase 0, levels 0). Mute se queda.
+ * Game.ambient debe coincidir (night/indoor/threat de la vida anterior no filtra).
+ * F9 load no usa esto — el mix persiste (misma carrera).
+ */
+export function resetAmbientAfterRestart(bus: AmbientBus): void {
+  const fresh = createAmbientBus(bus.muted);
+  bus.threatPhase = fresh.threatPhase;
+  bus.levels = { ...fresh.levels };
+}
+
 /** Targets lógicos 0–1 a partir del estado de mundo (sin suavizado). */
 export function ambientTargets(state: AmbientState, threatPhase = 0): AmbientLevels {
   const rain = state.raining
