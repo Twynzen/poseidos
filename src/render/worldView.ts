@@ -1093,6 +1093,34 @@ export function bedRoughnessAfterRestart(): number {
   return bedRoughnessFromLook(BED_ROUGHNESS_SPAWN);
 }
 
+/** Roughness del door-closed mesh. Ctor doorClosedMat.roughness: 0.7 = fresco. Mid-life leftover ≠ fresco. */
+export const DOOR_CLOSED_ROUGHNESS = 0.7;
+
+/** Roughness del door-closed mesh. Ctor doorClosedMat.roughness: 0.7 = fresco. Mid-life leftover ≠ fresco. */
+export const DOOR_CLOSED_MESH_ROUGHNESS = 0.7;
+
+/** Idle door-closed mesh roughness. Ctor doorClosedMat.roughness: 0.7 = fresco. Mid-life leftover ≠ fresco. */
+export const DOOR_CLOSED_ROUGHNESS_SPAWN = 0.7;
+
+/**
+ * Roughness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0.7).
+ * attach/tick no escriben roughness (ctor constant).
+ */
+export function doorClosedRoughnessFromLook(roughness: number): number {
+  return roughness;
+}
+
+/**
+ * R / softReset: roughness fresco (idle 0.7).
+ * WorldView nace doorClosedMat.roughness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben roughness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function doorClosedRoughnessAfterRestart(): number {
+  return doorClosedRoughnessFromLook(DOOR_CLOSED_ROUGHNESS_SPAWN);
+}
+
 /** Alto de la barricada. 1.35 × 1.15 para leerse un poco más alta de noche. */
 export const BARRICADE_HEIGHT = 1.5525;
 /** Ancho de la barricada. 0.92 × 1.15 para leerse un poco más ancha de noche. */
@@ -1428,7 +1456,8 @@ export function createWorldView(
   });
   const doorClosedMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(DOOR_CLOSED, lastDaylight),
-    roughness: 0.7,
+    // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
+    roughness: doorClosedRoughnessAfterRestart(),
   });
   const doorOpenMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(DOOR_OPEN, lastDaylight),
