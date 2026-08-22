@@ -465,6 +465,32 @@ import {
 
 /** Color de la silueta fallback (cuerpo). 0x4a8fd4 × 1.15/canal para leerse de noche. */
 export const PLAYER_COLOR = 0x55a4f4;
+
+/** Color del player body mesh. Ctor playerBodyMat.color: PLAYER_COLOR = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_BODY_COLOR = 0x55a4f4;
+
+/** Idle player body mesh color. Ctor playerBodyMat.color: PLAYER_COLOR = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_BODY_COLOR_SPAWN = 0x55a4f4;
+
+/**
+ * Color que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle PLAYER_COLOR 0x55a4f4).
+ * attach/tick no escriben color (ctor constant).
+ */
+export function playerBodyColorFromLook(color: number): number {
+  return color;
+}
+
+/**
+ * R / softReset: color fresco (idle PLAYER_COLOR 0x55a4f4).
+ * WorldView nace playerBodyMat.color AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben color (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function playerBodyColorAfterRestart(): number {
+  return playerBodyColorFromLook(PLAYER_BODY_COLOR_SPAWN);
+}
+
 /** Color de la silueta fallback (cabeza). 0x7eb6ef × 1.15/canal (b clamp) para leerse de noche. */
 export const PLAYER_HEAD_COLOR = 0x91d1ff;
 /** Emisivo de la silueta fallback (cabeza). 0x102030 × 1.15/canal para leerse de noche. */
@@ -1017,7 +1043,8 @@ export function createWorldView(
   const playerBodyGeo = new THREE.BoxGeometry(PLAYER_BODY_WIDTH, PLAYER_BODY_HEIGHT, PLAYER_BODY_DEPTH);
   const playerHeadGeo = new THREE.BoxGeometry(PLAYER_HEAD_SIZE, PLAYER_HEAD_SIZE, PLAYER_HEAD_SIZE);
   const playerBodyMat = new THREE.MeshStandardMaterial({
-    color: PLAYER_COLOR,
+    // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
+    color: playerBodyColorAfterRestart(),
     roughness: 0.45,
   });
   const playerHeadMat = new THREE.MeshStandardMaterial({
