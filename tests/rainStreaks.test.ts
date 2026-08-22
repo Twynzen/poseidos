@@ -24,6 +24,9 @@ import {
   rainStreakVxAfterRestart,
   rainStreakVxFromDrift,
   rainStreakVxFromPhase,
+  rainStreakVyAfterRestart,
+  rainStreakVyFromPhase,
+  rainStreakVyFromSpeed,
   rainStreakYAfterRestart,
   rainStreakYFromFall,
   rainStreakYFromPhase,
@@ -278,7 +281,7 @@ describe("rain streaks recreate lock (R / softReset)", () => {
       /const y = rainStreakYAfterRestart\(\s*Math\.random\(\)\)/,
     );
     expect(viewSrc).toMatch(
-      /if \(dt > 0\) \{[\s\S]{0,80}d\.y = rainStreakYFromFall\(\s*d\.y,\s*d\.vy,\s*dt,\s*i\)/,
+      /if \(dt > 0\) \{[\s\S]{0,80}d\.y = rainStreakYFromFall\(\s*d\.y,\s*rainStreakVyFromSpeed\(\s*d\.vy\),\s*dt,\s*i\)/,
     );
     expect(viewSrc).toContain("rainStreakVxFromDrift(");
     expect(gameSrc).toMatch(
@@ -434,6 +437,145 @@ describe("rain vx/drift recreate lock (R / softReset)", () => {
     expect(gameSrc).not.toContain("rainStreakVxAfterRestart(");
     expect(saveSrc).not.toContain("rainStreakVxAfterRestart");
     expect(saveSrc).not.toContain("rainStreakVxFromDrift");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+  });
+});
+
+describe("rainStreakVyAfterRestart (R / softReset)", () => {
+  test("speed fresco (spawn); leftover mid-life vy no filtra", () => {
+    const boot = rainStreakVyAfterRestart(0.4);
+    expect(boot).toBe(rainStreakVyFromPhase(0.4));
+    expect(boot).toBe(9 + 0.4 * 6);
+    expect(boot).toBeCloseTo(11.4, 10);
+    expect(rainStreakVyAfterRestart(0)).toBe(9);
+    expect(rainStreakVyAfterRestart(1)).toBe(15);
+    expect(rainStreakVyAfterRestart()).toBe(9);
+    expect(boot).toBe(rainStreakVyFromSpeed(boot));
+
+    const leftoverVy = 20;
+    expect(leftoverVy).toBeGreaterThan(15);
+    expect(leftoverVy).not.toBe(boot);
+    expect(rainStreakVyFromSpeed(leftoverVy)).toBe(leftoverVy);
+    expect(rainStreakVyFromSpeed(leftoverVy)).not.toBe(boot);
+    expect(rainStreakYFromFall(4.4, leftoverVy, 0.2, 1, true)).toBe(4.4);
+    expect(tickRainStreakY(4.4, leftoverVy, 0.2, 1, true)).toBe(4.4);
+
+    const leftoverFall = rainStreakYFromFall(
+      4.4,
+      rainStreakVyFromSpeed(leftoverVy),
+      0.5,
+      1,
+      false,
+    );
+    const bootFall = rainStreakYFromFall(
+      4.4,
+      rainStreakVyFromSpeed(boot),
+      0.5,
+      1,
+      false,
+    );
+    expect(leftoverFall).toBe(tickRainStreakY(4.4, leftoverVy, 0.5, 1, false));
+    expect(leftoverFall).toBeLessThan(bootFall);
+    expect(rainStreakVyFromSpeed(leftoverVy)).not.toBe(
+      rainStreakVyAfterRestart(0.4),
+    );
+    expect(rainStreakVyFromSpeed(leftoverVy)).not.toBe(boot);
+  });
+
+  test("vivo tick no usa el helper (vy se queda; Y avanza)", () => {
+    const boot = rainStreakVyAfterRestart(0.4);
+    const liveVy = rainStreakVyFromSpeed(boot);
+    expect(liveVy).toBe(boot);
+    expect(liveVy).toBe(rainStreakVyAfterRestart(0.4));
+    const live = rainStreakYFromFall(4.4, liveVy, 0.2, 1, false);
+    expect(live).toBeCloseTo(4.4 - boot * 0.2 * 1.2, 10);
+    expect(live).not.toBe(4.4);
+    expect(rainStreakYFromFall(live, liveVy, 0.1, 1, false)).not.toBe(4.4);
+  });
+});
+
+describe("rain vy/speed recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace rain vy fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const rainSrc = readFileSync(
+      resolve(process.cwd(), "src/render/rainStreaks.ts"),
+      "utf8",
+    );
+    expect(rainSrc).toContain("rainStreakVyAfterRestart(");
+    expect(rainSrc).toContain("rainStreakVyFromPhase(");
+    expect(rainSrc).toContain("rainStreakVyFromSpeed(");
+    expect(rainSrc).toMatch(
+      /rainStreakVyAfterRestart\([\s\S]{0,200}rainStreakVyFromPhase\(/,
+    );
+    expect(viewSrc).toContain("rainStreakVyAfterRestart(");
+    expect(viewSrc).toContain("rainStreakVyFromSpeed(");
+    expect(viewSrc).toMatch(
+      /const vy = rainStreakVyAfterRestart\(\s*Math\.random\(\)\)/,
+    );
+    expect(viewSrc).toMatch(
+      /if \(dt > 0\) \{[\s\S]{0,80}d\.y = rainStreakYFromFall\(\s*d\.y,\s*rainStreakVyFromSpeed\(\s*d\.vy\),\s*dt,\s*i\)/,
+    );
+    expect(viewSrc).toContain("rainStreakYFromFall(");
+    expect(viewSrc).not.toContain("d.vy = tickRainStreak");
+    expect(viewSrc).not.toContain("vy: 9 + Math.random()");
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /syncRainVisual\(dt = 0\): void \{[\s\S]{0,360}rainVisualApplies\(\s*this\.gameOver\) \? dt : 0/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3800}this\.syncRainVisual\(dt\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}rainStreakVyAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}rainStreakVyAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}rainStreakVyAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}rainStreakVyAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("rainStreakVyAfterRestart(");
+    expect(saveSrc).not.toContain("rainStreakVyAfterRestart");
+    expect(saveSrc).not.toContain("rainStreakVyFromSpeed");
     expect(gameSrc).not.toMatch(
       /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
     );

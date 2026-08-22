@@ -177,6 +177,8 @@ import {
   rainStreaksHidden,
   rainStreakVxAfterRestart,
   rainStreakVxFromDrift,
+  rainStreakVyAfterRestart,
+  rainStreakVyFromSpeed,
   rainStreakYAfterRestart,
   rainStreakYFromFall,
 } from "./rainStreaks";
@@ -1512,13 +1514,15 @@ export function createWorldView(
     const vz = (Math.random() - 0.5) * 14;
     // R / dispose: Y fresco (spawn); leftover mid-fall de la vida anterior no filtra.
     const y = rainStreakYAfterRestart(Math.random());
+    // R / dispose: vy fresco (spawn); leftover mid-life speed de la vida anterior no filtra.
+    const vy = rainStreakVyAfterRestart(Math.random());
     mesh.position.set(vx, y, vz);
     rainGroup.add(mesh);
     rainDrops.push({
       mesh,
       vx,
       vz,
-      vy: 9 + Math.random() * 6,
+      vy,
       y,
     });
   }
@@ -1555,7 +1559,7 @@ export function createWorldView(
       mat.opacity = op;
       d.mesh.scale.set(1, sy, 1);
       if (dt > 0) {
-        d.y = rainStreakYFromFall(d.y, d.vy, dt, i);
+        d.y = rainStreakYFromFall(d.y, rainStreakVyFromSpeed(d.vy), dt, i);
         if (d.y < 0.15) {
           d.y = 2.2 + Math.random() * 5.5;
           d.vx = (Math.random() - 0.5) * 14;
