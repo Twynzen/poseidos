@@ -310,3 +310,64 @@ export function flashlightFillOriginZAfterRestart(): number {
 export function flashlightFillVisibleAfterRestart(): boolean {
   return flashlightFillVisibleFromLook(FLASHLIGHT_FILL_VISIBLE_SPAWN);
 }
+
+/** Idle spot origin X. Ctor torchSpot position.x 0 + visible false = fresco. Mid-life leftover ≠ 0. */
+export const FLASHLIGHT_SPOT_ORIGIN_X_SPAWN = 0;
+
+/** Idle spot origin Z. Ctor torchSpot position.z 0 + visible false = fresco. Mid-life leftover ≠ 0. */
+export const FLASHLIGHT_SPOT_ORIGIN_Z_SPAWN = 0;
+
+/** Idle spot visible. Ctor torchSpot.visible false = fresco. Vivo on ≠ boot. */
+export const FLASHLIGHT_SPOT_VISIBLE_SPAWN = false;
+
+/**
+ * Origin X que lee syncTorchLight (look fresco o vivo).
+ * leftover mid-life / far 40 ≠ fresco (idle 0).
+ */
+export function flashlightSpotOriginXFromLook(x: number): number {
+  return x;
+}
+
+/**
+ * Origin Z que lee syncTorchLight (look fresco o vivo).
+ * leftover mid-life / far 30 ≠ fresco (idle 0).
+ */
+export function flashlightSpotOriginZFromLook(z: number): number {
+  return z;
+}
+
+/**
+ * Visible que lee syncTorchLight (look fresco o vivo).
+ * leftover mid-life on ≠ fresco (idle false).
+ */
+export function flashlightSpotVisibleFromLook(visible: boolean): boolean {
+  return visible;
+}
+
+/**
+ * R / softReset: origin X fresco (idle 0).
+ * WorldView nace torchSpot.position.x AfterRestart; leftover mid-life / far no filtra.
+ * syncTorchLight lee flashlightSpotOriginXFromLook.
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function flashlightSpotOriginXAfterRestart(): number {
+  return flashlightSpotOriginXFromLook(FLASHLIGHT_SPOT_ORIGIN_X_SPAWN);
+}
+
+/**
+ * R / softReset: origin Z fresco (idle 0).
+ * WorldView nace torchSpot.position.z AfterRestart; leftover mid-life / far no filtra.
+ * syncTorchLight lee flashlightSpotOriginZFromLook.
+ */
+export function flashlightSpotOriginZAfterRestart(): number {
+  return flashlightSpotOriginZFromLook(FLASHLIGHT_SPOT_ORIGIN_Z_SPAWN);
+}
+
+/**
+ * R / softReset: visible fresco (idle false).
+ * WorldView nace torchSpot.visible AfterRestart; leftover mid-life on no filtra.
+ * syncTorchLight lee flashlightSpotVisibleFromLook.
+ */
+export function flashlightSpotVisibleAfterRestart(): boolean {
+  return flashlightSpotVisibleFromLook(FLASHLIGHT_SPOT_VISIBLE_SPAWN);
+}

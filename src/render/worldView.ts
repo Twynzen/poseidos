@@ -49,6 +49,12 @@ import {
   flashlightFillOriginZFromLook,
   flashlightFillVisibleAfterRestart,
   flashlightFillVisibleFromLook,
+  flashlightSpotOriginXAfterRestart,
+  flashlightSpotOriginXFromLook,
+  flashlightSpotOriginZAfterRestart,
+  flashlightSpotOriginZFromLook,
+  flashlightSpotVisibleAfterRestart,
+  flashlightSpotVisibleFromLook,
   flashlightSpotAngle,
   flashlightWedgeOpacity,
   flashlightWedgeVertexColors,
@@ -813,8 +819,9 @@ export function createWorldView(
     FLASHLIGHT_SPOT_PENUMBRA,
     FLASHLIGHT_SPOT_DECAY,
   );
-  torchSpot.position.set(0, FLASHLIGHT_SPOT_Y, 0);
-  torchSpot.visible = false;
+  // R / dispose: spot fresco (idle origin 0,0 / visible false); leftover mid-life no filtra.
+  torchSpot.position.set(flashlightSpotOriginXAfterRestart(), FLASHLIGHT_SPOT_Y, flashlightSpotOriginZAfterRestart());
+  torchSpot.visible = flashlightSpotVisibleAfterRestart();
   scene.add(torchSpot);
   scene.add(torchSpot.target);
 
@@ -2542,10 +2549,10 @@ export function createWorldView(
       tip.z = flashlightConeOffsetZFromLook(tip.z);
       torchSpot.intensity = i * FLASHLIGHT_SPOT_INTENSITY_MUL;
       torchSpot.distance = FLASHLIGHT_CONE_LENGTH + FLASHLIGHT_SPOT_DISTANCE_EXTRA + i * FLASHLIGHT_SPOT_DISTANCE_GAIN;
-      torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy);
+      torchSpot.position.set(flashlightSpotOriginXFromLook(wx), FLASHLIGHT_SPOT_Y, flashlightSpotOriginZFromLook(wy));
       torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z);
       torchSpot.target.updateMatrixWorld();
-      torchSpot.visible = on;
+      torchSpot.visible = flashlightSpotVisibleFromLook(on);
       torchSpot.color.setHex(FLASHLIGHT_SPOT_COLOR);
 
       flashlightConeWedge.rotation.y = yaw;
