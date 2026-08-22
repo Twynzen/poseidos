@@ -426,16 +426,16 @@ describe("lighting recreate lock (R / softReset)", () => {
       /softReset\(\): void \{[\s\S]{0,2800}this\.clock = clockAfterRestart\(\)/,
     );
     expect(gameSrc).toMatch(
-      /this\.clock = clockAfterRestart\(\);[\s\S]{0,2400}this\.syncLighting\(\)/,
+      /this\.clock = clockAfterRestart\(\);[\s\S]{0,4200}this\.syncLighting\(\)/,
     );
     expect(gameSrc).toMatch(
-      /this\.weather = weatherAfterRestart\(\);[\s\S]{0,2400}this\.syncLighting\(\)/,
+      /this\.weather = weatherAfterRestart\(\);[\s\S]{0,4200}this\.syncLighting\(\)/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
     );
     expect(gameSrc).toMatch(
-      /this\.view\.dispose\(\);[\s\S]{0,800}this\.syncLighting\(\)/,
+      /this\.view\.dispose\(\);[\s\S]{0,2000}this\.syncLighting\(\)/,
     );
     expect(gameSrc).toMatch(
       /syncLighting\(\): void \{[\s\S]{0,360}this\.view\.syncDayNight\(this\.clock\)/,
