@@ -491,6 +491,31 @@ export function playerBodyColorAfterRestart(): number {
   return playerBodyColorFromLook(PLAYER_BODY_COLOR_SPAWN);
 }
 
+/** Roughness del player body mesh. Ctor playerBodyMat.roughness: 0.45 = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_BODY_MESH_ROUGHNESS = 0.45;
+
+/** Idle player body mesh roughness. Ctor playerBodyMat.roughness: 0.45 = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_BODY_ROUGHNESS_SPAWN = 0.45;
+
+/**
+ * Roughness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0.45).
+ * attach/tick no escriben roughness (ctor constant).
+ */
+export function playerBodyRoughnessFromLook(roughness: number): number {
+  return roughness;
+}
+
+/**
+ * R / softReset: roughness fresco (idle 0.45).
+ * WorldView nace playerBodyMat.roughness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben roughness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function playerBodyRoughnessAfterRestart(): number {
+  return playerBodyRoughnessFromLook(PLAYER_BODY_ROUGHNESS_SPAWN);
+}
+
 /** Color de la silueta fallback (cabeza). 0x7eb6ef × 1.15/canal (b clamp) para leerse de noche. */
 export const PLAYER_HEAD_COLOR = 0x91d1ff;
 
@@ -1302,7 +1327,8 @@ export function createWorldView(
   const playerBodyMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
     color: playerBodyColorAfterRestart(),
-    roughness: 0.45,
+    // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
+    roughness: playerBodyRoughnessAfterRestart(),
   });
   const playerHeadMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
