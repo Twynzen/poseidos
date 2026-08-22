@@ -169,7 +169,7 @@ describe("torchLightApplies (HAS MUERTO / F9 load-muerto)", () => {
       /syncLighting\(\): void \{[\s\S]{0,900}torchLightApplies\(\s*this\.gameOver/,
     );
     expect(gameSrc).toMatch(
-      /enterGameOver\(\): void \{[\s\S]{0,800}this\.syncLighting\(\)/,
+      /enterGameOver\(\): void \{[\s\S]{0,1000}this\.syncLighting\(\)/,
     );
     expect(gameSrc).toMatch(
       /refreshViewAfterLoad\(\): void \{[\s\S]{0,900}this\.syncLighting\(\)/,

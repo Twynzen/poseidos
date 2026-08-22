@@ -89,6 +89,7 @@ import { swingPoseApplies } from "../render/meleeSwing";
 import { cameraShakeApplies } from "../render/cameraShake";
 import { hitLeanApplies } from "../render/hitLean";
 import { locoBobApplies } from "../render/locoBob";
+import { hostileIdleApplies } from "../render/hostileLoco";
 import { lootFloaterLabel } from "../render/lootFloater";
 import {
   SpeechDirector,
@@ -555,6 +556,7 @@ export class Game {
     });
     this.applyFov();
     this.view.syncPlayer(this.player.x, this.player.y);
+    // Load-muerto: Idle mixer leftover dt 0 (load-vivo dt=0, igual que hoy).
     this.syncHostileView();
     this.syncSpeechOverlay();
     this.syncDialoguePanel();
@@ -656,7 +658,11 @@ export class Game {
     this.view.syncFov(visible);
   }
 
-  /** Hostiles solo visibles si su tile está en FOV del player. */
+  /**
+   * Hostiles solo visibles si su tile está en FOV del player.
+   * gameOver → dt 0 (congela mixer Idle; no esconde meshes).
+   * Vivo (incl. F9 load-vivo): dt de hoy.
+   */
   private syncHostileView(dt = 0): void {
     const px = this.player.x;
     const py = this.player.y;
@@ -676,7 +682,8 @@ export class Game {
             : {}),
         };
       }),
-      dt,
+      hostileIdleApplies(this.gameOver) ? dt : 0,
+      this.gameOver,
     );
   }
 
@@ -944,6 +951,7 @@ export class Game {
     this.syncInteractFocus();
     this.applyFov();
     // FOV ya en radio base: ocultar mudos/poseídos del anillo +4 linterna.
+    // Idle mixer leftover: dt 0 ya (no hide meshes).
     this.syncHostileView();
     this.syncLighting();
     // Tracers / anillos leftover: hide ya (no esperar el freeze tick).
