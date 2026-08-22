@@ -580,6 +580,32 @@ export function possessedColorAfterRestart(): number {
 const POSSESSED_EMISSIVE = 0x1e0925;
 /** Color de la silueta fallback poseída (cabeza). 0x7a3d8a × 1.15/canal para leerse de noche. */
 export const POSSESSED_HEAD_COLOR = 0x8c469f;
+
+/** Color del possessed head mesh. Ctor possessedHeadMat.color: POSSESSED_HEAD_COLOR = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_MESH_COLOR = 0x8c469f;
+
+/** Idle possessed head mesh color. Ctor possessedHeadMat.color: POSSESSED_HEAD_COLOR = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_COLOR_SPAWN = 0x8c469f;
+
+/**
+ * Color que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle POSSESSED_HEAD_COLOR 0x8c469f).
+ * attach/tick no escriben color (ctor constant).
+ */
+export function possessedHeadColorFromLook(color: number): number {
+  return color;
+}
+
+/**
+ * R / softReset: color fresco (idle POSSESSED_HEAD_COLOR 0x8c469f).
+ * WorldView nace possessedHeadMat.color AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben color (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function possessedHeadColorAfterRestart(): number {
+  return possessedHeadColorFromLook(POSSESSED_HEAD_COLOR_SPAWN);
+}
+
 /** Emisivo de la silueta fallback poseída (cabeza). 0x2a1040 × 1.15/canal para leerse de noche. */
 export const POSSESSED_HEAD_EMISSIVE = 0x30124a;
 /** Color del pool cálido indoor de noche. 0xffb070 × 1.15/canal (r clamp) para leerse de noche. */
@@ -1977,7 +2003,8 @@ export function createWorldView(
     roughness: 0.5,
   });
   const possessedHeadMat = new THREE.MeshStandardMaterial({
-    color: POSSESSED_HEAD_COLOR,
+    // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
+    color: possessedHeadColorAfterRestart(),
     emissive: POSSESSED_HEAD_EMISSIVE,
     emissiveIntensity: 0.7,
     roughness: 0.45,
