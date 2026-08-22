@@ -141,6 +141,7 @@ import {
   hotbarInputApplies,
   hotbarHudVisible,
   nextHotbarSelected,
+  hotbarSelectedAfterRestart,
   swapHotbarStacks,
   formatHudStatus,
   helpInputApplies,
@@ -530,6 +531,8 @@ export class Game {
     this.lastInvUseSlot = null;
     this.lastInvUseAt = Number.NEGATIVE_INFINITY;
     this.lastInvIndex = null;
+    // R: kit fresco = slot 1; no filtrar 1–5/rueda de la vida anterior.
+    this.hotbarSelected = hotbarSelectedAfterRestart();
     this.flashlightOn = false;
     this.session = new LocalLoopbackSession({
       playerX: this.player.x,

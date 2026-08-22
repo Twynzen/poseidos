@@ -15,6 +15,7 @@ import {
   hotbarInputApplies,
   hotbarHudVisible,
   nextHotbarSelected,
+  hotbarSelectedAfterRestart,
   swapHotbarStacks,
   hotbarIndexFromKey,
   hotbarKey,
@@ -379,6 +380,84 @@ describe("hotbarHudVisible (HAS MUERTO / F9 load-muerto)", () => {
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
     );
     expect(src).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+  });
+});
+
+describe("hotbarSelectedAfterRestart (R / softReset)", () => {
+  test("reinicio → 0; 1–4 previo no filtra", () => {
+    expect(hotbarSelectedAfterRestart()).toBe(0);
+
+    let current = 1;
+    current = hotbarSelectedAfterRestart();
+    expect(current).toBe(0);
+    expect(current).not.toBe(1);
+
+    current = 3;
+    current = hotbarSelectedAfterRestart();
+    expect(current).toBe(0);
+    expect(current).not.toBe(3);
+
+    current = 4;
+    current = hotbarSelectedAfterRestart();
+    expect(current).toBe(0);
+    expect(current).not.toBe(4);
+
+    current = 2;
+    current = hotbarSelectedAfterRestart();
+    expect(current).toBe(0);
+  });
+
+  test("vivo 1–5 / rueda no usa el helper (nextHotbarSelected igual que hoy)", () => {
+    expect(nextHotbarSelected(false, 0, 3)).toBe(3);
+    expect(nextHotbarSelected(false, 2, stepHotbarIndex(2, 1))).toBe(3);
+    expect(nextHotbarSelected(false, 4, stepHotbarIndex(4, 1))).toBe(0);
+    expect(nextHotbarSelected(false, 0, 3)).not.toBe(
+      hotbarSelectedAfterRestart(),
+    );
+    expect(hotbarInputApplies(false)).toBe(true);
+    expect(hotbarInputApplies(true)).toBe(false);
+    expect(nextHotbarSelected(true, 3, 0)).toBe(3);
+  });
+
+  test("Game softReset asigna helper; F9 load no toca selección; freeze drena R/F9/M", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("hotbarSelectedAfterRestart(");
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,1600}this\.hotbarSelected = hotbarSelectedAfterRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.lastInvIndex = null;[\s\S]{0,200}this\.hotbarSelected = hotbarSelectedAfterRestart\(\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}hotbarSelectedAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}this\.hotbarSelected\s*=/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}hotbarSelectedAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}this\.hotbarSelected\s*=/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}hotbarSelectedAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}this\.hotbarSelected\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
       /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
     );
   });

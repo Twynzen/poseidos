@@ -29,6 +29,7 @@ export {
   hotbarInputApplies,
   hotbarHudVisible,
   nextHotbarSelected,
+  hotbarSelectedAfterRestart,
   swapHotbarStacks,
   hotbarSlots,
   hotbarSlotIsConsumable,
