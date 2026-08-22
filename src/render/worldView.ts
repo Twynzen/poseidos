@@ -249,6 +249,7 @@ import {
   impactSparkPosYAfterRestart,
   impactSparkPosZAfterRestart,
   impactSparkPosZFromLook,
+  impactSparkColorAfterRestart,
   impactSparkLightColorAfterRestart,
   impactSparkLightDecayAfterRestart,
   impactSparkLightDistanceAfterRestart,
@@ -1540,7 +1541,7 @@ export function createWorldView(
   // Impact spark: esfera aditiva unlit (radio IMPACT_SPARK_RADIUS) + PointLight (reutilizable).
   const impactGeo = new THREE.SphereGeometry(IMPACT_SPARK_RADIUS, 10, 8);
   const impactMat = new THREE.MeshBasicMaterial({
-    color: IMPACT_SPARK_COLOR,
+    color: impactSparkColorAfterRestart(),
     transparent: true,
     // R / dispose: opacity fresco (inactive); leftover ctor Three 1 no filtra.
     opacity: impactSparkIntensityAfterRestart(),

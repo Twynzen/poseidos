@@ -418,10 +418,10 @@ describe("impact spark recreate lock (R / softReset)", () => {
       /impactMat\.opacity = impactSparkIntensityFromLook\(out\.intensity\)/,
     );
     expect(viewSrc).toMatch(
-      /IMPACT_SPARK_COLOR,[\s\S]{0,200}opacity:\s*impactSparkIntensityAfterRestart\(\)/,
+      /impactSparkColorAfterRestart\(\),[\s\S]{0,200}opacity:\s*impactSparkIntensityAfterRestart\(\)/,
     );
     expect(viewSrc).not.toMatch(
-      /IMPACT_SPARK_COLOR,[\s\S]{0,200}opacity:\s*1,/,
+      /impactSparkColorAfterRestart\(\),[\s\S]{0,200}opacity:\s*1,/,
     );
     expect(gameSrc).toMatch(
       /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
