@@ -1,11 +1,16 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
+  applyDropInput,
   ContainerRegistry,
   createInventory,
   createStarterInventory,
   createWorldContainer,
   dropFromSlot,
   dropFullMessage,
+  dropInputApplies,
   dropOnTile,
   dropQty,
   dropSourceIndex,
@@ -409,5 +414,148 @@ describe("dropFullMessage", () => {
   test("added > 0 → null (éxito / leftover no toastea)", () => {
     expect(dropFullMessage(1)).toBeNull();
     expect(dropFullMessage(8)).toBeNull();
+  });
+});
+
+describe("dropInputApplies / applyDropInput (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: U no aplica; vivo / load-vivo sí", () => {
+    expect(dropInputApplies(true)).toBe(false);
+    expect(dropInputApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(dropInputApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(dropInputApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver + wantsDrop no muta inventario ni spawnea pila; vivo U / Shift+U sí", () => {
+    const deadInv = createInventory(8, 20, [{ id: "ammo", qty: 8 }]);
+    const deadReg = new ContainerRegistry();
+    const beforeInv = deadInv.slots.map((s) => ({ ...s }));
+
+    expect(
+      applyDropInput(true, true, () => {
+        const r = dropFromSlot(
+          deadInv,
+          0,
+          dropQty(deadInv.slots[0]?.qty, false),
+          deadReg,
+          24,
+          16,
+          "drop-24-16-ammo",
+        );
+        return r.added > 0 ? r : null;
+      }),
+    ).toBeNull();
+    expect(deadInv.slots).toEqual(beforeInv);
+    expect(deadReg.list).toHaveLength(0);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(
+      applyDropInput(deadRt.gameOver, true, () => {
+        const r = dropFromSlot(
+          deadInv,
+          0,
+          dropQty(deadInv.slots[0]?.qty, true),
+          deadReg,
+          24,
+          16,
+          "drop-24-16-ammo",
+        );
+        return r.added > 0 ? r : null;
+      }),
+    ).toBeNull();
+    expect(deadInv.slots).toEqual(beforeInv);
+    expect(deadReg.list).toHaveLength(0);
+
+    const liveInv = createInventory(8, 20, [{ id: "ammo", qty: 8 }]);
+    const liveReg = new ContainerRegistry();
+    const one = applyDropInput(false, true, () => {
+      const r = dropFromSlot(
+        liveInv,
+        0,
+        dropQty(liveInv.slots[0]?.qty, false),
+        liveReg,
+        24,
+        16,
+        "drop-24-16-ammo",
+      );
+      return r.added > 0 ? r : null;
+    });
+    expect(one?.added).toBe(1);
+    expect(liveInv.slots[0]).toEqual({ id: "ammo", qty: 7 });
+    expect(liveReg.list).toHaveLength(1);
+    expect(liveReg.at(24, 16)?.inv.slots[0]).toEqual({ id: "ammo", qty: 1 });
+    expect(
+      applyDropInput(false, false, () => {
+        const r = dropFromSlot(
+          liveInv,
+          0,
+          1,
+          liveReg,
+          24,
+          16,
+          "drop-24-16-ammo",
+        );
+        return r.added > 0 ? r : null;
+      }),
+    ).toBeNull();
+    expect(liveInv.slots[0]?.qty).toBe(7);
+
+    const stackInv = createInventory(8, 20, [{ id: "ammo", qty: 8 }]);
+    const stackReg = new ContainerRegistry();
+    const liveRt = loadAliveRuntime(true);
+    const stack = applyDropInput(liveRt.gameOver, true, () => {
+      const r = dropFromSlot(
+        stackInv,
+        0,
+        dropQty(stackInv.slots[0]?.qty, true),
+        stackReg,
+        10,
+        10,
+        "drop-10-10-ammo",
+      );
+      return r.added > 0 ? r : null;
+    });
+    expect(stack?.added).toBe(8);
+    expect(stackInv.slots).toHaveLength(0);
+    expect(stackReg.list).toHaveLength(1);
+    expect(stackReg.at(10, 10)?.inv.slots[0]).toEqual({ id: "ammo", qty: 8 });
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto drenan U sin drop; vivo gatea", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("dropInputApplies(");
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeDrop\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,1400}consumeDrop\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,1400}if \(loaded\.gameOver\) this\.input\.consumeDrop\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /dropInputApplies\(\s*this\.gameOver[\s\S]{0,80}drop[\s\S]{0,700}dropFromSlot/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}dropFromSlot/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}dropFromSlot/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeRestOrRestart\(\)/,
+    );
   });
 });
