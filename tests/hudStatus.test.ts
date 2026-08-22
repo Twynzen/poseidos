@@ -17,6 +17,7 @@ import {
   helpInputApplies,
   helpHudVisible,
   nextShowHelp,
+  hudAccAfterRestart,
   formatPacifyHud,
   formatSpeedBumpHud,
   formatMoodBiasHud,
@@ -1077,6 +1078,94 @@ describe("helpHudVisible (HAS MUERTO / F9 load-muerto)", () => {
     );
     expect(gameSrc).not.toMatch(
       /refreshViewAfterLoad\(\): void \{[\s\S]{0,800}this\.showHelp\s*=\s*false/,
+    );
+  });
+});
+
+describe("hudAccAfterRestart (R / softReset)", () => {
+  test("reinicio → 0 del ctor; leftover 1 no filtra", () => {
+    expect(hudAccAfterRestart()).toBe(0);
+
+    let current = 1;
+    expect(current).not.toBe(0);
+    current = hudAccAfterRestart();
+    expect(current).toBe(0);
+    expect(current).not.toBe(1);
+
+    current = 1;
+    current = hudAccAfterRestart();
+    expect(current).toBe(0);
+
+    current = 0.25;
+    current = hudAccAfterRestart();
+    expect(current).toBe(0);
+    expect(current).not.toBe(0.25);
+  });
+
+  test("vivo tick no usa el helper (hudAcc += dt / 0.25 igual que hoy)", () => {
+    let acc = hudAccAfterRestart();
+    expect(acc).toBe(0);
+    acc += 0.1;
+    expect(acc).toBeLessThan(0.25);
+    acc += 0.15;
+    expect(acc).toBeGreaterThanOrEqual(0.25);
+    acc = 0;
+    expect(acc).toBe(hudAccAfterRestart());
+    expect(acc + 0.1).not.toBe(hudAccAfterRestart());
+    expect(1).not.toBe(hudAccAfterRestart());
+  });
+
+  test("Game softReset usa helper tras refreshHud; freeze R no pisa 1; F9/enterGameOver siguen 1", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("hudAccAfterRestart(");
+    expect(gameSrc).toMatch(/private hudAcc = 0;/);
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,3200}this\.refreshHud\(true\);[\s\S]{0,200}this\.hudAcc = hudAccAfterRestart\(\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}hudAccAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}this\.hudAcc\s*=/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}hudAccAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}this\.hudAcc\s*=/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}hudAccAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}this\.hudAcc = 1/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}hudAccAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeLoad\(\)\) \{\s*this\.doLoad\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.hudAcc \+= dt;\s*if \(this\.hudAcc >= 0\.25\) \{\s*this\.hudAcc = 0;\s*this\.refreshHud\(false\);/,
     );
   });
 });

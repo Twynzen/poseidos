@@ -149,6 +149,7 @@ import {
   helpInputApplies,
   helpHudVisible,
   nextShowHelp,
+  hudAccAfterRestart,
   isKeepableDeathCause,
   formatGateLine,
   createHitFlash,
@@ -588,6 +589,8 @@ export class Game {
     this.view.followCamera(this.player.x, this.player.y);
     // R: pintar HUD vivo ya (no esperar 0.25s del freeze path).
     this.refreshHud(true);
+    // R: cadence boot (0); leftover 1 de HAS MUERTO no filtra. Freeze R no pisa.
+    this.hudAcc = hudAccAfterRestart();
   }
 
   /** Tras applySave: remesh chunks, puertas, FOV, player, día/noche. */
@@ -1312,7 +1315,6 @@ export class Game {
       this.closeDialogueOnGameOver();
       if (this.input.consumeRestOrRestart()) {
         this.softReset();
-        this.hudAcc = 1;
       } else if (this.input.consumeLoad()) {
         this.doLoad();
         this.hudAcc = 1;

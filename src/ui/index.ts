@@ -75,6 +75,7 @@ export {
   helpHudVisible,
   applyHelpInput,
   nextShowHelp,
+  hudAccAfterRestart,
   resolveGameOverCause,
   isKeepableDeathCause,
   formatPacifyHud,
