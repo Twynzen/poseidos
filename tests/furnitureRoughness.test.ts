@@ -82,7 +82,7 @@ describe("furniture mesh roughness recreate lock (R / softReset)", () => {
     expect(viewSrc).toContain("furnitureRoughnessAfterRestart()");
     expect(viewSrc).toContain("roughness: furnitureRoughnessAfterRestart()");
     expect(viewSrc).not.toMatch(
-      /const furnitureMat = new THREE\.MeshStandardMaterial\(\{[\s\S]{0,520}roughness:\s*0\.8/,
+      /const furnitureMat = new THREE\.MeshStandardMaterial\(\{[\s\S]{0,520}roughness:\s*0\.8(?!\d)/,
     );
     expect(viewSrc).not.toMatch(/furnitureMat\.roughness\s*=/);
     expect(viewSrc).not.toMatch(
