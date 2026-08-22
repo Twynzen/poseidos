@@ -119,3 +119,25 @@ export function facingChevronOffsetZAfterRestart(): number {
     facingChevronOffset(facingChevronYawAfterRestart()).z,
   );
 }
+
+/** Idle chevron mesh color. Ctor chevronMat.color FACING_CHEVRON_COLOR 0xffe07a = fresco. Mid-life leftover ≠ fresco. */
+export const FACING_CHEVRON_COLOR_SPAWN = 0xffe07a;
+
+/**
+ * Color que leería place/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle FACING_CHEVRON_COLOR 0xffe07a).
+ * place/tick no escribe color (ctor constant).
+ */
+export function facingChevronColorFromLook(color: number): number {
+  return color;
+}
+
+/**
+ * R / softReset: color fresco (idle FACING_CHEVRON_COLOR 0xffe07a).
+ * WorldView nace chevronMat.color AfterRestart; leftover mid-life no filtra.
+ * place/tick no escribe color (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function facingChevronColorAfterRestart(): number {
+  return facingChevronColorFromLook(FACING_CHEVRON_COLOR_SPAWN);
+}
