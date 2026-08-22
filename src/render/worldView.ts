@@ -2531,12 +2531,12 @@ export function createWorldView(
 
       const yaw = flashlightConeYawFromLook(playerGltfYaw);
       const tip = flashlightConeTip(yaw);
-      const ox = flashlightConeOffsetXFromLook(tip.x);
-      const oz = flashlightConeOffsetZFromLook(tip.z);
+      tip.x = flashlightConeOffsetXFromLook(tip.x);
+      tip.z = flashlightConeOffsetZFromLook(tip.z);
       torchSpot.intensity = i * FLASHLIGHT_SPOT_INTENSITY_MUL;
       torchSpot.distance = FLASHLIGHT_CONE_LENGTH + FLASHLIGHT_SPOT_DISTANCE_EXTRA + i * FLASHLIGHT_SPOT_DISTANCE_GAIN;
       torchSpot.position.set(wx, FLASHLIGHT_SPOT_Y, wy);
-      torchSpot.target.position.set(wx + ox, FLASHLIGHT_SPOT_TARGET_Y, wy + oz);
+      torchSpot.target.position.set(wx + tip.x, FLASHLIGHT_SPOT_TARGET_Y, wy + tip.z);
       torchSpot.target.updateMatrixWorld();
       torchSpot.visible = on;
       torchSpot.color.setHex(FLASHLIGHT_SPOT_COLOR);
