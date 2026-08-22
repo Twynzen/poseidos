@@ -1655,6 +1655,31 @@ export function wallMetalnessAfterRestart(): number {
   return wallMetalnessFromLook(WALL_METALNESS_SPAWN);
 }
 
+/** Emisivo del wall mesh. Ctor wallMat.emissive: 0x000000 = fresco. Mid-life leftover ≠ fresco. */
+export const WALL_EMISSIVE = 0x000000;
+
+/** Idle wall mesh emissive. Ctor wallMat.emissive: 0x000000 = fresco. Mid-life leftover ≠ fresco. */
+export const WALL_EMISSIVE_SPAWN = 0x000000;
+
+/**
+ * Emisivo que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0x000000).
+ * attach/tick no escriben emissive (ctor constant).
+ */
+export function wallEmissiveFromLook(emissive: number): number {
+  return emissive;
+}
+
+/**
+ * R / softReset: emissive fresco (idle 0x000000).
+ * WorldView nace wallMat.emissive AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben emissive (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function wallEmissiveAfterRestart(): number {
+  return wallEmissiveFromLook(WALL_EMISSIVE_SPAWN);
+}
+
 /** Roughness del wall-base mesh. Ctor wallBaseMat.roughness: 1 = fresco. Mid-life leftover ≠ fresco. */
 export const WALL_BASE_ROUGHNESS = 1;
 
@@ -2209,6 +2234,8 @@ export function createWorldView(
     roughness: wallRoughnessAfterRestart(),
     // R / dispose: metalness fresco (idle); leftover mid-life metalness de la vida anterior no filtra.
     metalness: wallMetalnessAfterRestart(),
+    // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
+    emissive: wallEmissiveAfterRestart(),
   });
   const wallBaseMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(WALL_BASE_COLOR, lastDaylight),
