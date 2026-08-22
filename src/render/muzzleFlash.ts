@@ -197,6 +197,28 @@ export function muzzleLightDistanceAfterRestart(): number {
   return muzzleLightDistanceFromLook(MUZZLE_LIGHT_DISTANCE_SPAWN);
 }
 
+/** Idle muzzle flash mesh color. Ctor muzzleMat.color MUZZLE_FLASH_COLOR 0xffffdd = fresco. Mid-life leftover ≠ fresco. */
+export const MUZZLE_FLASH_COLOR_SPAWN = 0xffffdd;
+
+/**
+ * Color que leería applyMuzzleFlashVisual (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle MUZZLE_FLASH_COLOR 0xffffdd).
+ * apply/tick no escribe color (ctor constant).
+ */
+export function muzzleFlashColorFromLook(color: number): number {
+  return color;
+}
+
+/**
+ * R / softReset: color fresco (idle MUZZLE_FLASH_COLOR 0xffffdd).
+ * WorldView nace muzzleMat.color AfterRestart; leftover mid-life no filtra.
+ * apply/tick no escribe color (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function muzzleFlashColorAfterRestart(): number {
+  return muzzleFlashColorFromLook(MUZZLE_FLASH_COLOR_SPAWN);
+}
+
 /**
  * HAS MUERTO / F9 load-muerto: no avanzar el flash ni pintarlo.
  * Vivo (incl. F9 load-vivo): tick/intensity de hoy.
