@@ -570,6 +570,31 @@ export function playerBodyEmissiveAfterRestart(): number {
   return playerBodyEmissiveFromLook(PLAYER_BODY_EMISSIVE_SPAWN);
 }
 
+/** Intensidad del player-body mesh. Ctor playerBodyMat.emissiveIntensity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_BODY_EMISSIVE_INTENSITY = 1;
+
+/** Idle player-body mesh emissiveIntensity. Ctor playerBodyMat.emissiveIntensity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_BODY_EMISSIVE_INTENSITY_SPAWN = 1;
+
+/**
+ * Intensidad que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ */
+export function playerBodyEmissiveIntensityFromLook(intensity: number): number {
+  return intensity;
+}
+
+/**
+ * R / softReset: intensity fresco (idle 1).
+ * WorldView nace playerBodyMat.emissiveIntensity AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function playerBodyEmissiveIntensityAfterRestart(): number {
+  return playerBodyEmissiveIntensityFromLook(PLAYER_BODY_EMISSIVE_INTENSITY_SPAWN);
+}
+
 /** Color de la silueta fallback (cabeza). 0x7eb6ef × 1.15/canal (b clamp) para leerse de noche. */
 export const PLAYER_HEAD_COLOR = 0x91d1ff;
 
@@ -2369,6 +2394,8 @@ export function createWorldView(
     metalness: playerBodyMetalnessAfterRestart(),
     // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
     emissive: playerBodyEmissiveAfterRestart(),
+    // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
+    emissiveIntensity: playerBodyEmissiveIntensityAfterRestart(),
   });
   const playerHeadMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
