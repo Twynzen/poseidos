@@ -153,6 +153,28 @@ export function muzzleLightDecayAfterRestart(): number {
   return muzzleLightDecayFromLook(MUZZLE_LIGHT_DECAY_SPAWN);
 }
 
+/** Idle muzzle color. Ctor muzzleLight.color MUZZLE_LIGHT_COLOR 0xffffb8 = fresco. Mid-life leftover ≠ fresco. */
+export const MUZZLE_LIGHT_COLOR_SPAWN = 0xffffb8;
+
+/**
+ * Color que leería applyMuzzleFlashVisual (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle MUZZLE_LIGHT_COLOR 0xffffb8).
+ * apply/tick no escribe color (ctor constant).
+ */
+export function muzzleLightColorFromLook(color: number): number {
+  return color;
+}
+
+/**
+ * R / softReset: color fresco (idle MUZZLE_LIGHT_COLOR 0xffffb8).
+ * WorldView nace muzzleLight.color AfterRestart; leftover mid-life no filtra.
+ * apply/tick no escribe color (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function muzzleLightColorAfterRestart(): number {
+  return muzzleLightColorFromLook(MUZZLE_LIGHT_COLOR_SPAWN);
+}
+
 /**
  * HAS MUERTO / F9 load-muerto: no avanzar el flash ni pintarlo.
  * Vivo (incl. F9 load-vivo): tick/intensity de hoy.
