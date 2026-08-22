@@ -761,6 +761,34 @@ export function possessedEmissiveIntensityAfterRestart(): number {
   return possessedEmissiveIntensityFromLook(POSSESSED_EMISSIVE_INTENSITY_SPAWN);
 }
 
+/** Roughness del possessed mesh. Ctor possessedMat.roughness: 0.5 = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_ROUGHNESS = 0.5;
+
+/** Roughness del possessed mesh. Ctor possessedMat.roughness: 0.5 = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_MESH_ROUGHNESS = 0.5;
+
+/** Idle possessed mesh roughness. Ctor possessedMat.roughness: 0.5 = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_ROUGHNESS_SPAWN = 0.5;
+
+/**
+ * Roughness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0.5).
+ * attach/tick no escriben roughness (ctor constant).
+ */
+export function possessedRoughnessFromLook(roughness: number): number {
+  return roughness;
+}
+
+/**
+ * R / softReset: roughness fresco (idle 0.5).
+ * WorldView nace possessedMat.roughness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben roughness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function possessedRoughnessAfterRestart(): number {
+  return possessedRoughnessFromLook(POSSESSED_ROUGHNESS_SPAWN);
+}
+
 /** Color de la silueta fallback poseída (cabeza). 0x7a3d8a × 1.15/canal para leerse de noche. */
 export const POSSESSED_HEAD_COLOR = 0x8c469f;
 
@@ -2241,7 +2269,8 @@ export function createWorldView(
     emissive: possessedEmissiveAfterRestart(),
     // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
     emissiveIntensity: possessedEmissiveIntensityAfterRestart(),
-    roughness: 0.5,
+    // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
+    roughness: possessedRoughnessAfterRestart(),
   });
   const possessedHeadMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
