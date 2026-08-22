@@ -577,7 +577,7 @@ export class Game {
     this.syncHitFlashOverlay();
     this.syncInventoryPanel();
     this.lastLootMsg = lastLootMsgAfterRestart();
-    // R: WorldView nuevo = bed/door/nameplate/loot focus spawn + grass + rain + camera fresco; leftover Three ring no filtra.
+    // R: WorldView nuevo = player spawn + bed/door/nameplate/loot focus + grass + rain + camera fresco; leftover origin 0,0 no filtra.
     this.view.dispose();
     this.view = createWorldView(this.map, this.containers);
     // R: cámara nueva = ISO_FRUSTUM + look spawn; leftover zoom / origin 0,0 no filtra.

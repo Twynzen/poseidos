@@ -33,3 +33,43 @@ export function playerGltfYawFromMove(
   if (Math.abs(faceX) < MOVE_EPS && Math.abs(faceZ) < MOVE_EPS) return null;
   return Math.atan2(faceX, faceZ) + offset;
 }
+
+/** Spawn barrio (neighborhood 24.5, 15.5). Three default origin 0,0 = leftover. */
+export const PLAYER_POS_X_SPAWN = 24.5;
+export const PLAYER_POS_Z_SPAWN = 15.5;
+
+/**
+ * Pos X que lee syncPlayer (wx fresco o vivo).
+ * leftover mid-life (ctor origin 0 / far 40) ≠ pos fresco (spawn 24.5).
+ */
+export function playerPosXFromLook(wx: number): number {
+  return wx;
+}
+
+/**
+ * Pos Z que lee syncPlayer (wy fresco o vivo; mapa y = Three z).
+ * leftover mid-life (ctor origin 0 / far 30) ≠ pos fresco (spawn 15.5).
+ */
+export function playerPosZFromLook(wz: number): number {
+  return wz;
+}
+
+/**
+ * R / softReset: pos X fresco (spawn 24.5).
+ * WorldView nace `playerMesh.position.set(playerPosXAfterRestart(), 0, …)`;
+ * leftover ctor origin 0,0 no filtra.
+ * syncPlayer lee playerPosXFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function playerPosXAfterRestart(wx = PLAYER_POS_X_SPAWN): number {
+  return playerPosXFromLook(wx);
+}
+
+/**
+ * R / softReset: pos Z fresco (spawn 15.5).
+ * WorldView nace `playerMesh.position.set(…, 0, playerPosZAfterRestart())`;
+ * leftover ctor origin 0,0 no filtra.
+ * syncPlayer lee playerPosZFromLook. F9 / enterGameOver / freeze death no assign.
+ */
+export function playerPosZAfterRestart(wz = PLAYER_POS_Z_SPAWN): number {
+  return playerPosZFromLook(wz);
+}
