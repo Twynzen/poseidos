@@ -58,6 +58,8 @@ export {
   attemptBuildBarricade,
   tryCraftBandage,
   craftFullMessage,
+  craftInputApplies,
+  applyCraftInput,
   type BuildResult,
   type BarricadeFailReason,
   type BarricadeAttempt,

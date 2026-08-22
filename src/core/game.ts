@@ -39,6 +39,7 @@ import {
   lootInputApplies,
   dropInputApplies,
   useInputApplies,
+  craftInputApplies,
   getItemDef,
   splitStack,
   mergeStack,
@@ -442,9 +443,10 @@ export class Game {
     if (!hasFlashlight(this.player.inventory)) this.flashlightOn = false;
     this.noise.clear();
     this.refreshViewAfterLoad();
-    // Drain U / Q fuera del bloque close/loot: no tira ni consume leftover; no estira regex de hide.
+    // Drain U / Q / C fuera del bloque close/loot: no tira ni consume ni craftea leftover; no estira regex de hide.
     if (loaded.gameOver) this.input.consumeDrop();
     if (loaded.gameOver) this.input.consumeUse();
+    if (loaded.gameOver) this.input.consumeCraft();
     this.lastLootMsg = "cargado";
     this.refreshHud(true);
     return true;
@@ -864,11 +866,12 @@ export class Game {
     // FOV ya en radio base: ocultar mudos/poseídos del anillo +4 linterna.
     this.syncHostileView();
     this.syncLighting();
-    // Drain G/E/F / U / Q al final: no loot/puerta/drop/use; no empuja ventanas de scan del hide.
+    // Drain G/E/F / U / Q / C al final: no loot/puerta/drop/use/craft; no empuja ventanas de scan del hide.
     this.input.consumeLoot();
     this.input.consumeInteract();
     this.input.consumeDrop();
     this.input.consumeUse();
+    this.input.consumeCraft();
   }
 
 
@@ -1157,12 +1160,13 @@ export class Game {
         this.lastLootMsg = muteHudMsg(toggleAmbientMute(this.ambient));
         this.hudAcc = 1;
       }
-      // Drain L / G / E / F / U / Q; HAS MUERTO no togglea ni lootea / abre puertas / tira / usa.
+      // Drain L / G / E / F / U / Q / C; HAS MUERTO no togglea ni lootea / abre puertas / tira / usa / craftea.
       this.input.consumeFlashlightToggle();
       this.input.consumeLoot();
       this.input.consumeInteract();
       this.input.consumeDrop();
       this.input.consumeUse();
+      this.input.consumeCraft();
       this.input.endFrame();
       this.syncAmbient(dt);
       this.syncHeartbeat(dt);
@@ -1561,7 +1565,8 @@ export class Game {
         this.hudAcc = 1;
       }
     }
-    if (this.input.consumeCraft()) {
+    const wantsCraft = this.input.consumeCraft();
+    if (craftInputApplies(this.gameOver) && wantsCraft) {
       const had =
         this.player.alive && hasBandageMaterials(this.player.inventory);
       const { added } = this.player.tryCraftBandage();

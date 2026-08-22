@@ -167,3 +167,26 @@ export function craftFullMessage(added: number): string | null {
   if (added > 0) return null;
   return "inventario lleno";
 }
+
+/**
+ * HAS MUERTO / F9 load-muerto: C no aplica (se drena, no craftea).
+ * Vivo (incl. F9 load-vivo): tela + chatarra → vendaje, igual que hoy.
+ * No cambia receta ni rollback dest-lleno; solo gate de input.
+ */
+export function craftInputApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no llama apply (inventario igual).
+ * Vivo + wants → apply(). !wants → null.
+ */
+export function applyCraftInput<T>(
+  gameOver: boolean,
+  wants: boolean,
+  apply: () => T | null,
+): T | null {
+  if (!craftInputApplies(gameOver) || !wants) return null;
+  return apply();
+}

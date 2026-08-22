@@ -1,13 +1,18 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
+import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
 import {
   BARRICADE_WOOD_COST,
   BANDAGE_CLOTH_COST,
   BANDAGE_SCRAP_COST,
   CONTAINER_REACH,
   addItem,
+  applyCraftInput,
   attemptBuildBarricade,
   barricadeFailMessage,
   canPlaceBarricade,
+  craftInputApplies,
   createInventory,
   diagnoseBarricade,
   getItemDef,
@@ -259,6 +264,127 @@ describe("craftFullMessage", () => {
 
   test("added > 0 → null (éxito / leftover mats no toastea)", () => {
     expect(craftFullMessage(1)).toBeNull();
+  });
+});
+
+describe("craftInputApplies / applyCraftInput (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: C no aplica; vivo / load-vivo sí", () => {
+    expect(craftInputApplies(true)).toBe(false);
+    expect(craftInputApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(craftInputApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(craftInputApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver + wantsCraft no muta inventario; vivo C craftea y dest-lleno rollback", () => {
+    const deadInv = createInventory(8, 20);
+    addItem(deadInv, "cloth", 2);
+    addItem(deadInv, "scrap", 2);
+    const beforeDead = deadInv.slots.map((s) => ({ ...s }));
+
+    expect(
+      applyCraftInput(true, true, () => tryCraftBandage(deadInv)),
+    ).toBeNull();
+    expect(deadInv.slots).toEqual(beforeDead);
+    expect(deadInv.slots.find((s) => s.id === "cloth")?.qty).toBe(2);
+    expect(deadInv.slots.find((s) => s.id === "scrap")?.qty).toBe(2);
+    expect(deadInv.slots.find((s) => s.id === "bandage")).toBeUndefined();
+
+    const deadRt = loadAliveRuntime(false);
+    expect(
+      applyCraftInput(deadRt.gameOver, true, () => tryCraftBandage(deadInv)),
+    ).toBeNull();
+    expect(deadInv.slots).toEqual(beforeDead);
+
+    const liveInv = createInventory(8, 20);
+    addItem(liveInv, "cloth", 2);
+    addItem(liveInv, "scrap", 2);
+    expect(
+      applyCraftInput(false, true, () => tryCraftBandage(liveInv)),
+    ).toEqual({ added: 1 });
+    expect(liveInv.slots.find((s) => s.id === "bandage")?.qty).toBe(1);
+    expect(liveInv.slots.find((s) => s.id === "cloth")?.qty).toBe(1);
+    expect(liveInv.slots.find((s) => s.id === "scrap")?.qty).toBe(1);
+    expect(
+      applyCraftInput(false, false, () => tryCraftBandage(liveInv)),
+    ).toBeNull();
+    expect(liveInv.slots.find((s) => s.id === "cloth")?.qty).toBe(1);
+
+    const liveRt = loadAliveRuntime(true);
+    const again = createInventory(8, 20);
+    addItem(again, "cloth", 1);
+    addItem(again, "scrap", 1);
+    expect(
+      applyCraftInput(liveRt.gameOver, true, () => tryCraftBandage(again)),
+    ).toEqual({ added: 1 });
+    expect(again.slots.find((s) => s.id === "bandage")?.qty).toBe(1);
+    expect(again.slots.find((s) => s.id === "cloth")).toBeUndefined();
+    expect(again.slots.find((s) => s.id === "scrap")).toBeUndefined();
+
+    const fullInv = createInventory(2, 20);
+    addItem(fullInv, "cloth", 2);
+    addItem(fullInv, "scrap", 2);
+    const beforeFull = fullInv.slots.map((s) => ({ ...s }));
+    expect(
+      applyCraftInput(false, true, () => tryCraftBandage(fullInv)),
+    ).toEqual({ added: 0 });
+    expect(fullInv.slots).toEqual(beforeFull);
+    expect(fullInv.slots.find((s) => s.id === "cloth")?.qty).toBe(2);
+    expect(fullInv.slots.find((s) => s.id === "scrap")?.qty).toBe(2);
+    expect(fullInv.slots.find((s) => s.id === "bandage")).toBeUndefined();
+    expect(craftFullMessage(0)).toBe("inventario lleno");
+
+    const deadPlayer = new PlayerSim(
+      { x: 1, y: 1 },
+      undefined,
+      createInventory(8, 20, [
+        { id: "cloth", qty: 1 },
+        { id: "scrap", qty: 1 },
+      ]),
+    );
+    const beforePlayer = deadPlayer.inventory.slots.map((s) => ({ ...s }));
+    expect(
+      applyCraftInput(true, true, () => deadPlayer.tryCraftBandage()),
+    ).toBeNull();
+    expect(deadPlayer.inventory.slots).toEqual(beforePlayer);
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto drenan C sin craft; vivo gatea", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("craftInputApplies(");
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeCraft\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,1800}consumeCraft\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,1800}if \(loaded\.gameOver\) this\.input\.consumeCraft\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /craftInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsCraft[\s\S]{0,200}tryCraftBandage/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}tryCraftBandage/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}tryCraftBandage/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,2400}consumeRestOrRestart\(\)/,
+    );
   });
 });
 
