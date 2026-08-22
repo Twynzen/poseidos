@@ -8,9 +8,11 @@ import {
   BANDAGE_SCRAP_COST,
   CONTAINER_REACH,
   addItem,
+  applyBuildInput,
   applyCraftInput,
   attemptBuildBarricade,
   barricadeFailMessage,
+  buildInputApplies,
   canPlaceBarricade,
   craftInputApplies,
   createInventory,
@@ -150,6 +152,146 @@ describe("tryBuildBarricade", () => {
       player.move(0.05, { x: 1, z: 0 }, map);
     }
     expect(player.x).toBeLessThan(6 - PLAYER_RADIUS + 0.08);
+  });
+});
+
+describe("buildInputApplies / applyBuildInput (HAS MUERTO / F9 load-muerto)", () => {
+  test("muerte: B no aplica; vivo / load-vivo sí", () => {
+    expect(buildInputApplies(true)).toBe(false);
+    expect(buildInputApplies(false)).toBe(true);
+
+    const deadRt = loadAliveRuntime(false);
+    expect(deadRt.gameOver).toBe(true);
+    expect(deadRt.deathClip).toBe(true);
+    expect(deadRt.spawnGrace).toBe(0);
+    expect(buildInputApplies(deadRt.gameOver)).toBe(false);
+
+    const liveRt = loadAliveRuntime(true);
+    expect(liveRt.gameOver).toBe(false);
+    expect(liveRt.deathClip).toBe(false);
+    expect(liveRt.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(buildInputApplies(liveRt.gameOver)).toBe(true);
+  });
+
+  test("gameOver + wantsBuild no muta madera ni tiles; vivo B coloca o toast de hoy", () => {
+    const deadMap = new TileMap(8, 8, makeFloor);
+    const deadInv = createInventory(8, 20);
+    addItem(deadInv, "wood", 2);
+    const beforeDeadSlots = deadInv.slots.map((s) => ({ ...s }));
+    const beforeDeadTile = deadMap.getTile(4, 3)?.kind;
+
+    expect(
+      applyBuildInput(true, true, () => tryBuildBarricade(deadMap, deadInv, 4, 3)),
+    ).toBeNull();
+    expect(deadInv.slots).toEqual(beforeDeadSlots);
+    expect(deadInv.slots.find((s) => s.id === "wood")?.qty).toBe(2);
+    expect(deadMap.getTile(4, 3)?.kind).toBe(beforeDeadTile);
+    expect(deadMap.getTile(4, 3)?.kind).toBe("floor");
+
+    const deadRt = loadAliveRuntime(false);
+    expect(
+      applyBuildInput(deadRt.gameOver, true, () =>
+        tryBuildBarricade(deadMap, deadInv, 4, 3),
+      ),
+    ).toBeNull();
+    expect(deadInv.slots.find((s) => s.id === "wood")?.qty).toBe(2);
+    expect(deadMap.getTile(4, 3)?.kind).toBe("floor");
+
+    const liveMap = new TileMap(8, 8, makeFloor);
+    const liveInv = createInventory(8, 20);
+    addItem(liveInv, "wood", 2);
+    const placed = applyBuildInput(false, true, () =>
+      tryBuildBarricade(liveMap, liveInv, 4, 3),
+    );
+    expect(placed).toEqual({ x: 4, y: 3 });
+    expect(liveMap.getTile(4, 3)?.kind).toBe("barricade");
+    expect(liveInv.slots.find((s) => s.id === "wood")?.qty).toBe(1);
+    expect(
+      applyBuildInput(false, false, () =>
+        tryBuildBarricade(liveMap, liveInv, 5, 3),
+      ),
+    ).toBeNull();
+    expect(liveInv.slots.find((s) => s.id === "wood")?.qty).toBe(1);
+    expect(liveMap.getTile(5, 3)?.kind).toBe("floor");
+
+    const liveRt = loadAliveRuntime(true);
+    const againMap = new TileMap(10, 10, makeFloor);
+    const againPlayer = new PlayerSim({ x: 5.2, y: 5.2 });
+    addItem(againPlayer.inventory, "wood", 1);
+    againPlayer.facingX = 1;
+    againPlayer.facingY = 0;
+    const again = applyBuildInput(liveRt.gameOver, true, () =>
+      againPlayer.tryPlaceBarricade(againMap),
+    );
+    expect(again?.ok).toBe(true);
+    if (again?.ok) expect(again.result).toEqual({ x: 6, y: 5 });
+    expect(againMap.getTile(6, 5)?.kind).toBe("barricade");
+    expect(againPlayer.inventory.slots.find((s) => s.id === "wood")).toBeUndefined();
+
+    const toastMap = new TileMap(6, 6, makeFloor);
+    toastMap.set(2, 2, makeDoor(false));
+    const toastInv = createInventory();
+    addItem(toastInv, "wood", 1);
+    const occupied = applyBuildInput(false, true, () =>
+      attemptBuildBarricade(toastMap, toastInv, 2, 2),
+    );
+    expect(occupied?.ok).toBe(false);
+    if (occupied && !occupied.ok) {
+      expect(occupied.reason).toBe("bad_tile");
+      expect(occupied.message).toBe("no se puede aquí (puerta/mueble/muro)");
+    }
+    expect(toastInv.slots.find((s) => s.id === "wood")?.qty).toBe(1);
+    expect(toastMap.getTile(2, 2)?.kind).toBe("door");
+
+    const noWood = applyBuildInput(false, true, () =>
+      attemptBuildBarricade(new TileMap(6, 6, makeFloor), createInventory(), 1, 1),
+    );
+    expect(noWood?.ok).toBe(false);
+    if (noWood && !noWood.ok) {
+      expect(noWood.reason).toBe("no_wood");
+      expect(noWood.message).toBe("falta madera");
+    }
+
+    const deadPlayer = new PlayerSim({ x: 5.2, y: 5.2 });
+    addItem(deadPlayer.inventory, "wood", 1);
+    deadPlayer.facingX = 1;
+    deadPlayer.facingY = 0;
+    const deadPlayerMap = new TileMap(10, 10, makeFloor);
+    const beforePlayer = deadPlayer.inventory.slots.map((s) => ({ ...s }));
+    expect(
+      applyBuildInput(true, true, () => deadPlayer.tryPlaceBarricade(deadPlayerMap)),
+    ).toBeNull();
+    expect(deadPlayer.inventory.slots).toEqual(beforePlayer);
+    expect(deadPlayerMap.getTile(6, 5)?.kind).toBe("floor");
+  });
+
+  test("Game freeze / enterGameOver / F9 load-muerto drenan B sin colocar; vivo gatea", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("buildInputApplies(");
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3000}consumeBuild\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}consumeBuild\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}if \(loaded\.gameOver\) this\.input\.consumeBuild\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /buildInputApplies\(\s*this\.gameOver[\s\S]{0,80}wantsBuild[\s\S]{0,200}tryPlaceBarricade/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3000}tryPlaceBarricade/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,800}tryPlaceBarricade/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3000}consumeRestOrRestart\(\)/,
+    );
   });
 });
 

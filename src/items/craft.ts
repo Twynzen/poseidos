@@ -119,6 +119,29 @@ export function attemptBuildBarricade(
   return { ok: true, result };
 }
 
+/**
+ * HAS MUERTO / F9 load-muerto: B no aplica (se drena, no coloca).
+ * Vivo (incl. F9 load-vivo): madera + tile adyacente, igual que hoy.
+ * No cambia receta ni toast; solo gate de input.
+ */
+export function buildInputApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no llama apply (inventario / tiles iguales).
+ * Vivo + wants → apply(). !wants → null.
+ */
+export function applyBuildInput<T>(
+  gameOver: boolean,
+  wants: boolean,
+  apply: () => T | null,
+): T | null {
+  if (!buildInputApplies(gameOver) || !wants) return null;
+  return apply();
+}
+
 /** Resultado de craft vendaje (add-first no cabe: mismo inv que las mats). */
 export type CraftBandageResult = {
   added: number;
