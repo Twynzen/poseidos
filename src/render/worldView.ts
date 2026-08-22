@@ -175,9 +175,10 @@ import {
   rainStreakOpacity,
   rainStreakScaleY,
   rainStreaksHidden,
+  rainStreakVxAfterRestart,
+  rainStreakVxFromDrift,
   rainStreakYAfterRestart,
   rainStreakYFromFall,
-  tickRainStreakVx,
 } from "./rainStreaks";
 import { lootBadgeIconScale, lootBadgeY, lootFocusMul, lootRingVisible, LOOT_FOCUS_REACH } from "./lootFocus";
 import {
@@ -1506,7 +1507,8 @@ export function createWorldView(
   for (let i = 0; i < RAIN_COUNT; i++) {
     const mat = rainMat.clone();
     const mesh = new THREE.Mesh(rainGeo, mat);
-    const vx = (Math.random() - 0.5) * 14;
+    // R / dispose: vx fresco (spawn); leftover mid-drift de la vida anterior no filtra.
+    const vx = rainStreakVxAfterRestart(Math.random());
     const vz = (Math.random() - 0.5) * 14;
     // R / dispose: Y fresco (spawn); leftover mid-fall de la vida anterior no filtra.
     const y = rainStreakYAfterRestart(Math.random());
@@ -1560,7 +1562,7 @@ export function createWorldView(
           d.vz = (Math.random() - 0.5) * 14;
         }
         // Drift leve con el viento.
-        d.vx = tickRainStreakVx(d.vx, dt);
+        d.vx = rainStreakVxFromDrift(d.vx, dt);
         d.mesh.position.set(d.vx, d.y, d.vz);
       }
     }
