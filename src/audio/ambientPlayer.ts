@@ -28,7 +28,8 @@ const INDOOR_LOWPASS_HZ = 190;
 const THREAT_OSC_HZ = 36;
 const THREAT_LOWPASS_HZ = 48;
 
-const GAIN_RAMP_SEC = 0.08;
+/** applyGains rampa desde param.value leftover durante este intervalo. */
+export const GAIN_RAMP_SEC = 0.08;
 const SILENT_EPS = 0.0005;
 const NOISE_SEC = 2;
 
@@ -82,6 +83,56 @@ function tryCreateAudioContext(): AudioContext | null {
 /** Crea player stub; no abre AudioContext (lazy en sync). */
 export function createAmbientPlayer(): AmbientPlayer {
   return { ctx: null, voices: null };
+}
+
+/**
+ * R / softReset: voices a 0 (boot de buildVoices / connectOut).
+ * Night/indoor/threat leftover no rampa GAIN_RAMP_SEC sobre el drizzle nuevo.
+ * F9 load no usa esto — el player persiste (misma carrera).
+ */
+export function ambientPlayerGainsAfterRestart(): AmbientLevels {
+  return { rain: 0, night: 0, indoor: 0, threat: 0 };
+}
+
+/** Gains actuales de voices (null si lazy / sin graph). Headless. */
+export function ambientPlayerVoiceGains(
+  player: AmbientPlayer,
+): AmbientLevels | null {
+  const voices = player.voices;
+  if (!voices) return null;
+  return {
+    rain: voices.rain.gain.gain.value,
+    night: voices.night.gain.gain.value,
+    indoor: voices.indoor.gain.gain.value,
+    threat: voices.threat.gain.gain.value,
+  };
+}
+
+function snapGain(gain: GainNode, value: number, currentTime: number): void {
+  const param = gain.gain;
+  const v = Math.max(0, value);
+  try {
+    param.cancelScheduledValues(currentTime);
+    param.setValueAtTime(v, currentTime);
+  } catch {
+    // mock / context cerrado
+  }
+  param.value = v;
+}
+
+/**
+ * R / softReset: voices a 0 (boot). Mute se queda (vive en el bus).
+ * Game.ambientPlayer debe coincidir (night/threat leftover no rampa).
+ * Sin voices (lazy/headless) = no-op. F9 load no usa esto.
+ */
+export function resetAmbientPlayerAfterRestart(player: AmbientPlayer): void {
+  const voices = player.voices;
+  if (!voices) return;
+  const gains = ambientPlayerGainsAfterRestart();
+  const t = player.ctx?.currentTime ?? 0;
+  for (const layer of LAYERS) {
+    snapGain(voices[layer].gain, gains[layer], t);
+  }
 }
 
 function createNoiseBuffer(ctx: AudioContext): AudioBuffer {
