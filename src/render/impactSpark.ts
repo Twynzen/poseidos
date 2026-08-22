@@ -225,6 +225,31 @@ export function impactSparkColorAfterRestart(): number {
   return impactSparkColorFromLook(IMPACT_SPARK_COLOR_SPAWN);
 }
 
+/** DepthWrite del impact spark mesh. Ctor impactMat.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const IMPACT_SPARK_DEPTH_WRITE = false;
+
+/** Idle impact spark mesh depthWrite. Ctor impactMat.depthWrite false = fresco. Mid-life leftover ≠ fresco. */
+export const IMPACT_SPARK_DEPTH_WRITE_SPAWN = false;
+
+/**
+ * DepthWrite que leería applyImpactSparkVisual (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * apply/tick no escribe depthWrite (ctor constant).
+ */
+export function impactSparkDepthWriteFromLook(depthWrite: boolean): boolean {
+  return depthWrite;
+}
+
+/**
+ * R / softReset: depthWrite fresco (idle false).
+ * WorldView nace impactMat.depthWrite AfterRestart; leftover mid-life no filtra.
+ * apply/tick no escribe depthWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function impactSparkDepthWriteAfterRestart(): boolean {
+  return impactSparkDepthWriteFromLook(IMPACT_SPARK_DEPTH_WRITE_SPAWN);
+}
+
 /**
  * HAS MUERTO / F9 load-muerto: no avanzar el spark ni pintarlo.
  * Vivo (incl. F9 load-vivo): tick/intensity de hoy.

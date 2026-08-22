@@ -256,6 +256,7 @@ import {
   impactSparkPosZAfterRestart,
   impactSparkPosZFromLook,
   impactSparkColorAfterRestart,
+  impactSparkDepthWriteAfterRestart,
   impactSparkLightColorAfterRestart,
   impactSparkLightDecayAfterRestart,
   impactSparkLightDistanceAfterRestart,
@@ -1578,7 +1579,8 @@ export function createWorldView(
     transparent: true,
     // R / dispose: opacity fresco (inactive); leftover ctor Three 1 no filtra.
     opacity: impactSparkIntensityAfterRestart(),
-    depthWrite: false,
+    // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
+    depthWrite: impactSparkDepthWriteAfterRestart(),
     blending: THREE.AdditiveBlending,
   });
   const impactMesh = new THREE.Mesh(impactGeo, impactMat);
