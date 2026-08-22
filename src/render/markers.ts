@@ -333,6 +333,31 @@ export function markerBadgeSideAfterRestart(): number {
   return markerBadgeSideFromLook(MARKER_BADGE_SIDE_SPAWN);
 }
 
+/** Intensidad del marker-badge mesh. Ctor badgeMat.emissiveIntensity: 0.65 = fresco. Mid-life leftover ≠ fresco. */
+export const MARKER_BADGE_EMISSIVE_INTENSITY = 0.65;
+
+/** Idle marker-badge mesh emissiveIntensity. Ctor badgeMat.emissiveIntensity: 0.65 = fresco. Mid-life leftover ≠ fresco. */
+export const MARKER_BADGE_EMISSIVE_INTENSITY_SPAWN = 0.65;
+
+/**
+ * Intensidad que leería attach (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0.65).
+ * attach no escribe emissiveIntensity (ctor constant).
+ */
+export function markerBadgeEmissiveIntensityFromLook(intensity: number): number {
+  return intensity;
+}
+
+/**
+ * R / softReset: intensity fresco (idle 0.65).
+ * WorldView nace badgeMat.emissiveIntensity AfterRestart; leftover mid-life no filtra.
+ * attach no escribe emissiveIntensity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function markerBadgeEmissiveIntensityAfterRestart(): number {
+  return markerBadgeEmissiveIntensityFromLook(MARKER_BADGE_EMISSIVE_INTENSITY_SPAWN);
+}
+
 /** Altura world del floatBadge mute (2.3 × 1.15, misma banda door/bed/loot; queda por encima del Soldier 1.5). */
 export const muteBadgeY = 2.645;
 

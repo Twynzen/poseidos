@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import {
+  markerBadgeEmissiveIntensityAfterRestart,
   markerBadgeOpacity,
   markerBadgeSideAfterRestart,
   markerIconColorAfterRestart,
@@ -3313,7 +3314,8 @@ function attachRoleMarkers(
   const badgeMat = new THREE.MeshStandardMaterial({
     color: pal.badge,
     emissive: pal.emissive,
-    emissiveIntensity: 0.65,
+    // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
+    emissiveIntensity: markerBadgeEmissiveIntensityAfterRestart(),
     roughness: 0.45,
     metalness: 0.1,
     // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
