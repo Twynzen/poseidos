@@ -34,11 +34,12 @@ import {
   FLASHLIGHT_SPOT_INTENSITY_MUL,
   FLASHLIGHT_SPOT_PENUMBRA,
   FLASHLIGHT_WEDGE_COLOR,
-  FLASHLIGHT_WEDGE_OPACITY_BASE,
   flashlightConeOffsetXFromLook,
   flashlightConeOffsetZFromLook,
   flashlightConeTip,
   flashlightConeVisible,
+  flashlightConeOpacityAfterRestart,
+  flashlightConeOpacityFromLook,
   flashlightConeVisibleAfterRestart,
   flashlightConeVisibleFromLook,
   flashlightConeYawAfterRestart,
@@ -1446,7 +1447,8 @@ export function createWorldView(
     color: FLASHLIGHT_WEDGE_COLOR,
     vertexColors: true,
     transparent: true,
-    opacity: FLASHLIGHT_WEDGE_OPACITY_BASE,
+    // R / dispose: cone opacity fresco (idle 0); leftover ctor BASE / mid-life no filtra.
+    opacity: flashlightConeOpacityAfterRestart(),
     side: THREE.DoubleSide,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
@@ -2568,7 +2570,7 @@ export function createWorldView(
 
       flashlightConeWedge.rotation.y = yaw;
       flashlightConeWedge.visible = flashlightConeVisibleFromLook(on);
-      coneMat.opacity = flashlightWedgeOpacity(i);
+      coneMat.opacity = flashlightConeOpacityFromLook(flashlightWedgeOpacity(i));
     },
     followCamera(x, y) {
       camera.position.set(

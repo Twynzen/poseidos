@@ -433,3 +433,24 @@ export function flashlightConeVisibleFromLook(visible: boolean): boolean {
 export function flashlightConeVisibleAfterRestart(): boolean {
   return flashlightConeVisibleFromLook(FLASHLIGHT_CONE_VISIBLE_SPAWN);
 }
+
+/** Idle cone opacity. Ctor coneMat.opacity BASE leftover vs idle 0. Mid-life leftover ≠ 0. */
+export const FLASHLIGHT_CONE_OPACITY_SPAWN = 0;
+
+/**
+ * Opacity que lee syncTorchLight (look fresco o vivo).
+ * leftover mid-life / ctor BASE ≠ fresco (idle 0).
+ */
+export function flashlightConeOpacityFromLook(opacity: number): number {
+  return opacity;
+}
+
+/**
+ * R / softReset: opacity fresco (idle 0).
+ * WorldView nace coneMat.opacity AfterRestart; leftover ctor BASE / mid-life no filtra.
+ * syncTorchLight lee flashlightConeOpacityFromLook.
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function flashlightConeOpacityAfterRestart(): number {
+  return flashlightConeOpacityFromLook(FLASHLIGHT_CONE_OPACITY_SPAWN);
+}
