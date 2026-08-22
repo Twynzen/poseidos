@@ -1753,6 +1753,31 @@ export function floorEmissiveAfterRestart(): number {
   return floorEmissiveFromLook(FLOOR_EMISSIVE_SPAWN);
 }
 
+/** Intensidad del floor mesh. Ctor floorMat.emissiveIntensity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const FLOOR_EMISSIVE_INTENSITY = 1;
+
+/** Idle floor mesh emissiveIntensity. Ctor floorMat.emissiveIntensity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const FLOOR_EMISSIVE_INTENSITY_SPAWN = 1;
+
+/**
+ * Intensidad que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ */
+export function floorEmissiveIntensityFromLook(intensity: number): number {
+  return intensity;
+}
+
+/**
+ * R / softReset: intensity fresco (idle 1).
+ * WorldView nace floorMat.emissiveIntensity AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function floorEmissiveIntensityAfterRestart(): number {
+  return floorEmissiveIntensityFromLook(FLOOR_EMISSIVE_INTENSITY_SPAWN);
+}
+
 /** Roughness del wall mesh. Ctor wallMat.roughness: 0.85 = fresco. Mid-life leftover ≠ fresco. */
 export const WALL_ROUGHNESS = 0.85;
 
@@ -2446,6 +2471,8 @@ export function createWorldView(
       metalness: floorMetalnessAfterRestart(),
       // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
       emissive: floorEmissiveAfterRestart(),
+      // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
+      emissiveIntensity: floorEmissiveIntensityAfterRestart(),
     });
     floorMatByColor.set(key, m);
     return m;
