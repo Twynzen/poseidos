@@ -203,3 +203,24 @@ export function warmLightIntensityFromLook(intensity: number): number {
 export function warmLightIntensityAfterRestart(): number {
   return warmLightIntensityFromLook(WARM_LIGHT_INTENSITY_SPAWN);
 }
+
+/** Idle warm Y. Ctor warmLight.position.y 1.6 leftover vs idle WARM_LIGHT_Y 1.7825. Mid-life leftover ≠ 1.7825. */
+export const WARM_LIGHT_Y_SPAWN = 1.7825;
+
+/**
+ * Y que lee syncWarmLight (look fresco o vivo).
+ * leftover mid-life / ctor 1.6 ≠ fresco (idle 1.7825).
+ */
+export function warmLightYFromLook(y: number): number {
+  return y;
+}
+
+/**
+ * R / softReset: Y fresco (idle WARM_LIGHT_Y 1.7825).
+ * WorldView nace warmLight.position.y AfterRestart; leftover ctor 1.6 / mid-life no filtra.
+ * syncWarmLight lee warmLightYFromLook.
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function warmLightYAfterRestart(): number {
+  return warmLightYFromLook(WARM_LIGHT_Y_SPAWN);
+}
