@@ -152,6 +152,7 @@ import {
   helpHudVisible,
   nextShowHelp,
   hudAccAfterRestart,
+  lastLootMsgAfterRestart,
   isKeepableDeathCause,
   formatGateLine,
   createHitFlash,
@@ -566,7 +567,7 @@ export class Game {
     this.hitFlash.intensity = 0;
     this.syncHitFlashOverlay();
     this.syncInventoryPanel();
-    this.lastLootMsg = "reinicio";
+    this.lastLootMsg = lastLootMsgAfterRestart();
     this.view.dispose();
     this.view = createWorldView(this.map, this.containers);
     // R: cámara nueva = ISO_FRUSTUM; no filtrar el zoom de la vida anterior.

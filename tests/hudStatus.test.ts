@@ -7,6 +7,7 @@ import {
   defaultPossessedSpawns,
   loadAliveRuntime,
   SPAWN_GRACE_SECONDS,
+  spawnGraceAfterRestart,
 } from "../src/ai";
 import {
   CONTROLS_HELP,
@@ -18,6 +19,7 @@ import {
   helpHudVisible,
   nextShowHelp,
   hudAccAfterRestart,
+  lastLootMsgAfterRestart,
   formatPacifyHud,
   formatSpeedBumpHud,
   formatMoodBiasHud,
@@ -1166,6 +1168,136 @@ describe("hudAccAfterRestart (R / softReset)", () => {
     );
     expect(gameSrc).toMatch(
       /this\.hudAcc \+= dt;\s*if \(this\.hudAcc >= 0\.25\) \{\s*this\.hudAcc = 0;\s*this\.refreshHud\(false\);/,
+    );
+  });
+});
+
+describe("death → R HUD lock (softReset)", () => {
+  test("lastLootMsgAfterRestart → reinicio; leftover no filtra", () => {
+    expect(lastLootMsgAfterRestart()).toBe("reinicio");
+    expect(lastLootMsgAfterRestart()).not.toBe(REST_HUD_MSG);
+    expect(lastLootMsgAfterRestart()).not.toBe("sin objetivo");
+    expect(lastLootMsgAfterRestart()).not.toContain("HAS MUERTO");
+    expect(lastLootMsgAfterRestart()).not.toBe("");
+
+    let current = "sin objetivo";
+    expect(current).not.toBe("reinicio");
+    current = lastLootMsgAfterRestart();
+    expect(current).toBe("reinicio");
+
+    current = REST_HUD_MSG;
+    current = lastLootMsgAfterRestart();
+    expect(current).toBe("reinicio");
+    expect(current).not.toBe("descansaste");
+
+    current = "golpe -12 HP";
+    current = lastLootMsgAfterRestart();
+    expect(current).toBe("reinicio");
+
+    current = "HAS MUERTO";
+    current = lastLootMsgAfterRestart();
+    expect(current).toBe("reinicio");
+    expect(current).not.toContain("HAS MUERTO");
+
+    current = "cargado";
+    current = lastLootMsgAfterRestart();
+    expect(current).toBe("reinicio");
+    expect(current).not.toBe("cargado");
+  });
+
+  test("tras R: lastLootMsg reinicio + hudAcc 0 + gameOver false + spawnGrace", () => {
+    expect(lastLootMsgAfterRestart()).toBe("reinicio");
+    expect(hudAccAfterRestart()).toBe(0);
+    expect(spawnGraceAfterRestart()).toBe(SPAWN_GRACE_SECONDS);
+
+    const live = loadAliveRuntime(true);
+    expect(live.gameOver).toBe(false);
+    expect(live.spawnGrace).toBe(SPAWN_GRACE_SECONDS);
+    expect(live.spawnGrace).toBe(spawnGraceAfterRestart());
+
+    const dead = loadAliveRuntime(false);
+    expect(dead.gameOver).toBe(true);
+    expect(dead.spawnGrace).toBe(0);
+    expect(dead.spawnGrace).not.toBe(spawnGraceAfterRestart());
+    expect(hudAccAfterRestart()).not.toBe(1);
+
+    const afterR = formatHudStatus(
+      base({
+        muteN: 3,
+        possN: 2,
+        gameOver: false,
+        msg: lastLootMsgAfterRestart(),
+      }),
+    );
+    expect(afterR).toContain("reinicio");
+    expect(afterR).toContain("mudos 3");
+    expect(afterR).toContain("poseídos 2");
+    expect(afterR).not.toContain("HAS MUERTO");
+    expect(afterR).not.toContain("sin objetivo");
+    expect(afterR).not.toContain(REST_HUD_MSG);
+
+    const stillDead = formatHudStatus(
+      base({
+        gameOver: true,
+        msg: lastLootMsgAfterRestart(),
+      }),
+    );
+    expect(stillDead).toContain("HAS MUERTO");
+    expect(stillDead).toBe(`${GAME_OVER_LINE} · reinicio`);
+  });
+
+  test("Game softReset assign lastLootMsg/gameOver/hudAcc/spawnGrace; refreshHud limpia HAS MUERTO", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    expect(gameSrc).toContain("lastLootMsgAfterRestart(");
+    expect(gameSrc).toMatch(/private lastLootMsg = "";/);
+    expect(gameSrc).toMatch(/private gameOver = false;/);
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.gameOver = false/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,3200}this\.lastLootMsg = lastLootMsgAfterRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.gameOver = false;[\s\S]{0,800}this\.lastLootMsg = lastLootMsgAfterRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,3200}this\.spawnGrace = spawnGraceAfterRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.lastLootMsg = lastLootMsgAfterRestart\(\);[\s\S]{0,800}this\.refreshHud\(true\);[\s\S]{0,200}this\.hudAcc = hudAccAfterRestart\(\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,3600}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}lastLootMsgAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}this\.lastLootMsg = "cargado"/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}lastLootMsgAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}lastLootMsgAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
     );
   });
 });
