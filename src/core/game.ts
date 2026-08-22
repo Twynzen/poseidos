@@ -187,6 +187,7 @@ import {
   resetFootstepPlayerAfterRestart,
   syncFootstepPlayer,
   createAmbientPlayer,
+  resetAmbientPlayerAfterRestart,
   syncAmbientPlayer,
   createCombatPlayer,
   playMelee,
@@ -534,6 +535,8 @@ export class Game {
     this.weather = new WeatherSystem({ initial: "drizzle" });
     // R: mix fresco; no filtrar night/indoor/threat de la vida anterior. Mute se queda.
     resetAmbientAfterRestart(this.ambient);
+    // R: voices a 0; no rampa leftover. Mute se queda.
+    resetAmbientPlayerAfterRestart(this.ambientPlayer);
     // R: pisadas frescas; no filtrar level/phase/prevPhase de la vida anterior. Mute se queda.
     resetFootstepsAfterRestart(this.footsteps);
     resetFootstepPlayerAfterRestart(this.footstepPlayer);

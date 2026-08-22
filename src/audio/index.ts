@@ -40,7 +40,11 @@ export {
   computeLayerGain,
   shouldBeSilent,
   createAmbientPlayer,
+  ambientPlayerGainsAfterRestart,
+  ambientPlayerVoiceGains,
+  resetAmbientPlayerAfterRestart,
   syncAmbientPlayer,
+  GAIN_RAMP_SEC,
   type AmbientPlayer,
 } from "./ambientPlayer";
 
