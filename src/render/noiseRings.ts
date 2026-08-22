@@ -266,6 +266,31 @@ export function noiseRingDepthWriteAfterRestart(): boolean {
   return noiseRingDepthWriteFromLook(NOISE_RING_DEPTH_WRITE_SPAWN);
 }
 
+/** Side del noise-ring mesh. Ctor mat.side THREE.DoubleSide (2) = fresco. Mid-life leftover ≠ fresco. */
+export const NOISE_RING_SIDE = 2;
+
+/** Idle noise-ring mesh side. Ctor mat.side THREE.DoubleSide (2) = fresco. Mid-life leftover ≠ fresco. */
+export const NOISE_RING_SIDE_SPAWN = 2;
+
+/**
+ * Side que leería spawn/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.DoubleSide / 2).
+ * spawn/tick no escriben side (ctor constant).
+ */
+export function noiseRingSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.DoubleSide / 2).
+ * WorldView nace mat.side AfterRestart; leftover mid-life no filtra.
+ * spawn/tick no escriben side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function noiseRingSideAfterRestart(): number {
+  return noiseRingSideFromLook(NOISE_RING_SIDE_SPAWN);
+}
+
 /** Ámbar door/loot. 0xe8b060 × 1.15/canal (r clamp) para leer de noche. */
 export const NOISE_RING_AMBER = 0xffca6e;
 
