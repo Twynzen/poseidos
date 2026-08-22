@@ -577,7 +577,7 @@ export class Game {
     this.syncHitFlashOverlay();
     this.syncInventoryPanel();
     this.lastLootMsg = lastLootMsgAfterRestart();
-    // R: WorldView nuevo = spawn + bed/door/nameplate/loot + grass + rain + camera + muzzle + impact + tracers + melee + loco + hit lean + camera shake + noise rings + facing chevron fresco; leftover origin 0,0 / opacity 1 / mid-swing / mid-stride / mid-recoil / mid-shake / mid-life ring / mid-life yaw no filtra.
+    // R: WorldView nuevo = spawn + bed/door/nameplate/loot + grass + rain + camera + muzzle + impact + tracers + melee + loco + hit lean + camera shake + noise rings + facing chevron + flashlight cone fresco; leftover origin 0,0 / opacity 1 / mid-swing / mid-stride / mid-recoil / mid-shake / mid-life ring / mid-life yaw no filtra.
     this.view.dispose();
     this.view = createWorldView(this.map, this.containers);
     // R: cámara nueva = ISO_FRUSTUM + look spawn; leftover zoom / origin 0,0 no filtra.

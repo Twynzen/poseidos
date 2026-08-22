@@ -190,3 +190,62 @@ export function flashlightWedgeVertexColors(): Float32Array {
     FLASHLIGHT_WEDGE_FAR_R, FLASHLIGHT_WEDGE_FAR_G, FLASHLIGHT_WEDGE_FAR_B,
   ]);
 }
+
+/** Idle cone yaw. Ctor flashlightConeWedge rotation.y 0 + tip +Z = fresco. Mid-life leftover ≠ 0. */
+export const FLASHLIGHT_CONE_YAW_SPAWN = 0;
+
+/**
+ * Yaw que lee syncTorchLight (look fresco o vivo).
+ * leftover mid-life yaw ≠ fresco (idle 0).
+ */
+export function flashlightConeYawFromLook(yaw: number): number {
+  return yaw;
+}
+
+/**
+ * Offset X (tip) que lee syncTorchLight (look fresco o vivo).
+ * leftover mid-life / far 40 ≠ fresco (yaw 0 → 0).
+ */
+export function flashlightConeOffsetXFromLook(x: number): number {
+  return x;
+}
+
+/**
+ * Offset Z (tip) que lee syncTorchLight (look fresco o vivo).
+ * leftover mid-life / far 30 ≠ fresco (yaw 0 → LENGTH).
+ */
+export function flashlightConeOffsetZFromLook(z: number): number {
+  return z;
+}
+
+/**
+ * R / softReset: yaw fresco (idle 0).
+ * WorldView nace rotation.y AfterRestart; leftover mid-life yaw no filtra.
+ * syncTorchLight lee flashlightConeYawFromLook.
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function flashlightConeYawAfterRestart(): number {
+  return flashlightConeYawFromLook(FLASHLIGHT_CONE_YAW_SPAWN);
+}
+
+/**
+ * R / softReset: offset X fresco (yaw 0 → 0).
+ * WorldView nace tip.x AfterRestart; leftover mid-life / far no filtra.
+ * syncTorchLight lee flashlightConeOffsetXFromLook.
+ */
+export function flashlightConeOffsetXAfterRestart(): number {
+  return flashlightConeOffsetXFromLook(
+    flashlightConeTip(flashlightConeYawAfterRestart()).x,
+  );
+}
+
+/**
+ * R / softReset: offset Z fresco (yaw 0 → LENGTH).
+ * WorldView nace tip.z AfterRestart; leftover mid-life / far no filtra.
+ * syncTorchLight lee flashlightConeOffsetZFromLook.
+ */
+export function flashlightConeOffsetZAfterRestart(): number {
+  return flashlightConeOffsetZFromLook(
+    flashlightConeTip(flashlightConeYawAfterRestart()).z,
+  );
+}
