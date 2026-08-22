@@ -2,11 +2,20 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
 import { loadAliveRuntime, SPAWN_GRACE_SECONDS } from "../src/ai";
+import { createNeighborhood } from "../src/world/neighborhood";
 import {
   CAMERA_SHAKE_AMP,
   CAMERA_SHAKE_DURATION,
   CAMERA_SHAKE_FREQ,
+  CAMERA_SHAKE_OFFSET_X_SPAWN,
+  CAMERA_SHAKE_OFFSET_Z_SPAWN,
+  cameraShakeActiveAfterRestart,
+  cameraShakeActiveFromLook,
   cameraShakeApplies,
+  cameraShakeOffsetXAfterRestart,
+  cameraShakeOffsetXFromLook,
+  cameraShakeOffsetZAfterRestart,
+  cameraShakeOffsetZFromLook,
   createCameraShakeState,
   tickCameraShake,
   triggerCameraShake,
@@ -291,5 +300,193 @@ describe("cameraShakeApplies (HAS MUERTO / F9 load-muerto)", () => {
     expect(viewSrc).toContain("hideCameraShake: hideShake");
     expect(viewSrc).toContain("playerMixer.update(dt, currentRole(playerAnimator))");
     expect(viewSrc).not.toContain("tickCameraShake(playerCameraShake, dt)");
+  });
+});
+
+describe("cameraShakeAfterRestart (R / softReset)", () => {
+  test("shake fresco (idle 0); leftover mid-shake / far 40,30 no filtra", () => {
+    const barrio = createNeighborhood(48);
+    expect(barrio.spawn.x).toBe(24.5);
+    expect(barrio.spawn.y).toBe(15.5);
+
+    const bootX = cameraShakeOffsetXAfterRestart();
+    const bootZ = cameraShakeOffsetZAfterRestart();
+    const bootA = cameraShakeActiveAfterRestart();
+    expect(bootX).toBe(cameraShakeOffsetXFromLook(0));
+    expect(bootZ).toBe(cameraShakeOffsetZFromLook(0));
+    expect(bootA).toBe(cameraShakeActiveFromLook(false));
+    expect(bootX).toBe(0);
+    expect(bootZ).toBe(0);
+    expect(bootA).toBe(false);
+    expect(bootX).toBe(CAMERA_SHAKE_OFFSET_X_SPAWN);
+    expect(bootZ).toBe(CAMERA_SHAKE_OFFSET_Z_SPAWN);
+    expect(cameraShakeOffsetXAfterRestart()).toBe(bootX);
+    expect(cameraShakeOffsetZAfterRestart()).toBe(bootZ);
+    expect(cameraShakeActiveAfterRestart()).toBe(bootA);
+
+    const leftoverMidX = CAMERA_SHAKE_AMP;
+    const leftoverMidZ = CAMERA_SHAKE_AMP;
+    expect(leftoverMidX).not.toBe(bootX);
+    expect(leftoverMidZ).not.toBe(bootZ);
+    expect(cameraShakeOffsetXFromLook(CAMERA_SHAKE_AMP)).toBe(leftoverMidX);
+    expect(cameraShakeOffsetXFromLook(CAMERA_SHAKE_AMP)).not.toBe(bootX);
+    expect(cameraShakeOffsetZFromLook(CAMERA_SHAKE_AMP)).toBe(leftoverMidZ);
+    expect(cameraShakeOffsetZFromLook(CAMERA_SHAKE_AMP)).not.toBe(bootZ);
+    expect(cameraShakeActiveFromLook(true)).not.toBe(bootA);
+
+    const leftoverFarX = 40;
+    const leftoverFarZ = 30;
+    expect(leftoverFarX).not.toBe(barrio.spawn.x);
+    expect(leftoverFarZ).not.toBe(barrio.spawn.y);
+    expect(leftoverFarX).not.toBe(24.5);
+    expect(leftoverFarZ).not.toBe(15.5);
+
+    expect(cameraShakeOffsetXFromLook(0)).toBe(bootX);
+    expect(cameraShakeOffsetZFromLook(0)).toBe(bootZ);
+    expect(cameraShakeActiveFromLook(false)).toBe(bootA);
+  });
+
+  test("vivo tick no usa el helper (shake avanza con look)", () => {
+    const bootX = cameraShakeOffsetXAfterRestart();
+    const bootZ = cameraShakeOffsetZAfterRestart();
+    const bootA = cameraShakeActiveAfterRestart();
+    const live = createCameraShakeState();
+    triggerCameraShake(live, () => 0);
+    const mid = tickCameraShake(live, CAMERA_SHAKE_DURATION / 4);
+    const liveX = cameraShakeOffsetXFromLook(mid.offsetX);
+    const liveZ = cameraShakeOffsetZFromLook(mid.offsetZ);
+    const liveA = cameraShakeActiveFromLook(mid.active);
+    const mag = expectedMag(0.25);
+    expect(liveX).toBeCloseTo(mag, 10);
+    expect(liveZ).toBeCloseTo(0, 10);
+    expect(liveA).toBe(true);
+    expect(liveX).not.toBe(bootX);
+    expect(liveA).not.toBe(bootA);
+    expect(liveX).not.toBe(cameraShakeOffsetXAfterRestart());
+    expect(liveA).not.toBe(cameraShakeActiveAfterRestart());
+    expect(Math.abs(liveX)).toBeGreaterThan(CAMERA_SHAKE_AMP * 0.5);
+
+    expect(cameraShakeOffsetXFromLook(0)).toBe(bootX);
+    expect(cameraShakeOffsetZFromLook(0)).toBe(bootZ);
+    expect(cameraShakeActiveFromLook(false)).toBe(bootA);
+    expect(cameraShakeOffsetXFromLook(CAMERA_SHAKE_AMP)).toBe(CAMERA_SHAKE_AMP);
+    expect(cameraShakeActiveFromLook(true)).toBe(true);
+  });
+});
+
+describe("camera shake recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace shake fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const shakeSrc = readFileSync(
+      resolve(process.cwd(), "src/render/cameraShake.ts"),
+      "utf8",
+    );
+    expect(shakeSrc).toContain("cameraShakeOffsetXAfterRestart(");
+    expect(shakeSrc).toContain("cameraShakeOffsetZAfterRestart(");
+    expect(shakeSrc).toContain("cameraShakeActiveAfterRestart(");
+    expect(shakeSrc).toContain("cameraShakeOffsetXFromLook(");
+    expect(shakeSrc).toContain("cameraShakeOffsetZFromLook(");
+    expect(shakeSrc).toContain("cameraShakeActiveFromLook(");
+    expect(shakeSrc).toContain("CAMERA_SHAKE_OFFSET_X_SPAWN");
+    expect(shakeSrc).toContain("CAMERA_SHAKE_OFFSET_Z_SPAWN");
+    expect(shakeSrc).toMatch(
+      /cameraShakeOffsetXAfterRestart\([\s\S]{0,200}cameraShakeOffsetXFromLook\(/,
+    );
+    expect(shakeSrc).toMatch(
+      /cameraShakeOffsetZAfterRestart\([\s\S]{0,200}cameraShakeOffsetZFromLook\(/,
+    );
+    expect(viewSrc).toContain("cameraShakeOffsetXAfterRestart(");
+    expect(viewSrc).toContain("cameraShakeOffsetZAfterRestart(");
+    expect(viewSrc).toContain("cameraShakeActiveAfterRestart(");
+    expect(viewSrc).toContain("cameraShakeOffsetXFromLook(");
+    expect(viewSrc).toContain("cameraShakeOffsetZFromLook(");
+    expect(viewSrc).toContain("cameraShakeActiveFromLook(");
+    expect(viewSrc).toMatch(
+      /offsetX:\s*cameraShakeOffsetXAfterRestart\(\)/,
+    );
+    expect(viewSrc).toMatch(
+      /offsetZ:\s*cameraShakeOffsetZAfterRestart\(\)/,
+    );
+    expect(viewSrc).toMatch(
+      /active:\s*cameraShakeActiveAfterRestart\(\)/,
+    );
+    expect(viewSrc).toContain("cameraShakeOffsetXFromLook(out.offsetX)");
+    expect(viewSrc).toContain("cameraShakeOffsetZFromLook(out.offsetZ)");
+    expect(viewSrc).toContain("cameraShakeActiveFromLook(out.active)");
+    expect(viewSrc).toContain(
+      "cameraShakeOffsetXFromLook(cameraShakeOut.offsetX)",
+    );
+    expect(viewSrc).toContain(
+      "cameraShakeOffsetZFromLook(cameraShakeOut.offsetZ)",
+    );
+    expect(viewSrc).toMatch(
+      /cameraFollowPosXAfterRestart\([\s\S]{0,120}cameraShakeOffsetXAfterRestart\(\)/,
+    );
+    expect(viewSrc).toMatch(
+      /cameraFollowPosZAfterRestart\([\s\S]{0,120}cameraShakeOffsetZAfterRestart\(\)/,
+    );
+    expect(viewSrc).not.toMatch(
+      /hideShake\(\): void \{[\s\S]{0,200}cameraShakeOffsetXAfterRestart/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}cameraShakeOffsetXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}cameraShakeOffsetXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}cameraShakeOffsetXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}cameraShakeOffsetXAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("cameraShakeOffsetXAfterRestart(");
+    expect(gameSrc).not.toContain("cameraShakeOffsetZAfterRestart(");
+    expect(gameSrc).not.toContain("cameraShakeActiveAfterRestart(");
+    expect(gameSrc).not.toContain("cameraShakeOffsetXFromLook(");
+    expect(gameSrc).not.toContain("cameraShakeOffsetZFromLook(");
+    expect(gameSrc).not.toContain("cameraShakeActiveFromLook(");
+    expect(saveSrc).not.toContain("cameraShakeOffsetXAfterRestart");
+    expect(saveSrc).not.toContain("cameraShakeOffsetZAfterRestart");
+    expect(saveSrc).not.toContain("cameraShakeOffsetXFromLook");
+    expect(saveSrc).not.toContain("cameraShakeOffsetZFromLook");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
   });
 });

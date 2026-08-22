@@ -89,6 +89,8 @@ import {
   type PlayerOneShotRole,
 } from "./characterManifest";
 import {
+  CAMERA_LOOK_X_SPAWN,
+  CAMERA_LOOK_Z_SPAWN,
   ISO_FRUSTUM,
   cameraFollowLookXAfterRestart,
   cameraFollowLookXFromLook,
@@ -153,7 +155,13 @@ import {
   type HitLeanOutput,
 } from "./hitLean";
 import {
+  cameraShakeActiveAfterRestart,
+  cameraShakeActiveFromLook,
   cameraShakeApplies,
+  cameraShakeOffsetXAfterRestart,
+  cameraShakeOffsetXFromLook,
+  cameraShakeOffsetZAfterRestart,
+  cameraShakeOffsetZFromLook,
   createCameraShakeState,
   tickCameraShake as stepCameraShake,
   triggerCameraShake,
@@ -911,10 +919,11 @@ export function createWorldView(
   const playerMuzzle = createMuzzleFlash();
   /** Spark de impacto al extremo del tracer (X hit/miss). */
   const impactSpark = createImpactSpark();
+  // R / dispose: shake fresco (idle 0); leftover mid-shake no filtra.
   let cameraShakeOut: CameraShakeOutput = {
-    offsetX: 0,
-    offsetZ: 0,
-    active: false,
+    offsetX: cameraShakeOffsetXAfterRestart(),
+    offsetZ: cameraShakeOffsetZAfterRestart(),
+    active: cameraShakeActiveAfterRestart(),
   };
   let meleeSwingOut: MeleeSwingOutput = {
     pitch: meleeSwingPitchAfterRestart(),
@@ -1658,11 +1667,20 @@ export function createWorldView(
       hideShake();
       return;
     }
-    cameraShakeOut = stepCameraShake(playerCameraShake, dt, gameOver);
+    const out = stepCameraShake(playerCameraShake, dt, gameOver);
+    cameraShakeOut = {
+      offsetX: cameraShakeOffsetXFromLook(out.offsetX),
+      offsetZ: cameraShakeOffsetZFromLook(out.offsetZ),
+      active: cameraShakeActiveFromLook(out.active),
+    };
   }
 
   function hideShake(): void {
-    cameraShakeOut = { offsetX: 0, offsetZ: 0, active: false };
+    cameraShakeOut = {
+      offsetX: cameraShakeOffsetXFromLook(0),
+      offsetZ: cameraShakeOffsetZFromLook(0),
+      active: cameraShakeActiveFromLook(false),
+    };
   }
 
   const hostileGeo = new THREE.BoxGeometry(HOSTILE_BODY_WIDTH, HOSTILE_BODY_HEIGHT, HOSTILE_BODY_DEPTH);
@@ -2071,11 +2089,17 @@ export function createWorldView(
     0.1,
     200,
   );
-  // R / dispose: look fresco (spawn); leftover mid-life origin 0,0 no filtra.
+  // R / dispose: look fresco (spawn) + shake fresco (idle 0); leftover mid-shake no filtra.
   camera.position.set(
-    cameraFollowPosXAfterRestart(),
+    cameraFollowPosXAfterRestart(
+      CAMERA_LOOK_X_SPAWN,
+      cameraShakeOffsetXAfterRestart(),
+    ),
     cameraFollowPosYAfterRestart(),
-    cameraFollowPosZAfterRestart(),
+    cameraFollowPosZAfterRestart(
+      CAMERA_LOOK_Z_SPAWN,
+      cameraShakeOffsetZAfterRestart(),
+    ),
   );
   camera.lookAt(
     cameraFollowLookXAfterRestart(),
@@ -2478,9 +2502,15 @@ export function createWorldView(
     },
     followCamera(x, y) {
       camera.position.set(
-        cameraFollowPosXFromLook(x, cameraShakeOut.offsetX),
+        cameraFollowPosXFromLook(
+          x,
+          cameraShakeOffsetXFromLook(cameraShakeOut.offsetX),
+        ),
         cameraFollowPosYFromLook(),
-        cameraFollowPosZFromLook(y, cameraShakeOut.offsetZ),
+        cameraFollowPosZFromLook(
+          y,
+          cameraShakeOffsetZFromLook(cameraShakeOut.offsetZ),
+        ),
       );
       camera.lookAt(
         cameraFollowLookXFromLook(x),
