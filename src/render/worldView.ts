@@ -4,6 +4,7 @@ import {
   markerIconColorAfterRestart,
   markerIconDepthWriteAfterRestart,
   markerIconOpacityAfterRestart,
+  markerIconSideAfterRestart,
   markerIconTransparentAfterRestart,
   markerRingDepthWriteAfterRestart,
   markerRingOpacity,
@@ -3001,7 +3002,8 @@ function attachRoleMarkers(
     transparent: markerIconTransparentAfterRestart(),
     // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
     opacity: markerIconOpacityAfterRestart(),
-    side: THREE.DoubleSide,
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: markerIconSideAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: markerIconDepthWriteAfterRestart(),
   });
