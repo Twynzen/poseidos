@@ -870,6 +870,34 @@ export function possessedHeadEmissiveIntensityAfterRestart(): number {
   return possessedHeadEmissiveIntensityFromLook(POSSESSED_HEAD_EMISSIVE_INTENSITY_SPAWN);
 }
 
+/** Roughness del possessed head mesh. Ctor possessedHeadMat.roughness: 0.45 = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_ROUGHNESS = 0.45;
+
+/** Roughness del possessed head mesh. Ctor possessedHeadMat.roughness: 0.45 = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_MESH_ROUGHNESS = 0.45;
+
+/** Idle possessed head mesh roughness. Ctor possessedHeadMat.roughness: 0.45 = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_ROUGHNESS_SPAWN = 0.45;
+
+/**
+ * Roughness que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0.45).
+ * attach/tick no escriben roughness (ctor constant).
+ */
+export function possessedHeadRoughnessFromLook(roughness: number): number {
+  return roughness;
+}
+
+/**
+ * R / softReset: roughness fresco (idle 0.45).
+ * WorldView nace possessedHeadMat.roughness AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben roughness (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function possessedHeadRoughnessAfterRestart(): number {
+  return possessedHeadRoughnessFromLook(POSSESSED_HEAD_ROUGHNESS_SPAWN);
+}
+
 /** Color del pool cálido indoor de noche. 0xffb070 × 1.15/canal (r clamp) para leerse de noche. */
 export const WARM_LIGHT_COLOR = 0xffca81;
 /** Multiplicador de intensidad del PointLight cálido indoor. 1.55 × 1.15 para leerse un poco más fuerte de noche. */
@@ -2279,7 +2307,8 @@ export function createWorldView(
     emissive: possessedHeadEmissiveAfterRestart(),
     // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
     emissiveIntensity: possessedHeadEmissiveIntensityAfterRestart(),
-    roughness: 0.45,
+    // R / dispose: roughness fresco (idle); leftover mid-life roughness de la vida anterior no filtra.
+    roughness: possessedHeadRoughnessAfterRestart(),
   });
   const hostileMeshes = new Map<string, THREE.Object3D>();
   const hostileKinds = new Map<string, "mute" | "possessed">();
