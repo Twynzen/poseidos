@@ -655,6 +655,31 @@ export function possessedEmissiveAfterRestart(): number {
   return possessedEmissiveFromLook(POSSESSED_EMISSIVE_SPAWN);
 }
 
+/** Intensidad del possessed mesh. Ctor possessedMat.emissiveIntensity: 0.55 = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_MESH_EMISSIVE_INTENSITY = 0.55;
+
+/** Idle possessed mesh emissiveIntensity. Ctor possessedMat.emissiveIntensity: 0.55 = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_EMISSIVE_INTENSITY_SPAWN = 0.55;
+
+/**
+ * Intensidad que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0.55).
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ */
+export function possessedEmissiveIntensityFromLook(intensity: number): number {
+  return intensity;
+}
+
+/**
+ * R / softReset: intensity fresco (idle 0.55).
+ * WorldView nace possessedMat.emissiveIntensity AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben emissiveIntensity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function possessedEmissiveIntensityAfterRestart(): number {
+  return possessedEmissiveIntensityFromLook(POSSESSED_EMISSIVE_INTENSITY_SPAWN);
+}
+
 /** Color de la silueta fallback poseída (cabeza). 0x7a3d8a × 1.15/canal para leerse de noche. */
 export const POSSESSED_HEAD_COLOR = 0x8c469f;
 
@@ -2105,7 +2130,8 @@ export function createWorldView(
     color: possessedColorAfterRestart(),
     // R / dispose: emissive fresco (idle); leftover mid-life emissive de la vida anterior no filtra.
     emissive: possessedEmissiveAfterRestart(),
-    emissiveIntensity: 0.55,
+    // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
+    emissiveIntensity: possessedEmissiveIntensityAfterRestart(),
     roughness: 0.5,
   });
   const possessedHeadMat = new THREE.MeshStandardMaterial({
