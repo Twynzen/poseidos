@@ -7,8 +7,22 @@ import {
   ISO_FRUSTUM_MAX,
   ISO_FRUSTUM_MIN,
   ISO_FRUSTUM_STEP,
+  CAMERA_FOLLOW_OFFSET,
+  CAMERA_FOLLOW_Y,
+  CAMERA_LOOK_X_SPAWN,
+  CAMERA_LOOK_Z_SPAWN,
   applyIsoZoom,
   applyZoomInput,
+  cameraFollowLookXAfterRestart,
+  cameraFollowLookXFromLook,
+  cameraFollowLookZAfterRestart,
+  cameraFollowLookZFromLook,
+  cameraFollowPosXAfterRestart,
+  cameraFollowPosXFromLook,
+  cameraFollowPosYAfterRestart,
+  cameraFollowPosYFromLook,
+  cameraFollowPosZAfterRestart,
+  cameraFollowPosZFromLook,
   clampIsoFrustum,
   isoFrustumAfterRestart,
   nextIsoZoom,
@@ -19,6 +33,7 @@ import {
   ZOOM_IN_HUD_MSG,
   ZOOM_OUT_HUD_MSG,
 } from "../src/render/cameraConfig";
+import { createNeighborhood } from "../src/world/neighborhood";
 import { PLAYER_SOLDIER_MANIFEST } from "../src/render/characterManifest";
 
 describe("ISO_FRUSTUM", () => {
@@ -402,5 +417,211 @@ describe("PLAYER_SOLDIER_MANIFEST scale (iso presence)", () => {
   test("scale > 1 para presencia vs tiles/hostiles", () => {
     expect(PLAYER_SOLDIER_MANIFEST.scale).toBeGreaterThan(1);
     expect(PLAYER_SOLDIER_MANIFEST.yOffset).toBe(0);
+  });
+});
+
+describe("cameraFollowAfterRestart (R / softReset)", () => {
+  test("look fresco (spawn 24.5, 15.5); leftover mid-life origin no filtra", () => {
+    const bootLookX = cameraFollowLookXAfterRestart();
+    const bootLookZ = cameraFollowLookZAfterRestart();
+    const bootPosX = cameraFollowPosXAfterRestart();
+    const bootPosY = cameraFollowPosYAfterRestart();
+    const bootPosZ = cameraFollowPosZAfterRestart();
+    const barrio = createNeighborhood(48);
+    expect(bootLookX).toBe(cameraFollowLookXFromLook(24.5));
+    expect(bootLookZ).toBe(cameraFollowLookZFromLook(15.5));
+    expect(bootLookX).toBe(CAMERA_LOOK_X_SPAWN);
+    expect(bootLookZ).toBe(CAMERA_LOOK_Z_SPAWN);
+    expect(bootLookX).toBe(barrio.spawn.x);
+    expect(bootLookZ).toBe(barrio.spawn.y);
+    expect(cameraFollowLookXAfterRestart(24.5)).toBe(bootLookX);
+    expect(cameraFollowLookZAfterRestart(15.5)).toBe(bootLookZ);
+    expect(cameraFollowLookXAfterRestart(0)).toBe(cameraFollowLookXFromLook(0));
+    expect(cameraFollowLookZAfterRestart(40)).toBe(cameraFollowLookZFromLook(40));
+
+    expect(CAMERA_FOLLOW_OFFSET).toBe(12);
+    expect(CAMERA_FOLLOW_Y).toBe(14);
+    expect(bootPosX).toBe(cameraFollowPosXFromLook(24.5));
+    expect(bootPosY).toBe(cameraFollowPosYFromLook());
+    expect(bootPosZ).toBe(cameraFollowPosZFromLook(15.5));
+    expect(bootPosX).toBe(24.5 + CAMERA_FOLLOW_OFFSET);
+    expect(bootPosY).toBe(CAMERA_FOLLOW_Y);
+    expect(bootPosZ).toBe(15.5 + CAMERA_FOLLOW_OFFSET);
+    expect(cameraFollowPosXAfterRestart(24.5)).toBe(bootPosX);
+    expect(cameraFollowPosZAfterRestart(15.5)).toBe(bootPosZ);
+    expect(cameraFollowPosYAfterRestart()).toBe(bootPosY);
+
+    const leftoverCtorLookX = 0;
+    const leftoverCtorLookZ = 0;
+    const leftoverCtorPosX = 12;
+    const leftoverCtorPosZ = 12;
+    expect(leftoverCtorLookX).not.toBe(bootLookX);
+    expect(leftoverCtorLookZ).not.toBe(bootLookZ);
+    expect(leftoverCtorLookX).toBe(0);
+    expect(leftoverCtorLookZ).toBe(0);
+    expect(cameraFollowLookXFromLook(24.5)).not.toBe(leftoverCtorLookX);
+    expect(cameraFollowLookZFromLook(15.5)).not.toBe(leftoverCtorLookZ);
+    expect(leftoverCtorPosX).toBe(cameraFollowPosXFromLook(0));
+    expect(leftoverCtorPosZ).toBe(cameraFollowPosZFromLook(0));
+    expect(leftoverCtorPosX).not.toBe(bootPosX);
+    expect(leftoverCtorPosZ).not.toBe(bootPosZ);
+
+    const leftoverFarLookX = cameraFollowLookXFromLook(40);
+    const leftoverFarLookZ = cameraFollowLookZFromLook(30);
+    expect(leftoverFarLookX).toBe(40);
+    expect(leftoverFarLookZ).toBe(30);
+    expect(leftoverFarLookX).not.toBe(bootLookX);
+    expect(leftoverFarLookZ).not.toBe(bootLookZ);
+    expect(leftoverFarLookX).not.toBe(cameraFollowLookXAfterRestart());
+    expect(leftoverFarLookZ).not.toBe(cameraFollowLookZAfterRestart());
+    expect(cameraFollowPosXFromLook(40)).not.toBe(cameraFollowPosXAfterRestart());
+    expect(cameraFollowPosZFromLook(30)).not.toBe(cameraFollowPosZAfterRestart());
+
+    const leftoverOrigin = cameraFollowLookXFromLook(0);
+    expect(leftoverOrigin).toBe(0);
+    expect(leftoverOrigin).not.toBe(cameraFollowLookXAfterRestart());
+
+    expect(cameraFollowLookXFromLook(24.5)).toBe(bootLookX);
+    expect(cameraFollowLookZFromLook(15.5)).toBe(bootLookZ);
+    expect(cameraFollowPosXFromLook(24.5, 0.2)).toBe(bootPosX + 0.2);
+    expect(cameraFollowPosZFromLook(15.5, -0.1)).toBe(bootPosZ - 0.1);
+    expect(isoFrustumAfterRestart()).toBe(ISO_FRUSTUM);
+  });
+
+  test("vivo tick no usa el helper (look avanza con player)", () => {
+    const bootLookX = cameraFollowLookXAfterRestart();
+    const bootLookZ = cameraFollowLookZAfterRestart();
+    const liveLookX = cameraFollowLookXFromLook(40);
+    const liveLookZ = cameraFollowLookZFromLook(30);
+    expect(liveLookX).toBe(40);
+    expect(liveLookZ).toBe(30);
+    expect(liveLookX).not.toBe(bootLookX);
+    expect(liveLookZ).not.toBe(bootLookZ);
+    expect(liveLookX).not.toBe(cameraFollowLookXAfterRestart());
+    expect(liveLookZ).not.toBe(cameraFollowLookZAfterRestart());
+    expect(liveLookX).toBeGreaterThan(bootLookX);
+    expect(liveLookZ).toBeGreaterThan(bootLookZ);
+    expect(cameraFollowPosXFromLook(40)).not.toBe(cameraFollowPosXAfterRestart());
+    expect(cameraFollowPosZFromLook(30)).not.toBe(cameraFollowPosZAfterRestart());
+
+    expect(cameraFollowLookXFromLook(24.5)).toBe(bootLookX);
+    expect(cameraFollowLookZFromLook(15.5)).toBe(bootLookZ);
+    expect(cameraFollowLookXFromLook(0)).toBe(0);
+    expect(cameraFollowPosXFromLook(0)).toBe(CAMERA_FOLLOW_OFFSET);
+    expect(cameraFollowPosZFromLook(0)).toBe(CAMERA_FOLLOW_OFFSET);
+  });
+});
+
+describe("camera follow/look recreate lock (R / softReset)", () => {
+  test("Game softReset dispose nace camera look fresco; F9 no helper", () => {
+    const gameSrc = readFileSync(
+      resolve(process.cwd(), "src/core/game.ts"),
+      "utf8",
+    );
+    const viewSrc = readFileSync(
+      resolve(process.cwd(), "src/render/worldView.ts"),
+      "utf8",
+    );
+    const saveSrc = readFileSync(
+      resolve(process.cwd(), "src/core/save.ts"),
+      "utf8",
+    );
+    const camSrc = readFileSync(
+      resolve(process.cwd(), "src/render/cameraConfig.ts"),
+      "utf8",
+    );
+    expect(camSrc).toContain("cameraFollowLookXAfterRestart(");
+    expect(camSrc).toContain("cameraFollowLookZAfterRestart(");
+    expect(camSrc).toContain("cameraFollowLookXFromLook(");
+    expect(camSrc).toContain("cameraFollowLookZFromLook(");
+    expect(camSrc).toContain("cameraFollowPosXAfterRestart(");
+    expect(camSrc).toContain("cameraFollowPosZAfterRestart(");
+    expect(camSrc).toContain("cameraFollowPosXFromLook(");
+    expect(camSrc).toContain("cameraFollowPosZFromLook(");
+    expect(camSrc).toContain("CAMERA_LOOK_X_SPAWN");
+    expect(camSrc).toContain("CAMERA_LOOK_Z_SPAWN");
+    expect(camSrc).toMatch(
+      /cameraFollowLookXAfterRestart\([\s\S]{0,200}cameraFollowLookXFromLook\(/,
+    );
+    expect(camSrc).toMatch(
+      /cameraFollowLookZAfterRestart\([\s\S]{0,200}cameraFollowLookZFromLook\(/,
+    );
+    expect(viewSrc).toContain("cameraFollowLookXAfterRestart(");
+    expect(viewSrc).toContain("cameraFollowLookZAfterRestart(");
+    expect(viewSrc).toContain("cameraFollowLookXFromLook(");
+    expect(viewSrc).toContain("cameraFollowLookZFromLook(");
+    expect(viewSrc).toContain("cameraFollowPosXAfterRestart(");
+    expect(viewSrc).toContain("cameraFollowPosZAfterRestart(");
+    expect(viewSrc).toContain("cameraFollowPosXFromLook(");
+    expect(viewSrc).toContain("cameraFollowPosZFromLook(");
+    expect(viewSrc).toMatch(
+      /camera\.position\.set\(\s*cameraFollowPosXAfterRestart\(\s*\),\s*cameraFollowPosYAfterRestart\(\s*\),\s*cameraFollowPosZAfterRestart\(\s*\)/,
+    );
+    expect(viewSrc).toMatch(
+      /camera\.lookAt\(\s*cameraFollowLookXAfterRestart\(\s*\),\s*0,\s*cameraFollowLookZAfterRestart\(\s*\)/,
+    );
+    expect(viewSrc).toMatch(
+      /cameraFollowPosXFromLook\(\s*x,\s*cameraShakeOut\.offsetX\)/,
+    );
+    expect(viewSrc).toMatch(
+      /cameraFollowPosZFromLook\(\s*y,\s*cameraShakeOut\.offsetZ\)/,
+    );
+    expect(viewSrc).toMatch(
+      /camera\.lookAt\(\s*cameraFollowLookXFromLook\(\s*x\),\s*0,\s*cameraFollowLookZFromLook\(\s*y\)/,
+    );
+    expect(viewSrc).not.toMatch(/camera\.position\.set\(\s*12,\s*14,\s*12\s*\)/);
+    expect(viewSrc).not.toMatch(/camera\.lookAt\(\s*0,\s*0,\s*0\s*\)/);
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,200}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,2800}this\.view\.dispose\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /this\.view\.dispose\(\);[\s\S]{0,80}this\.view = createWorldView/,
+    );
+    expect(gameSrc).toMatch(
+      /softReset\(\): void \{[\s\S]{0,3600}this\.view\.followCamera\(\s*this\.player\.x,\s*this\.player\.y\)/,
+    );
+    expect(gameSrc).not.toMatch(
+      /doLoad\(\): boolean \{[\s\S]{0,2800}cameraFollowLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /refreshViewAfterLoad\(\): void \{[\s\S]{0,2400}cameraFollowLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /enterGameOver\(\): void \{[\s\S]{0,2400}cameraFollowLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}cameraFollowLookXAfterRestart/,
+    );
+    expect(gameSrc).not.toContain("cameraFollowLookXAfterRestart(");
+    expect(gameSrc).not.toContain("cameraFollowLookZAfterRestart(");
+    expect(gameSrc).not.toContain("cameraFollowLookXFromLook(");
+    expect(gameSrc).not.toContain("cameraFollowLookZFromLook(");
+    expect(gameSrc).not.toContain("cameraFollowPosXAfterRestart(");
+    expect(gameSrc).not.toContain("cameraFollowPosZAfterRestart(");
+    expect(saveSrc).not.toContain("cameraFollowLookXAfterRestart");
+    expect(saveSrc).not.toContain("cameraFollowLookZAfterRestart");
+    expect(saveSrc).not.toContain("cameraFollowLookXFromLook");
+    expect(saveSrc).not.toContain("cameraFollowLookZFromLook");
+    expect(gameSrc).not.toMatch(
+      /softReset\(\): void \{[\s\S]{0,4200}this\.showHelp\s*=/,
+    );
+    expect(gameSrc).toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);/,
+    );
+    expect(gameSrc).not.toMatch(
+      /consumeRestOrRestart\(\)\) \{\s*this\.softReset\(\);\s*this\.hudAcc = 1/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3600}consumeMute\(\)[\s\S]{0,200}toggleAmbientMute/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeRestOrRestart\(\)/,
+    );
+    expect(gameSrc).toMatch(
+      /if \(this\.gameOver \|\| !this\.player\.alive\) \{[\s\S]{0,3200}consumeLoad\(\)/,
+    );
   });
 });

@@ -577,10 +577,10 @@ export class Game {
     this.syncHitFlashOverlay();
     this.syncInventoryPanel();
     this.lastLootMsg = lastLootMsgAfterRestart();
-    // R: WorldView nuevo = grassTime 0 + rain Y/vx/vy/vz/opacity/scaleY/count/hide/pos fresco; leftover sway/caída/viento/speed/deriva/wrap/look/largo/active/hide/origin no filtra.
+    // R: WorldView nuevo = grassTime 0 + rain Y/vx/vy/vz/opacity/scaleY/count/hide/pos + camera look fresco; leftover sway/caída/viento/speed/deriva/wrap/look/largo/active/hide/origin/follow no filtra.
     this.view.dispose();
     this.view = createWorldView(this.map, this.containers);
-    // R: cámara nueva = ISO_FRUSTUM; no filtrar el zoom de la vida anterior.
+    // R: cámara nueva = ISO_FRUSTUM + look spawn; leftover zoom / origin 0,0 no filtra.
     this.isoFrustum = isoFrustumAfterRestart();
     this.resize();
     // R: kit fresco = gracia de spawn; leftover 0 de la vida anterior no filtra.

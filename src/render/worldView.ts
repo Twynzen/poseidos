@@ -79,7 +79,19 @@ import {
   shouldApplySurvivorLook,
   type PlayerOneShotRole,
 } from "./characterManifest";
-import { ISO_FRUSTUM } from "./cameraConfig";
+import {
+  ISO_FRUSTUM,
+  cameraFollowLookXAfterRestart,
+  cameraFollowLookXFromLook,
+  cameraFollowLookZAfterRestart,
+  cameraFollowLookZFromLook,
+  cameraFollowPosXAfterRestart,
+  cameraFollowPosXFromLook,
+  cameraFollowPosYAfterRestart,
+  cameraFollowPosYFromLook,
+  cameraFollowPosZAfterRestart,
+  cameraFollowPosZFromLook,
+} from "./cameraConfig";
 import { HOSTILE_VISUAL_SCALE, hostileYaw } from "./hostileFigure";
 import {
   hostileIdleApplies,
@@ -594,7 +606,8 @@ export interface WorldView {
    */
   syncTorchLight(wx: number, wy: number, intensity: number): void;
   /**
-   * Iso follow: position = (x+12, 14, y+12) + shake XZ; lookAt (x,0,y) sin shake.
+   * Iso follow: position = FromLook(x/y) + shake XZ; lookAt FromLook sin shake.
+   * R / dispose nace AfterRestart (spawn); leftover ctor origin 0,0 no filtra.
    */
   followCamera(x: number, y: number): void;
   /** Crea/destruye meshes de chunks cerca de (wx, wy). */
@@ -1698,8 +1711,17 @@ export function createWorldView(
     0.1,
     200,
   );
-  camera.position.set(12, 14, 12);
-  camera.lookAt(0, 0, 0);
+  // R / dispose: look fresco (spawn); leftover mid-life origin 0,0 no filtra.
+  camera.position.set(
+    cameraFollowPosXAfterRestart(),
+    cameraFollowPosYAfterRestart(),
+    cameraFollowPosZAfterRestart(),
+  );
+  camera.lookAt(
+    cameraFollowLookXAfterRestart(),
+    0,
+    cameraFollowLookZAfterRestart(),
+  );
   scene.add(camera);
 
   function unloadChunk(key: string): void {
@@ -2151,11 +2173,15 @@ export function createWorldView(
     },
     followCamera(x, y) {
       camera.position.set(
-        x + 12 + cameraShakeOut.offsetX,
-        14,
-        y + 12 + cameraShakeOut.offsetZ,
+        cameraFollowPosXFromLook(x, cameraShakeOut.offsetX),
+        cameraFollowPosYFromLook(),
+        cameraFollowPosZFromLook(y, cameraShakeOut.offsetZ),
       );
-      camera.lookAt(x, 0, y);
+      camera.lookAt(
+        cameraFollowLookXFromLook(x),
+        0,
+        cameraFollowLookZFromLook(y),
+      );
     },
     syncVisibleChunks,
     syncFov,
