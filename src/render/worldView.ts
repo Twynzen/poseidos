@@ -42,6 +42,7 @@ import {
   flashlightConeOpacityAfterRestart,
   flashlightConeOpacityFromLook,
   flashlightConeDepthWriteAfterRestart,
+  flashlightConeTransparentAfterRestart,
   flashlightConeVisibleAfterRestart,
   flashlightConeVisibleFromLook,
   flashlightConeYawAfterRestart,
@@ -1519,7 +1520,8 @@ export function createWorldView(
   const coneMat = new THREE.MeshBasicMaterial({
     color: FLASHLIGHT_WEDGE_COLOR,
     vertexColors: true,
-    transparent: true,
+    // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+    transparent: flashlightConeTransparentAfterRestart(),
     // R / dispose: cone opacity fresco (idle 0); leftover ctor BASE / mid-life no filtra.
     opacity: flashlightConeOpacityAfterRestart(),
     side: THREE.DoubleSide,
