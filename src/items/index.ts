@@ -128,6 +128,8 @@ export {
   dropSourceIndex,
   dropToastLabel,
   dropTargetTile,
+  dropInputApplies,
+  applyDropInput,
   type DropOnTileResult,
 } from "./drop";
 

@@ -1,6 +1,7 @@
 /**
  * Tirar del slot al tile de frente (pila WorldContainer).
- * U tira 1; Shift+U tira el stack entero (ver game.ts). G/E recogen 1; Shift+G el stack.
+ * U tira 1; Shift+U tira el stack entero (ver input.consumeDrop / game.ts).
+ * G/E recogen 1; Shift+G el stack.
  * Si el tile de facing no es walkable, cae en el tile del player.
  */
 
@@ -188,4 +189,27 @@ export function dropFromSlot(
 export function dropFullMessage(added: number): string | null {
   if (added > 0) return null;
   return "inventario lleno";
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: U / Shift+U no aplican (se drenan, no tira).
+ * Vivo (incl. F9 load-vivo): tira 1 / stack, igual que hoy.
+ * No cambia física ni reglas de pila; solo gate de input.
+ */
+export function dropInputApplies(gameOver: boolean): boolean {
+  if (gameOver) return false;
+  return true;
+}
+
+/**
+ * HAS MUERTO / F9 load-muerto: no llama apply (inventario / pila iguales).
+ * Vivo + wants → apply(). !wants → null.
+ */
+export function applyDropInput<T>(
+  gameOver: boolean,
+  wants: boolean,
+  apply: () => T | null,
+): T | null {
+  if (!dropInputApplies(gameOver) || !wants) return null;
+  return apply();
 }
