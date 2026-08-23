@@ -156,6 +156,31 @@ export function grassEmissiveIntensityAfterRestart(): number {
   return grassEmissiveIntensityFromLook(GRASS_EMISSIVE_INTENSITY_SPAWN);
 }
 
+/** Opacity del césped instanced. Ctor grassMat.opacity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const GRASS_OPACITY = 1;
+
+/** Idle grass mesh opacity. Ctor grassMat.opacity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const GRASS_OPACITY_SPAWN = 1;
+
+/**
+ * Opacity que leería applyGrassPoses (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * applyGrassPoses / color.setHex no escribe opacity (ctor constant).
+ */
+export function grassOpacityFromLook(opacity: number): number {
+  return opacity;
+}
+
+/**
+ * R / softReset: opacity fresco (idle 1).
+ * WorldView nace grassMat.opacity AfterRestart; leftover mid-life no filtra.
+ * applyGrassPoses / color.setHex no escribe opacity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function grassOpacityAfterRestart(): number {
+  return grassOpacityFromLook(GRASS_OPACITY_SPAWN);
+}
+
 export interface GrassTile {
   tx: number;
   ty: number;

@@ -327,6 +327,7 @@ import {
   grassAnchorTxAfterRestart,
   grassEmissiveAfterRestart,
   grassEmissiveIntensityAfterRestart,
+  grassOpacityAfterRestart,
   grassMetalnessAfterRestart,
   grassRoughnessAfterRestart,
   grassAnchorTxFromLook,
@@ -4253,6 +4254,8 @@ export function createWorldView(
     emissive: grassEmissiveAfterRestart(),
     // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
     emissiveIntensity: grassEmissiveIntensityAfterRestart(),
+    // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
+    opacity: grassOpacityAfterRestart(),
   });
   const grassMesh = new THREE.InstancedMesh(grassGeo, grassMat, MAX_GRASS_INSTANCES);
   grassMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
