@@ -2962,6 +2962,31 @@ export function wallDepthWriteAfterRestart(): boolean {
   return wallDepthWriteFromLook(WALL_DEPTH_WRITE_SPAWN);
 }
 
+/** Side del wall mesh. Ctor wallMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const WALL_SIDE = 0;
+
+/** Idle wall mesh side. Ctor wallMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const WALL_SIDE_SPAWN = 0;
+
+/**
+ * Side que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.FrontSide / 0).
+ * attach/tick no escriben side (ctor constant).
+ */
+export function wallSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.FrontSide / 0).
+ * WorldView nace wallMat.side AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function wallSideAfterRestart(): number {
+  return wallSideFromLook(WALL_SIDE_SPAWN);
+}
+
 /** Roughness del wall-base mesh. Ctor wallBaseMat.roughness: 1 = fresco. Mid-life leftover ≠ fresco. */
 export const WALL_BASE_ROUGHNESS = 1;
 
@@ -3951,6 +3976,8 @@ export function createWorldView(
     transparent: wallTransparentAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: wallDepthWriteAfterRestart(),
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: wallSideAfterRestart() as THREE.Side,
   });
   const wallBaseMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(WALL_BASE_COLOR, lastDaylight),
