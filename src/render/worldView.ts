@@ -1371,6 +1371,31 @@ export function possessedDepthWriteAfterRestart(): boolean {
   return possessedDepthWriteFromLook(POSSESSED_DEPTH_WRITE_SPAWN);
 }
 
+/** Side del possessed mesh. Ctor possessedMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_SIDE = 0;
+
+/** Idle possessed mesh side. Ctor possessedMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_SIDE_SPAWN = 0;
+
+/**
+ * Side que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.FrontSide / 0).
+ * attach/tick no escriben side (ctor constant).
+ */
+export function possessedSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.FrontSide / 0).
+ * WorldView nace possessedMat.side AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function possessedSideAfterRestart(): number {
+  return possessedSideFromLook(POSSESSED_SIDE_SPAWN);
+}
+
 /** Color de la silueta fallback poseída (cabeza). 0x7a3d8a × 1.15/canal para leerse de noche. */
 export const POSSESSED_HEAD_COLOR = 0x8c469f;
 
@@ -4747,6 +4772,8 @@ export function createWorldView(
     transparent: possessedTransparentAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: possessedDepthWriteAfterRestart(),
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: possessedSideAfterRestart() as THREE.Side,
   });
   const possessedHeadMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
