@@ -361,6 +361,7 @@ import {
   rainAnchorZFromLook,
   rainColorAfterRestart,
   rainDepthWriteAfterRestart,
+  rainSideAfterRestart,
   rainTransparentAfterRestart,
   rainStreakOpacityAfterRestart,
   rainStreakOpacityFromLook,
@@ -5274,6 +5275,8 @@ export function createWorldView(
     opacity: rainStreakOpacityAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: rainDepthWriteAfterRestart(),
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: rainSideAfterRestart() as THREE.Side,
   });
   const rainGroup = new THREE.Group();
   // R / dispose: grupo fresco (drizzle visible); leftover mid-life hide no filtra.
