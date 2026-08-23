@@ -443,6 +443,7 @@ import {
   lootNameplateDepthFuncAfterRestart,
   lootNameplateStencilWriteAfterRestart,
   lootNameplateStencilFuncAfterRestart,
+  lootNameplateStencilRefAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4405,6 +4406,8 @@ export function createWorldView(
       stencilWrite: lootNameplateStencilWriteAfterRestart(),
       // R / dispose: stencilFunc fresco (idle); leftover mid-life stencilFunc de la vida anterior no filtra.
       stencilFunc: lootNameplateStencilFuncAfterRestart() as THREE.StencilFunc,
+      // R / dispose: stencilRef fresco (idle); leftover mid-life stencilRef de la vida anterior no filtra.
+      stencilRef: lootNameplateStencilRefAfterRestart(),
     });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";
