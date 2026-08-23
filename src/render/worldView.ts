@@ -2152,6 +2152,31 @@ export function doorClosedTransparentAfterRestart(): boolean {
   return doorClosedTransparentFromLook(DOOR_CLOSED_TRANSPARENT_SPAWN);
 }
 
+/** DepthWrite del door-closed mesh. Ctor doorClosedMat.depthWrite: true = fresco. Mid-life leftover ≠ fresco. */
+export const DOOR_CLOSED_DEPTH_WRITE = true;
+
+/** Idle door-closed mesh depthWrite. Ctor doorClosedMat.depthWrite: true = fresco. Mid-life leftover ≠ fresco. */
+export const DOOR_CLOSED_DEPTH_WRITE_SPAWN = true;
+
+/**
+ * DepthWrite que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * attach/tick no escriben depthWrite (ctor constant).
+ */
+export function doorClosedDepthWriteFromLook(depthWrite: boolean): boolean {
+  return depthWrite;
+}
+
+/**
+ * R / softReset: depthWrite fresco (idle true).
+ * WorldView nace doorClosedMat.depthWrite AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben depthWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function doorClosedDepthWriteAfterRestart(): boolean {
+  return doorClosedDepthWriteFromLook(DOOR_CLOSED_DEPTH_WRITE_SPAWN);
+}
+
 /** Roughness del door-open mesh. Ctor doorOpenMat.roughness: 0.7 = fresco. Mid-life leftover ≠ fresco. */
 export const DOOR_OPEN_ROUGHNESS = 0.7;
 
@@ -3441,6 +3466,8 @@ export function createWorldView(
     opacity: doorClosedOpacityAfterRestart(),
     // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
     transparent: doorClosedTransparentAfterRestart(),
+    // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
+    depthWrite: doorClosedDepthWriteAfterRestart(),
   });
   const doorOpenMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(DOOR_OPEN, lastDaylight),
