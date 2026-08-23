@@ -432,6 +432,7 @@ import {
   lootNameplateAlphaToCoverageAfterRestart,
   lootNameplateForceSinglePassAfterRestart,
   lootNameplateBlendingAfterRestart,
+  lootNameplateBlendSrcAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4372,6 +4373,8 @@ export function createWorldView(
       forceSinglePass: lootNameplateForceSinglePassAfterRestart(),
       // R / dispose: blending fresco (idle); leftover mid-life blending de la vida anterior no filtra.
       blending: lootNameplateBlendingAfterRestart() as THREE.Blending,
+      // R / dispose: blendSrc fresco (idle); leftover mid-life blendSrc de la vida anterior no filtra.
+      blendSrc: lootNameplateBlendSrcAfterRestart(),
     });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";
