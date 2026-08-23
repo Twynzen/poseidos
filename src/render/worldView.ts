@@ -5,6 +5,7 @@ import {
   markerBadgeOpacity,
   markerBadgeRoughnessAfterRestart,
   markerBadgeSideAfterRestart,
+  markerBadgeDepthWriteAfterRestart,
   markerBadgeTransparentAfterRestart,
   markerIconColorAfterRestart,
   markerIconDepthWriteAfterRestart,
@@ -5443,6 +5444,8 @@ function attachRoleMarkers(
     opacity: markerBadgeOpacity(role),
     // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
     transparent: markerBadgeTransparentAfterRestart(),
+    // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
+    depthWrite: markerBadgeDepthWriteAfterRestart(),
   });
   const letterMap =
     role === "door"
