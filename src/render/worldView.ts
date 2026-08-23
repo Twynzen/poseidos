@@ -460,6 +460,7 @@ import {
   lootNameplateMaterialNameAfterRestart,
   lootNameplateMaterialUserDataAfterRestart,
   lootNameplateCenterAfterRestart,
+  lootNameplateAllowOverrideAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4456,9 +4457,12 @@ export function createWorldView(
       userData: lootNameplateMaterialUserDataAfterRestart(),
       // R / dispose: center fresco (idle); leftover mid-life center de la vida anterior no filtra.
       center: lootNameplateCenterAfterRestart(),
+      // R / dispose: allowOverride fresco (idle); leftover mid-life allowOverride de la vida anterior no filtra.
+      allowOverride: lootNameplateAllowOverrideAfterRestart(),
     } as THREE.SpriteMaterialParameters & {
       stencilPass: THREE.StencilOp;
       clipping: boolean;
+      allowOverride: boolean;
     });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";

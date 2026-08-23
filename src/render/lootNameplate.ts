@@ -1453,6 +1453,33 @@ export function lootNameplateCenterAfterRestart(): THREE.Vector2 {
   );
 }
 
+/** AllowOverride del nameplate sprite. Ctor SpriteMaterial.allowOverride true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_ALLOW_OVERRIDE = true;
+
+/** Idle nameplate sprite allowOverride. Ctor SpriteMaterial.allowOverride true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_ALLOW_OVERRIDE_SPAWN = true;
+
+/**
+ * AllowOverride que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * syncLootFocus / applyLootNameplateLook no escriben allowOverride (ctor constant).
+ */
+export function lootNameplateAllowOverrideFromLook(
+  allowOverride: boolean,
+): boolean {
+  return allowOverride;
+}
+
+/**
+ * R / softReset: allowOverride fresco (idle true).
+ * WorldView nace SpriteMaterial.allowOverride AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben allowOverride (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateAllowOverrideAfterRestart(): boolean {
+  return lootNameplateAllowOverrideFromLook(LOOT_NAMEPLATE_ALLOW_OVERRIDE_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
