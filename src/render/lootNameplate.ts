@@ -873,6 +873,31 @@ export function lootNameplateBlendEquationAlphaAfterRestart(): number | null {
   return lootNameplateBlendEquationAlphaFromLook(LOOT_NAMEPLATE_BLEND_EQUATION_ALPHA_SPAWN);
 }
 
+/** BlendColor del nameplate sprite. Ctor SpriteMaterial.blendColor 0x000000 = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_BLEND_COLOR = 0x000000;
+
+/** Idle nameplate sprite blendColor. Ctor SpriteMaterial.blendColor 0x000000 = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_BLEND_COLOR_SPAWN = 0x000000;
+
+/**
+ * BlendColor que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0x000000).
+ * syncLootFocus / applyLootNameplateLook no escriben blendColor (ctor constant).
+ */
+export function lootNameplateBlendColorFromLook(blendColor: number): number {
+  return blendColor;
+}
+
+/**
+ * R / softReset: blendColor fresco (idle 0x000000).
+ * WorldView nace SpriteMaterial.blendColor AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben blendColor (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateBlendColorAfterRestart(): number {
+  return lootNameplateBlendColorFromLook(LOOT_NAMEPLATE_BLEND_COLOR_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
