@@ -2150,6 +2150,31 @@ export function bedDepthWriteAfterRestart(): boolean {
   return bedDepthWriteFromLook(BED_DEPTH_WRITE_SPAWN);
 }
 
+/** Side del bed mesh. Ctor bedMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const BED_SIDE = 0;
+
+/** Idle bed mesh side. Ctor bedMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const BED_SIDE_SPAWN = 0;
+
+/**
+ * Side que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.FrontSide / 0).
+ * attach/tick no escriben side (ctor constant).
+ */
+export function bedSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.FrontSide / 0).
+ * WorldView nace bedMat.side AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function bedSideAfterRestart(): number {
+  return bedSideFromLook(BED_SIDE_SPAWN);
+}
+
 /** Roughness del door-closed mesh. Ctor doorClosedMat.roughness: 0.7 = fresco. Mid-life leftover ≠ fresco. */
 export const DOOR_CLOSED_ROUGHNESS = 0.7;
 
@@ -3754,6 +3779,8 @@ export function createWorldView(
     transparent: bedTransparentAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: bedDepthWriteAfterRestart(),
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: bedSideAfterRestart() as THREE.Side,
   });
   const doorClosedMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(DOOR_CLOSED, lastDaylight),
