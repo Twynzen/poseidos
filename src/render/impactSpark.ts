@@ -300,6 +300,31 @@ export function impactSparkBlendingAfterRestart(): number {
   return impactSparkBlendingFromLook(IMPACT_SPARK_BLENDING_SPAWN);
 }
 
+/** Side del impact spark mesh. Ctor impactMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const IMPACT_SIDE = 0;
+
+/** Idle impact spark mesh side. Ctor impactMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const IMPACT_SIDE_SPAWN = 0;
+
+/**
+ * Side que leería applyImpactSparkVisual (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.FrontSide / 0).
+ * apply/tick no escribe side (ctor constant).
+ */
+export function impactSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.FrontSide / 0).
+ * WorldView nace impactMat.side AfterRestart; leftover mid-life no filtra.
+ * apply/tick no escribe side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function impactSideAfterRestart(): number {
+  return impactSideFromLook(IMPACT_SIDE_SPAWN);
+}
+
 /**
  * HAS MUERTO / F9 load-muerto: no avanzar el spark ni pintarlo.
  * Vivo (incl. F9 load-vivo): tick/intensity de hoy.
