@@ -590,6 +590,31 @@ export function lootNameplateVertexColorsAfterRestart(): boolean {
   return lootNameplateVertexColorsFromLook(LOOT_NAMEPLATE_VERTEX_COLORS_SPAWN);
 }
 
+/** AlphaTest del nameplate sprite. Ctor SpriteMaterial.alphaTest 0 = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_ALPHA_TEST = 0;
+
+/** Idle nameplate sprite alphaTest. Ctor SpriteMaterial.alphaTest 0 = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_ALPHA_TEST_SPAWN = 0;
+
+/**
+ * AlphaTest que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0).
+ * syncLootFocus / applyLootNameplateLook no escriben alphaTest (ctor constant).
+ */
+export function lootNameplateAlphaTestFromLook(alphaTest: number): number {
+  return alphaTest;
+}
+
+/**
+ * R / softReset: alphaTest fresco (idle 0).
+ * WorldView nace SpriteMaterial.alphaTest AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben alphaTest (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateAlphaTestAfterRestart(): number {
+  return lootNameplateAlphaTestFromLook(LOOT_NAMEPLATE_ALPHA_TEST_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
