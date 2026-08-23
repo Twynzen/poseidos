@@ -1048,6 +1048,31 @@ export function lootNameplateStencilWriteMaskAfterRestart(): number {
   return lootNameplateStencilWriteMaskFromLook(LOOT_NAMEPLATE_STENCIL_WRITE_MASK_SPAWN);
 }
 
+/** StencilFuncMask del nameplate sprite. Ctor SpriteMaterial.stencilFuncMask 0xff = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_STENCIL_FUNC_MASK = 0xff;
+
+/** Idle nameplate sprite stencilFuncMask. Ctor SpriteMaterial.stencilFuncMask 0xff = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_STENCIL_FUNC_MASK_SPAWN = 0xff;
+
+/**
+ * StencilFuncMask que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0xff).
+ * syncLootFocus / applyLootNameplateLook no escriben stencilFuncMask (ctor constant).
+ */
+export function lootNameplateStencilFuncMaskFromLook(stencilFuncMask: number): number {
+  return stencilFuncMask;
+}
+
+/**
+ * R / softReset: stencilFuncMask fresco (idle 0xff).
+ * WorldView nace SpriteMaterial.stencilFuncMask AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben stencilFuncMask (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateStencilFuncMaskAfterRestart(): number {
+  return lootNameplateStencilFuncMaskFromLook(LOOT_NAMEPLATE_STENCIL_FUNC_MASK_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
