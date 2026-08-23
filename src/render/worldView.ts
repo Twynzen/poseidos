@@ -2255,6 +2255,31 @@ export function floorOpacityAfterRestart(): number {
   return floorOpacityFromLook(FLOOR_OPACITY_SPAWN);
 }
 
+/** Transparent del floor mesh. Ctor floorMat.transparent: false = fresco. Mid-life leftover ≠ fresco. */
+export const FLOOR_TRANSPARENT = false;
+
+/** Idle floor mesh transparent. Ctor floorMat.transparent: false = fresco. Mid-life leftover ≠ fresco. */
+export const FLOOR_TRANSPARENT_SPAWN = false;
+
+/**
+ * Transparent que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * attach/tick no escriben transparent (ctor constant).
+ */
+export function floorTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle false).
+ * WorldView nace floorMat.transparent AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function floorTransparentAfterRestart(): boolean {
+  return floorTransparentFromLook(FLOOR_TRANSPARENT_SPAWN);
+}
+
 /** Roughness del wall mesh. Ctor wallMat.roughness: 0.85 = fresco. Mid-life leftover ≠ fresco. */
 export const WALL_ROUGHNESS = 0.85;
 
@@ -3168,6 +3193,8 @@ export function createWorldView(
       emissiveIntensity: floorEmissiveIntensityAfterRestart(),
       // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
       opacity: floorOpacityAfterRestart(),
+      // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+      transparent: floorTransparentAfterRestart(),
     });
     floorMatByColor.set(key, m);
     return m;
