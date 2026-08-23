@@ -2759,6 +2759,31 @@ export function floorDepthWriteAfterRestart(): boolean {
   return floorDepthWriteFromLook(FLOOR_DEPTH_WRITE_SPAWN);
 }
 
+/** Side del floor mesh. Ctor floorMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const FLOOR_SIDE = 0;
+
+/** Idle floor mesh side. Ctor floorMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const FLOOR_SIDE_SPAWN = 0;
+
+/**
+ * Side que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.FrontSide / 0).
+ * attach/tick no escriben side (ctor constant).
+ */
+export function floorSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.FrontSide / 0).
+ * WorldView nace floorMat.side AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function floorSideAfterRestart(): number {
+  return floorSideFromLook(FLOOR_SIDE_SPAWN);
+}
+
 /** Roughness del wall mesh. Ctor wallMat.roughness: 0.85 = fresco. Mid-life leftover ≠ fresco. */
 export const WALL_ROUGHNESS = 0.85;
 
@@ -3892,6 +3917,8 @@ export function createWorldView(
       transparent: floorTransparentAfterRestart(),
       // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
       depthWrite: floorDepthWriteAfterRestart(),
+      // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+      side: floorSideAfterRestart() as THREE.Side,
     });
     floorMatByColor.set(key, m);
     return m;
