@@ -312,6 +312,7 @@ import {
   fogColorAfterRestart,
   fogDepthWriteAfterRestart,
   fogOpacityAfterRestart,
+  fogSideAfterRestart,
   fogRotXAfterRestart,
   fogRotYAfterRestart,
   fogRotZAfterRestart,
@@ -4121,6 +4122,8 @@ export function createWorldView(
     opacity: fogOpacityAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: fogDepthWriteAfterRestart(),
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: fogSideAfterRestart() as THREE.Side,
   });
 
   const loaded = new Map<string, ChunkMeshes>();
