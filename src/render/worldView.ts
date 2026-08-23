@@ -2714,6 +2714,31 @@ export function barricadeOpacityAfterRestart(): number {
   return barricadeOpacityFromLook(BARRICADE_OPACITY_SPAWN);
 }
 
+/** Transparent del barricade mesh. Ctor barricadeMat.transparent: false = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_TRANSPARENT = false;
+
+/** Idle barricade mesh transparent. Ctor barricadeMat.transparent: false = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_TRANSPARENT_SPAWN = false;
+
+/**
+ * Transparent que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * attach/tick no escriben transparent (ctor constant).
+ */
+export function barricadeTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle false).
+ * WorldView nace barricadeMat.transparent AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function barricadeTransparentAfterRestart(): boolean {
+  return barricadeTransparentFromLook(BARRICADE_TRANSPARENT_SPAWN);
+}
+
 /** Roughness del barricade-edge mesh. Ctor barricadeEdgeMat.roughness: 0.9 = fresco. Mid-life leftover ≠ fresco. */
 export const BARRICADE_EDGE_ROUGHNESS = 0.9;
 
@@ -3303,6 +3328,8 @@ export function createWorldView(
     emissiveIntensity: barricadeEmissiveIntensityAfterRestart(),
     // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
     opacity: barricadeOpacityAfterRestart(),
+    // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+    transparent: barricadeTransparentAfterRestart(),
   });
   const barricadeEdgeMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(BARRICADE_EDGE, lastDaylight),
