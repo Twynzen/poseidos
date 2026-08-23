@@ -984,6 +984,31 @@ export function hostileOpacityAfterRestart(): number {
   return hostileOpacityFromLook(HOSTILE_OPACITY_SPAWN);
 }
 
+/** Transparent del hostile mesh. Ctor hostileMat.transparent: false = fresco. Mid-life leftover ≠ fresco. */
+export const HOSTILE_TRANSPARENT = false;
+
+/** Idle hostile mesh transparent. Ctor hostileMat.transparent: false = fresco. Mid-life leftover ≠ fresco. */
+export const HOSTILE_TRANSPARENT_SPAWN = false;
+
+/**
+ * Transparent que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * attach/tick no escriben transparent (ctor constant).
+ */
+export function hostileTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle false).
+ * WorldView nace hostileMat.transparent AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function hostileTransparentAfterRestart(): boolean {
+  return hostileTransparentFromLook(HOSTILE_TRANSPARENT_SPAWN);
+}
+
 /** Poseído: púrpura enfermo. 0x5a2d6b × 1.15/canal para leerse de noche. */
 export const POSSESSED_COLOR = 0x68347b;
 
@@ -3950,6 +3975,8 @@ export function createWorldView(
     emissiveIntensity: hostileEmissiveIntensityAfterRestart(),
     // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
     opacity: hostileOpacityAfterRestart(),
+    // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+    transparent: hostileTransparentAfterRestart(),
   });
   const possessedMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
