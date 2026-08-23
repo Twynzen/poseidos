@@ -5,6 +5,7 @@ import {
   markerBadgeOpacity,
   markerBadgeRoughnessAfterRestart,
   markerBadgeSideAfterRestart,
+  markerBadgeTransparentAfterRestart,
   markerIconColorAfterRestart,
   markerIconDepthWriteAfterRestart,
   markerIconOpacityAfterRestart,
@@ -5440,6 +5441,8 @@ function attachRoleMarkers(
     // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
     side: markerBadgeSideAfterRestart() as THREE.Side,
     opacity: markerBadgeOpacity(role),
+    // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+    transparent: markerBadgeTransparentAfterRestart(),
   });
   const letterMap =
     role === "door"
