@@ -430,6 +430,7 @@ import {
   lootNameplateAlphaTestAfterRestart,
   lootNameplateAlphaHashAfterRestart,
   lootNameplateAlphaToCoverageAfterRestart,
+  lootNameplateForceSinglePassAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4366,6 +4367,8 @@ export function createWorldView(
       alphaHash: lootNameplateAlphaHashAfterRestart(),
       // R / dispose: alphaToCoverage fresco (idle); leftover mid-life alphaToCoverage de la vida anterior no filtra.
       alphaToCoverage: lootNameplateAlphaToCoverageAfterRestart(),
+      // R / dispose: forceSinglePass fresco (idle); leftover mid-life forceSinglePass de la vida anterior no filtra.
+      forceSinglePass: lootNameplateForceSinglePassAfterRestart(),
     });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";

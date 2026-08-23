@@ -665,6 +665,31 @@ export function lootNameplateAlphaToCoverageAfterRestart(): boolean {
   return lootNameplateAlphaToCoverageFromLook(LOOT_NAMEPLATE_ALPHA_TO_COVERAGE_SPAWN);
 }
 
+/** ForceSinglePass del nameplate sprite. Ctor SpriteMaterial.forceSinglePass false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_FORCE_SINGLE_PASS = false;
+
+/** Idle nameplate sprite forceSinglePass. Ctor SpriteMaterial.forceSinglePass false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_FORCE_SINGLE_PASS_SPAWN = false;
+
+/**
+ * ForceSinglePass que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * syncLootFocus / applyLootNameplateLook no escriben forceSinglePass (ctor constant).
+ */
+export function lootNameplateForceSinglePassFromLook(forceSinglePass: boolean): boolean {
+  return forceSinglePass;
+}
+
+/**
+ * R / softReset: forceSinglePass fresco (idle false).
+ * WorldView nace SpriteMaterial.forceSinglePass AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben forceSinglePass (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateForceSinglePassAfterRestart(): boolean {
+  return lootNameplateForceSinglePassFromLook(LOOT_NAMEPLATE_FORCE_SINGLE_PASS_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
