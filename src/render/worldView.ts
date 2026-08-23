@@ -803,6 +803,31 @@ export function playerHeadOpacityAfterRestart(): number {
   return playerHeadOpacityFromLook(PLAYER_HEAD_OPACITY_SPAWN);
 }
 
+/** Transparent del player-head mesh. Ctor playerHeadMat.transparent: false = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_HEAD_TRANSPARENT = false;
+
+/** Idle player-head mesh transparent. Ctor playerHeadMat.transparent: false = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_HEAD_TRANSPARENT_SPAWN = false;
+
+/**
+ * Transparent que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * attach/tick no escriben transparent (ctor constant).
+ */
+export function playerHeadTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle false).
+ * WorldView nace playerHeadMat.transparent AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function playerHeadTransparentAfterRestart(): boolean {
+  return playerHeadTransparentFromLook(PLAYER_HEAD_TRANSPARENT_SPAWN);
+}
+
 /** Amenaza muda: rojo oscuro. 0x6b1a1a × 1.15/canal para leerse de noche. */
 export const HOSTILE_COLOR = 0x7b1e1e;
 
@@ -3077,6 +3102,8 @@ export function createWorldView(
     emissiveIntensity: playerHeadEmissiveIntensityAfterRestart(),
     // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
     opacity: playerHeadOpacityAfterRestart(),
+    // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+    transparent: playerHeadTransparentAfterRestart(),
   });
   const playerMesh = new THREE.Group();
   /** Hijo de silueta: bobY + lean/sway; root queda en suelo (x,0,y). */
