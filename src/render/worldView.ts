@@ -2516,6 +2516,31 @@ export function barricadeEdgeEmissiveIntensityAfterRestart(): number {
   return barricadeEdgeEmissiveIntensityFromLook(BARRICADE_EDGE_EMISSIVE_INTENSITY_SPAWN);
 }
 
+/** Opacity del barricade-edge mesh. Ctor barricadeEdgeMat.opacity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_EDGE_OPACITY = 1;
+
+/** Idle barricade-edge mesh opacity. Ctor barricadeEdgeMat.opacity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_EDGE_OPACITY_SPAWN = 1;
+
+/**
+ * Opacity que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * attach/tick no escriben opacity (ctor constant).
+ */
+export function barricadeEdgeOpacityFromLook(opacity: number): number {
+  return opacity;
+}
+
+/**
+ * R / softReset: opacity fresco (idle 1).
+ * WorldView nace barricadeEdgeMat.opacity AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben opacity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function barricadeEdgeOpacityAfterRestart(): number {
+  return barricadeEdgeOpacityFromLook(BARRICADE_EDGE_OPACITY_SPAWN);
+}
+
 /** Alto de la barricada. 1.35 × 1.15 para leerse un poco más alta de noche. */
 export const BARRICADE_HEIGHT = 1.5525;
 /** Ancho de la barricada. 0.92 × 1.15 para leerse un poco más ancha de noche. */
@@ -2974,6 +2999,8 @@ export function createWorldView(
     emissive: barricadeEdgeEmissiveAfterRestart(),
     // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
     emissiveIntensity: barricadeEdgeEmissiveIntensityAfterRestart(),
+    // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
+    opacity: barricadeEdgeOpacityAfterRestart(),
   });
   const fogMat = new THREE.MeshBasicMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
