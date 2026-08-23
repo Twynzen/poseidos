@@ -515,6 +515,31 @@ export function lootNameplateDitheringAfterRestart(): boolean {
   return lootNameplateDitheringFromLook(LOOT_NAMEPLATE_DITHERING_SPAWN);
 }
 
+/** PremultipliedAlpha del nameplate sprite. Ctor SpriteMaterial.premultipliedAlpha false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_PREMULTIPLIED_ALPHA = false;
+
+/** Idle nameplate sprite premultipliedAlpha. Ctor SpriteMaterial.premultipliedAlpha false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_PREMULTIPLIED_ALPHA_SPAWN = false;
+
+/**
+ * PremultipliedAlpha que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * syncLootFocus / applyLootNameplateLook no escriben premultipliedAlpha (ctor constant).
+ */
+export function lootNameplatePremultipliedAlphaFromLook(premultipliedAlpha: boolean): boolean {
+  return premultipliedAlpha;
+}
+
+/**
+ * R / softReset: premultipliedAlpha fresco (idle false).
+ * WorldView nace SpriteMaterial.premultipliedAlpha AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben premultipliedAlpha (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplatePremultipliedAlphaAfterRestart(): boolean {
+  return lootNameplatePremultipliedAlphaFromLook(LOOT_NAMEPLATE_PREMULTIPLIED_ALPHA_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
