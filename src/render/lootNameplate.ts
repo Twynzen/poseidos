@@ -1229,6 +1229,35 @@ export function lootNameplateClipShadowsAfterRestart(): boolean {
   return lootNameplateClipShadowsFromLook(LOOT_NAMEPLATE_CLIP_SHADOWS_SPAWN);
 }
 
+/** ClippingPlanes del nameplate sprite. Ctor SpriteMaterial.clippingPlanes null = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_CLIPPING_PLANES: THREE.Plane[] | null = null;
+
+/** Idle nameplate sprite clippingPlanes. Ctor SpriteMaterial.clippingPlanes null = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_CLIPPING_PLANES_SPAWN: THREE.Plane[] | null = null;
+
+/**
+ * ClippingPlanes que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle null).
+ * syncLootFocus / applyLootNameplateLook no escriben clippingPlanes (ctor constant).
+ */
+export function lootNameplateClippingPlanesFromLook(
+  clippingPlanes: THREE.Plane[] | null,
+): THREE.Plane[] | null {
+  return clippingPlanes;
+}
+
+/**
+ * R / softReset: clippingPlanes fresco (idle null).
+ * WorldView nace SpriteMaterial.clippingPlanes AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben clippingPlanes (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateClippingPlanesAfterRestart(): THREE.Plane[] | null {
+  return lootNameplateClippingPlanesFromLook(
+    LOOT_NAMEPLATE_CLIPPING_PLANES_SPAWN,
+  );
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
