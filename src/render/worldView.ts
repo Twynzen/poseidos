@@ -3368,6 +3368,31 @@ export function barricadeDepthWriteAfterRestart(): boolean {
   return barricadeDepthWriteFromLook(BARRICADE_DEPTH_WRITE_SPAWN);
 }
 
+/** Side del barricade mesh. Ctor barricadeMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_SIDE = 0;
+
+/** Idle barricade mesh side. Ctor barricadeMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_SIDE_SPAWN = 0;
+
+/**
+ * Side que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.FrontSide / 0).
+ * attach/tick no escriben side (ctor constant).
+ */
+export function barricadeSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.FrontSide / 0).
+ * WorldView nace barricadeMat.side AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function barricadeSideAfterRestart(): number {
+  return barricadeSideFromLook(BARRICADE_SIDE_SPAWN);
+}
+
 /** Roughness del barricade-edge mesh. Ctor barricadeEdgeMat.roughness: 0.9 = fresco. Mid-life leftover ≠ fresco. */
 export const BARRICADE_EDGE_ROUGHNESS = 0.9;
 
@@ -4039,6 +4064,8 @@ export function createWorldView(
     transparent: barricadeTransparentAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: barricadeDepthWriteAfterRestart(),
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: barricadeSideAfterRestart() as THREE.Side,
   });
   const barricadeEdgeMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(BARRICADE_EDGE, lastDaylight),
