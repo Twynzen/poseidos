@@ -206,6 +206,31 @@ export function grassTransparentAfterRestart(): boolean {
   return grassTransparentFromLook(GRASS_TRANSPARENT_SPAWN);
 }
 
+/** DepthWrite del césped instanced. Ctor grassMat.depthWrite: true = fresco. Mid-life leftover ≠ fresco. */
+export const GRASS_DEPTH_WRITE = true;
+
+/** Idle grass mesh depthWrite. Ctor grassMat.depthWrite: true = fresco. Mid-life leftover ≠ fresco. */
+export const GRASS_DEPTH_WRITE_SPAWN = true;
+
+/**
+ * DepthWrite que leería applyGrassPoses (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * applyGrassPoses / color.setHex no escribe depthWrite (ctor constant).
+ */
+export function grassDepthWriteFromLook(depthWrite: boolean): boolean {
+  return depthWrite;
+}
+
+/**
+ * R / softReset: depthWrite fresco (idle true).
+ * WorldView nace grassMat.depthWrite AfterRestart; leftover mid-life no filtra.
+ * applyGrassPoses / color.setHex no escribe depthWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function grassDepthWriteAfterRestart(): boolean {
+  return grassDepthWriteFromLook(GRASS_DEPTH_WRITE_SPAWN);
+}
+
 export interface GrassTile {
   tx: number;
   ty: number;
