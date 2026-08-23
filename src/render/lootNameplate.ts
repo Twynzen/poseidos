@@ -1310,6 +1310,33 @@ export function lootNameplateShadowSideAfterRestart(): THREE.Side | null {
   return lootNameplateShadowSideFromLook(LOOT_NAMEPLATE_SHADOW_SIDE_SPAWN);
 }
 
+/** AlphaMap del nameplate sprite. Ctor SpriteMaterial.alphaMap null = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_ALPHA_MAP: THREE.Texture | null = null;
+
+/** Idle nameplate sprite alphaMap. Ctor SpriteMaterial.alphaMap null = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_ALPHA_MAP_SPAWN: THREE.Texture | null = null;
+
+/**
+ * AlphaMap que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle null).
+ * syncLootFocus / applyLootNameplateLook no escriben alphaMap (ctor constant).
+ */
+export function lootNameplateAlphaMapFromLook(
+  alphaMap: THREE.Texture | null,
+): THREE.Texture | null {
+  return alphaMap;
+}
+
+/**
+ * R / softReset: alphaMap fresco (idle null).
+ * WorldView nace SpriteMaterial.alphaMap AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben alphaMap (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateAlphaMapAfterRestart(): THREE.Texture | null {
+  return lootNameplateAlphaMapFromLook(LOOT_NAMEPLATE_ALPHA_MAP_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
