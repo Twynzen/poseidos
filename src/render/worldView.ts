@@ -422,6 +422,7 @@ import {
   lootNameplateFogAfterRestart,
   lootNameplateRotationAfterRestart,
   lootNameplateDepthTestAfterRestart,
+  lootNameplateColorWriteAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4342,6 +4343,8 @@ export function createWorldView(
       rotation: lootNameplateRotationAfterRestart(),
       // R / dispose: depthTest fresco (idle); leftover mid-life depthTest de la vida anterior no filtra.
       depthTest: lootNameplateDepthTestAfterRestart(),
+      // R / dispose: colorWrite fresco (idle); leftover mid-life colorWrite de la vida anterior no filtra.
+      colorWrite: lootNameplateColorWriteAfterRestart(),
     });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";

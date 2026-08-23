@@ -465,6 +465,31 @@ export function lootNameplateDepthTestAfterRestart(): boolean {
   return lootNameplateDepthTestFromLook(LOOT_NAMEPLATE_DEPTH_TEST_SPAWN);
 }
 
+/** ColorWrite del nameplate sprite. Ctor SpriteMaterial.colorWrite true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_COLOR_WRITE = true;
+
+/** Idle nameplate sprite colorWrite. Ctor SpriteMaterial.colorWrite true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_COLOR_WRITE_SPAWN = true;
+
+/**
+ * ColorWrite que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * syncLootFocus / applyLootNameplateLook no escriben colorWrite (ctor constant).
+ */
+export function lootNameplateColorWriteFromLook(colorWrite: boolean): boolean {
+  return colorWrite;
+}
+
+/**
+ * R / softReset: colorWrite fresco (idle true).
+ * WorldView nace SpriteMaterial.colorWrite AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben colorWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateColorWriteAfterRestart(): boolean {
+  return lootNameplateColorWriteFromLook(LOOT_NAMEPLATE_COLOR_WRITE_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
