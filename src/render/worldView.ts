@@ -291,6 +291,7 @@ import {
   impactSparkLightColorAfterRestart,
   impactSparkLightDecayAfterRestart,
   impactSparkLightDistanceAfterRestart,
+  impactSideAfterRestart,
   tickImpactSpark as stepImpactSpark,
   triggerImpactSpark as startImpactSpark,
 } from "./impactSpark";
@@ -4774,6 +4775,8 @@ export function createWorldView(
     depthWrite: impactSparkDepthWriteAfterRestart(),
     // R / dispose: blending fresco (idle); leftover mid-life blending de la vida anterior no filtra.
     blending: impactSparkBlendingAfterRestart() as THREE.Blending,
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: impactSideAfterRestart() as THREE.Side,
   });
   const impactMesh = new THREE.Mesh(impactGeo, impactMat);
   // R / dispose: hidden fresco; leftover mid-spark visible no filtra.
