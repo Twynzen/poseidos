@@ -3571,6 +3571,31 @@ export function barricadeEdgeDepthWriteAfterRestart(): boolean {
   return barricadeEdgeDepthWriteFromLook(BARRICADE_EDGE_DEPTH_WRITE_SPAWN);
 }
 
+/** Side del barricade-edge mesh. Ctor barricadeEdgeMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_EDGE_SIDE = 0;
+
+/** Idle barricade-edge mesh side. Ctor barricadeEdgeMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const BARRICADE_EDGE_SIDE_SPAWN = 0;
+
+/**
+ * Side que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.FrontSide / 0).
+ * attach/tick no escriben side (ctor constant).
+ */
+export function barricadeEdgeSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.FrontSide / 0).
+ * WorldView nace barricadeEdgeMat.side AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function barricadeEdgeSideAfterRestart(): number {
+  return barricadeEdgeSideFromLook(BARRICADE_EDGE_SIDE_SPAWN);
+}
+
 /** Alto de la barricada. 1.35 × 1.15 para leerse un poco más alta de noche. */
 export const BARRICADE_HEIGHT = 1.5525;
 /** Ancho de la barricada. 0.92 × 1.15 para leerse un poco más ancha de noche. */
@@ -4083,6 +4108,8 @@ export function createWorldView(
     transparent: barricadeEdgeTransparentAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: barricadeEdgeDepthWriteAfterRestart(),
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: barricadeEdgeSideAfterRestart() as THREE.Side,
   });
   const fogMat = new THREE.MeshBasicMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
