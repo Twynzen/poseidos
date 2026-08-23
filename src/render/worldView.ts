@@ -856,6 +856,31 @@ export function playerHeadTransparentAfterRestart(): boolean {
   return playerHeadTransparentFromLook(PLAYER_HEAD_TRANSPARENT_SPAWN);
 }
 
+/** DepthWrite del player-head mesh. Ctor playerHeadMat.depthWrite: true = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_HEAD_DEPTH_WRITE = true;
+
+/** Idle player-head mesh depthWrite. Ctor playerHeadMat.depthWrite: true = fresco. Mid-life leftover ≠ fresco. */
+export const PLAYER_HEAD_DEPTH_WRITE_SPAWN = true;
+
+/**
+ * DepthWrite que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * attach/tick no escriben depthWrite (ctor constant).
+ */
+export function playerHeadDepthWriteFromLook(depthWrite: boolean): boolean {
+  return depthWrite;
+}
+
+/**
+ * R / softReset: depthWrite fresco (idle true).
+ * WorldView nace playerHeadMat.depthWrite AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben depthWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function playerHeadDepthWriteAfterRestart(): boolean {
+  return playerHeadDepthWriteFromLook(PLAYER_HEAD_DEPTH_WRITE_SPAWN);
+}
+
 /** Amenaza muda: rojo oscuro. 0x6b1a1a × 1.15/canal para leerse de noche. */
 export const HOSTILE_COLOR = 0x7b1e1e;
 
@@ -3452,6 +3477,8 @@ export function createWorldView(
     opacity: playerHeadOpacityAfterRestart(),
     // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
     transparent: playerHeadTransparentAfterRestart(),
+    // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
+    depthWrite: playerHeadDepthWriteAfterRestart(),
   });
   const playerMesh = new THREE.Group();
   /** Hijo de silueta: bobY + lean/sway; root queda en suelo (x,0,y). */
