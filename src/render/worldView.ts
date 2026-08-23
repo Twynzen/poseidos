@@ -4426,7 +4426,7 @@ export function createWorldView(
       stencilZPass: lootNameplateStencilZPassAfterRestart() as THREE.StencilOp,
       // R / dispose: stencilPass fresco (idle); leftover mid-life stencilPass de la vida anterior no filtra.
       stencilPass: lootNameplateStencilPassAfterRestart() as THREE.StencilOp,
-    });
+    } as THREE.SpriteMaterialParameters & { stencilPass: THREE.StencilOp });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";
     sprite.position.set(0, LOOT_NAMEPLATE_Y, 0);
