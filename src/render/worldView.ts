@@ -1062,6 +1062,31 @@ export function hostileTransparentAfterRestart(): boolean {
   return hostileTransparentFromLook(HOSTILE_TRANSPARENT_SPAWN);
 }
 
+/** DepthWrite del hostile mesh. Ctor hostileMat.depthWrite: true = fresco. Mid-life leftover ≠ fresco. */
+export const HOSTILE_DEPTH_WRITE = true;
+
+/** Idle hostile mesh depthWrite. Ctor hostileMat.depthWrite: true = fresco. Mid-life leftover ≠ fresco. */
+export const HOSTILE_DEPTH_WRITE_SPAWN = true;
+
+/**
+ * DepthWrite que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * attach/tick no escriben depthWrite (ctor constant).
+ */
+export function hostileDepthWriteFromLook(depthWrite: boolean): boolean {
+  return depthWrite;
+}
+
+/**
+ * R / softReset: depthWrite fresco (idle true).
+ * WorldView nace hostileMat.depthWrite AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben depthWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function hostileDepthWriteAfterRestart(): boolean {
+  return hostileDepthWriteFromLook(HOSTILE_DEPTH_WRITE_SPAWN);
+}
+
 /** Poseído: púrpura enfermo. 0x5a2d6b × 1.15/canal para leerse de noche. */
 export const POSSESSED_COLOR = 0x68347b;
 
@@ -4327,6 +4352,8 @@ export function createWorldView(
     opacity: hostileOpacityAfterRestart(),
     // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
     transparent: hostileTransparentAfterRestart(),
+    // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
+    depthWrite: hostileDepthWriteAfterRestart(),
   });
   const possessedMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
