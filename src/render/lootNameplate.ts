@@ -640,6 +640,31 @@ export function lootNameplateAlphaHashAfterRestart(): boolean {
   return lootNameplateAlphaHashFromLook(LOOT_NAMEPLATE_ALPHA_HASH_SPAWN);
 }
 
+/** AlphaToCoverage del nameplate sprite. Ctor SpriteMaterial.alphaToCoverage false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_ALPHA_TO_COVERAGE = false;
+
+/** Idle nameplate sprite alphaToCoverage. Ctor SpriteMaterial.alphaToCoverage false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_ALPHA_TO_COVERAGE_SPAWN = false;
+
+/**
+ * AlphaToCoverage que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * syncLootFocus / applyLootNameplateLook no escriben alphaToCoverage (ctor constant).
+ */
+export function lootNameplateAlphaToCoverageFromLook(alphaToCoverage: boolean): boolean {
+  return alphaToCoverage;
+}
+
+/**
+ * R / softReset: alphaToCoverage fresco (idle false).
+ * WorldView nace SpriteMaterial.alphaToCoverage AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben alphaToCoverage (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateAlphaToCoverageAfterRestart(): boolean {
+  return lootNameplateAlphaToCoverageFromLook(LOOT_NAMEPLATE_ALPHA_TO_COVERAGE_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
