@@ -453,6 +453,7 @@ import {
   lootNameplateClipIntersectionAfterRestart,
   lootNameplateClipShadowsAfterRestart,
   lootNameplateClippingPlanesAfterRestart,
+  lootNameplateClippingAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4435,7 +4436,12 @@ export function createWorldView(
       clipShadows: lootNameplateClipShadowsAfterRestart(),
       // R / dispose: clippingPlanes fresco (idle); leftover mid-life clippingPlanes de la vida anterior no filtra.
       clippingPlanes: lootNameplateClippingPlanesAfterRestart(),
-    } as THREE.SpriteMaterialParameters & { stencilPass: THREE.StencilOp });
+      // R / dispose: clipping fresco (idle); leftover mid-life clipping de la vida anterior no filtra.
+      clipping: lootNameplateClippingAfterRestart(),
+    } as THREE.SpriteMaterialParameters & {
+      stencilPass: THREE.StencilOp;
+      clipping: boolean;
+    });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";
     sprite.position.set(0, LOOT_NAMEPLATE_Y, 0);
