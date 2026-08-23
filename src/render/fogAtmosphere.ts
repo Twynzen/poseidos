@@ -562,6 +562,31 @@ export function fogDepthWriteAfterRestart(): boolean {
   return fogDepthWriteFromLook(FOG_DEPTH_WRITE_SPAWN);
 }
 
+/** Side del fog de tiles fuera de LOS. Ctor fogMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const FOG_SIDE = 0;
+
+/** Idle fog mesh side. Ctor fogMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const FOG_SIDE_SPAWN = 0;
+
+/**
+ * Side que leería chunk/FOV (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.FrontSide / 0).
+ * chunk/FOV no escribe side (ctor constant).
+ */
+export function fogSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.FrontSide / 0).
+ * WorldView nace fogMat.side AfterRestart; leftover mid-life no filtra.
+ * chunk/FOV no escribe side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function fogSideAfterRestart(): number {
+  return fogSideFromLook(FOG_SIDE_SPAWN);
+}
+
 function clamp01(v: number): number {
   return Math.max(0, Math.min(1, v));
 }
