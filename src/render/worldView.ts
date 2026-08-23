@@ -1351,6 +1351,31 @@ export function possessedHeadOpacityAfterRestart(): number {
   return possessedHeadOpacityFromLook(POSSESSED_HEAD_OPACITY_SPAWN);
 }
 
+/** Transparent del possessed head mesh. Ctor possessedHeadMat.transparent: false = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_TRANSPARENT = false;
+
+/** Idle possessed head mesh transparent. Ctor possessedHeadMat.transparent: false = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_TRANSPARENT_SPAWN = false;
+
+/**
+ * Transparent que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * attach/tick no escriben transparent (ctor constant).
+ */
+export function possessedHeadTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle false).
+ * WorldView nace possessedHeadMat.transparent AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function possessedHeadTransparentAfterRestart(): boolean {
+  return possessedHeadTransparentFromLook(POSSESSED_HEAD_TRANSPARENT_SPAWN);
+}
+
 /** Color del pool cálido indoor de noche. 0xffb070 × 1.15/canal (r clamp) para leerse de noche. */
 export const WARM_LIGHT_COLOR = 0xffca81;
 /** Multiplicador de intensidad del PointLight cálido indoor. 1.55 × 1.15 para leerse un poco más fuerte de noche. */
@@ -4032,6 +4057,8 @@ export function createWorldView(
     metalness: possessedHeadMetalnessAfterRestart(),
     // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
     opacity: possessedHeadOpacityAfterRestart(),
+    // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+    transparent: possessedHeadTransparentAfterRestart(),
   });
   const hostileMeshes = new Map<string, THREE.Object3D>();
   const hostileKinds = new Map<string, "mute" | "possessed">();
