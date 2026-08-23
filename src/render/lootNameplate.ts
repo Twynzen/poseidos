@@ -1148,6 +1148,31 @@ export function lootNameplateStencilZPassAfterRestart(): number {
   return lootNameplateStencilZPassFromLook(LOOT_NAMEPLATE_STENCIL_Z_PASS_SPAWN);
 }
 
+/** StencilPass del nameplate sprite. Ctor SpriteMaterial.stencilPass THREE.KeepStencilOp (7680) = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_STENCIL_PASS = THREE.KeepStencilOp;
+
+/** Idle nameplate sprite stencilPass. Ctor SpriteMaterial.stencilPass THREE.KeepStencilOp (7680) = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_STENCIL_PASS_SPAWN = THREE.KeepStencilOp;
+
+/**
+ * StencilPass que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.KeepStencilOp / 7680).
+ * syncLootFocus / applyLootNameplateLook no escriben stencilPass (ctor constant).
+ */
+export function lootNameplateStencilPassFromLook(stencilPass: number): number {
+  return stencilPass;
+}
+
+/**
+ * R / softReset: stencilPass fresco (idle THREE.KeepStencilOp / 7680).
+ * WorldView nace SpriteMaterial.stencilPass AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben stencilPass (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateStencilPassAfterRestart(): number {
+  return lootNameplateStencilPassFromLook(LOOT_NAMEPLATE_STENCIL_PASS_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
