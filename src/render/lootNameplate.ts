@@ -1419,6 +1419,40 @@ export function lootNameplateMaterialUserDataAfterRestart(): Record<string, unkn
   });
 }
 
+/** Center X del nameplate sprite. Ctor SpriteMaterial.center.x 0.5 = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_CENTER_X = 0.5;
+
+/** Center Y del nameplate sprite. Ctor SpriteMaterial.center.y 0.5 = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_CENTER_Y = 0.5;
+
+/** Idle nameplate sprite center X. Ctor SpriteMaterial.center.x 0.5 = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_CENTER_SPAWN_X = 0.5;
+
+/** Idle nameplate sprite center Y. Ctor SpriteMaterial.center.y 0.5 = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_CENTER_SPAWN_Y = 0.5;
+
+/**
+ * Center que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0.5, 0.5).
+ * syncLootFocus / applyLootNameplateLook no escriben center (ctor constant).
+ * No muta el leftover.
+ */
+export function lootNameplateCenterFromLook(center: THREE.Vector2): THREE.Vector2 {
+  return center;
+}
+
+/**
+ * R / softReset: center fresco (idle 0.5, 0.5).
+ * WorldView nace SpriteMaterial.center AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben center (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateCenterAfterRestart(): THREE.Vector2 {
+  return lootNameplateCenterFromLook(
+    new THREE.Vector2(LOOT_NAMEPLATE_CENTER_SPAWN_X, LOOT_NAMEPLATE_CENTER_SPAWN_Y),
+  );
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
