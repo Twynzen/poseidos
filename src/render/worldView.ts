@@ -454,6 +454,7 @@ import {
   lootNameplateClipShadowsAfterRestart,
   lootNameplateClippingPlanesAfterRestart,
   lootNameplateClippingAfterRestart,
+  lootNameplateShadowSideAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4438,6 +4439,8 @@ export function createWorldView(
       clippingPlanes: lootNameplateClippingPlanesAfterRestart(),
       // R / dispose: clipping fresco (idle); leftover mid-life clipping de la vida anterior no filtra.
       clipping: lootNameplateClippingAfterRestart(),
+      // R / dispose: shadowSide fresco (idle); leftover mid-life shadowSide de la vida anterior no filtra.
+      shadowSide: lootNameplateShadowSideAfterRestart(),
     } as THREE.SpriteMaterialParameters & {
       stencilPass: THREE.StencilOp;
       clipping: boolean;

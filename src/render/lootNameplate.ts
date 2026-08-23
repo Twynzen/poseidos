@@ -1283,6 +1283,33 @@ export function lootNameplateClippingAfterRestart(): boolean {
   return lootNameplateClippingFromLook(LOOT_NAMEPLATE_CLIPPING_SPAWN);
 }
 
+/** ShadowSide del nameplate sprite. Ctor SpriteMaterial.shadowSide null = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_SHADOW_SIDE: THREE.Side | null = null;
+
+/** Idle nameplate sprite shadowSide. Ctor SpriteMaterial.shadowSide null = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_SHADOW_SIDE_SPAWN: THREE.Side | null = null;
+
+/**
+ * ShadowSide que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle null).
+ * syncLootFocus / applyLootNameplateLook no escriben shadowSide (ctor constant).
+ */
+export function lootNameplateShadowSideFromLook(
+  shadowSide: THREE.Side | null,
+): THREE.Side | null {
+  return shadowSide;
+}
+
+/**
+ * R / softReset: shadowSide fresco (idle null).
+ * WorldView nace SpriteMaterial.shadowSide AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben shadowSide (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateShadowSideAfterRestart(): THREE.Side | null {
+  return lootNameplateShadowSideFromLook(LOOT_NAMEPLATE_SHADOW_SIDE_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
