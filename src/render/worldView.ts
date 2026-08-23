@@ -1643,6 +1643,31 @@ export function furnitureOpacityAfterRestart(): number {
   return furnitureOpacityFromLook(FURNITURE_OPACITY_SPAWN);
 }
 
+/** Transparent del furniture mesh. Ctor furnitureMat.transparent: false = fresco. Mid-life leftover ≠ fresco. */
+export const FURNITURE_TRANSPARENT = false;
+
+/** Idle furniture mesh transparent. Ctor furnitureMat.transparent: false = fresco. Mid-life leftover ≠ fresco. */
+export const FURNITURE_TRANSPARENT_SPAWN = false;
+
+/**
+ * Transparent que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * attach/tick no escriben transparent (ctor constant).
+ */
+export function furnitureTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle false).
+ * WorldView nace furnitureMat.transparent AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function furnitureTransparentAfterRestart(): boolean {
+  return furnitureTransparentFromLook(FURNITURE_TRANSPARENT_SPAWN);
+}
+
 /** Roughness del bed mesh. Ctor bedMat.roughness: 0.85 = fresco. Mid-life leftover ≠ fresco. */
 export const BED_ROUGHNESS = 0.85;
 
@@ -3000,6 +3025,8 @@ export function createWorldView(
     emissiveIntensity: furnitureEmissiveIntensityAfterRestart(),
     // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
     opacity: furnitureOpacityAfterRestart(),
+    // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+    transparent: furnitureTransparentAfterRestart(),
   });
   /** Cama: más baja y ancha que furniture genérico (reuse geo/mat). */
   const bedGeo = new THREE.BoxGeometry(1.0, BED_HEIGHT, BED_DEPTH);
