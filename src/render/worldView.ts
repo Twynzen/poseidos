@@ -440,6 +440,7 @@ import {
   lootNameplateBlendEquationAlphaAfterRestart,
   lootNameplateBlendColorAfterRestart,
   lootNameplateBlendAlphaAfterRestart,
+  lootNameplateDepthFuncAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4396,6 +4397,8 @@ export function createWorldView(
       blendColor: lootNameplateBlendColorAfterRestart(),
       // R / dispose: blendAlpha fresco (idle); leftover mid-life blendAlpha de la vida anterior no filtra.
       blendAlpha: lootNameplateBlendAlphaAfterRestart(),
+      // R / dispose: depthFunc fresco (idle); leftover mid-life depthFunc de la vida anterior no filtra.
+      depthFunc: lootNameplateDepthFuncAfterRestart() as THREE.DepthModes,
     });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";
