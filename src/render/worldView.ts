@@ -419,6 +419,7 @@ import {
   lootNameplateRenderOrderAfterRestart,
   lootNameplateSideAfterRestart,
   lootNameplateSizeAttenuationAfterRestart,
+  lootNameplateFogAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4333,6 +4334,8 @@ export function createWorldView(
       side: lootNameplateSideAfterRestart() as THREE.Side,
       // R / dispose: sizeAttenuation fresco (idle); leftover mid-life sizeAttenuation de la vida anterior no filtra.
       sizeAttenuation: lootNameplateSizeAttenuationAfterRestart(),
+      // R / dispose: fog fresco (idle); leftover mid-life fog de la vida anterior no filtra.
+      fog: lootNameplateFogAfterRestart(),
     });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";
