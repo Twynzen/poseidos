@@ -2556,6 +2556,31 @@ export function doorOpenDepthWriteAfterRestart(): boolean {
   return doorOpenDepthWriteFromLook(DOOR_OPEN_DEPTH_WRITE_SPAWN);
 }
 
+/** Side del door-open mesh. Ctor doorOpenMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const DOOR_OPEN_SIDE = 0;
+
+/** Idle door-open mesh side. Ctor doorOpenMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const DOOR_OPEN_SIDE_SPAWN = 0;
+
+/**
+ * Side que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.FrontSide / 0).
+ * attach/tick no escriben side (ctor constant).
+ */
+export function doorOpenSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.FrontSide / 0).
+ * WorldView nace doorOpenMat.side AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function doorOpenSideAfterRestart(): number {
+  return doorOpenSideFromLook(DOOR_OPEN_SIDE_SPAWN);
+}
+
 /** Roughness del floor mesh. Ctor floorMat.roughness: 0.95 = fresco. Mid-life leftover ≠ fresco. */
 export const FLOOR_ROUGHNESS = 0.95;
 
@@ -3842,6 +3867,8 @@ export function createWorldView(
     transparent: doorOpenTransparentAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: doorOpenDepthWriteAfterRestart(),
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: doorOpenSideAfterRestart() as THREE.Side,
   });
   /** Cache de materiales de floor por color final (tint+AO) — barato, sin GTAO. */
   const floorMatByColor = new Map<number, THREE.MeshStandardMaterial>();
