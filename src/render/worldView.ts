@@ -456,6 +456,7 @@ import {
   lootNameplateClippingAfterRestart,
   lootNameplateShadowSideAfterRestart,
   lootNameplateAlphaMapAfterRestart,
+  lootNameplateMaterialVisibleAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4444,6 +4445,8 @@ export function createWorldView(
       shadowSide: lootNameplateShadowSideAfterRestart(),
       // R / dispose: alphaMap fresco (idle); leftover mid-life alphaMap de la vida anterior no filtra.
       alphaMap: lootNameplateAlphaMapAfterRestart(),
+      // R / dispose: Material.visible fresco (idle); leftover mid-life Material.visible de la vida anterior no filtra.
+      visible: lootNameplateMaterialVisibleAfterRestart(),
     } as THREE.SpriteMaterialParameters & {
       stencilPass: THREE.StencilOp;
       clipping: boolean;

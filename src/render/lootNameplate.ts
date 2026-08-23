@@ -1337,6 +1337,32 @@ export function lootNameplateAlphaMapAfterRestart(): THREE.Texture | null {
   return lootNameplateAlphaMapFromLook(LOOT_NAMEPLATE_ALPHA_MAP_SPAWN);
 }
 
+/** Material.visible del nameplate sprite. Ctor SpriteMaterial.visible true = fresco. Mid-life leftover ≠ fresco. Object3D.visible es live write. */
+export const LOOT_NAMEPLATE_MATERIAL_VISIBLE = true;
+
+/** Idle nameplate sprite Material.visible. Ctor SpriteMaterial.visible true = fresco. Mid-life leftover ≠ fresco. Object3D.visible es live write. */
+export const LOOT_NAMEPLATE_MATERIAL_VISIBLE_SPAWN = true;
+
+/**
+ * Material.visible que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * syncLootFocus / applyLootNameplateLook no escriben material.visible (ctor constant).
+ * Object3D.visible (sprite.visible) es live write; no es este leftover.
+ */
+export function lootNameplateMaterialVisibleFromLook(visible: boolean): boolean {
+  return visible;
+}
+
+/**
+ * R / softReset: Material.visible fresco (idle true).
+ * WorldView nace SpriteMaterial.visible AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben material.visible (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateMaterialVisibleAfterRestart(): boolean {
+  return lootNameplateMaterialVisibleFromLook(LOOT_NAMEPLATE_MATERIAL_VISIBLE_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
