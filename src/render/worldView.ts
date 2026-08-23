@@ -332,6 +332,7 @@ import {
   grassOpacityAfterRestart,
   grassTransparentAfterRestart,
   grassDepthWriteAfterRestart,
+  grassSideAfterRestart,
   grassMetalnessAfterRestart,
   grassRoughnessAfterRestart,
   grassAnchorTxFromLook,
@@ -5398,6 +5399,8 @@ export function createWorldView(
     transparent: grassTransparentAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: grassDepthWriteAfterRestart(),
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: grassSideAfterRestart() as THREE.Side,
   });
   const grassMesh = new THREE.InstancedMesh(grassGeo, grassMat, MAX_GRASS_INSTANCES);
   grassMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);

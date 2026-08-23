@@ -231,6 +231,31 @@ export function grassDepthWriteAfterRestart(): boolean {
   return grassDepthWriteFromLook(GRASS_DEPTH_WRITE_SPAWN);
 }
 
+/** Side del césped instanced. Ctor grassMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const GRASS_SIDE = 0;
+
+/** Idle grass mesh side. Ctor grassMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const GRASS_SIDE_SPAWN = 0;
+
+/**
+ * Side que leería applyGrassPoses (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.FrontSide / 0).
+ * applyGrassPoses / color.setHex no escribe side (ctor constant).
+ */
+export function grassSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.FrontSide / 0).
+ * WorldView nace grassMat.side AfterRestart; leftover mid-life no filtra.
+ * applyGrassPoses / color.setHex no escribe side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function grassSideAfterRestart(): number {
+  return grassSideFromLook(GRASS_SIDE_SPAWN);
+}
+
 export interface GrassTile {
   tx: number;
   ty: number;
