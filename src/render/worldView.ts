@@ -4374,7 +4374,7 @@ export function createWorldView(
       // R / dispose: blending fresco (idle); leftover mid-life blending de la vida anterior no filtra.
       blending: lootNameplateBlendingAfterRestart() as THREE.Blending,
       // R / dispose: blendSrc fresco (idle); leftover mid-life blendSrc de la vida anterior no filtra.
-      blendSrc: lootNameplateBlendSrcAfterRestart(),
+      blendSrc: lootNameplateBlendSrcAfterRestart() as THREE.BlendingSrcFactor,
     });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";
