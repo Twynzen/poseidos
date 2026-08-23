@@ -2686,6 +2686,31 @@ export function wallTransparentAfterRestart(): boolean {
   return wallTransparentFromLook(WALL_TRANSPARENT_SPAWN);
 }
 
+/** DepthWrite del wall mesh. Ctor wallMat.depthWrite: true = fresco. Mid-life leftover ≠ fresco. */
+export const WALL_DEPTH_WRITE = true;
+
+/** Idle wall mesh depthWrite. Ctor wallMat.depthWrite: true = fresco. Mid-life leftover ≠ fresco. */
+export const WALL_DEPTH_WRITE_SPAWN = true;
+
+/**
+ * DepthWrite que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * attach/tick no escriben depthWrite (ctor constant).
+ */
+export function wallDepthWriteFromLook(depthWrite: boolean): boolean {
+  return depthWrite;
+}
+
+/**
+ * R / softReset: depthWrite fresco (idle true).
+ * WorldView nace wallMat.depthWrite AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben depthWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function wallDepthWriteAfterRestart(): boolean {
+  return wallDepthWriteFromLook(WALL_DEPTH_WRITE_SPAWN);
+}
+
 /** Roughness del wall-base mesh. Ctor wallBaseMat.roughness: 1 = fresco. Mid-life leftover ≠ fresco. */
 export const WALL_BASE_ROUGHNESS = 1;
 
@@ -3588,6 +3613,8 @@ export function createWorldView(
     opacity: wallOpacityAfterRestart(),
     // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
     transparent: wallTransparentAfterRestart(),
+    // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
+    depthWrite: wallDepthWriteAfterRestart(),
   });
   const wallBaseMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(WALL_BASE_COLOR, lastDaylight),
