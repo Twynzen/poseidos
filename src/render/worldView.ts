@@ -1479,6 +1479,31 @@ export function possessedHeadTransparentAfterRestart(): boolean {
   return possessedHeadTransparentFromLook(POSSESSED_HEAD_TRANSPARENT_SPAWN);
 }
 
+/** DepthWrite del possessed head mesh. Ctor possessedHeadMat.depthWrite: true = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_DEPTH_WRITE = true;
+
+/** Idle possessed head mesh depthWrite. Ctor possessedHeadMat.depthWrite: true = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_DEPTH_WRITE_SPAWN = true;
+
+/**
+ * DepthWrite que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * attach/tick no escriben depthWrite (ctor constant).
+ */
+export function possessedHeadDepthWriteFromLook(depthWrite: boolean): boolean {
+  return depthWrite;
+}
+
+/**
+ * R / softReset: depthWrite fresco (idle true).
+ * WorldView nace possessedHeadMat.depthWrite AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben depthWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function possessedHeadDepthWriteAfterRestart(): boolean {
+  return possessedHeadDepthWriteFromLook(POSSESSED_HEAD_DEPTH_WRITE_SPAWN);
+}
+
 /** Color del pool cálido indoor de noche. 0xffb070 × 1.15/canal (r clamp) para leerse de noche. */
 export const WARM_LIGHT_COLOR = 0xffca81;
 /** Multiplicador de intensidad del PointLight cálido indoor. 1.55 × 1.15 para leerse un poco más fuerte de noche. */
@@ -4413,6 +4438,8 @@ export function createWorldView(
     opacity: possessedHeadOpacityAfterRestart(),
     // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
     transparent: possessedHeadTransparentAfterRestart(),
+    // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
+    depthWrite: possessedHeadDepthWriteAfterRestart(),
   });
   const hostileMeshes = new Map<string, THREE.Object3D>();
   const hostileKinds = new Map<string, "mute" | "possessed">();
