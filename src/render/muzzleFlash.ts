@@ -294,6 +294,31 @@ export function muzzleFlashBlendingAfterRestart(): number {
   return muzzleFlashBlendingFromLook(MUZZLE_FLASH_BLENDING_SPAWN);
 }
 
+/** Side del muzzle flash mesh. Ctor muzzleMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const MUZZLE_SIDE = 0;
+
+/** Idle muzzle flash mesh side. Ctor muzzleMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const MUZZLE_SIDE_SPAWN = 0;
+
+/**
+ * Side que leería applyMuzzleFlashVisual (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.FrontSide / 0).
+ * apply/tick no escribe side (ctor constant).
+ */
+export function muzzleSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.FrontSide / 0).
+ * WorldView nace muzzleMat.side AfterRestart; leftover mid-life no filtra.
+ * apply/tick no escribe side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function muzzleSideAfterRestart(): number {
+  return muzzleSideFromLook(MUZZLE_SIDE_SPAWN);
+}
+
 /**
  * HAS MUERTO / F9 load-muerto: no avanzar el flash ni pintarlo.
  * Vivo (incl. F9 load-vivo): tick/intensity de hoy.
