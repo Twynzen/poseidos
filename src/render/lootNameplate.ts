@@ -973,6 +973,31 @@ export function lootNameplateStencilWriteAfterRestart(): boolean {
   return lootNameplateStencilWriteFromLook(LOOT_NAMEPLATE_STENCIL_WRITE_SPAWN);
 }
 
+/** StencilFunc del nameplate sprite. Ctor SpriteMaterial.stencilFunc THREE.AlwaysStencilFunc (519) = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_STENCIL_FUNC = THREE.AlwaysStencilFunc;
+
+/** Idle nameplate sprite stencilFunc. Ctor SpriteMaterial.stencilFunc THREE.AlwaysStencilFunc (519) = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_STENCIL_FUNC_SPAWN = THREE.AlwaysStencilFunc;
+
+/**
+ * StencilFunc que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.AlwaysStencilFunc / 519).
+ * syncLootFocus / applyLootNameplateLook no escriben stencilFunc (ctor constant).
+ */
+export function lootNameplateStencilFuncFromLook(stencilFunc: number): number {
+  return stencilFunc;
+}
+
+/**
+ * R / softReset: stencilFunc fresco (idle THREE.AlwaysStencilFunc / 519).
+ * WorldView nace SpriteMaterial.stencilFunc AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben stencilFunc (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateStencilFuncAfterRestart(): number {
+  return lootNameplateStencilFuncFromLook(LOOT_NAMEPLATE_STENCIL_FUNC_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
