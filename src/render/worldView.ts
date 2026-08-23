@@ -448,6 +448,7 @@ import {
   lootNameplateStencilFuncMaskAfterRestart,
   lootNameplateStencilFailAfterRestart,
   lootNameplateStencilZFailAfterRestart,
+  lootNameplateStencilZPassAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4420,6 +4421,8 @@ export function createWorldView(
       stencilFail: lootNameplateStencilFailAfterRestart() as THREE.StencilOp,
       // R / dispose: stencilZFail fresco (idle); leftover mid-life stencilZFail de la vida anterior no filtra.
       stencilZFail: lootNameplateStencilZFailAfterRestart() as THREE.StencilOp,
+      // R / dispose: stencilZPass fresco (idle); leftover mid-life stencilZPass de la vida anterior no filtra.
+      stencilZPass: lootNameplateStencilZPassAfterRestart() as THREE.StencilOp,
     });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";
