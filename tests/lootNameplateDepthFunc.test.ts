@@ -23,7 +23,7 @@ describe("lootNameplateDepthFuncAfterRestart (R / softReset)", () => {
     expect(bootDepthFunc).toBe(LOOT_NAMEPLATE_DEPTH_FUNC);
     expect(bootDepthFunc).toBe(LOOT_NAMEPLATE_DEPTH_FUNC_SPAWN);
     expect(bootDepthFunc).toBe(THREE.LessEqualDepth);
-    expect(bootDepthFunc).toBe(515);
+    expect(bootDepthFunc).toBe(3);
     expect(lootNameplateDepthFuncAfterRestart()).toBe(bootDepthFunc);
 
     const leftoverDepthFunc = THREE.AlwaysDepth;

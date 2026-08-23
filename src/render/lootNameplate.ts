@@ -923,15 +923,15 @@ export function lootNameplateBlendAlphaAfterRestart(): number {
   return lootNameplateBlendAlphaFromLook(LOOT_NAMEPLATE_BLEND_ALPHA_SPAWN);
 }
 
-/** DepthFunc del nameplate sprite. Ctor SpriteMaterial.depthFunc THREE.LessEqualDepth (515) = fresco. Mid-life leftover ≠ fresco. */
+/** DepthFunc del nameplate sprite. Ctor SpriteMaterial.depthFunc THREE.LessEqualDepth (3) = fresco. Mid-life leftover ≠ fresco. */
 export const LOOT_NAMEPLATE_DEPTH_FUNC = THREE.LessEqualDepth;
 
-/** Idle nameplate sprite depthFunc. Ctor SpriteMaterial.depthFunc THREE.LessEqualDepth (515) = fresco. Mid-life leftover ≠ fresco. */
+/** Idle nameplate sprite depthFunc. Ctor SpriteMaterial.depthFunc THREE.LessEqualDepth (3) = fresco. Mid-life leftover ≠ fresco. */
 export const LOOT_NAMEPLATE_DEPTH_FUNC_SPAWN = THREE.LessEqualDepth;
 
 /**
  * DepthFunc que leería syncLootFocus (look fresco o vivo).
- * leftover mid-life ≠ fresco (idle THREE.LessEqualDepth / 515).
+ * leftover mid-life ≠ fresco (idle THREE.LessEqualDepth / 3).
  * syncLootFocus / applyLootNameplateLook no escriben depthFunc (ctor constant).
  */
 export function lootNameplateDepthFuncFromLook(depthFunc: number): number {
@@ -939,7 +939,7 @@ export function lootNameplateDepthFuncFromLook(depthFunc: number): number {
 }
 
 /**
- * R / softReset: depthFunc fresco (idle THREE.LessEqualDepth / 515).
+ * R / softReset: depthFunc fresco (idle THREE.LessEqualDepth / 3).
  * WorldView nace SpriteMaterial.depthFunc AfterRestart; leftover mid-life no filtra.
  * syncLootFocus / applyLootNameplateLook no escriben depthFunc (ctor constant).
  * F9 / enterGameOver / freeze death no assign.
