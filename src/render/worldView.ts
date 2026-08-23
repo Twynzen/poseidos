@@ -1947,6 +1947,31 @@ export function furnitureDepthWriteAfterRestart(): boolean {
   return furnitureDepthWriteFromLook(FURNITURE_DEPTH_WRITE_SPAWN);
 }
 
+/** Side del furniture mesh. Ctor furnitureMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const FURNITURE_SIDE = 0;
+
+/** Idle furniture mesh side. Ctor furnitureMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const FURNITURE_SIDE_SPAWN = 0;
+
+/**
+ * Side que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.FrontSide / 0).
+ * attach/tick no escriben side (ctor constant).
+ */
+export function furnitureSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.FrontSide / 0).
+ * WorldView nace furnitureMat.side AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function furnitureSideAfterRestart(): number {
+  return furnitureSideFromLook(FURNITURE_SIDE_SPAWN);
+}
+
 /** Roughness del bed mesh. Ctor bedMat.roughness: 0.85 = fresco. Mid-life leftover ≠ fresco. */
 export const BED_ROUGHNESS = 0.85;
 
@@ -3708,6 +3733,8 @@ export function createWorldView(
     transparent: furnitureTransparentAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: furnitureDepthWriteAfterRestart(),
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: furnitureSideAfterRestart() as THREE.Side,
   });
   /** Cama: más baja y ancha que furniture genérico (reuse geo/mat). */
   const bedGeo = new THREE.BoxGeometry(1.0, BED_HEIGHT, BED_DEPTH);
