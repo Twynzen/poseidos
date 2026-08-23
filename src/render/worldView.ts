@@ -4462,7 +4462,6 @@ export function createWorldView(
     } as THREE.SpriteMaterialParameters & {
       stencilPass: THREE.StencilOp;
       clipping: boolean;
-      allowOverride: boolean;
     });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";
