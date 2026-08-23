@@ -1202,6 +1202,33 @@ export function lootNameplateClipIntersectionAfterRestart(): boolean {
   );
 }
 
+/** ClipShadows del nameplate sprite. Ctor SpriteMaterial.clipShadows false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_CLIP_SHADOWS = false;
+
+/** Idle nameplate sprite clipShadows. Ctor SpriteMaterial.clipShadows false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_CLIP_SHADOWS_SPAWN = false;
+
+/**
+ * ClipShadows que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * syncLootFocus / applyLootNameplateLook no escriben clipShadows (ctor constant).
+ */
+export function lootNameplateClipShadowsFromLook(
+  clipShadows: boolean,
+): boolean {
+  return clipShadows;
+}
+
+/**
+ * R / softReset: clipShadows fresco (idle false).
+ * WorldView nace SpriteMaterial.clipShadows AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben clipShadows (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateClipShadowsAfterRestart(): boolean {
+  return lootNameplateClipShadowsFromLook(LOOT_NAMEPLATE_CLIP_SHADOWS_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.

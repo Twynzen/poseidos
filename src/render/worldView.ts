@@ -451,6 +451,7 @@ import {
   lootNameplateStencilZPassAfterRestart,
   lootNameplateStencilPassAfterRestart,
   lootNameplateClipIntersectionAfterRestart,
+  lootNameplateClipShadowsAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4429,6 +4430,8 @@ export function createWorldView(
       stencilPass: lootNameplateStencilPassAfterRestart() as THREE.StencilOp,
       // R / dispose: clipIntersection fresco (idle); leftover mid-life clipIntersection de la vida anterior no filtra.
       clipIntersection: lootNameplateClipIntersectionAfterRestart(),
+      // R / dispose: clipShadows fresco (idle); leftover mid-life clipShadows de la vida anterior no filtra.
+      clipShadows: lootNameplateClipShadowsAfterRestart(),
     } as THREE.SpriteMaterialParameters & { stencilPass: THREE.StencilOp });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";
