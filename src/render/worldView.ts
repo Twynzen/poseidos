@@ -417,6 +417,7 @@ import {
   lootNameplateColorAfterRestart,
   lootNameplateDepthWriteAfterRestart,
   lootNameplateRenderOrderAfterRestart,
+  lootNameplateSideAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4327,6 +4328,8 @@ export function createWorldView(
       transparent: lootNameplateTransparentAfterRestart(),
       // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
       depthWrite: lootNameplateDepthWriteAfterRestart(),
+      // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+      side: lootNameplateSideAfterRestart() as THREE.Side,
     });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";

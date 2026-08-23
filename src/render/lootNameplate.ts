@@ -336,6 +336,31 @@ export function lootNameplateRenderOrderAfterRestart(): number {
   return lootNameplateRenderOrderFromLook(LOOT_NAMEPLATE_RENDER_ORDER_SPAWN);
 }
 
+/** Side del nameplate sprite. Ctor SpriteMaterial.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_SIDE = 0;
+
+/** Idle nameplate sprite side. Ctor SpriteMaterial.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_SIDE_SPAWN = 0;
+
+/**
+ * Side que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.FrontSide / 0).
+ * syncLootFocus / applyLootNameplateLook no escriben side (ctor constant).
+ */
+export function lootNameplateSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.FrontSide / 0).
+ * WorldView nace SpriteMaterial.side AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateSideAfterRestart(): number {
+  return lootNameplateSideFromLook(LOOT_NAMEPLATE_SIDE_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
