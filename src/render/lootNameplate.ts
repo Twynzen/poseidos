@@ -390,6 +390,31 @@ export function lootNameplateSizeAttenuationAfterRestart(): boolean {
   );
 }
 
+/** Fog del nameplate sprite. Ctor SpriteMaterial.fog true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_FOG = true;
+
+/** Idle nameplate sprite fog. Ctor SpriteMaterial.fog true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_FOG_SPAWN = true;
+
+/**
+ * Fog que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * syncLootFocus / applyLootNameplateLook no escriben fog (ctor constant).
+ */
+export function lootNameplateFogFromLook(fog: boolean): boolean {
+  return fog;
+}
+
+/**
+ * R / softReset: fog fresco (idle true).
+ * WorldView nace SpriteMaterial.fog AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben fog (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateFogAfterRestart(): boolean {
+  return lootNameplateFogFromLook(LOOT_NAMEPLATE_FOG_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
