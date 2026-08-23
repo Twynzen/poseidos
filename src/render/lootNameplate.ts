@@ -361,6 +361,35 @@ export function lootNameplateSideAfterRestart(): number {
   return lootNameplateSideFromLook(LOOT_NAMEPLATE_SIDE_SPAWN);
 }
 
+/** SizeAttenuation del nameplate sprite. Ctor SpriteMaterial.sizeAttenuation true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_SIZE_ATTENUATION = true;
+
+/** Idle nameplate sprite sizeAttenuation. Ctor SpriteMaterial.sizeAttenuation true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_SIZE_ATTENUATION_SPAWN = true;
+
+/**
+ * SizeAttenuation que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * syncLootFocus / applyLootNameplateLook no escriben sizeAttenuation (ctor constant).
+ */
+export function lootNameplateSizeAttenuationFromLook(
+  sizeAttenuation: boolean,
+): boolean {
+  return sizeAttenuation;
+}
+
+/**
+ * R / softReset: sizeAttenuation fresco (idle true).
+ * WorldView nace SpriteMaterial.sizeAttenuation AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben sizeAttenuation (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateSizeAttenuationAfterRestart(): boolean {
+  return lootNameplateSizeAttenuationFromLook(
+    LOOT_NAMEPLATE_SIZE_ATTENUATION_SPAWN,
+  );
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
