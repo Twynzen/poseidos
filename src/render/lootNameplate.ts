@@ -3,6 +3,8 @@
  * worldView aplica label/opacity al Sprite canvas hijo del grupo loot.
  */
 
+import * as THREE from "three";
+
 /** Máximo de caracteres del label. */
 export const LOOT_NAMEPLATE_MAX_CHARS = 23;
 
@@ -688,6 +690,31 @@ export function lootNameplateForceSinglePassFromLook(forceSinglePass: boolean): 
  */
 export function lootNameplateForceSinglePassAfterRestart(): boolean {
   return lootNameplateForceSinglePassFromLook(LOOT_NAMEPLATE_FORCE_SINGLE_PASS_SPAWN);
+}
+
+/** Blending del nameplate sprite. Ctor SpriteMaterial.blending THREE.NormalBlending (1) = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_BLENDING = THREE.NormalBlending;
+
+/** Idle nameplate sprite blending. Ctor SpriteMaterial.blending THREE.NormalBlending (1) = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_BLENDING_SPAWN = THREE.NormalBlending;
+
+/**
+ * Blending que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.NormalBlending / 1).
+ * syncLootFocus / applyLootNameplateLook no escriben blending (ctor constant).
+ */
+export function lootNameplateBlendingFromLook(blending: number): number {
+  return blending;
+}
+
+/**
+ * R / softReset: blending fresco (idle THREE.NormalBlending / 1).
+ * WorldView nace SpriteMaterial.blending AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben blending (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateBlendingAfterRestart(): number {
+  return lootNameplateBlendingFromLook(LOOT_NAMEPLATE_BLENDING_SPAWN);
 }
 
 /**
