@@ -2132,6 +2132,31 @@ export function wallEmissiveIntensityAfterRestart(): number {
   return wallEmissiveIntensityFromLook(WALL_EMISSIVE_INTENSITY_SPAWN);
 }
 
+/** Opacity del wall mesh. Ctor wallMat.opacity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const WALL_OPACITY = 1;
+
+/** Idle wall mesh opacity. Ctor wallMat.opacity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const WALL_OPACITY_SPAWN = 1;
+
+/**
+ * Opacity que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * attach/tick no escriben opacity (ctor constant).
+ */
+export function wallOpacityFromLook(opacity: number): number {
+  return opacity;
+}
+
+/**
+ * R / softReset: opacity fresco (idle 1).
+ * WorldView nace wallMat.opacity AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben opacity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function wallOpacityAfterRestart(): number {
+  return wallOpacityFromLook(WALL_OPACITY_SPAWN);
+}
+
 /** Roughness del wall-base mesh. Ctor wallBaseMat.roughness: 1 = fresco. Mid-life leftover ≠ fresco. */
 export const WALL_BASE_ROUGHNESS = 1;
 
@@ -2860,6 +2885,8 @@ export function createWorldView(
     emissive: wallEmissiveAfterRestart(),
     // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
     emissiveIntensity: wallEmissiveIntensityAfterRestart(),
+    // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
+    opacity: wallOpacityAfterRestart(),
   });
   const wallBaseMat = new THREE.MeshStandardMaterial({
     color: applyNightGroundLift(WALL_BASE_COLOR, lastDaylight),
