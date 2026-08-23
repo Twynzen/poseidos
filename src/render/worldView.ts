@@ -426,6 +426,7 @@ import {
   lootNameplateDitheringAfterRestart,
   lootNameplatePremultipliedAlphaAfterRestart,
   lootNameplateToneMappedAfterRestart,
+  lootNameplateVertexColorsAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4354,6 +4355,8 @@ export function createWorldView(
       premultipliedAlpha: lootNameplatePremultipliedAlphaAfterRestart(),
       // R / dispose: toneMapped fresco (idle); leftover mid-life toneMapped de la vida anterior no filtra.
       toneMapped: lootNameplateToneMappedAfterRestart(),
+      // R / dispose: vertexColors fresco (idle); leftover mid-life vertexColors de la vida anterior no filtra.
+      vertexColors: lootNameplateVertexColorsAfterRestart(),
     });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";
