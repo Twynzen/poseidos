@@ -1796,6 +1796,31 @@ export function furnitureTransparentAfterRestart(): boolean {
   return furnitureTransparentFromLook(FURNITURE_TRANSPARENT_SPAWN);
 }
 
+/** DepthWrite del furniture mesh. Ctor furnitureMat.depthWrite: true = fresco. Mid-life leftover ≠ fresco. */
+export const FURNITURE_DEPTH_WRITE = true;
+
+/** Idle furniture mesh depthWrite. Ctor furnitureMat.depthWrite: true = fresco. Mid-life leftover ≠ fresco. */
+export const FURNITURE_DEPTH_WRITE_SPAWN = true;
+
+/**
+ * DepthWrite que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * attach/tick no escriben depthWrite (ctor constant).
+ */
+export function furnitureDepthWriteFromLook(depthWrite: boolean): boolean {
+  return depthWrite;
+}
+
+/**
+ * R / softReset: depthWrite fresco (idle true).
+ * WorldView nace furnitureMat.depthWrite AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben depthWrite (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function furnitureDepthWriteAfterRestart(): boolean {
+  return furnitureDepthWriteFromLook(FURNITURE_DEPTH_WRITE_SPAWN);
+}
+
 /** Roughness del bed mesh. Ctor bedMat.roughness: 0.85 = fresco. Mid-life leftover ≠ fresco. */
 export const BED_ROUGHNESS = 0.85;
 
@@ -3355,6 +3380,8 @@ export function createWorldView(
     opacity: furnitureOpacityAfterRestart(),
     // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
     transparent: furnitureTransparentAfterRestart(),
+    // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
+    depthWrite: furnitureDepthWriteAfterRestart(),
   });
   /** Cama: más baja y ancha que furniture genérico (reuse geo/mat). */
   const bedGeo = new THREE.BoxGeometry(1.0, BED_HEIGHT, BED_DEPTH);
