@@ -540,6 +540,31 @@ export function lootNameplatePremultipliedAlphaAfterRestart(): boolean {
   return lootNameplatePremultipliedAlphaFromLook(LOOT_NAMEPLATE_PREMULTIPLIED_ALPHA_SPAWN);
 }
 
+/** ToneMapped del nameplate sprite. Ctor SpriteMaterial.toneMapped true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_TONE_MAPPED = true;
+
+/** Idle nameplate sprite toneMapped. Ctor SpriteMaterial.toneMapped true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_TONE_MAPPED_SPAWN = true;
+
+/**
+ * ToneMapped que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * syncLootFocus / applyLootNameplateLook no escriben toneMapped (ctor constant).
+ */
+export function lootNameplateToneMappedFromLook(toneMapped: boolean): boolean {
+  return toneMapped;
+}
+
+/**
+ * R / softReset: toneMapped fresco (idle true).
+ * WorldView nace SpriteMaterial.toneMapped AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben toneMapped (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateToneMappedAfterRestart(): boolean {
+  return lootNameplateToneMappedFromLook(LOOT_NAMEPLATE_TONE_MAPPED_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
