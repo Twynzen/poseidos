@@ -458,6 +458,7 @@ import {
   lootNameplateAlphaMapAfterRestart,
   lootNameplateMaterialVisibleAfterRestart,
   lootNameplateMaterialNameAfterRestart,
+  lootNameplateMaterialUserDataAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4450,6 +4451,8 @@ export function createWorldView(
       visible: lootNameplateMaterialVisibleAfterRestart(),
       // R / dispose: Material.name fresco (idle); leftover mid-life Material.name de la vida anterior no filtra.
       name: lootNameplateMaterialNameAfterRestart(),
+      // R / dispose: Material.userData fresco (idle); leftover mid-life Material.userData de la vida anterior no filtra.
+      userData: lootNameplateMaterialUserDataAfterRestart(),
     } as THREE.SpriteMaterialParameters & {
       stencilPass: THREE.StencilOp;
       clipping: boolean;

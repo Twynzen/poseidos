@@ -1389,6 +1389,36 @@ export function lootNameplateMaterialNameAfterRestart(): string {
   return lootNameplateMaterialNameFromLook(LOOT_NAMEPLATE_MATERIAL_NAME_SPAWN);
 }
 
+/** Material.userData del nameplate sprite. Ctor SpriteMaterial.userData {} = fresco. Mid-life leftover ≠ fresco. Object3D.userData es otro campo. */
+export const LOOT_NAMEPLATE_MATERIAL_USER_DATA: Record<string, unknown> = {};
+
+/** Idle nameplate sprite Material.userData. Ctor SpriteMaterial.userData {} = fresco. Mid-life leftover ≠ fresco. Object3D.userData es otro campo. */
+export const LOOT_NAMEPLATE_MATERIAL_USER_DATA_SPAWN: Record<string, unknown> = {};
+
+/**
+ * Material.userData que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle {}).
+ * syncLootFocus / applyLootNameplateLook no escriben material.userData (ctor constant).
+ * Object3D.userData (sprite.userData) es otro campo; no es este leftover.
+ */
+export function lootNameplateMaterialUserDataFromLook(
+  userData: Record<string, unknown>,
+): Record<string, unknown> {
+  return userData;
+}
+
+/**
+ * R / softReset: Material.userData fresco (idle {}).
+ * WorldView nace SpriteMaterial.userData AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben material.userData (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateMaterialUserDataAfterRestart(): Record<string, unknown> {
+  return lootNameplateMaterialUserDataFromLook({
+    ...LOOT_NAMEPLATE_MATERIAL_USER_DATA_SPAWN,
+  });
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
