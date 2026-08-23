@@ -1605,6 +1605,31 @@ export function possessedHeadDepthWriteAfterRestart(): boolean {
   return possessedHeadDepthWriteFromLook(POSSESSED_HEAD_DEPTH_WRITE_SPAWN);
 }
 
+/** Side del possessed head mesh. Ctor possessedHeadMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_SIDE = 0;
+
+/** Idle possessed head mesh side. Ctor possessedHeadMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_HEAD_SIDE_SPAWN = 0;
+
+/**
+ * Side que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.FrontSide / 0).
+ * attach/tick no escriben side (ctor constant).
+ */
+export function possessedHeadSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.FrontSide / 0).
+ * WorldView nace possessedHeadMat.side AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function possessedHeadSideAfterRestart(): number {
+  return possessedHeadSideFromLook(POSSESSED_HEAD_SIDE_SPAWN);
+}
+
 /** Color del pool cálido indoor de noche. 0xffb070 × 1.15/canal (r clamp) para leerse de noche. */
 export const WARM_LIGHT_COLOR = 0xffca81;
 /** Multiplicador de intensidad del PointLight cálido indoor. 1.55 × 1.15 para leerse un poco más fuerte de noche. */
@@ -4792,6 +4817,8 @@ export function createWorldView(
     transparent: possessedHeadTransparentAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: possessedHeadDepthWriteAfterRestart(),
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: possessedHeadSideAfterRestart() as THREE.Side,
   });
   const hostileMeshes = new Map<string, THREE.Object3D>();
   const hostileKinds = new Map<string, "mute" | "possessed">();
