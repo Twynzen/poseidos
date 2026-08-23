@@ -440,6 +440,31 @@ export function lootNameplateRotationAfterRestart(): number {
   return lootNameplateRotationFromLook(LOOT_NAMEPLATE_ROTATION_SPAWN);
 }
 
+/** DepthTest del nameplate sprite. Ctor SpriteMaterial.depthTest true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_DEPTH_TEST = true;
+
+/** Idle nameplate sprite depthTest. Ctor SpriteMaterial.depthTest true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_DEPTH_TEST_SPAWN = true;
+
+/**
+ * DepthTest que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * syncLootFocus / applyLootNameplateLook no escriben depthTest (ctor constant).
+ */
+export function lootNameplateDepthTestFromLook(depthTest: boolean): boolean {
+  return depthTest;
+}
+
+/**
+ * R / softReset: depthTest fresco (idle true).
+ * WorldView nace SpriteMaterial.depthTest AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben depthTest (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateDepthTestAfterRestart(): boolean {
+  return lootNameplateDepthTestFromLook(LOOT_NAMEPLATE_DEPTH_TEST_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
