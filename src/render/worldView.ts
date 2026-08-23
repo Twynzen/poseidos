@@ -1876,6 +1876,31 @@ export function doorOpenEmissiveIntensityAfterRestart(): number {
   return doorOpenEmissiveIntensityFromLook(DOOR_OPEN_EMISSIVE_INTENSITY_SPAWN);
 }
 
+/** Opacity del door-open mesh. Ctor doorOpenMat.opacity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const DOOR_OPEN_OPACITY = 1;
+
+/** Idle door-open mesh opacity. Ctor doorOpenMat.opacity: 1 = fresco. Mid-life leftover ≠ fresco. */
+export const DOOR_OPEN_OPACITY_SPAWN = 1;
+
+/**
+ * Opacity que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * attach/tick no escriben opacity (ctor constant).
+ */
+export function doorOpenOpacityFromLook(opacity: number): number {
+  return opacity;
+}
+
+/**
+ * R / softReset: opacity fresco (idle 1).
+ * WorldView nace doorOpenMat.opacity AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben opacity (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function doorOpenOpacityAfterRestart(): number {
+  return doorOpenOpacityFromLook(DOOR_OPEN_OPACITY_SPAWN);
+}
+
 /** Roughness del floor mesh. Ctor floorMat.roughness: 0.95 = fresco. Mid-life leftover ≠ fresco. */
 export const FLOOR_ROUGHNESS = 0.95;
 
@@ -2763,6 +2788,8 @@ export function createWorldView(
     emissive: doorOpenEmissiveAfterRestart(),
     // R / dispose: intensity fresco (idle); leftover mid-life intensity de la vida anterior no filtra.
     emissiveIntensity: doorOpenEmissiveIntensityAfterRestart(),
+    // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
+    opacity: doorOpenOpacityAfterRestart(),
   });
   /** Cache de materiales de floor por color final (tint+AO) — barato, sin GTAO. */
   const floorMatByColor = new Map<number, THREE.MeshStandardMaterial>();
