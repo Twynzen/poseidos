@@ -1363,6 +1363,32 @@ export function lootNameplateMaterialVisibleAfterRestart(): boolean {
   return lootNameplateMaterialVisibleFromLook(LOOT_NAMEPLATE_MATERIAL_VISIBLE_SPAWN);
 }
 
+/** Material.name del nameplate sprite. Ctor SpriteMaterial.name '' = fresco. Mid-life leftover ≠ fresco. Object3D.name es otro campo. */
+export const LOOT_NAMEPLATE_MATERIAL_NAME = "";
+
+/** Idle nameplate sprite Material.name. Ctor SpriteMaterial.name '' = fresco. Mid-life leftover ≠ fresco. Object3D.name es otro campo. */
+export const LOOT_NAMEPLATE_MATERIAL_NAME_SPAWN = "";
+
+/**
+ * Material.name que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle '').
+ * syncLootFocus / applyLootNameplateLook no escriben material.name (ctor constant).
+ * Object3D.name (sprite.name) es otro campo; no es este leftover.
+ */
+export function lootNameplateMaterialNameFromLook(name: string): string {
+  return name;
+}
+
+/**
+ * R / softReset: Material.name fresco (idle '').
+ * WorldView nace SpriteMaterial.name AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben material.name (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateMaterialNameAfterRestart(): string {
+  return lootNameplateMaterialNameFromLook(LOOT_NAMEPLATE_MATERIAL_NAME_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
