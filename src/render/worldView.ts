@@ -107,6 +107,7 @@ import {
   tracerColorAfterRestart,
   tracerCountAfterRestart,
   tracerDepthWriteAfterRestart,
+  tracerSideAfterRestart,
   tracerTransparentAfterRestart,
   tracerFlashColorAfterRestart,
   tracerFlashDecayAfterRestart,
@@ -5119,6 +5120,8 @@ export function createWorldView(
     opacity: tracerOpacityAfterRestart(),
     // R / dispose: depthWrite fresco (idle); leftover mid-life depthWrite de la vida anterior no filtra.
     depthWrite: tracerDepthWriteAfterRestart(),
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: tracerSideAfterRestart() as THREE.Side,
   });
   interface LiveTracer {
     mesh: THREE.Mesh;

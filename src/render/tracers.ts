@@ -258,6 +258,31 @@ export function tracerTransparentAfterRestart(): boolean {
   return tracerTransparentFromLook(TRACER_TRANSPARENT_SPAWN);
 }
 
+/** Side del tracer mesh. Ctor tracerMatBase.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const TRACER_SIDE = 0;
+
+/** Idle tracer mesh side. Ctor tracerMatBase.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const TRACER_SIDE_SPAWN = 0;
+
+/**
+ * Side que leería spawn/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.FrontSide / 0).
+ * spawn/tick no escribe side (ctor constant).
+ */
+export function tracerSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.FrontSide / 0).
+ * WorldView nace tracerMatBase.side AfterRestart; leftover mid-life no filtra.
+ * spawn/tick no escribe side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function tracerSideAfterRestart(): number {
+  return tracerSideFromLook(TRACER_SIDE_SPAWN);
+}
+
 /** Longitud del segmento (mínimo epsilon para evitar NaN en escala). */
 export function tracerLength(from: TracerPoint, to: TracerPoint): number {
   return Math.max(0.05, Math.hypot(to.x - from.x, to.y - from.y));
