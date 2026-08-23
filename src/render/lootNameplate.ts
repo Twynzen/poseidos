@@ -415,6 +415,31 @@ export function lootNameplateFogAfterRestart(): boolean {
   return lootNameplateFogFromLook(LOOT_NAMEPLATE_FOG_SPAWN);
 }
 
+/** Rotation del nameplate sprite. Ctor SpriteMaterial.rotation 0 = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_ROTATION = 0;
+
+/** Idle nameplate sprite rotation. Ctor SpriteMaterial.rotation 0 = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_ROTATION_SPAWN = 0;
+
+/**
+ * Rotation que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 0).
+ * syncLootFocus / applyLootNameplateLook no escriben rotation (ctor constant).
+ */
+export function lootNameplateRotationFromLook(rotation: number): number {
+  return rotation;
+}
+
+/**
+ * R / softReset: rotation fresco (idle 0).
+ * WorldView nace SpriteMaterial.rotation AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben rotation (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateRotationAfterRestart(): number {
+  return lootNameplateRotationFromLook(LOOT_NAMEPLATE_ROTATION_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.

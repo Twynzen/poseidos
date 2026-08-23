@@ -420,6 +420,7 @@ import {
   lootNameplateSideAfterRestart,
   lootNameplateSizeAttenuationAfterRestart,
   lootNameplateFogAfterRestart,
+  lootNameplateRotationAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4336,6 +4337,8 @@ export function createWorldView(
       sizeAttenuation: lootNameplateSizeAttenuationAfterRestart(),
       // R / dispose: fog fresco (idle); leftover mid-life fog de la vida anterior no filtra.
       fog: lootNameplateFogAfterRestart(),
+      // R / dispose: rotation fresco (idle); leftover mid-life rotation de la vida anterior no filtra.
+      rotation: lootNameplateRotationAfterRestart(),
     });
     const sprite = new THREE.Sprite(mat);
     sprite.name = "lootNameplate";
