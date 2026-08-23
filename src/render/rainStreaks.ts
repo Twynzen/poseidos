@@ -462,3 +462,28 @@ export function rainDepthWriteFromLook(depthWrite: boolean): boolean {
 export function rainDepthWriteAfterRestart(): boolean {
   return rainDepthWriteFromLook(RAIN_DEPTH_WRITE_SPAWN);
 }
+
+/** Side del rain mesh. Ctor rainMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const RAIN_SIDE = 0;
+
+/** Idle rain mesh side. Ctor rainMat.side THREE.FrontSide (0) = fresco. Mid-life leftover ≠ fresco. */
+export const RAIN_SIDE_SPAWN = 0;
+
+/**
+ * Side que leería spawn/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle THREE.FrontSide / 0).
+ * spawn/tick no escribe side (ctor constant).
+ */
+export function rainSideFromLook(side: number): number {
+  return side;
+}
+
+/**
+ * R / softReset: side fresco (idle THREE.FrontSide / 0).
+ * WorldView nace rainMat.side AfterRestart; leftover mid-life no filtra.
+ * spawn/tick no escribe side (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function rainSideAfterRestart(): number {
+  return rainSideFromLook(RAIN_SIDE_SPAWN);
+}
