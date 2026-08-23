@@ -266,6 +266,7 @@ import {
   muzzleLightColorAfterRestart,
   muzzleLightDecayAfterRestart,
   muzzleLightDistanceAfterRestart,
+  muzzleSideAfterRestart,
   tickMuzzleFlash as stepMuzzleFlash,
   triggerMuzzleFlash as startMuzzleFlash,
 } from "./muzzleFlash";
@@ -4588,6 +4589,8 @@ export function createWorldView(
     depthWrite: muzzleFlashDepthWriteAfterRestart(),
     // R / dispose: blending fresco (idle); leftover mid-life blending de la vida anterior no filtra.
     blending: muzzleFlashBlendingAfterRestart() as THREE.Blending,
+    // R / dispose: side fresco (idle); leftover mid-life side de la vida anterior no filtra.
+    side: muzzleSideAfterRestart() as THREE.Side,
   });
   const muzzleMesh = new THREE.Mesh(muzzleGeo, muzzleMat);
   // R / dispose: hidden fresco; leftover mid-flash visible no filtra.
