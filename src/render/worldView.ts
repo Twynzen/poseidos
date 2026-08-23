@@ -1167,6 +1167,31 @@ export function possessedOpacityAfterRestart(): number {
   return possessedOpacityFromLook(POSSESSED_OPACITY_SPAWN);
 }
 
+/** Transparent del possessed mesh. Ctor possessedMat.transparent: false = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_TRANSPARENT = false;
+
+/** Idle possessed mesh transparent. Ctor possessedMat.transparent: false = fresco. Mid-life leftover ≠ fresco. */
+export const POSSESSED_TRANSPARENT_SPAWN = false;
+
+/**
+ * Transparent que leería attach/tick (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * attach/tick no escriben transparent (ctor constant).
+ */
+export function possessedTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle false).
+ * WorldView nace possessedMat.transparent AfterRestart; leftover mid-life no filtra.
+ * attach/tick no escriben transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function possessedTransparentAfterRestart(): boolean {
+  return possessedTransparentFromLook(POSSESSED_TRANSPARENT_SPAWN);
+}
+
 /** Color de la silueta fallback poseída (cabeza). 0x7a3d8a × 1.15/canal para leerse de noche. */
 export const POSSESSED_HEAD_COLOR = 0x8c469f;
 
@@ -3991,6 +4016,8 @@ export function createWorldView(
     metalness: possessedMetalnessAfterRestart(),
     // R / dispose: opacity fresco (idle); leftover mid-life opacity de la vida anterior no filtra.
     opacity: possessedOpacityAfterRestart(),
+    // R / dispose: transparent fresco (idle); leftover mid-life transparent de la vida anterior no filtra.
+    transparent: possessedTransparentAfterRestart(),
   });
   const possessedHeadMat = new THREE.MeshStandardMaterial({
     // R / dispose: color fresco (idle); leftover mid-life color de la vida anterior no filtra.
