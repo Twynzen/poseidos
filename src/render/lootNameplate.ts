@@ -565,6 +565,31 @@ export function lootNameplateToneMappedAfterRestart(): boolean {
   return lootNameplateToneMappedFromLook(LOOT_NAMEPLATE_TONE_MAPPED_SPAWN);
 }
 
+/** VertexColors del nameplate sprite. Ctor SpriteMaterial.vertexColors false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_VERTEX_COLORS = false;
+
+/** Idle nameplate sprite vertexColors. Ctor SpriteMaterial.vertexColors false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_VERTEX_COLORS_SPAWN = false;
+
+/**
+ * VertexColors que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * syncLootFocus / applyLootNameplateLook no escriben vertexColors (ctor constant).
+ */
+export function lootNameplateVertexColorsFromLook(vertexColors: boolean): boolean {
+  return vertexColors;
+}
+
+/**
+ * R / softReset: vertexColors fresco (idle false).
+ * WorldView nace SpriteMaterial.vertexColors AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben vertexColors (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateVertexColorsAfterRestart(): boolean {
+  return lootNameplateVertexColorsFromLook(LOOT_NAMEPLATE_VERTEX_COLORS_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
