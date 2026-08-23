@@ -819,6 +819,33 @@ export function lootNameplateBlendSrcAlphaAfterRestart(): number | null {
   return lootNameplateBlendSrcAlphaFromLook(LOOT_NAMEPLATE_BLEND_SRC_ALPHA_SPAWN);
 }
 
+/** BlendDstAlpha del nameplate sprite. Ctor SpriteMaterial.blendDstAlpha null = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_BLEND_DST_ALPHA = null;
+
+/** Idle nameplate sprite blendDstAlpha. Ctor SpriteMaterial.blendDstAlpha null = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_BLEND_DST_ALPHA_SPAWN = null;
+
+/**
+ * BlendDstAlpha que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle null).
+ * syncLootFocus / applyLootNameplateLook no escriben blendDstAlpha (ctor constant).
+ */
+export function lootNameplateBlendDstAlphaFromLook(
+  blendDstAlpha: number | null,
+): number | null {
+  return blendDstAlpha;
+}
+
+/**
+ * R / softReset: blendDstAlpha fresco (idle null).
+ * WorldView nace SpriteMaterial.blendDstAlpha AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben blendDstAlpha (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateBlendDstAlphaAfterRestart(): number | null {
+  return lootNameplateBlendDstAlphaFromLook(LOOT_NAMEPLATE_BLEND_DST_ALPHA_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
