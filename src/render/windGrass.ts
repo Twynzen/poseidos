@@ -181,6 +181,31 @@ export function grassOpacityAfterRestart(): number {
   return grassOpacityFromLook(GRASS_OPACITY_SPAWN);
 }
 
+/** Transparent del césped instanced. Ctor grassMat.transparent: false = fresco. Mid-life leftover ≠ fresco. */
+export const GRASS_TRANSPARENT = false;
+
+/** Idle grass mesh transparent. Ctor grassMat.transparent: false = fresco. Mid-life leftover ≠ fresco. */
+export const GRASS_TRANSPARENT_SPAWN = false;
+
+/**
+ * Transparent que leería applyGrassPoses (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * applyGrassPoses / color.setHex no escribe transparent (ctor constant).
+ */
+export function grassTransparentFromLook(transparent: boolean): boolean {
+  return transparent;
+}
+
+/**
+ * R / softReset: transparent fresco (idle false).
+ * WorldView nace grassMat.transparent AfterRestart; leftover mid-life no filtra.
+ * applyGrassPoses / color.setHex no escribe transparent (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function grassTransparentAfterRestart(): boolean {
+  return grassTransparentFromLook(GRASS_TRANSPARENT_SPAWN);
+}
+
 export interface GrassTile {
   tx: number;
   ty: number;
