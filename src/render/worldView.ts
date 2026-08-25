@@ -465,6 +465,7 @@ import {
   lootNameplateCastShadowAfterRestart,
   lootNameplateReceiveShadowAfterRestart,
   lootNameplateMatrixAutoUpdateAfterRestart,
+  lootNameplateLayersMaskAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4481,6 +4482,8 @@ export function createWorldView(
     sprite.receiveShadow = lootNameplateReceiveShadowAfterRestart() as false;
     // R / dispose: matrixAutoUpdate fresco (idle); leftover mid-life matrixAutoUpdate de la vida anterior no filtra.
     sprite.matrixAutoUpdate = lootNameplateMatrixAutoUpdateAfterRestart();
+    // R / dispose: layers.mask fresco (idle); leftover mid-life layers.mask de la vida anterior no filtra.
+    sprite.layers.mask = lootNameplateLayersMaskAfterRestart();
     return sprite;
   }
 

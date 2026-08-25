@@ -1590,6 +1590,31 @@ export function lootNameplateMatrixAutoUpdateAfterRestart(): boolean {
   );
 }
 
+/** layers.mask del nameplate sprite. Ctor sprite.layers.mask 1 = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_LAYERS_MASK = 1;
+
+/** Idle nameplate sprite layers.mask. Ctor sprite.layers.mask 1 = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_LAYERS_MASK_SPAWN = 1;
+
+/**
+ * layers.mask que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle 1).
+ * syncLootFocus / applyLootNameplateLook no escriben layers.mask (ctor constant).
+ */
+export function lootNameplateLayersMaskFromLook(layersMask: number): number {
+  return layersMask;
+}
+
+/**
+ * R / softReset: layers.mask fresco (idle 1).
+ * WorldView nace sprite.layers.mask AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben layers.mask (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateLayersMaskAfterRestart(): number {
+  return lootNameplateLayersMaskFromLook(LOOT_NAMEPLATE_LAYERS_MASK_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
