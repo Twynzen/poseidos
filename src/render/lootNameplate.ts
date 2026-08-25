@@ -1561,6 +1561,35 @@ export function lootNameplateReceiveShadowAfterRestart(): boolean {
   return lootNameplateReceiveShadowFromLook(LOOT_NAMEPLATE_RECEIVE_SHADOW_SPAWN);
 }
 
+/** matrixAutoUpdate del nameplate sprite. Ctor sprite.matrixAutoUpdate true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_MATRIX_AUTO_UPDATE = true;
+
+/** Idle nameplate sprite matrixAutoUpdate. Ctor sprite.matrixAutoUpdate true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_MATRIX_AUTO_UPDATE_SPAWN = true;
+
+/**
+ * matrixAutoUpdate que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * syncLootFocus / applyLootNameplateLook no escriben matrixAutoUpdate (ctor constant).
+ */
+export function lootNameplateMatrixAutoUpdateFromLook(
+  matrixAutoUpdate: boolean,
+): boolean {
+  return matrixAutoUpdate;
+}
+
+/**
+ * R / softReset: matrixAutoUpdate fresco (idle true).
+ * WorldView nace sprite.matrixAutoUpdate AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben matrixAutoUpdate (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateMatrixAutoUpdateAfterRestart(): boolean {
+  return lootNameplateMatrixAutoUpdateFromLook(
+    LOOT_NAMEPLATE_MATRIX_AUTO_UPDATE_SPAWN,
+  );
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
