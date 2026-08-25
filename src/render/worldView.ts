@@ -471,6 +471,7 @@ import {
   lootNameplateUpAfterRestart,
   lootNameplateMatrixWorldNeedsUpdateAfterRestart,
   lootNameplateAnimationsAfterRestart,
+  lootNameplateCustomDepthMaterialAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4499,6 +4500,8 @@ export function createWorldView(
     sprite.matrixWorldNeedsUpdate = lootNameplateMatrixWorldNeedsUpdateAfterRestart();
     // R / dispose: animations fresco (idle); leftover mid-life animations de la vida anterior no filtra.
     sprite.animations = lootNameplateAnimationsAfterRestart();
+    // R / dispose: customDepthMaterial fresco (idle); leftover mid-life customDepthMaterial de la vida anterior no filtra.
+    sprite.customDepthMaterial = lootNameplateCustomDepthMaterialAfterRestart();
     return sprite;
   }
 
