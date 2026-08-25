@@ -1534,6 +1534,33 @@ export function lootNameplateCastShadowAfterRestart(): boolean {
   return lootNameplateCastShadowFromLook(LOOT_NAMEPLATE_CAST_SHADOW_SPAWN);
 }
 
+/** receiveShadow del nameplate sprite. Ctor sprite.receiveShadow false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_RECEIVE_SHADOW = false;
+
+/** Idle nameplate sprite receiveShadow. Ctor sprite.receiveShadow false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_RECEIVE_SHADOW_SPAWN = false;
+
+/**
+ * receiveShadow que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * syncLootFocus / applyLootNameplateLook no escriben receiveShadow (ctor constant).
+ */
+export function lootNameplateReceiveShadowFromLook(
+  receiveShadow: boolean,
+): boolean {
+  return receiveShadow;
+}
+
+/**
+ * R / softReset: receiveShadow fresco (idle false).
+ * WorldView nace sprite.receiveShadow AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben receiveShadow (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateReceiveShadowAfterRestart(): boolean {
+  return lootNameplateReceiveShadowFromLook(LOOT_NAMEPLATE_RECEIVE_SHADOW_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
