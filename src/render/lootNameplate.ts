@@ -1674,6 +1674,32 @@ export function lootNameplateMatrixWorldAutoUpdateAfterRestart(): boolean {
   );
 }
 
+/** up del nameplate sprite. Ctor sprite.up Vector3(0, 1, 0) = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_UP = new THREE.Vector3(0, 1, 0);
+
+/** Idle nameplate sprite up. Ctor sprite.up Vector3(0, 1, 0) = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_UP_SPAWN = new THREE.Vector3(0, 1, 0);
+
+/**
+ * up que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle Vector3(0, 1, 0)).
+ * syncLootFocus / applyLootNameplateLook no escriben sprite.up (ctor constant).
+ * No muta el leftover.
+ */
+export function lootNameplateUpFromLook(up: THREE.Vector3): THREE.Vector3 {
+  return up;
+}
+
+/**
+ * R / softReset: up fresco (idle Vector3(0, 1, 0)).
+ * WorldView nace sprite.up AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben sprite.up (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateUpAfterRestart(): THREE.Vector3 {
+  return lootNameplateUpFromLook(LOOT_NAMEPLATE_UP_SPAWN.clone());
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
