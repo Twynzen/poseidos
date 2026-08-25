@@ -1480,6 +1480,33 @@ export function lootNameplateAllowOverrideAfterRestart(): boolean {
   return lootNameplateAllowOverrideFromLook(LOOT_NAMEPLATE_ALLOW_OVERRIDE_SPAWN);
 }
 
+/** frustumCulled del nameplate sprite. Ctor sprite.frustumCulled true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_FRUSTUM_CULLED = true;
+
+/** Idle nameplate sprite frustumCulled. Ctor sprite.frustumCulled true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_FRUSTUM_CULLED_SPAWN = true;
+
+/**
+ * frustumCulled que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * syncLootFocus / applyLootNameplateLook no escriben frustumCulled (ctor constant).
+ */
+export function lootNameplateFrustumCulledFromLook(
+  frustumCulled: boolean,
+): boolean {
+  return frustumCulled;
+}
+
+/**
+ * R / softReset: frustumCulled fresco (idle true).
+ * WorldView nace sprite.frustumCulled AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben frustumCulled (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateFrustumCulledAfterRestart(): boolean {
+  return lootNameplateFrustumCulledFromLook(LOOT_NAMEPLATE_FRUSTUM_CULLED_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
