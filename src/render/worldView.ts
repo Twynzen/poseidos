@@ -461,6 +461,7 @@ import {
   lootNameplateMaterialUserDataAfterRestart,
   lootNameplateCenterAfterRestart,
   lootNameplateAllowOverrideAfterRestart,
+  lootNameplateFrustumCulledAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4469,6 +4470,8 @@ export function createWorldView(
     sprite.scale.set(LOOT_NAMEPLATE_SCALE_X, LOOT_NAMEPLATE_SCALE_Y, 1);
     // R / dispose: renderOrder fresco (idle); leftover mid-life renderOrder de la vida anterior no filtra.
     sprite.renderOrder = lootNameplateRenderOrderAfterRestart();
+    // R / dispose: frustumCulled fresco (idle); leftover mid-life frustumCulled de la vida anterior no filtra.
+    sprite.frustumCulled = lootNameplateFrustumCulledAfterRestart();
     return sprite;
   }
 
