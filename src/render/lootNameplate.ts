@@ -1700,6 +1700,35 @@ export function lootNameplateUpAfterRestart(): THREE.Vector3 {
   return lootNameplateUpFromLook(LOOT_NAMEPLATE_UP_SPAWN.clone());
 }
 
+/** matrixWorldNeedsUpdate del nameplate sprite. Ctor sprite.matrixWorldNeedsUpdate false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_MATRIX_WORLD_NEEDS_UPDATE = false;
+
+/** Idle nameplate sprite matrixWorldNeedsUpdate. Ctor sprite.matrixWorldNeedsUpdate false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_MATRIX_WORLD_NEEDS_UPDATE_SPAWN = false;
+
+/**
+ * matrixWorldNeedsUpdate que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * syncLootFocus / applyLootNameplateLook no escriben matrixWorldNeedsUpdate (ctor constant).
+ */
+export function lootNameplateMatrixWorldNeedsUpdateFromLook(
+  matrixWorldNeedsUpdate: boolean,
+): boolean {
+  return matrixWorldNeedsUpdate;
+}
+
+/**
+ * R / softReset: matrixWorldNeedsUpdate fresco (idle false).
+ * WorldView nace sprite.matrixWorldNeedsUpdate AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben matrixWorldNeedsUpdate (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateMatrixWorldNeedsUpdateAfterRestart(): boolean {
+  return lootNameplateMatrixWorldNeedsUpdateFromLook(
+    LOOT_NAMEPLATE_MATRIX_WORLD_NEEDS_UPDATE_SPAWN,
+  );
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
