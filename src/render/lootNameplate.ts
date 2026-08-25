@@ -1792,6 +1792,40 @@ export function lootNameplateCustomDepthMaterialAfterRestart():
   );
 }
 
+/** customDistanceMaterial del nameplate sprite. Ctor sprite.customDistanceMaterial undefined = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_CUSTOM_DISTANCE_MATERIAL: THREE.Material | undefined =
+  undefined;
+
+/** Idle nameplate sprite customDistanceMaterial. Ctor sprite.customDistanceMaterial undefined = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_CUSTOM_DISTANCE_MATERIAL_SPAWN:
+  | THREE.Material
+  | undefined = undefined;
+
+/**
+ * customDistanceMaterial que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle undefined).
+ * syncLootFocus / applyLootNameplateLook no escriben sprite.customDistanceMaterial (ctor constant).
+ */
+export function lootNameplateCustomDistanceMaterialFromLook(
+  customDistanceMaterial: THREE.Material | undefined,
+): THREE.Material | undefined {
+  return customDistanceMaterial;
+}
+
+/**
+ * R / softReset: customDistanceMaterial fresco (idle undefined).
+ * WorldView nace sprite.customDistanceMaterial AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben sprite.customDistanceMaterial (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateCustomDistanceMaterialAfterRestart():
+  | THREE.Material
+  | undefined {
+  return lootNameplateCustomDistanceMaterialFromLook(
+    LOOT_NAMEPLATE_CUSTOM_DISTANCE_MATERIAL_SPAWN,
+  );
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
