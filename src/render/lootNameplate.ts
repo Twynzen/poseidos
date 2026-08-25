@@ -1729,6 +1729,35 @@ export function lootNameplateMatrixWorldNeedsUpdateAfterRestart(): boolean {
   );
 }
 
+/** animations del nameplate sprite. Ctor sprite.animations [] = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_ANIMATIONS: THREE.AnimationClip[] = [];
+
+/** Idle nameplate sprite animations. Ctor sprite.animations [] = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_ANIMATIONS_SPAWN: THREE.AnimationClip[] = [];
+
+/**
+ * animations que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle []).
+ * syncLootFocus / applyLootNameplateLook no escriben sprite.animations (ctor constant).
+ */
+export function lootNameplateAnimationsFromLook(
+  animations: THREE.AnimationClip[],
+): THREE.AnimationClip[] {
+  return animations;
+}
+
+/**
+ * R / softReset: animations fresco (idle []).
+ * WorldView nace sprite.animations AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben sprite.animations (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateAnimationsAfterRestart(): THREE.AnimationClip[] {
+  return lootNameplateAnimationsFromLook([
+    ...LOOT_NAMEPLATE_ANIMATIONS_SPAWN,
+  ]);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
