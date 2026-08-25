@@ -4474,7 +4474,7 @@ export function createWorldView(
     // R / dispose: frustumCulled fresco (idle); leftover mid-life frustumCulled de la vida anterior no filtra.
     sprite.frustumCulled = lootNameplateFrustumCulledAfterRestart();
     // R / dispose: castShadow fresco (idle); leftover mid-life castShadow de la vida anterior no filtra.
-    sprite.castShadow = lootNameplateCastShadowAfterRestart();
+    sprite.castShadow = lootNameplateCastShadowAfterRestart() as false;
     return sprite;
   }
 
