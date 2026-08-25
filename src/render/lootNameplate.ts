@@ -1645,6 +1645,35 @@ export function lootNameplateObjectUserDataAfterRestart(): Record<string, unknow
   });
 }
 
+/** matrixWorldAutoUpdate del nameplate sprite. Ctor sprite.matrixWorldAutoUpdate true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_MATRIX_WORLD_AUTO_UPDATE = true;
+
+/** Idle nameplate sprite matrixWorldAutoUpdate. Ctor sprite.matrixWorldAutoUpdate true = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_MATRIX_WORLD_AUTO_UPDATE_SPAWN = true;
+
+/**
+ * matrixWorldAutoUpdate que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle true).
+ * syncLootFocus / applyLootNameplateLook no escriben matrixWorldAutoUpdate (ctor constant).
+ */
+export function lootNameplateMatrixWorldAutoUpdateFromLook(
+  matrixWorldAutoUpdate: boolean,
+): boolean {
+  return matrixWorldAutoUpdate;
+}
+
+/**
+ * R / softReset: matrixWorldAutoUpdate fresco (idle true).
+ * WorldView nace sprite.matrixWorldAutoUpdate AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben matrixWorldAutoUpdate (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateMatrixWorldAutoUpdateAfterRestart(): boolean {
+  return lootNameplateMatrixWorldAutoUpdateFromLook(
+    LOOT_NAMEPLATE_MATRIX_WORLD_AUTO_UPDATE_SPAWN,
+  );
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
