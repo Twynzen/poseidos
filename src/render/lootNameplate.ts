@@ -1507,6 +1507,33 @@ export function lootNameplateFrustumCulledAfterRestart(): boolean {
   return lootNameplateFrustumCulledFromLook(LOOT_NAMEPLATE_FRUSTUM_CULLED_SPAWN);
 }
 
+/** castShadow del nameplate sprite. Ctor sprite.castShadow false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_CAST_SHADOW = false;
+
+/** Idle nameplate sprite castShadow. Ctor sprite.castShadow false = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_CAST_SHADOW_SPAWN = false;
+
+/**
+ * castShadow que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle false).
+ * syncLootFocus / applyLootNameplateLook no escriben castShadow (ctor constant).
+ */
+export function lootNameplateCastShadowFromLook(
+  castShadow: boolean,
+): boolean {
+  return castShadow;
+}
+
+/**
+ * R / softReset: castShadow fresco (idle false).
+ * WorldView nace sprite.castShadow AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben castShadow (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateCastShadowAfterRestart(): boolean {
+  return lootNameplateCastShadowFromLook(LOOT_NAMEPLATE_CAST_SHADOW_SPAWN);
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
