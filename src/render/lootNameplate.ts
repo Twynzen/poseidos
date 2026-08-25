@@ -1758,6 +1758,40 @@ export function lootNameplateAnimationsAfterRestart(): THREE.AnimationClip[] {
   ]);
 }
 
+/** customDepthMaterial del nameplate sprite. Ctor sprite.customDepthMaterial undefined = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_CUSTOM_DEPTH_MATERIAL: THREE.Material | undefined =
+  undefined;
+
+/** Idle nameplate sprite customDepthMaterial. Ctor sprite.customDepthMaterial undefined = fresco. Mid-life leftover ≠ fresco. */
+export const LOOT_NAMEPLATE_CUSTOM_DEPTH_MATERIAL_SPAWN:
+  | THREE.Material
+  | undefined = undefined;
+
+/**
+ * customDepthMaterial que leería syncLootFocus (look fresco o vivo).
+ * leftover mid-life ≠ fresco (idle undefined).
+ * syncLootFocus / applyLootNameplateLook no escriben sprite.customDepthMaterial (ctor constant).
+ */
+export function lootNameplateCustomDepthMaterialFromLook(
+  customDepthMaterial: THREE.Material | undefined,
+): THREE.Material | undefined {
+  return customDepthMaterial;
+}
+
+/**
+ * R / softReset: customDepthMaterial fresco (idle undefined).
+ * WorldView nace sprite.customDepthMaterial AfterRestart; leftover mid-life no filtra.
+ * syncLootFocus / applyLootNameplateLook no escriben sprite.customDepthMaterial (ctor constant).
+ * F9 / enterGameOver / freeze death no assign.
+ */
+export function lootNameplateCustomDepthMaterialAfterRestart():
+  | THREE.Material
+  | undefined {
+  return lootNameplateCustomDepthMaterialFromLook(
+    LOOT_NAMEPLATE_CUSTOM_DEPTH_MATERIAL_SPAWN,
+  );
+}
+
 /**
  * True si no hay stacks o todos qty<=0.
  * null / undefined / slots vacíos / agujeros → true.
