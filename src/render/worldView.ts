@@ -467,6 +467,7 @@ import {
   lootNameplateMatrixAutoUpdateAfterRestart,
   lootNameplateLayersMaskAfterRestart,
   lootNameplateObjectUserDataAfterRestart,
+  lootNameplateMatrixWorldAutoUpdateAfterRestart,
   lootNameplateTransparentAfterRestart,
   lootNameplateVisible,
   lootNameplateVisibleFromLook,
@@ -4487,6 +4488,8 @@ export function createWorldView(
     sprite.layers.mask = lootNameplateLayersMaskAfterRestart();
     // R / dispose: Object3D.userData fresco (idle); leftover mid-life Object3D.userData de la vida anterior no filtra.
     sprite.userData = lootNameplateObjectUserDataAfterRestart();
+    // R / dispose: matrixWorldAutoUpdate fresco (idle); leftover mid-life matrixWorldAutoUpdate de la vida anterior no filtra.
+    sprite.matrixWorldAutoUpdate = lootNameplateMatrixWorldAutoUpdateAfterRestart();
     return sprite;
   }
 
